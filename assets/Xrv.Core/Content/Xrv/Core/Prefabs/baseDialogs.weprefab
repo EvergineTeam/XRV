@@ -1,0 +1,176 @@
+!Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
+Root:
+  Name: contents
+  Tag: null
+  IsEnabled: true
+  IsStatic: false
+  Components:
+    - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+      Id: 37feb664-0e4a-441c-9cbe-001f02d8a361
+      IsEnabled: true
+      LocalOrientation:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalPosition:
+        X: 0.0
+        Y: 0.0
+        Z: 0.0130000003
+      LocalScale:
+        X: 1.0
+        Y: 1.0
+        Z: 1.0
+  Children:
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: text
+      Tag: PART_base_dialog_text
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: 1320dd91-9218-4124-994b-228d8bff0dff
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0308239721
+            Z: 4.65661287E-09
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
+          Id: 13d79da2-7127-4b37-af6a-a9d3c41f8b48
+          Color:
+            A: 255
+            B: 255
+            G: 255
+            R: 255
+          Ellipsis: true
+          Font: d1322288-d9e9-4b1e-b2fe-ca281f0388a2
+          HorizontalAlignment: Center
+          IsEnabled: true
+          Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+          LineSpacing: 0.800000012
+          Origin:
+            X: 0.5
+            Y: 0.5
+          ScaleFactor: 0.00800000038
+          Size:
+            X: 0.159999996
+            Y: 0.0300000496
+          Text: Message text goes here! Message text goes here! Message text goes here! Message text goes here!
+          VerticalAlignment: Center
+          Wrapping: true
+        - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
+          Id: d0bd2607-602f-43fa-9cfc-c92b34f04343
+          DebugBoundingbox: true
+          DebugMode: false
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+      Children: []
+      Id: e9a4cac8-41c5-4aab-a32c-91f868d35c6a
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: buttons
+      Tag: PART_base_dialog_buttons_holder
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: d0ffaeff-09e6-4c84-89a8-5529226d5dfa
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+      Children:
+        - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+          Name: cancelHolder
+          Tag: PART_base_dialog_cancel_holder
+          IsEnabled: true
+          IsStatic: false
+          Components:
+            - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+              Id: ae504830-5277-4211-ab58-6b0b0dabfbf1
+              IsEnabled: true
+              LocalOrientation:
+                W: 1.0
+                X: 0.0
+                Y: 0.0
+                Z: 0.0
+              LocalPosition:
+                X: -0.0399999991
+                Y: -0.0250000004
+                Z: 0.0
+              LocalScale:
+                X: 1.0
+                Y: 1.0
+                Z: 1.0
+          Children: []
+          Id: 216e51a3-6302-4c4c-9b4a-9bd140c60dff
+        - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+          Name: acceptHolder
+          Tag: PART_base_dialog_accept_holder
+          IsEnabled: true
+          IsStatic: false
+          Components:
+            - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+              Id: 6e1478f4-2300-4853-bc3a-2b0ae7b1bc12
+              IsEnabled: true
+              LocalOrientation:
+                W: 1.0
+                X: 0.0
+                Y: 0.0
+                Z: 0.0
+              LocalPosition:
+                X: 0.0399999991
+                Y: -0.0250000004
+                Z: 0.0
+              LocalScale:
+                X: 1.0
+                Y: 1.0
+                Z: 1.0
+          Children: []
+          Id: 47bea373-4070-4711-a011-7917b786eca3
+        - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+          Name: singleButtonHolder
+          Tag: PART_base_dialog_single_holder
+          IsEnabled: true
+          IsStatic: false
+          Components:
+            - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+              Id: 03f757c5-1f08-46eb-afa5-1852c4a564d3
+              IsEnabled: true
+              LocalOrientation:
+                W: 1.0
+                X: 0.0
+                Y: 0.0
+                Z: 0.0
+              LocalPosition:
+                X: 0.0
+                Y: -0.0250000004
+                Z: 0.0
+              LocalScale:
+                X: 1.0
+                Y: 1.0
+                Z: 1.0
+          Children: []
+          Id: ded5cc74-8d83-4e0d-a2d8-df9325e9306f
+      Id: 113a4966-588a-4ad2-b4b8-981021111044
+  Id: e68cad5f-5fe7-4ce9-ba18-671722f53500

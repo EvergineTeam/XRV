@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateEvergineContent>True</GenerateEvergineContent>
+    <GenerateEvergineAssets>False</GenerateEvergineAssets>
+    <GenerateEvergineScenesCode>True</GenerateEvergineScenesCode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Evergine.Common" Version="2022.8.3.1-nightly" />
+    <PackageReference Include="Evergine.Components" Version="2022.8.3.1-nightly" />
+    <PackageReference Include="Evergine.Framework" Version="2022.8.3.1-nightly" />
+    <PackageReference Include="Evergine.Mathematics" Version="2022.8.3.1-nightly" />
+    <PackageReference Include="Evergine.Platform" Version="2022.8.3.1-nightly" />
+    <PackageReference Include="Evergine.Bullet" Version="2022.8.3.1-nightly" />
+    <PackageReference Include="Evergine.Targets" Version="2022.8.3.1-nightly" />
+    <PackageReference Include="Evergine.CodeScenes" Version="2022.8.3.1-nightly" />
+	<PackageReference Include="Evergine.MRTK" Version="2022.7.1.1-nightly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Xrv.Core\Xrv.Core.csproj" />
+  </ItemGroup>
+
+</Project>

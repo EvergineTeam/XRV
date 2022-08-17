@@ -1,0 +1,147 @@
+!Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
+Root:
+  Name: menu
+  Tag: null
+  IsEnabled: true
+  IsStatic: false
+  Components:
+    - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+      Id: 2feba1a5-d26d-4ae1-ac53-2245797d50cc
+      IsEnabled: true
+      LocalOrientation:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalPosition:
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalScale:
+        X: 1.0
+        Y: 1.0
+        Z: 1.0
+  Children:
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: backPlate
+      Tag: PART_hand_menu_back_plate
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: 53ea14e4-22df-49e0-a11d-512fbbe588bb
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+          Id: ab160458-3e77-4e7e-b2c2-faeb2a5370d7
+          AsignedTo: Default
+          IsEnabled: true
+          Material: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+        - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+          Id: 5e653cfc-326e-4591-bcdd-7c622b610a9b
+          Height: 0.159999996
+          InitialU: 0.0
+          InitialV: 0.0
+          IsEnabled: true
+          PlaneNormal: ZPositive
+          TwoSides: true
+          UTile: 1.0
+          UVHorizontalFlip: false
+          UVVerticalFlip: false
+          Width: 0.0320000015
+          YTile: 1.0
+        - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+          Id: 98cd3bdb-de13-4288-8b9f-ea7fc1c3a925
+          DebugBoundingbox: true
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+      Children: []
+      Id: 0b4efd06-4a2c-4e77-be03-2bc590992b96
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: frontPlate
+      Tag: PART_hand_menu_front_plate
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: cb4309ef-8e32-4857-8856-67648420402c
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: -0.0160000008
+            Z: 0.00300000003
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+          Id: 604509f6-f4f8-49ed-bc1f-3a4ef0049b2c
+          AsignedTo: Default
+          IsEnabled: true
+          Material: 1a7070d5-cccf-4b60-93c8-eddafd9b51d5
+        - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+          Id: 0f3b8f51-e655-4f32-9430-31f52d2e3a6f
+          Height: 0.128000006
+          InitialU: 0.0
+          InitialV: 0.0
+          IsEnabled: true
+          PlaneNormal: ZPositive
+          TwoSides: false
+          UTile: 1.0
+          UVHorizontalFlip: false
+          UVVerticalFlip: false
+          Width: 0.0320000015
+          YTile: 1.0
+        - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+          Id: 26dab4e8-04eb-41bd-a8c3-132220dd30c3
+          DebugBoundingbox: true
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+      Children: []
+      Id: 280f8349-6e44-469a-8920-73432685bee7
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: buttonsContainer
+      Tag: PART_hand_menu_buttons_container
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: 77670d24-87b8-45eb-abcf-87996864ef61
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0
+            Z: 0.00600000005
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+      Children: []
+      Id: f617345f-ff9e-4c14-baca-861b1ec74eee
+  Id: 28217a06-a254-4d1a-9bb1-c2e55719e7a2
