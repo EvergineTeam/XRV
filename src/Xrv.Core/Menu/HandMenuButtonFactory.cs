@@ -35,7 +35,7 @@ namespace Xrv.Core.Menu
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(definition.IconOn),
             });
             this.SetModuleAssociation(definition, button);
-            FixUpMrtkIssue(button);
+            Workarounds.MrtkForceButtonNullPlate(button);
 
             return button;
         }
@@ -59,7 +59,7 @@ namespace Xrv.Core.Menu
             });
 
             this.SetModuleAssociation(definition, button);
-            FixUpMrtkIssue(button);
+            Workarounds.MrtkForceButtonNullPlate(button);
 
             return button;
         }
@@ -78,11 +78,5 @@ namespace Xrv.Core.Menu
 
         private Prefab GetButtonPrefab() =>
             this.assetsService.Load<Prefab>(DefaultResourceIDs.Mrtk.Prefabs.PressableButtonPlated);
-
-        private static void FixUpMrtkIssue(Entity button)
-        {
-            // Workaround MTRK ignores null material on StandardButtonConfigurator
-            button.FindChildrenByTag("PART_Plate", true).First().FindComponent<MaterialComponent>().Material = null;
-        }
     }
 }

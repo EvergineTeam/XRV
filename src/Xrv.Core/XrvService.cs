@@ -8,6 +8,7 @@ using System.Linq;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.Themes;
+using Xrv.Core.UI.Tabs;
 
 namespace Xrv.Core
 {
@@ -69,6 +70,9 @@ namespace Xrv.Core
 
             // Register services and managers
             scene.Managers.AddManager(new UI.Windows.WindowManager());
+
+            // Register other helper dependencies
+            TabControl.Builder = new TabControlBuilder(this.assetsService);
 
             // Hand menu initialization
             var handMenuManager = new HandMenuManager(scene.Managers.EntityManager, this.assetsService);

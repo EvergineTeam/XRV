@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using Xrv.Core.Extensions;
 
 namespace Xrv.Core.Menu
 {
@@ -136,7 +137,7 @@ namespace Xrv.Core.Menu
                     this.InternalRemoveButtons(args.OldItems.OfType<HandMenuButtonDefinition>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    this.InternalRemoveButtons(this.buttonDefinitions);
+                    this.InternalClearButtons();
                     break;
             }
 
@@ -150,10 +151,7 @@ namespace Xrv.Core.Menu
             foreach (var definition in buttons)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(definition);
-                // MRTK buttons look to negative Z, so we have to invert this component
-                var buttonTransform = buttonInstance.FindComponent<Transform3D>();
-                buttonTransform.LocalRotation = new Vector3(0f, MathHelper.Pi, 0);
-
+                Workarounds.MrtkRotateButton(buttonInstance);
                 this.buttonsContainer.AddChild(buttonInstance);
                 this.instantiatedButtons.Add(definition.Id, buttonInstance);
             }
@@ -172,6 +170,12 @@ namespace Xrv.Core.Menu
                     this.instantiatedButtons.Remove(definition.Id);
                 }
             }
+        }
+
+        private void InternalClearButtons()
+        {
+            this.instantiatedButtons.Clear();
+            this.buttonsContainer.RemoveAllChildren();
         }
 
         private void ReorderButtons()

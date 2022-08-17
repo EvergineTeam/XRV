@@ -74,12 +74,7 @@ namespace Xrv.Core.UI.Dialogs
             var prefab = this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.TextButton);
             var buttonInstance = prefab.Instantiate();
             buttonInstance.AddComponent(option.Configuration);
-
-            // MRTK buttons look to negative Z, so we have to invert this component
-            var transform = buttonInstance.FindComponent<Transform3D>();
-            var rotation = transform.LocalRotation;
-            rotation.Y = MathHelper.Pi;
-            transform.LocalRotation = rotation;
+            Workarounds.MrtkRotateButton(buttonInstance);
 
             return buttonInstance;
         }

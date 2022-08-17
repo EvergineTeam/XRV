@@ -3,6 +3,7 @@ using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
+using System;
 using System.Linq;
 
 namespace Xrv.Core.UI.Windows
@@ -16,6 +17,7 @@ namespace Xrv.Core.UI.Windows
         private string title;
         private Entity content;
 
+        private bool displayFrontPlate = true;
         private bool displayLogo = true;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_window_back_plate")]
@@ -110,6 +112,20 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        public bool DisplayFrontPlate
+        {
+            get => this.displayFrontPlate;
+
+            set
+            {
+                if (this.displayFrontPlate != value)
+                {
+                    this.displayFrontPlate = value;
+                    this.UpdateDisplayFrontPlate();
+                }
+            }
+        }
+
         public bool DisplayLogo
         {
             get => this.displayLogo;
@@ -136,6 +152,7 @@ namespace Xrv.Core.UI.Windows
             this.UpdateContent();
             this.UpdateTitle();
             this.UpdateDisplayLogo();
+            this.UpdateDisplayFrontPlate();
         }
 
         protected virtual void UpdateFrontPlateSize()
@@ -225,5 +242,7 @@ namespace Xrv.Core.UI.Windows
                 this.logoEntity.IsEnabled = this.displayLogo;
             }
         }
+
+        private void UpdateDisplayFrontPlate() => this.frontPlate.Owner.IsEnabled = this.displayFrontPlate;
     }
 }
