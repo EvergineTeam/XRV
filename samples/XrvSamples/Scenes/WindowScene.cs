@@ -70,7 +70,7 @@ namespace XrvSamples.Scenes
             var position = (sender as Component).Owner.FindComponent<Transform3D>().WorldTransform.Translation;
             var confirmDialog = this.windowsSystem.ShowConfirmDialog("test!", "this is a message", "no", "yes", position + Vector3.UnitX * 0.3f);
             var configuration = confirmDialog.AcceptOption.Configuration;
-            configuration.Plate = this.assetsService.Load<Material>(EvergineContent.Materials.Buttons.ButtonPrimary);
+            configuration.Plate = this.assetsService.Load<Material>(EvergineContent.XRV.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;
         }
 
