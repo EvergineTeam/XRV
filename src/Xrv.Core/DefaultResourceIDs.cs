@@ -5,31 +5,11 @@ namespace Xrv.Core
     public static class DefaultResourceIDs
     {
         public static class Mrtk
-        {
-            public static class Materials
-            {
-                public static class Cursor
-                {
-                    public static Guid CursorPinch = new Guid("d12dec8a-90fd-410d-acc6-078da8c70bb4");
-
-                    public static Guid CursorBase = new Guid("b65fb622-f2bc-42ef-a797-3a98cd7df438");
-                }
-            }
-
+        {            
             public static class Prefabs
             {
                 public static Guid PressableButtonPlated = new Guid("dabe9073-b1d1-42c5-99b9-ebc0cb4a7430");
-            }
-
-            public static class Samplers
-            {
-                public static Guid LinearWrapSampler = new Guid("79d9580a-094a-407f-8773-2a3d217de8e7");
-            }
-
-            public static class Textures
-            {
-                public static Guid line_dots_png = new Guid("cb80d2ef-6bcc-4dd3-8e62-636465021fba");
-            }
+            }            
         }
 
         public static class Prefabs
