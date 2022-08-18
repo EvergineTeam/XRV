@@ -2,6 +2,7 @@ using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Platform;
 using Xrv.Core;
+using Xrv.Ruler;
 
 namespace XrvSamples
 {
@@ -22,7 +23,7 @@ namespace XrvSamples
             this.Container.RegisterType<WorkActionScheduler>();
 
             var xrera = new XrvService();
-            xrera.AddModule(new Scenes.ModuleScene.TestModule1());
+            xrera.AddModule(new RulerModule());
 
             this.Container.RegisterInstance(xrera);
         }
@@ -37,8 +38,8 @@ namespace XrvSamples
 
             // Navigate to scene
             //var scene = assetsService.Load<Scenes.HandMenuScene>(EvergineContent.Scenes.HandMenu_wescene);
-            //var scene = assetsService.Load<Scenes.ModuleScene>(EvergineContent.Scenes.Module_wescene);
-            var scene = assetsService.Load<Scenes.WindowScene>(EvergineContent.Scenes.Windows_wescene);
+            var scene = assetsService.Load<Scenes.EmptyScene>(EvergineContent.Scenes.Empty_wescene);
+            //var scene = assetsService.Load<Scenes.WindowScene>(EvergineContent.Scenes.Windows_wescene);
 
             ScreenContext screenContext = new ScreenContext(scene);
             screenContextManager.To(screenContext);

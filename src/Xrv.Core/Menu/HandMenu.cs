@@ -16,7 +16,7 @@ namespace Xrv.Core.Menu
     {
         private const float ButtonWidth = 0.032f;
 
-        private readonly ObservableCollection<HandMenuButtonDefinition> buttonDefinitions;
+        private readonly ObservableCollection<HandMenuButtonDescription> buttonDefinitions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
 
         private int buttonsPerColumn = 4;
@@ -46,7 +46,7 @@ namespace Xrv.Core.Menu
 
         public HandMenu()
         {
-            this.buttonDefinitions = new ObservableCollection<HandMenuButtonDefinition>();
+            this.buttonDefinitions = new ObservableCollection<HandMenuButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
         }
 
@@ -64,7 +64,7 @@ namespace Xrv.Core.Menu
             }
         }
 
-        public IList<HandMenuButtonDefinition> ButtonDefinitions { get => this.buttonDefinitions; }
+        public IList<HandMenuButtonDescription> ButtonDefinitions { get => this.buttonDefinitions; }
 
         protected override bool OnAttached()
         {
@@ -130,10 +130,10 @@ namespace Xrv.Core.Menu
             switch (args.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    this.InternalAddButtons(args.NewItems.OfType<HandMenuButtonDefinition>());
+                    this.InternalAddButtons(args.NewItems.OfType<HandMenuButtonDescription>());
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    this.InternalRemoveButtons(args.OldItems.OfType<HandMenuButtonDefinition>());
+                    this.InternalRemoveButtons(args.OldItems.OfType<HandMenuButtonDescription>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     this.InternalRemoveButtons(this.buttonDefinitions);
@@ -143,7 +143,7 @@ namespace Xrv.Core.Menu
             this.ReorderButtons();
         }
 
-        private void InternalAddButtons(IEnumerable<HandMenuButtonDefinition> buttons)
+        private void InternalAddButtons(IEnumerable<HandMenuButtonDescription> buttons)
         {
             var buttonsFactory = new HandMenuButtonFactory(this.xrvService, this.assetsService);
 
@@ -159,7 +159,7 @@ namespace Xrv.Core.Menu
             }
         }
 
-        private void InternalRemoveButtons(IEnumerable<HandMenuButtonDefinition> buttons)
+        private void InternalRemoveButtons(IEnumerable<HandMenuButtonDescription> buttons)
         {
             var entityManager = this.Managers.EntityManager;
 
@@ -203,7 +203,7 @@ namespace Xrv.Core.Menu
             // Add buttons
             for (int i = 0; i < this.buttonDefinitions.Count; i++)
             {
-                HandMenuButtonDefinition definition = this.buttonDefinitions[i];
+                HandMenuButtonDescription definition = this.buttonDefinitions[i];
                 Entity button = this.instantiatedButtons[definition.Id];
                 var buttonTransform = button.FindComponent<Transform3D>();
                 var buttonPosition = buttonTransform.LocalPosition;

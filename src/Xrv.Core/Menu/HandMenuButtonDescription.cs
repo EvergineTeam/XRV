@@ -2,9 +2,9 @@
 
 namespace Xrv.Core.Menu
 {
-    public class HandMenuButtonDefinition
+    public class HandMenuButtonDescription
     {
-        public HandMenuButtonDefinition()
+        public HandMenuButtonDescription()
         {
             this.Id = Guid.NewGuid();
         }

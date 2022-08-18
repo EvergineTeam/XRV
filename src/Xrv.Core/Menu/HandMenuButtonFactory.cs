@@ -22,10 +22,10 @@ namespace Xrv.Core.Menu
             this.assetsService = assetsService;
         }
 
-        public Entity CreateInstance(HandMenuButtonDefinition definition) =>
+        public Entity CreateInstance(HandMenuButtonDescription definition) =>
             definition.IsToggle ? CreateToggleButton(definition) : CreateStandardButton(definition);
 
-        private Entity CreateStandardButton(HandMenuButtonDefinition definition)
+        private Entity CreateStandardButton(HandMenuButtonDescription definition)
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
@@ -40,7 +40,7 @@ namespace Xrv.Core.Menu
             return button;
         }
 
-        private Entity CreateToggleButton(HandMenuButtonDefinition definition)
+        private Entity CreateToggleButton(HandMenuButtonDescription definition)
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
@@ -64,7 +64,7 @@ namespace Xrv.Core.Menu
             return button;
         }
 
-        private void SetModuleAssociation(HandMenuButtonDefinition definition, Entity button)
+        private void SetModuleAssociation(HandMenuButtonDescription definition, Entity button)
         {
             var associatedModule = this.xrvService.GetModuleForHandButton(definition);
             if (associatedModule != null)
