@@ -19,7 +19,7 @@ namespace XrvSamples.Scenes
         private PressableButton button1;
         private PressableButton button2;
         private Text3DMesh messageText;
-        private WindowManager windowManager;
+        private WindowsSystem windowsSystem;
         private Window window1;
         private Window window2;
 
@@ -42,7 +42,7 @@ namespace XrvSamples.Scenes
 
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
 
-            this.windowManager = this.Managers.FindManager<WindowManager>();
+            this.windowsSystem = xrv.WindowSystem;
             this.messageText = this.Managers.EntityManager.FindAllByTag("message").First().FindComponent<Text3DMesh>();
             this.messageText.Text = string.Empty;
 
@@ -67,14 +67,14 @@ namespace XrvSamples.Scenes
         private void CreateAlert_ButtonReleased(object sender, EventArgs e)
         {
             var position = (sender as Component).Owner.FindComponent<Transform3D>().WorldTransform.Translation;
-            var alertDialog = this.windowManager.ShowAlertDialog("test!", "this is a message\nSecond line", "ok", position + Vector3.UnitX * 0.3f);
+            var alertDialog = this.windowsSystem.ShowAlertDialog("test!", "this is a message\nSecond line", "ok", position + Vector3.UnitX * 0.3f);
             alertDialog.Closed += this.Dialog_Closed;
         }
 
         private void CreateConfirm_ButtonReleased(object sender, EventArgs e)
         {
             var position = (sender as Component).Owner.FindComponent<Transform3D>().WorldTransform.Translation;
-            var confirmDialog = this.windowManager.ShowConfirmDialog("test!", "this is a message", "no", "yes", position + Vector3.UnitX * 0.3f);
+            var confirmDialog = this.windowsSystem.ShowConfirmDialog("test!", "this is a message", "no", "yes", position + Vector3.UnitX * 0.3f);
             var configuration = confirmDialog.AcceptOption.Configuration;
             configuration.Plate = this.assetsService.Load<Material>(EvergineContent.Xrv.Core.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;
@@ -93,7 +93,7 @@ namespace XrvSamples.Scenes
         {
             if (this.window1 == null)
             {
-                this.window1 = this.windowManager.CreateWindow(new Vector3(0.2f, 0f, -0.6f));
+                this.window1 = this.windowsSystem.CreateWindow(new Vector3(0.2f, 0f, -0.6f));
                 this.window1.Configuration.Title = "Window #1";
                 this.window1.Configuration.Content = this.CreateText3D(
                     Text, 
@@ -118,7 +118,7 @@ namespace XrvSamples.Scenes
             if (this.window2 == null)
             {
                 var assetsService = Application.Current.Container.Resolve<AssetsService>();
-                this.window2 = this.windowManager.CreateWindow(new Vector3(0.6f, 0f, -0.65f));
+                this.window2 = this.windowsSystem.CreateWindow(new Vector3(0.6f, 0f, -0.65f));
                 this.window2.Configuration.Title = "Window #2";
                 this.window2.Configuration.Size = new Vector2(0.2f, 0.3f);
                 ((WindowConfiguration)this.window2.Configuration).LogoMaterial = assetsService.Load<Material>(EvergineContent.Materials.EvergineLogo);
