@@ -9,6 +9,7 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.Themes;
 using Xrv.Core.UI.Tabs;
+using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
 namespace Xrv.Core
 {
@@ -20,6 +21,8 @@ namespace Xrv.Core
         private readonly Dictionary<Type, Module> modules;
 
         public HandMenu HandMenu { get; private set; }
+
+        public WindowsSystem WindowSystem { get; private set; }
 
         public Theme CurrentTheme { get; set; }
 
@@ -69,7 +72,7 @@ namespace Xrv.Core
             camera.BackgroundColor = Color.Transparent;
 
             // Register services and managers
-            scene.Managers.AddManager(new UI.Windows.WindowManager());
+            this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
 
             // Register other helper dependencies
             TabControl.Builder = new TabControlBuilder(this.assetsService);
