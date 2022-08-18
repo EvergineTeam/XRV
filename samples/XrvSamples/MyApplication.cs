@@ -36,7 +36,10 @@ namespace XrvSamples
             var assetsService = this.Container.Resolve<AssetsService>();
 
             // Navigate to scene
+            //var scene = assetsService.Load<Scenes.HandMenuScene>(EvergineContent.Scenes.HandMenu_wescene);
+            //var scene = assetsService.Load<Scenes.ModuleScene>(EvergineContent.Scenes.Module_wescene);
             var scene = assetsService.Load<Scenes.WindowScene>(EvergineContent.Scenes.Windows_wescene);
+
             ScreenContext screenContext = new ScreenContext(scene);
             screenContextManager.To(screenContext);
         }
