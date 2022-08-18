@@ -8,6 +8,7 @@ using System.Linq;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.Themes;
+using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
 namespace Xrv.Core
 {
@@ -19,6 +20,8 @@ namespace Xrv.Core
         private readonly Dictionary<Type, Module> modules;
 
         public HandMenu HandMenu { get; private set; }
+
+        public WindowsSystem WindowSystem { get; private set; }
 
         public Theme CurrentTheme { get; set; }
 
@@ -68,7 +71,7 @@ namespace Xrv.Core
             camera.BackgroundColor = Color.Transparent;
 
             // Register services and managers
-            scene.Managers.AddManager(new UI.Windows.WindowManager());
+            this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
 
             // Hand menu initialization
             var handMenuManager = new HandMenuManager(scene.Managers.EntityManager, this.assetsService);

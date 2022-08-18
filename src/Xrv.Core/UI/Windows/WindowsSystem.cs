@@ -1,5 +1,4 @@
-﻿using Evergine.Framework;
-using Evergine.Framework.Graphics;
+﻿using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
@@ -10,14 +9,20 @@ using Xrv.Core.UI.Dialogs;
 
 namespace Xrv.Core.UI.Windows
 {
-    public class WindowManager : SceneManager
+    public class WindowsSystem
     {
-        [BindService]
-        private AssetsService assetsService = null;
+        private readonly EntityManager entityManager;
+        private readonly AssetsService assetsService;
 
         public IEnumerable<Window> AllWindows 
         { 
-            get => this.Managers.EntityManager.FindComponentsOfType<Window>(isExactType: false); 
+            get => this.entityManager.FindComponentsOfType<Window>(isExactType: false); 
+        }
+
+        public WindowsSystem(EntityManager entityManager, AssetsService assetsService)
+        {
+            this.entityManager = entityManager;
+            this.assetsService = assetsService;
         }
 
         public Window CreateWindow() => this.CreateWindow(Vector3.Zero);
@@ -30,7 +35,7 @@ namespace Xrv.Core.UI.Windows
             var transform = windowEntity.FindComponent<Transform3D>();
             transform.Position = position;
 
-            this.Managers.EntityManager.Add(windowEntity);
+            this.entityManager.Add(windowEntity);
             windowEntity.IsEnabled = false;
 
             return window;
