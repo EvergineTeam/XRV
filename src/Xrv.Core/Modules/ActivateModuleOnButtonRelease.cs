@@ -31,8 +31,8 @@ namespace Xrv.Core.Modules
 
         private void Button_ButtonReleased(object sender, EventArgs e)
         {
-            bool turnOff = this.toggleButton?.IsOn ?? false;
-            this.Module.Run(turnOff);
+            bool turnOn = this.toggleButton?.IsOn ?? true;
+            this.Module.Run(turnOn);
         }
     }
 }

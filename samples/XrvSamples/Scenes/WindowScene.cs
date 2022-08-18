@@ -29,12 +29,6 @@ namespace XrvSamples.Scenes
 
         private AssetsService assetsService;
 
-        public override void RegisterManagers()
-        {
-            base.RegisterManagers();
-            Managers.AddManager(new Evergine.Bullet.BulletPhysicManager3D());
-        }
-
         protected override void OnPostCreateXRScene()
         {
             var xrv = Application.Current.Container.Resolve<XrvService>();
@@ -76,7 +70,7 @@ namespace XrvSamples.Scenes
             var position = (sender as Component).Owner.FindComponent<Transform3D>().WorldTransform.Translation;
             var confirmDialog = this.windowsSystem.ShowConfirmDialog("test!", "this is a message", "no", "yes", position + Vector3.UnitX * 0.3f);
             var configuration = confirmDialog.AcceptOption.Configuration;
-            configuration.Plate = this.assetsService.Load<Material>(EvergineContent.Xrv.Core.Materials.Buttons.ButtonPrimary);
+            configuration.Plate = this.assetsService.Load<Material>(EvergineContent.XRV.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;
         }
 

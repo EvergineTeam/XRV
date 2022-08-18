@@ -15,12 +15,6 @@ namespace XrvSamples.Scenes
         private Text3DMesh numberOfButtons;
         private int counter;
 
-        public override void RegisterManagers()
-        {
-            base.RegisterManagers();
-            Managers.AddManager(new Evergine.Bullet.BulletPhysicManager3D());
-        }
-
         protected override void OnPostCreateXRScene()
         {
             var xrv = Application.Current.Container.Resolve<XrvService>();
@@ -84,7 +78,7 @@ namespace XrvSamples.Scenes
 
         private void DecreaseNumberOfButtons_ButtonReleased(object sender, EventArgs e)
         {
-            if (this.handMenu.ButtonDefinitions.LastOrDefault() is HandMenuButtonDefinition definition)
+            if (this.handMenu.ButtonDefinitions.LastOrDefault() is HandMenuButtonDescription definition)
             {
                 this.handMenu.ButtonDefinitions.Remove(definition);
                 this.UpdateCounts();
@@ -94,7 +88,7 @@ namespace XrvSamples.Scenes
         private void AddButton()
         {
             bool isToggle = DateTime.Now.Millisecond % 2 == 0;
-            this.handMenu.ButtonDefinitions.Add(new HandMenuButtonDefinition
+            this.handMenu.ButtonDefinitions.Add(new HandMenuButtonDescription
             {
                 IsToggle = isToggle,
                 TextOn = $"{(isToggle ? "T_" : string.Empty)}{DateTime.Now.Millisecond}",

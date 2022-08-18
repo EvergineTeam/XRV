@@ -52,7 +52,7 @@ namespace Xrv.Core
         public Module FindModule(Type type) =>
             this.modules.TryGetValue(type, out var module) ? module : null;
 
-        internal Module GetModuleForHandButton(HandMenuButtonDefinition definition)
+        internal Module GetModuleForHandButton(HandMenuButtonDescription definition)
         {
             foreach (var kvp in this.modules)
             {
