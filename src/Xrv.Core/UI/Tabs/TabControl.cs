@@ -1,10 +1,13 @@
 ﻿using Evergine.Common.Attributes;
+using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +21,7 @@ namespace Xrv.Core.UI.Tabs
     {
         private const float ButtonHeight = 0.032f;
         private readonly ObservableCollection<TabItem> items;
+        private readonly Dictionary<Entity, TabItem> mappings;
 
         private Vector2 size;
         private TabItem selectedItem;
@@ -26,6 +30,8 @@ namespace Xrv.Core.UI.Tabs
 
         private Vector3 defaultCurrentItemPlatePosition;
         private IWorkAction currentItemChangeAnimation;
+        private Color inactiveItemTextColor;
+        private Color activeItemTextColor;
 
         [BindService]
         private AssetsService assetsService = null;
@@ -47,6 +53,7 @@ namespace Xrv.Core.UI.Tabs
         public TabControl()
         {
             this.items = new ObservableCollection<TabItem>();
+            this.mappings = new Dictionary<Entity, TabItem>();
             this.size = new Vector2(0.3f, 0.2f);
         }
 
@@ -85,6 +92,34 @@ namespace Xrv.Core.UI.Tabs
                 if (this.IsAttached)
                 {
                     this.UpdateContent();
+                }
+            }
+        }
+
+        public Color InactiveItemTextColor
+        {
+            get => this.inactiveItemTextColor;
+
+            set
+            {
+                if (this.inactiveItemTextColor != value)
+                {
+                    this.inactiveItemTextColor = value;
+                    this.UpdateItemsTextColor();
+                }
+            }
+        }
+
+        public Color ActiveItemTextColor
+        {
+            get => this.activeItemTextColor;
+
+            set
+            {
+                if (this.activeItemTextColor != value)
+                {
+                    this.activeItemTextColor = value;
+                    this.UpdateItemsTextColor();
                 }
             }
         }
@@ -177,8 +212,14 @@ namespace Xrv.Core.UI.Tabs
                 position.Y = this.buttonsContainer.ChildEntities.Count() * ButtonHeight;
                 transform.LocalPosition = position;
 
+                var pressableButton = buttonInstance.FindComponentInChildren<PressableButton>();
+                pressableButton.ButtonReleased += this.PressableButton_ButtonReleased;
+
                 this.buttonsContainer.AddChild(buttonInstance);
+                this.mappings.Add(buttonInstance, item);
             }
+
+            this.UpdateItemsTextColor();
         }
 
         private void InternalRemoveItems(IEnumerable<TabItem> items)
@@ -186,41 +227,46 @@ namespace Xrv.Core.UI.Tabs
             bool currentItemRemoved = false;
             int currentItemIndex = -1;
 
-            var associations = this.buttonsContainer.FindComponentsInChildren<TabItemAssociation>();
-            for (int i = 0; i < associations.Count(); i++) 
+            for (int i = 0; i < this.mappings.Count(); i++)
             {
-                var association = associations.ElementAt(i);
-                if (items.Contains(association.Item))
+                Entity owner = this.mappings.ElementAt(i).Key;
+                TabItem item = this.mappings.ElementAt(i).Value;
+                if (items.Contains(item))
                 {
-                    this.Managers.EntityManager.Remove(association.Owner);
+                    this.Managers.EntityManager.Remove(owner);
+                    this.mappings.Remove(owner);
 
-                    if (association.Item == this.selectedItem)
+                    if (item == this.selectedItem)
                     {
                         currentItemRemoved = true;
                         currentItemIndex = i;
                     }
                 }
+
+                var pressableButton = owner.FindComponentInChildren<PressableButton>();
+                pressableButton.ButtonReleased -= this.PressableButton_ButtonReleased;
             }
 
             if (currentItemRemoved)
             {
                 var newSelectedIndex = Math.Max(0, Math.Min(currentItemIndex - 1, this.Items.Count - 1));
                 this.SelectedItem = this.items.Any() ? this.items.ElementAt(newSelectedIndex) : null;
+                this.UpdateItemsTextColor();
             }
         }
 
         private void UpdateSelectedItem()
         {
-            var itemAssociations = this.Owner.FindComponentsInChildren<TabItemAssociation>();
             var itemIndex = -1;
 
-            for (int i = 0; i < itemAssociations.Count(); i++)
+            for (int i = 0; i < this.buttonsContainer.ChildEntities.Count(); i++)
             {
-                var association = itemAssociations.ElementAt(i);
-                association.IsSelected = association.Item == this.selectedItem;
-                if (association.IsSelected)
+                Entity child = this.buttonsContainer.ChildEntities.ElementAt(i);
+                TabItem currentItem = this.mappings.ContainsKey(child) ? this.mappings[child] : null;
+                if (currentItem == this.selectedItem)
                 {
                     itemIndex = i;
+                    break;
                 }
             }
 
@@ -280,6 +326,38 @@ namespace Xrv.Core.UI.Tabs
                 }
 
                 this.currentItemPlate.Owner.IsEnabled = this.items.Any();
+            }
+        }
+
+        private void UpdateItemsTextColor()
+        {
+            if (!this.IsAttached)
+            {
+                return;
+            }
+
+            for (int i = 0; i < this.buttonsContainer.ChildEntities.Count(); i++)
+            {
+                var child = this.buttonsContainer.ChildEntities.ElementAt(i);
+                var configurator = child.FindComponent<StandardButtonConfigurator>();
+                if (configurator != null)
+                {
+                    bool isSelected = this.mappings.ContainsKey(child) ? this.mappings[child] == this.selectedItem : false;
+                    configurator.PrimaryColor = isSelected ? this.activeItemTextColor : this.inactiveItemTextColor;
+                }
+            }
+        }
+
+        private void PressableButton_ButtonReleased(object sender, EventArgs e)
+        {
+            if (sender is PressableButton button)
+            {
+                var owner = button.Owner.FindComponentInParents<StandardButtonConfigurator>().Owner;
+                if (this.mappings.ContainsKey(owner))
+                {
+                    this.SelectedItem = this.mappings[owner];
+                    this.UpdateItemsTextColor();
+                }
             }
         }
     }

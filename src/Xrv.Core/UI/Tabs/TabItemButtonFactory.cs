@@ -1,5 +1,4 @@
-﻿using Evergine.Common.Graphics;
-using Evergine.Framework;
+﻿using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
@@ -16,8 +15,6 @@ namespace Xrv.Core.UI.Tabs
             this.assetsService = assetsService;
         }
 
-        public static TabItemButtonFactory Instance { get; internal set; }
-
         public Entity CreateInstance(TabItem item)
         {
             var prefab = this.GetButtonPrefab();
@@ -27,17 +24,11 @@ namespace Xrv.Core.UI.Tabs
                 Text = item.Text,
                 Icon = null,
             });
-            button.AddComponent(new TabItemAssociation
-            {
-                Item = item,
-                SelectedTextColor = Color.White,
-                UnselectedTextColor = Color.FromHex("#70F2F8"),
-            });
 
             var cage = button.FindChildrenByTag("PART_text_button_cage", true).First();
             cage.IsEnabled = false;
 
-            Workarounds.MrtkForceButtonNullPlate(button, "PART_text_button_back_plate");
+            Workarounds.MrtkForceButtonNullPlate(button);
 
             return button;
         }

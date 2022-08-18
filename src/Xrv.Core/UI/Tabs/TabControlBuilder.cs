@@ -1,4 +1,5 @@
-﻿using Evergine.Framework;
+﻿using Evergine.Common.Graphics;
+using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
@@ -22,6 +23,9 @@ namespace Xrv.Core.UI.Tabs
             var prefab = this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.TabControl);
             this.entity = prefab.Instantiate();
             this.control = this.entity.FindComponentInChildren<TabControl>();
+            this.control.ActiveItemTextColor = Color.White; // TODO
+            this.control.InactiveItemTextColor = Color.FromHex("#70F2F8");
+
             return this;
         }
 
@@ -43,6 +47,18 @@ namespace Xrv.Core.UI.Tabs
             {
                 this.control.Items.Add(item);
             }
+            return this;
+        }
+
+        public TabControlBuilder WithActiveItemTextColor(Color color)
+        {
+            this.control.ActiveItemTextColor = color;
+            return this;
+        }
+
+        public TabControlBuilder WithInactiveItemTextColor(Color color)
+        {
+            this.control.InactiveItemTextColor = color;
             return this;
         }
 
