@@ -3,6 +3,7 @@ using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
+using System.Linq;
 
 namespace Xrv.Core.UI.Tabs
 {
@@ -33,7 +34,10 @@ namespace Xrv.Core.UI.Tabs
                 UnselectedTextColor = Color.FromHex("#70F2F8"),
             });
 
-            Workarounds.MrtkForceButtonNullPlate(button);
+            var cage = button.FindChildrenByTag("PART_text_button_cage", true).First();
+            cage.IsEnabled = false;
+
+            Workarounds.MrtkForceButtonNullPlate(button, "PART_text_button_back_plate");
 
             return button;
         }

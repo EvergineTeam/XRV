@@ -8,10 +8,10 @@ namespace Xrv.Core
 {
     public static class Workarounds
     {
-        public static void MrtkForceButtonNullPlate(Entity button)
+        public static void MrtkForceButtonNullPlate(Entity button, string tag = "PART_Plate")
         {
             // Workaround MTRK ignores null material on StandardButtonConfigurator
-            button.FindChildrenByTag("PART_Plate", true).First().FindComponent<MaterialComponent>().Material = null;
+            button.FindChildrenByTag(tag, true).First().FindComponent<MaterialComponent>().Material = null;
         }
 
         public static void MrtkRotateButton(Entity button)
