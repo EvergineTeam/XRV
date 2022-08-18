@@ -132,13 +132,13 @@ namespace Xrv.Core.UI.Tabs
             this.frontPlate.Width = this.size.X - (this.currentItemPlate.Width / 2);
             this.frontPlate.Height = this.size.Y;
             var currentItemPosition = this.currentItemPlateTransform.LocalPosition;
-            currentItemPosition.X = -this.size.X / 2;
+            currentItemPosition.X = -this.size.X * 0.43f;
             currentItemPosition.Y = this.size.Y / 2 - this.currentItemPlate.Height / 2;
             this.currentItemPlateTransform.LocalPosition = currentItemPosition;
             this.defaultCurrentItemPlatePosition = currentItemPosition;
 
             var buttonsPosition = this.buttonsContainerTransform.LocalPosition;
-            buttonsPosition.X = currentItemPosition.X;
+            buttonsPosition.X = currentItemPosition.X - 0.025f;
             buttonsPosition.Y = currentItemPosition.Y;
             this.buttonsContainerTransform.LocalPosition = buttonsPosition;
         }
@@ -183,13 +183,29 @@ namespace Xrv.Core.UI.Tabs
 
         private void InternalRemoveItems(IEnumerable<TabItem> items)
         {
+            bool currentItemRemoved = false;
+            int currentItemIndex = -1;
+
             var associations = this.buttonsContainer.FindComponentsInChildren<TabItemAssociation>();
-            foreach (var association in associations)
+            for (int i = 0; i < associations.Count(); i++) 
             {
+                var association = associations.ElementAt(i);
                 if (items.Contains(association.Item))
                 {
                     this.Managers.EntityManager.Remove(association.Owner);
+
+                    if (association.Item == this.selectedItem)
+                    {
+                        currentItemRemoved = true;
+                        currentItemIndex = i;
+                    }
                 }
+            }
+
+            if (currentItemRemoved)
+            {
+                var newSelectedIndex = Math.Max(0, Math.Min(currentItemIndex - 1, this.Items.Count - 1));
+                this.SelectedItem = this.items.Any() ? this.items.ElementAt(newSelectedIndex) : null;
             }
         }
 
@@ -252,13 +268,18 @@ namespace Xrv.Core.UI.Tabs
 
         private void ReorderItems()
         {
-            for (int i = 0; i < this.buttonsContainer.ChildEntities.Count(); i++)
+            if (this.IsAttached)
             {
-                var child = this.buttonsContainer.ChildEntities.ElementAt(i);
-                var transform = child.FindComponent<Transform3D>();
-                var position = transform.LocalPosition;
-                position.Y = -i * ButtonHeight;
-                transform.LocalPosition = position;
+                for (int i = 0; i < this.buttonsContainer.ChildEntities.Count(); i++)
+                {
+                    var child = this.buttonsContainer.ChildEntities.ElementAt(i);
+                    var transform = child.FindComponent<Transform3D>();
+                    var position = transform.LocalPosition;
+                    position.Y = -i * ButtonHeight;
+                    transform.LocalPosition = position;
+                }
+
+                this.currentItemPlate.Owner.IsEnabled = this.items.Any();
             }
         }
     }

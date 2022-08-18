@@ -243,6 +243,12 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
-        private void UpdateDisplayFrontPlate() => this.frontPlate.Owner.IsEnabled = this.displayFrontPlate;
+        private void UpdateDisplayFrontPlate()
+        {
+            if (this.IsAttached)
+            {
+                this.frontPlate.Owner.IsEnabled = this.displayFrontPlate;
+            }
+        }
     }
 }

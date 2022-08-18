@@ -10,8 +10,8 @@ namespace Xrv.Core.UI.Tabs
     internal class TabItemAssociation : Component
     {
         private bool isSelected;
-        private Color initialForegroundColor;
-        private Color selectedForegroundColor;
+        private Color unselectedTextColor;
+        private Color selectedTextColor;
 
         [BindComponent(source: BindComponentSource.Parents)]
         protected TabControl tabControl;
@@ -35,39 +35,43 @@ namespace Xrv.Core.UI.Tabs
                 if (this.isSelected != value)
                 {
                     this.isSelected = value;
-                    this.UpdateTextColor(this.isSelected ? this.selectedForegroundColor : this.initialForegroundColor);
+                    this.UpdateTextColor();
                 }
             }
         }
 
-        public Color SelectedForegroundColor
+        public Color UnselectedTextColor
         {
-            get => this.selectedForegroundColor;
+            get => this.unselectedTextColor;
 
             set
             {
-                if (this.selectedForegroundColor != value)
+                if (this.unselectedTextColor != value)
                 {
-                    this.selectedForegroundColor = value;
-                    this.UpdateTextColor(this.selectedForegroundColor);
+                    this.unselectedTextColor = value;
+                    this.UpdateTextColor();
                 }
             }
         }
 
-        protected override bool OnAttached()
+        public Color SelectedTextColor
         {
-            bool attached = base.OnAttached();
-            if (attached)
-            {
-                this.initialForegroundColor = this.configurator.PrimaryColor;
-            }
+            get => this.selectedTextColor;
 
-            return attached;
+            set
+            {
+                if (this.selectedTextColor != value)
+                {
+                    this.selectedTextColor = value;
+                    this.UpdateTextColor();
+                }
+            }
         }
 
         protected override void OnActivated()
         {
             base.OnActivated();
+            this.UpdateTextColor();
             this.button.ButtonReleased += this.Button_ButtonReleased;
         }
 
@@ -77,7 +81,13 @@ namespace Xrv.Core.UI.Tabs
             this.button.ButtonReleased -= this.Button_ButtonReleased;
         }
 
-        private void UpdateTextColor(Color color) => configurator.PrimaryColor = color;
+        private void UpdateTextColor()
+        {
+            if (this.IsAttached)
+            {
+                configurator.PrimaryColor = this.isSelected ? this.selectedTextColor : this.unselectedTextColor;
+            }
+        }
 
         private void Button_ButtonReleased(object sender, EventArgs args) =>
             this.tabControl.SelectedItem = this.Item;

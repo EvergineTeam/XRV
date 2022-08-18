@@ -51,7 +51,7 @@ namespace XrvSamples.Scenes
                 .FindComponentInChildren<Window>();
             var tabEntity = TabControl.Builder
                 .Create()
-                .WithSize(new Vector2(0.28f, 0.2f))
+                .WithSize(new Vector2(0.286f, 0.2f))
                 .AddItem(new TabItem
                 {
                     Text = "Repositories",
@@ -65,7 +65,7 @@ namespace XrvSamples.Scenes
             {
                 var transform = tabEntity.FindComponent<Transform3D>();
                 var position = transform.LocalPosition;
-                position.X += 0.02f;
+                position.X += 0.034f;
                 transform.LocalPosition = position;
                 window.Configuration.Content = tabEntity;
                 window.Configuration.DisplayFrontPlate = false;
@@ -96,10 +96,14 @@ namespace XrvSamples.Scenes
 
         private void TabControl_SelectedItemChanged(object sender, SelectedItemChangedEventArgs args)
         {
-            if (args.Item.Data != null && args.Item.Data is int @value)
+            if (args.Item?.Data is int @value)
             {
                 var textEntity = this.CreateText(@value);
                 this.tabControl.Content = textEntity;
+            }
+            else
+            {
+                this.tabControl.Content = null;
             }
         }
 

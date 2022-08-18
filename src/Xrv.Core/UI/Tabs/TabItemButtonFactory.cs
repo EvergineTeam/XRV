@@ -1,4 +1,5 @@
-﻿using Evergine.Framework;
+﻿using Evergine.Common.Graphics;
+using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
@@ -28,6 +29,8 @@ namespace Xrv.Core.UI.Tabs
             button.AddComponent(new TabItemAssociation
             {
                 Item = item,
+                SelectedTextColor = Color.White,
+                UnselectedTextColor = Color.FromHex("#70F2F8"),
             });
 
             Workarounds.MrtkForceButtonNullPlate(button);
