@@ -103,10 +103,6 @@ Items:
             MinCompressRatio: 0.5
             MovementScale: 1.0
             PressedMaterial: null
-          - !Xrv.Core.UI.Buttons.ButtonCursorAnimation,Xrv.Core
-            Id: 54953920-2a6f-479a-9f02-a900b7f1466f
-            IsEnabled: true
-            UpdateOrder: 0.5
           - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
             Id: ac0d001c-a90d-493d-8f33-65e17b6bc85e
             IsEnabled: true
@@ -124,6 +120,10 @@ Items:
               X: 0.0700000003
               Y: 0.0320000015
               Z: 0.0500000007
+          - !Xrv.Core.UI.Buttons.TextButtonCursorAnimation,Xrv.Core
+            Id: 09153270-3966-4e19-8ba7-465ff0df19d1
+            IsEnabled: true
+            UpdateOrder: 0.5
         Children:
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: content

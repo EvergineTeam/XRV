@@ -8,7 +8,7 @@ using Xrv.Core.UI.Cursors;
 
 namespace Xrv.Core.UI.Buttons
 {
-    public class ButtonCursorAnimation : CursorDetectorBase
+    public class TextButtonCursorAnimation : CursorDetectorBase
     {
         private Vector3 contentDefaultPosition;
         private Vector3 contentHoverPosition;
