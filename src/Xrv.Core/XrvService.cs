@@ -102,6 +102,12 @@ namespace Xrv.Core
                     this.HandMenu.ButtonDescriptions.Add(module.HandMenuButton);
                 }
 
+                // Adding setting data
+                if (module.Settings != null)
+                {
+                    this.Settings.Window.Sections.Add(module.Settings);
+                }
+
                 // Modules initialization
                 module.Initialize(scene);
             }
