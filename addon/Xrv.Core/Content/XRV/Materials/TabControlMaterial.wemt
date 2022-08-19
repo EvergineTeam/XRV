@@ -1,13 +1,15 @@
 !Evergine.Assets.Exporters.MaterialMetaFile,Evergine.Assets
-Id: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+Id: 117070d5-cccf-4b60-93c8-eddafd9b51d5
 DefaultProfile:
   ExcludeAsset: false
   Name: null
   Platform: Undefined
 ExportAsRaw: false
 MaterialInfo:
-  Id: 1ec47fe5-1e46-4cbf-b7c1-0e9a2d1a70dd
+  Id: 4fbefa8f-11d2-4d71-b382-309e5f6902b9
   ActiveDirectives:
+    - INDEPENDENT_CORNERS
+    - IRIDESCENCE
     - PROXIMITY_LIGHT
     - PROXIMITY_LIGHT_TWO_SIDED
     - ROUND_CORNERS
@@ -45,7 +47,7 @@ MaterialInfo:
       ValueByteArray: AAAAAAAAAAAAAAAAAAAAAA==
     - Name: Color
       Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
-      ValueByteArray: gYCAPOHg4D2xsDA+
+      ValueByteArray: AAAAAAAAAAAAAAAA
     - Name: Alpha
       Type: System.Single
       ValueByteArray: AACAPw==
@@ -69,19 +71,19 @@ MaterialInfo:
       ValueByteArray: AACAPw==
     - Name: RoundCornerRadious
       Type: System.Single
-      ValueByteArray: CtejPA==
+      ValueByteArray: zcxMPQ==
     - Name: RoundCornerMargin
       Type: System.Single
-      ValueByteArray: AAAAAA==
+      ValueByteArray: AIBeJQ==
     - Name: Cutoff
       Type: System.Single
       ValueByteArray: AAAAPw==
     - Name: EdgeSmoothingValue
       Type: System.Single
-      ValueByteArray: bxIDOw==
+      ValueByteArray: F7fROA==
     - Name: RoundCornersRadious
       Type: Evergine.Mathematics.Vector4,Evergine.Mathematics
-      ValueByteArray: AAAAPwAAAD8AAAA/AAAAPw==
+      ValueByteArray: AAAAAArXozwK16M8AAAAAA==
     - Name: FadeBeginDistance
       Type: System.Single
       ValueByteArray: CtcjPA==
@@ -117,21 +119,21 @@ MaterialInfo:
       ValueByteArray: AAAAAAAAAAA=
     - Name: IridescenceIntensity
       Type: System.Single
-      ValueByteArray: AAAAPw==
+      ValueByteArray: AACAPw==
     - Name: IridescenceThreshold
       Type: System.Single
-      ValueByteArray: zcxMPQ==
+      ValueByteArray: ZmZmPw==
     - Name: IridescenceAngle
       Type: System.Single
-      ValueByteArray: FK5Hvw==
+      ValueByteArray: AAAAAA==
   Samplers:
     - ID: 00000000-0000-0000-0000-000000000000
       Name: null
-    - ID: 00000000-0000-0000-0000-000000000000
-      Name: null
+    - ID: 7d1e2792-2031-42bb-a67c-0dbd282be12a
+      Name: IridescentSpectrumMapSampler
   Textures:
     - ID: 00000000-0000-0000-0000-000000000000
       Name: null
-    - ID: 00000000-0000-0000-0000-000000000000
-      Name: null
+    - ID: ba547d15-0927-4bfe-b7da-6625fdd7d9a5
+      Name: IridescentSpectrumMap
 Profiles: {}

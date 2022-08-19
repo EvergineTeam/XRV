@@ -28,7 +28,7 @@ namespace Xrv.Core
 
             public static Guid HandMenu = new Guid("5f574367-77c6-4d6d-bef2-4e822c52cbac");
 
-            public static Guid TabControl = new Guid("c0a378d7-445f-46ad-a5d8-0865a2bc25b7");
+            public static Guid TabControl = new Guid("9b5b9816-be60-42fe-9988-966c377d3705");
 
             public static Guid TextButton = new Guid("69925256-16a0-4938-81fb-2810f6afa4eb");
 

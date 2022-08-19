@@ -159,7 +159,7 @@ namespace Xrv.Core.UI.Tabs
             this.frontPlate.Width = this.size.X - (this.currentItemPlate.Width / 2);
             this.frontPlate.Height = this.size.Y;
             var currentItemPosition = this.currentItemPlateTransform.LocalPosition;
-            currentItemPosition.X = -this.size.X * 0.43f;
+            currentItemPosition.X = ((this.currentItemPlate.Width  + this.size.X) * -0.5f) + 0.015f; //-this.size.X * 0.43f;
             currentItemPosition.Y = this.size.Y / 2 - this.currentItemPlate.Height / 2;
             this.currentItemPlateTransform.LocalPosition = currentItemPosition;
             this.defaultCurrentItemPlatePosition = currentItemPosition;
