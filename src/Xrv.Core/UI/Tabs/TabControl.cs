@@ -124,6 +124,8 @@ namespace Xrv.Core.UI.Tabs
             }
         }
 
+        public bool DestroyContentOnTabChange { get; set; }
+
         public IList<TabItem> Items { get => this.items; }
 
         public static TabControlBuilder Builder { get; internal set; }
@@ -307,8 +309,28 @@ namespace Xrv.Core.UI.Tabs
 
         private void UpdateContent()
         {
-            this.contentsContainer.RemoveAllChildren();
-            if (this.content != null)
+            if (this.DestroyContentOnTabChange)
+            {
+                this.contentsContainer.RemoveAllChildren();
+            }
+            else
+            {
+                foreach (var child in this.contentsContainer.ChildEntities)
+                {
+                    child.IsEnabled = false;
+                }
+            }
+
+            if (this.content == null)
+            {
+                return;
+            }
+
+            if (this.contentsContainer.ChildEntities.Contains(this.content))
+            {
+                this.content.IsEnabled = true;
+            }
+            else
             {
                 this.contentsContainer.AddChild(this.content);
             }

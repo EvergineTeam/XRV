@@ -1,4 +1,5 @@
-﻿using Evergine.Framework.Graphics;
+﻿using Evergine.Framework;
+using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Mathematics;
 using Xrv.Core.Menu;
@@ -41,6 +42,8 @@ namespace Xrv.Core.Settings
                 .Create()
                 .WithSize(new Vector2(0.24f, 0.16f))
                 .Build();
+            var tabControl = contents.FindComponent<TabControl>();
+            tabControl.DestroyContentOnTabChange = false;
             configurator.Content = contents;
 
             var transform = contents.FindComponent<Transform3D>();
@@ -50,6 +53,12 @@ namespace Xrv.Core.Settings
 
             owner.IsEnabled = false;
             this.entityManager.Add(owner);
+
+            window.Sections.Add(new Section
+            {
+                Name = "General",
+                Contents = () => null,
+            });
 
             return window;
         }
