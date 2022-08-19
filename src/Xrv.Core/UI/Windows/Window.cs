@@ -1,5 +1,7 @@
 ﻿using Evergine.Common.Attributes;
 using Evergine.Framework;
+using Evergine.Framework.Graphics;
+using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Linq;
@@ -13,6 +15,10 @@ namespace Xrv.Core.UI.Windows
 
         [BindComponent(source: BindComponentSource.Owner, isExactType: false)]
         private BaseWindowConfigurator configurator = null;
+
+        [BindComponent]
+        private Transform3D transform;
+
         protected Entity pinButtonEntity;
 
         [IgnoreEvergine]
@@ -44,6 +50,7 @@ namespace Xrv.Core.UI.Windows
         {
             if (this.IsClosed)
             {
+                this.PlaceInFrontOfUser();
                 this.Owner.IsEnabled = true;
                 this.Opened?.Invoke(this, EventArgs.Empty);
             }
@@ -115,5 +122,16 @@ namespace Xrv.Core.UI.Windows
         }
 
         private void CloseButtonReleased(object sender, EventArgs e) => this.Close();
+
+        private void PlaceInFrontOfUser()
+        {
+            var camera = this.Managers.RenderManager.ActiveCamera3D;
+            var position = camera.Transform.Position + camera.Transform.WorldTransform.Forward;
+            this.transform.Position = position;
+
+            // default LookAt makes window to be oriented backwards to the camera
+            this.transform.LookAt(camera.Transform.Position);
+            this.transform.RotateAround(position, this.transform.WorldTransform.Up, MathHelper.Pi);
+        }
     }
 }
