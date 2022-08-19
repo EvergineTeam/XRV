@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xrv.Core.Menu;
+using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Settings;
 using Xrv.Core.Themes;
@@ -23,7 +24,9 @@ namespace Xrv.Core
 
         public HandMenu HandMenu { get; private set; }
 
-        public SettingsWindow Settings { get; private set; }
+        public PubSub PubSub { get; private set; }
+
+        public SettingsSystem Settings { get; private set; }
 
         public WindowsSystem WindowSystem { get; private set; }
 
@@ -32,6 +35,11 @@ namespace Xrv.Core
         public XrvService()
         {
             this.modules = new Dictionary<Type, Module>();
+            this.PubSub = new PubSub();
+            this.PubSub.Subscribe<ActivateModuleMessage>(message =>
+            {
+                message.Module.Run(message.IsOn);
+            });
         }
 
         public void AddModule(Module module)
@@ -83,11 +91,8 @@ namespace Xrv.Core
 
             // Add controls and systems
             TabControl.Builder = new TabControlBuilder(this.assetsService);
-            var settingsLoader = new SettingsLoader(
-                scene.Managers.EntityManager, 
-                this.WindowSystem,
-                this.HandMenu);
-            settingsLoader.Load();
+            this.Settings = new SettingsSystem(this, scene.Managers.EntityManager);
+            this.Settings.Load();
 
             foreach(var module in this.modules.Values)
             {

@@ -4,34 +4,32 @@ using Evergine.Mathematics;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
-using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
 namespace Xrv.Core.Settings
 {
-    internal class SettingsLoader
+    public class SettingsSystem
     {
         private readonly EntityManager entityManager;
-        private readonly WindowsSystem windowSystem;
-        private readonly HandMenu handMenu;
+        private readonly XrvService xrvService;
+        private HandMenuButtonDescription handMenuButtonDescription;
 
-        public SettingsLoader(EntityManager entityManager, WindowsSystem windowSystem, HandMenu handMenu)
+        public SettingsSystem(XrvService xrvService, EntityManager entityManager)
         {
+            this.xrvService = xrvService;
             this.entityManager = entityManager;
-            this.windowSystem = windowSystem;
-            this.handMenu = handMenu;
         }
 
-        public SettingsWindow Load()
-        {
-            SettingsWindow window = this.CreateSettingsWindow();
-            this.AddHandMenuButton();
+        public SettingsWindow Window { get; private set; }
 
-            return window;
+        internal void Load()
+        {
+            this.Window = this.CreateSettingsWindow();
+            this.SetUpHandMenu();
         }
 
         private SettingsWindow CreateSettingsWindow()
         {
-            var owner = this.windowSystem.BuildWindow(new SettingsWindow(), (BaseWindowConfigurator)null);
+            var owner = this.xrvService.WindowSystem.BuildWindow(new SettingsWindow(), (BaseWindowConfigurator)null);
             var window = owner.FindComponent<SettingsWindow>();
             var configurator = owner.FindComponent<WindowConfiguration>();
             configurator.Title = "Settings";
@@ -50,23 +48,30 @@ namespace Xrv.Core.Settings
             position.X += 0.035f;
             transform.LocalPosition = position;
 
+            owner.IsEnabled = false;
             this.entityManager.Add(owner);
 
-            ////Evergine.Framework.Threading.EvergineForegroundTask.Run(() =>
-            ////{
-            ////    window.Open();
-            ////});
             return window;
         }
 
-        private void AddHandMenuButton()
+        private void SetUpHandMenu()
         {
-            this.handMenu.ButtonDescriptions.Add(new HandMenuButtonDescription
+            this.handMenuButtonDescription = new HandMenuButtonDescription
             {
                 IsToggle = false,
                 IconOn = DefaultResourceIDs.Materials.Settings,
                 TextOn = "Settings",
-            });
+            };
+            this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
+            this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
+        }
+
+        private void OnHandMenuButtonPressed(HandMenuActionMessage message)
+        {
+            if (this.handMenuButtonDescription == message.Description)
+            {
+                this.Window.Open();
+            }
         }
     }
 }

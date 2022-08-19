@@ -20,25 +20,25 @@ namespace Xrv.Core.Menu
             this.assetsService = assetsService;
         }
 
-        public Entity CreateInstance(HandMenuButtonDescription definition) =>
-            definition.IsToggle ? CreateToggleButton(definition) : CreateStandardButton(definition);
+        public Entity CreateInstance(HandMenuButtonDescription description) =>
+            description.IsToggle ? CreateToggleButton(description) : CreateStandardButton(description);
 
-        private Entity CreateStandardButton(HandMenuButtonDescription definition)
+        private Entity CreateStandardButton(HandMenuButtonDescription description)
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
             button.AddComponent(new StandardButtonConfigurator
             {
-                Text = definition.TextOn,
-                Icon = this.assetsService.LoadIfNotDefaultId<Material>(definition.IconOn),
+                Text = description.TextOn,
+                Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
             });
-            this.SetModuleAssociation(definition, button);
+            this.AssociateActivationPublishers(description, button);
             Workarounds.MrtkForceButtonNullPlate(button);
 
             return button;
         }
 
-        private Entity CreateToggleButton(HandMenuButtonDescription definition)
+        private Entity CreateToggleButton(HandMenuButtonDescription description)
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
@@ -46,30 +46,37 @@ namespace Xrv.Core.Menu
             button.AddComponent(new ToggleButtonConfigurator
             {
                 TargetState = ToggleState.Off,
-                Text = definition.TextOff,
-                Icon = this.assetsService.LoadIfNotDefaultId<Material>(definition.IconOff),
+                Text = description.TextOff,
+                Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff),
             });
             button.AddComponent(new ToggleButtonConfigurator
             {
                 TargetState = ToggleState.On,
-                Text = definition.TextOn,
-                Icon = this.assetsService.LoadIfNotDefaultId<Material>(definition.IconOn),
+                Text = description.TextOn,
+                Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
             });
 
-            this.SetModuleAssociation(definition, button);
+            this.AssociateActivationPublishers(description, button);
             Workarounds.MrtkForceButtonNullPlate(button);
 
             return button;
         }
 
-        private void SetModuleAssociation(HandMenuButtonDescription definition, Entity button)
+        private void AssociateActivationPublishers(HandMenuButtonDescription description, Entity button)
         {
-            var associatedModule = this.xrvService.GetModuleForHandButton(definition);
+            var associatedModule = this.xrvService.GetModuleForHandButton(description);
             if (associatedModule != null)
             {
-                button.AddComponent(new ActivateModuleOnButtonRelease
+                button.AddComponent(new ActivateModuleOnButtonPress
                 {
                     Module = associatedModule,
+                });
+            }
+            else
+            {
+                button.AddComponent(new HandMenuButtonPress
+                {
+                    Description = description,
                 });
             }
         }

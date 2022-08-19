@@ -1,38 +1,39 @@
-﻿using Evergine.Common.Attributes;
-using Evergine.Framework;
+﻿using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 
-namespace Xrv.Core.Modules
+namespace Xrv.Core.Messaging
 {
-    internal class ActivateModuleOnButtonRelease : Component
+    public abstract class PubSubOnButtonPress<TMessage> : Component
     {
+        [BindService]
+        private XrvService xrvService = null;
+
         [BindComponent(source: BindComponentSource.Children, isExactType: false)]
         private PressableButton button = null;
 
         [BindComponent(source: BindComponentSource.Children, isExactType: false, isRequired: false)]
         private ToggleButton toggleButton = null;
 
-        [IgnoreEvergine]
-        public Module Module { get; set; }
-
         protected override void OnActivated()
         {
             base.OnActivated();
-            button.ButtonReleased += this.Button_ButtonReleased;
+            this.button.ButtonReleased += this.Button_ButtonReleased;
         }
 
         protected override void OnDeactivated()
         {
             base.OnDeactivated();
-            button.ButtonReleased -= this.Button_ButtonReleased;
+            this.button.ButtonReleased -= this.Button_ButtonReleased;
         }
+
+        protected abstract TMessage GetPublishData(bool isOn);
 
         private void Button_ButtonReleased(object sender, EventArgs e)
         {
-            bool turnOn = this.toggleButton?.IsOn ?? true;
-            this.Module.Run(turnOn);
+            bool isOn = this.toggleButton?.IsOn ?? true;
+            this.xrvService.PubSub.Publish(this.GetPublishData(isOn));
         }
     }
 }
