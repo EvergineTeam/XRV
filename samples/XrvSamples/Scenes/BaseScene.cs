@@ -10,7 +10,7 @@ namespace XrvSamples.Scenes
 
         protected override Guid CursorMatReleased => EvergineContent.MRTK.Materials.Cursor.CursorBase;
 
-        protected override Guid HoloHandsMat => Guid.Empty;
+        protected override Guid HoloHandsMat => EvergineContent.MRTK.Materials.Hands.QuestHands;
 
         protected override Guid SpatialMappingMat => Guid.Empty;
 
