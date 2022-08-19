@@ -3,15 +3,15 @@ using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
 
-namespace Xrv.Core.Settings
+namespace Xrv.Core.Help
 {
-    public class SettingsSystem
+    public class HelpSystem
     {
         private readonly EntityManager entityManager;
         private readonly XrvService xrvService;
         private HandMenuButtonDescription handMenuButtonDescription;
 
-        public SettingsSystem(XrvService xrvService, EntityManager entityManager)
+        public HelpSystem(XrvService xrvService, EntityManager entityManager)
         {
             this.xrvService = xrvService;
             this.entityManager = entityManager;
@@ -21,7 +21,7 @@ namespace Xrv.Core.Settings
 
         internal void Load()
         {
-            this.Window = this.CreateSettingsWindow();
+            this.Window = this.CreateHelpWindow();
             this.SetUpHandMenu();
         }
 
@@ -29,12 +29,12 @@ namespace Xrv.Core.Settings
 
         public void RemoveTabItem(TabItem item) => this.Window.Tabs.Remove(item);
 
-        private TabbedWindow CreateSettingsWindow()
+        private TabbedWindow CreateHelpWindow()
         {
             var owner = TabbedWindow.Create(this.xrvService);
             var configurator = owner.FindComponent<WindowConfiguration>();
             var window = owner.FindComponent<TabbedWindow>();
-            configurator.Title = "Settings";
+            configurator.Title = "Help";
 
             owner.IsEnabled = false;
             this.entityManager.Add(owner);
@@ -53,8 +53,8 @@ namespace Xrv.Core.Settings
             this.handMenuButtonDescription = new HandMenuButtonDescription
             {
                 IsToggle = false,
-                IconOn = DefaultResourceIDs.Materials.Icons.Settings,
-                TextOn = "Settings",
+                IconOn = DefaultResourceIDs.Materials.Icons.Help,
+                TextOn = "Help",
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
             this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);

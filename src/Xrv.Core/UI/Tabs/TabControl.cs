@@ -25,7 +25,6 @@ namespace Xrv.Core.UI.Tabs
 
         private Vector2 size;
         private TabItem selectedItem;
-        private Entity content;
         private Entity contentsContainer;
 
         private Vector3 defaultCurrentItemPlatePosition;
@@ -80,18 +79,6 @@ namespace Xrv.Core.UI.Tabs
                 {
                     this.selectedItem = value;
                     this.UpdateSelectedItem();
-                }
-            }
-        }
-        public Entity Content
-        {
-            get => this.content;
-            set
-            {
-                this.content = value;
-                if (this.IsAttached)
-                {
-                    this.UpdateContent();
                 }
             }
         }
@@ -153,6 +140,7 @@ namespace Xrv.Core.UI.Tabs
             this.UpdateFrontPlateSize();
             this.ReorderItems();
             this.UpdateItemsTextColor();
+            this.UpdateSelectedItem();
         }
 
         protected override void OnDetach()
@@ -302,6 +290,7 @@ namespace Xrv.Core.UI.Tabs
                 this.currentItemChangeAnimation.Run();
             }
 
+            this.UpdateContent();
             this.SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(this.selectedItem));
         }
 
@@ -321,19 +310,23 @@ namespace Xrv.Core.UI.Tabs
                 }
             }
 
-            if (this.content == null)
+            if (this.selectedItem == null)
             {
                 return;
             }
 
-            if (this.contentsContainer.ChildEntities.Contains(this.content))
+            var content = selectedItem.Contents?.Invoke();
+            if (content == null)
             {
-                this.content.IsEnabled = true;
+                return;
             }
-            else
+
+            if (!this.contentsContainer.ChildEntities.Contains(content))
             {
-                this.contentsContainer.AddChild(this.content);
+                this.contentsContainer.AddChild(content);
             }
+
+            content.IsEnabled = true;
         }
 
         private void ReorderItems()

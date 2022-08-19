@@ -6,7 +6,12 @@ namespace Xrv.Core
     {
         public static class Materials
         {
-            public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
+            public static class Icons
+            {
+                public static Guid Help = new Guid("c67d466a-5391-4f19-94ce-23f88c0a028d");
+
+                public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
+            }
         }
 
         public static class Mrtk

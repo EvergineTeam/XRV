@@ -5,14 +5,15 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
-using Xrv.Core.Settings;
+using Xrv.Core.UI.Tabs;
 
 namespace Xrv.Ruler
 {
     public class RulerModule : Module
     {
         private HandMenuButtonDescription handMenuDesc;
-        private Section settings;
+        private TabItem settings;
+        private TabItem help;
 
         private Entity rulerEntity;
 
@@ -20,9 +21,9 @@ namespace Xrv.Ruler
 
         public override HandMenuButtonDescription HandMenuButton => this.handMenuDesc;
 
-        public override Section Help => null;
+        public override TabItem Help => this.help;
 
-        public override Section Settings => this.settings;
+        public override TabItem Settings => this.settings;
 
         public RulerModule()
         {
@@ -35,10 +36,16 @@ namespace Xrv.Ruler
                 TextOff = "Show"
             };
 
-            this.settings = new Section()
+            this.settings = new TabItem()
             {
                 Name = "Ruler",
                 Contents = SettingContent,
+            };
+
+            this.help = new TabItem()
+            {
+                Name = "Ruler",
+                Contents = HelpContent,
             };
         }
 
@@ -66,6 +73,20 @@ namespace Xrv.Ruler
                 .AddComponent(new Transform3D())
                 .AddComponent(new MaterialComponent() { Material = material })
                 .AddComponent(new CubeMesh() { Size = 0.02f })
+                .AddComponent(new MeshRenderer());
+
+            return entity;
+        }
+
+        private Entity HelpContent()
+        {
+            var assetsService = Application.Current.Container.Resolve<AssetsService>();
+            var material = assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+
+            Entity entity = new Entity()
+                .AddComponent(new Transform3D())
+                .AddComponent(new MaterialComponent() { Material = material })
+                .AddComponent(new TeapotMesh() { Size = 0.02f })
                 .AddComponent(new MeshRenderer());
 
             return entity;

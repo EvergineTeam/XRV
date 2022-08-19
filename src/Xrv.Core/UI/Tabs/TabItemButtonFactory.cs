@@ -21,7 +21,7 @@ namespace Xrv.Core.UI.Tabs
             var button = prefab.Instantiate();
             button.AddComponent(new StandardButtonConfigurator
             {
-                Text = item.Text,
+                Text = item.Name,
                 Icon = null,
             });
 

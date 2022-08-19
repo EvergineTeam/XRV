@@ -5,6 +5,7 @@ using Evergine.Framework.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xrv.Core.Help;
 using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
@@ -23,6 +24,8 @@ namespace Xrv.Core
         private readonly Dictionary<Type, Module> modules;
 
         public HandMenu HandMenu { get; private set; }
+
+        public HelpSystem Help { get; private set; }
 
         public PubSub PubSub { get; private set; }
 
@@ -91,10 +94,12 @@ namespace Xrv.Core
 
             // Add controls and systems
             TabControl.Builder = new TabControlBuilder(this.assetsService);
+            this.Help = new HelpSystem(this, scene.Managers.EntityManager);
+            this.Help.Load();
             this.Settings = new SettingsSystem(this, scene.Managers.EntityManager);
             this.Settings.Load();
 
-            foreach(var module in this.modules.Values)
+            foreach (var module in this.modules.Values)
             {
                 // Adding hand menu button for module, if any
                 if (module.HandMenuButton != null)
@@ -103,9 +108,15 @@ namespace Xrv.Core
                 }
 
                 // Adding setting data
+                if (module.Help != null)
+                {
+                    this.Help.AddTabItem(module.Help);
+                }
+
+                // Adding setting data
                 if (module.Settings != null)
                 {
-                    this.Settings.Window.Sections.Add(module.Settings);
+                    this.Settings.AddTabItem(module.Settings);
                 }
 
                 // Modules initialization

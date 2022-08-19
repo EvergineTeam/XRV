@@ -1,6 +1,6 @@
 ﻿using Evergine.Framework;
 using Xrv.Core.Menu;
-using Xrv.Core.Settings;
+using Xrv.Core.UI.Tabs;
 
 namespace Xrv.Core.Modules
 {
@@ -10,9 +10,9 @@ namespace Xrv.Core.Modules
 
         public abstract HandMenuButtonDescription HandMenuButton { get; }
 
-        public abstract Section Help { get; }
+        public abstract TabItem Help { get; }
 
-        public abstract Section Settings { get; }
+        public abstract TabItem Settings { get; }
 
         public abstract void Run(bool turnOn);
 

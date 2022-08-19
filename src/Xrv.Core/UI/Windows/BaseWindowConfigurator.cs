@@ -10,7 +10,7 @@ namespace Xrv.Core.UI.Windows
 {
     public abstract class BaseWindowConfigurator : Component
     {
-        private Vector2 size = new Vector2(0.4f, 0.3f);
+        private Vector2 size = new Vector2(0.35f, 0.3f);
         private Vector2 frontPlateOffsets = new Vector2(0f);
 
         private Vector2 frontPlateSize;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Evergine.Framework;
+using System;
 
 namespace Xrv.Core.UI.Tabs
 {
@@ -11,8 +12,10 @@ namespace Xrv.Core.UI.Tabs
 
         public Guid Id { get; private set; }
 
-        public string Text { get; set; }
+        public string Name { get; set; }
 
         public object Data { get; set; }
+
+        public Func<Entity> Contents { get; set; }
     }
 }

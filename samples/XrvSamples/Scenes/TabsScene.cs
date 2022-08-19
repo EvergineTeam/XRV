@@ -54,11 +54,10 @@ namespace XrvSamples.Scenes
                 .WithSize(new Vector2(0.286f, 0.2f))
                 .AddItem(new TabItem
                 {
-                    Text = "Repositories",
+                    Name = "Repositories",
                 })
                 .Build();
             this.tabControl = tabEntity.FindComponent<TabControl>();
-            this.tabControl.SelectedItemChanged += this.TabControl_SelectedItemChanged;
             this.UpdateCounts();
 
             EvergineForegroundTask.Run(() =>
@@ -77,8 +76,9 @@ namespace XrvSamples.Scenes
             var count = this.tabControl.Items.Count;
             this.tabControl.Items.Add(new TabItem
             {
-                Text = $"Item #{count}",
+                Name = $"Item #{count}",
                 Data = count,
+                Contents = () => this.CreateText(count),
             });
             this.UpdateCounts();
         }
@@ -93,19 +93,6 @@ namespace XrvSamples.Scenes
         }
 
         private void UpdateCounts() => this.numberOfButtons.Text = this.tabControl.Items.Count.ToString();
-
-        private void TabControl_SelectedItemChanged(object sender, SelectedItemChangedEventArgs args)
-        {
-            if (args.Item?.Data is int @value)
-            {
-                var textEntity = this.CreateText(@value);
-                this.tabControl.Content = textEntity;
-            }
-            else
-            {
-                this.tabControl.Content = null;
-            }
-        }
 
         private Entity CreateText(int value) =>
             new Entity()
