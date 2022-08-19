@@ -1,7 +1,7 @@
 !Evergine.Framework.Assets.AssetSources.Entities.SceneModel,Evergine.Framework
 Items:
   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-    Name: control
+    Name: tabControl
     Tag: null
     IsEnabled: true
     IsStatic: false
@@ -24,7 +24,17 @@ Items:
           Z: 1.0
       - !Xrv.Core.UI.Tabs.TabControl,Xrv.Core
         Id: dafc9a45-19df-4dba-8d7a-b00fcee8be19
-        Content: null
+        ActiveItemTextColor:
+          A: 0
+          B: 0
+          G: 0
+          R: 0
+        DestroyContentOnTabChange: false
+        InactiveItemTextColor:
+          A: 0
+          B: 0
+          G: 0
+          R: 0
         IsEnabled: true
         Size:
           X: 0.300000012
@@ -56,7 +66,7 @@ Items:
             Id: ed816c91-4fe1-4adc-8e91-967c96495bba
             AsignedTo: Default
             IsEnabled: true
-            Material: 1a7070d5-cccf-4b60-93c8-eddafd9b51d5
+            Material: 117070d5-cccf-4b60-93c8-eddafd9b51d5
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: 39197e72-2304-4fe0-a7f5-a916bab32ebe
             Height: 0.180000007
@@ -94,7 +104,7 @@ Items:
               Y: 0.0
               Z: 0.0
             LocalPosition:
-              X: -0.154000014
+              X: -0.220000014
               Y: 0.074000001
               Z: 0.00999999978
             LocalScale:
@@ -106,7 +116,7 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: currentItemPlate
         Tag: PART_tab_control_current_item_plate
-        IsEnabled: true
+        IsEnabled: false
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -118,7 +128,7 @@ Items:
               Y: 0.0
               Z: 0.0
             LocalPosition:
-              X: -0.129000008
+              X: -0.195000008
               Y: 0.074000001
               Z: -1.05880051E-08
             LocalScale:
@@ -129,7 +139,7 @@ Items:
             Id: fcc1b2b6-c894-4b09-b965-6cdb19184a32
             AsignedTo: Default
             IsEnabled: true
-            Material: 1a7070d5-cccf-4b60-93c8-eddafd9b51d5
+            Material: 117070d5-cccf-4b60-93c8-eddafd9b51d5
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: 7f8a42cc-9bff-4f6e-982c-0534a0d5266b
             Height: 0.0320000015
