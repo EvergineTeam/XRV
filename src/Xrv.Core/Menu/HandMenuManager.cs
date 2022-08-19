@@ -73,7 +73,7 @@ namespace Xrv.Core.Menu
         }
 
         private Prefab GetMenuPrefab() =>
-            this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.HandMenu);
+            this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.HandMenu);
 
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool isPalmUp)
         {

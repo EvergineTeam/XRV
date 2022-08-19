@@ -113,9 +113,9 @@ namespace Xrv.Core.UI.Windows
         }
 
         private Prefab GetWindowPrefab() =>
-            this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.Window);
+            this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Window);
 
         private Prefab GetBaseDialogPrefab() =>
-            this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.BaseDialogContents);
+            this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.BaseDialogContents);
     }
 }

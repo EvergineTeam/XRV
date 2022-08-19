@@ -53,7 +53,7 @@ namespace Xrv.Core.Settings
             this.handMenuButtonDescription = new HandMenuButtonDescription
             {
                 IsToggle = false,
-                IconOn = DefaultResourceIDs.Materials.Icons.Settings,
+                IconOn = CoreResourcesIDs.Materials.Icons.Settings,
                 TextOn = "Settings",
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);

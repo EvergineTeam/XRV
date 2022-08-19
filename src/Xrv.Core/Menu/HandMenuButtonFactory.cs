@@ -82,6 +82,6 @@ namespace Xrv.Core.Menu
         }
 
         private Prefab GetButtonPrefab() =>
-            this.assetsService.Load<Prefab>(DefaultResourceIDs.Mrtk.Prefabs.PressableButtonPlated);
+            this.assetsService.Load<Prefab>(CoreResourcesIDs.Mrtk.Prefabs.PressableButtonPlated);
     }
 }

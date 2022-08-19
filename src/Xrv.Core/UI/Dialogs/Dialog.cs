@@ -71,7 +71,7 @@ namespace Xrv.Core.UI.Dialogs
 
         protected virtual Entity CreateButtonInstance(DialogOption option)
         {
-            var prefab = this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.TextButton);
+            var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);
             var buttonInstance = prefab.Instantiate();
             buttonInstance.AddComponent(option.Configuration);
             Workarounds.MrtkRotateButton(buttonInstance);

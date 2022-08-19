@@ -17,7 +17,7 @@ namespace Xrv.Core.UI.Windows
         private BaseWindowConfigurator configurator = null;
 
         [BindComponent]
-        private Transform3D transform;
+        private Transform3D transform = null;
 
         protected Entity pinButtonEntity;
 
@@ -131,7 +131,7 @@ namespace Xrv.Core.UI.Windows
 
             // default LookAt makes window to be oriented backwards to the camera
             this.transform.LookAt(camera.Transform.Position);
-            this.transform.RotateAround(position, this.transform.WorldTransform.Up, MathHelper.Pi);
+            this.transform.RotateAround(position, Vector3.Up, MathHelper.Pi);
         }
     }
 }

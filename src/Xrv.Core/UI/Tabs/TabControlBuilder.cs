@@ -20,7 +20,7 @@ namespace Xrv.Core.UI.Tabs
 
         public TabControlBuilder Create()
         {
-            var prefab = this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.TabControl);
+            var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TabControl);
             this.entity = prefab.Instantiate();
             this.control = this.entity.FindComponentInChildren<TabControl>();
             this.control.ActiveItemTextColor = Color.White; // TODO

@@ -64,6 +64,7 @@ namespace Xrv.Core.UI.Tabs
                 this.size = value;
                 if (this.IsAttached)
                 {
+                    this.defaultCurrentItemPlatePosition = default;
                     this.UpdateFrontPlateSize();
                 }
             }
@@ -159,13 +160,17 @@ namespace Xrv.Core.UI.Tabs
             this.frontPlate.Width = this.size.X - (this.currentItemPlate.Width / 2);
             this.frontPlate.Height = this.size.Y;
             var currentItemPosition = this.currentItemPlateTransform.LocalPosition;
-            currentItemPosition.X = ((this.currentItemPlate.Width  + this.size.X) * -0.5f) + 0.015f; //-this.size.X * 0.43f;
+            currentItemPosition.X = -this.size.X / 2;
             currentItemPosition.Y = this.size.Y / 2 - this.currentItemPlate.Height / 2;
             this.currentItemPlateTransform.LocalPosition = currentItemPosition;
-            this.defaultCurrentItemPlatePosition = currentItemPosition;
+            
+            if (this.defaultCurrentItemPlatePosition == default)
+            {
+                this.defaultCurrentItemPlatePosition = this.currentItemPlateTransform.LocalPosition;
+            }
 
             var buttonsPosition = this.buttonsContainerTransform.LocalPosition;
-            buttonsPosition.X = currentItemPosition.X - 0.025f;
+            buttonsPosition.X = currentItemPosition.X - 0.012f;
             buttonsPosition.Y = currentItemPosition.Y;
             this.buttonsContainerTransform.LocalPosition = buttonsPosition;
         }
@@ -342,7 +347,7 @@ namespace Xrv.Core.UI.Tabs
                     transform.LocalPosition = position;
                 }
 
-                this.currentItemPlate.Owner.IsEnabled = this.items.Any();
+                this.currentItemPlate.Owner.IsEnabled = this.items.Any() || Application.Current.IsEditor;
             }
         }
 

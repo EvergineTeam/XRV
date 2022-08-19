@@ -34,6 +34,6 @@ namespace Xrv.Core.UI.Tabs
         }
 
         private Prefab GetButtonPrefab() =>
-            this.assetsService.Load<Prefab>(DefaultResourceIDs.Prefabs.TextButton);
+            this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);
     }
 }
