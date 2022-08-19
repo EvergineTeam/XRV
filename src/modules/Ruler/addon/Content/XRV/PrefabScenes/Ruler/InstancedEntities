@@ -168,7 +168,7 @@ Items:
         Id: 1214b948-e13a-4f5c-8fe7-01460449e737
         AsignedTo: Default
         IsEnabled: true
-        Material: ae99583a-cbbd-4241-89db-1d95314cedbc
+        Material: d838f9f1-7913-4fd3-bfed-08687745aac1
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: e14e7b95-489d-4c09-8c14-9ae566fb103d
         Diameter: 1.0
@@ -257,7 +257,7 @@ Items:
             Id: 6feb2445-131d-438b-b3e2-7b7c5ed67d8c
             AsignedTo: Default
             IsEnabled: true
-            Material: 05c2c50c-36c4-424c-9355-3e5c7ad8af04
+            Material: 55c2c50c-36c4-424c-9355-3e5c7ad8af04
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: 990e76dc-5955-4407-8624-646877f73a54
             Height: 0.200000003
@@ -311,16 +311,9 @@ Items:
             OrientationAxis: X
             TargetEntity: null
             UpdateOrder: 0.5
-          - !Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation.SimpleManipulationHandler,Evergine.MRTK
-            Id: 45027794-ac44-481e-89a4-d7c0fa10d24b
-            Constraints: ConstraintRotAll, ConstraintScaleAll
-            EnableSinglePointerRotation: true
-            IncludeChildrenColliders: true
+          - !Xrv.Ruler.RulerHandlerBehavior,Xrv.Ruler
+            Id: 84cd67b6-5452-4eb4-b929-0c272f12e35f
             IsEnabled: true
-            KeepRigidBodyActiveDuringDrag: false
-            SmoothingActive: true
-            SmoothingAmount: 0.00100000005
-            UpdateOrder: 0.5
         Children: []
         Id: fe9c6b37-690b-451d-ba34-f8f683bf7091
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -349,7 +342,7 @@ Items:
             Id: 0d69a599-549c-4296-8913-ee931d992b0c
             AsignedTo: Default
             IsEnabled: true
-            Material: 05c2c50c-36c4-424c-9355-3e5c7ad8af04
+            Material: 55c2c50c-36c4-424c-9355-3e5c7ad8af04
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: 812fcfa1-6b10-4369-9470-71e072fc2162
             Height: 0.200000003
@@ -403,24 +396,9 @@ Items:
             OrientationAxis: X
             TargetEntity: null
             UpdateOrder: 0.5
-          - !Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation.SimpleManipulationHandler,Evergine.MRTK
-            Id: 4b0a9bca-7816-48eb-8843-065ab1cdca0b
-            Constraints: ConstraintRotAll, ConstraintScaleAll
-            EnableSinglePointerRotation: true
-            IncludeChildrenColliders: true
+          - !Xrv.Ruler.RulerHandlerBehavior,Xrv.Ruler
+            Id: 4c11f613-56f4-4d7e-8c77-0b689c1c2f9b
             IsEnabled: true
-            KeepRigidBodyActiveDuringDrag: false
-            SmoothingActive: true
-            SmoothingAmount: 0.00100000005
-            UpdateOrder: 0.5
-          - !Evergine.Framework.ErrorComponent,Evergine.Framework
-            Id: a6788088-dec8-494b-bc52-b6bf0407f7cc
-            IsEnabled: true
-            OldType: '!Evergine167.NewRuler.MoveBehavior,Evergine167'
-            Properties:
-              Id: 0fcc7b9a-126f-42df-b56f-ef7d652b0e42
-              IsEnabled: true
-              UpdateOrder: 0.5
         Children: []
         Id: 1ee8cb55-6f8b-4610-abc2-4043018a759a
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

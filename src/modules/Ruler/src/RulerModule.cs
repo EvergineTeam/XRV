@@ -1,4 +1,7 @@
-﻿using Evergine.Framework;
+﻿using Evergine.Components.Graphics3D;
+using Evergine.Framework;
+using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Xrv.Core.Menu;
