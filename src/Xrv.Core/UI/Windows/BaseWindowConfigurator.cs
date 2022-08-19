@@ -140,12 +140,22 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        protected override bool OnAttached()
+        {
+            bool attached = base.OnAttached();
+            if (attached)
+            {
+                this.contentEntity = this.Owner.FindChildrenByTag("PART_window_content", isRecursive: true).First();
+                this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
+            }
+
+            return attached;
+        }
+
         protected override void OnActivated()
         {
             base.OnActivated();
 
-            this.contentEntity = this.Owner.FindChildrenByTag("PART_window_content", isRecursive: true).First();
-            this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
             this.UpdateSize();
             this.UpdateFrontPlateSize();
             this.UpdateFrontPlateOffsets();

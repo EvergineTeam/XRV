@@ -1,4 +1,5 @@
-﻿using Evergine.Framework;
+﻿using Evergine.Common.Attributes;
+using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace Xrv.Core.UI.Windows
         private bool allowPin = true;
 
         [BindComponent(source: BindComponentSource.Owner, isExactType: false)]
-        private BaseWindowConfigurator configuration = null;
-
+        private BaseWindowConfigurator configurator = null;
         protected Entity pinButtonEntity;
 
-        public BaseWindowConfigurator Configuration { get => this.configuration; }
+        [IgnoreEvergine]
+        public BaseWindowConfigurator Configurator { get => this.configurator; }
 
         public bool IsClosed { get => !this.Owner.IsEnabled; }
 

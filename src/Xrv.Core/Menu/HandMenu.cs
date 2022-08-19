@@ -3,7 +3,6 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Framework.XR;
-using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +16,7 @@ namespace Xrv.Core.Menu
     {
         private const float ButtonWidth = 0.032f;
 
-        private readonly ObservableCollection<HandMenuButtonDescription> buttonDefinitions;
+        private readonly ObservableCollection<HandMenuButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
 
         private int buttonsPerColumn = 4;
@@ -47,7 +46,7 @@ namespace Xrv.Core.Menu
 
         public HandMenu()
         {
-            this.buttonDefinitions = new ObservableCollection<HandMenuButtonDescription>();
+            this.buttonDescriptions = new ObservableCollection<HandMenuButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
         }
 
@@ -65,7 +64,7 @@ namespace Xrv.Core.Menu
             }
         }
 
-        public IList<HandMenuButtonDescription> ButtonDefinitions { get => this.buttonDefinitions; }
+        public IList<HandMenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
 
         protected override bool OnAttached()
         {
@@ -73,8 +72,8 @@ namespace Xrv.Core.Menu
             if (attached)
             {
                 this.buttonsContainer = this.Owner.FindChildrenByTag("PART_hand_menu_buttons_container").First();
-                this.InternalAddButtons(this.buttonDefinitions); // We can have items added before this component has been attached
-                this.buttonDefinitions.CollectionChanged += this.ButtonDefinitions_CollectionChanged;
+                this.InternalAddButtons(this.buttonDescriptions); // We can have items added before this component has been attached
+                this.buttonDescriptions.CollectionChanged += this.ButtonDefinitions_CollectionChanged;
             }
 
             return attached;
@@ -82,8 +81,8 @@ namespace Xrv.Core.Menu
 
         protected override void OnDetach()
         {
-            this.buttonDefinitions.Clear();
-            this.buttonDefinitions.CollectionChanged -= this.ButtonDefinitions_CollectionChanged;
+            this.buttonDescriptions.Clear();
+            this.buttonDescriptions.CollectionChanged -= this.ButtonDefinitions_CollectionChanged;
         }
 
         protected override void OnActivated()
@@ -180,7 +179,7 @@ namespace Xrv.Core.Menu
 
         private void ReorderButtons()
         {
-            int numberOfColumns = (int)Math.Ceiling(this.buttonDefinitions.Count / (float)this.buttonsPerColumn);
+            int numberOfColumns = (int)Math.Ceiling(this.buttonDescriptions.Count / (float)this.buttonsPerColumn);
             float menuWidth = Math.Max(0.0001f, numberOfColumns * ButtonWidth); // to avoid zero width exception
 
             // Resize back plate
@@ -205,9 +204,9 @@ namespace Xrv.Core.Menu
             float rowInitialY = (this.buttonsPerColumn - 2) * (ButtonWidth / 2);
 
             // Add buttons
-            for (int i = 0; i < this.buttonDefinitions.Count; i++)
+            for (int i = 0; i < this.buttonDescriptions.Count; i++)
             {
-                HandMenuButtonDescription definition = this.buttonDefinitions[i];
+                HandMenuButtonDescription definition = this.buttonDescriptions[i];
                 Entity button = this.instantiatedButtons[definition.Id];
                 var buttonTransform = button.FindComponent<Transform3D>();
                 var buttonPosition = buttonTransform.LocalPosition;

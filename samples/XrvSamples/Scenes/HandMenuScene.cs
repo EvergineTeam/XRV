@@ -78,9 +78,9 @@ namespace XrvSamples.Scenes
 
         private void DecreaseNumberOfButtons_ButtonReleased(object sender, EventArgs e)
         {
-            if (this.handMenu.ButtonDefinitions.LastOrDefault() is HandMenuButtonDescription definition)
+            if (this.handMenu.ButtonDescriptions.LastOrDefault() is HandMenuButtonDescription definition)
             {
-                this.handMenu.ButtonDefinitions.Remove(definition);
+                this.handMenu.ButtonDescriptions.Remove(definition);
                 this.UpdateCounts();
             }
         }
@@ -88,7 +88,7 @@ namespace XrvSamples.Scenes
         private void AddButton()
         {
             bool isToggle = DateTime.Now.Millisecond % 2 == 0;
-            this.handMenu.ButtonDefinitions.Add(new HandMenuButtonDescription
+            this.handMenu.ButtonDescriptions.Add(new HandMenuButtonDescription
             {
                 IsToggle = isToggle,
                 TextOn = $"{(isToggle ? "T_" : string.Empty)}{DateTime.Now.Millisecond}",
@@ -102,7 +102,7 @@ namespace XrvSamples.Scenes
         private void UpdateCounts()
         {
             this.columnSize.Text = this.handMenu.ButtonsPerColumn.ToString();
-            this.numberOfButtons.Text = this.handMenu.ButtonDefinitions.Count.ToString();
+            this.numberOfButtons.Text = this.handMenu.ButtonDescriptions.Count.ToString();
         }
     }
 }

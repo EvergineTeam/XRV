@@ -139,7 +139,7 @@ namespace Xrv.Core.UI.Tabs
                 this.buttonsContainer = this.Owner.FindChildrenByTag("PART_tab_control_buttons_container", isRecursive: true).First();
                 this.contentsContainer = this.Owner.FindChildrenByTag("PART_tab_control_current_item_contents", isRecursive: true).First();
                 this.InternalAddItems(this.items); // We can have items added before this component has been attached
-                this.ReorderItems();
+                this.selectedItem = this.items.FirstOrDefault();
             }
 
             return attached;
@@ -149,6 +149,8 @@ namespace Xrv.Core.UI.Tabs
         {
             base.OnActivated();
             this.UpdateFrontPlateSize();
+            this.ReorderItems();
+            this.UpdateItemsTextColor();
         }
 
         protected override void OnDetach()

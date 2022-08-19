@@ -67,8 +67,8 @@ namespace XrvSamples.Scenes
                 var position = transform.LocalPosition;
                 position.X += 0.034f;
                 transform.LocalPosition = position;
-                window.Configuration.Content = tabEntity;
-                window.Configuration.DisplayFrontPlate = false;
+                window.Configurator.Content = tabEntity;
+                window.Configurator.DisplayFrontPlate = false;
             });
         }
 

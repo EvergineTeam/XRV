@@ -1,8 +1,7 @@
-﻿using Evergine.Framework.Graphics;
+﻿using Evergine.Framework;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
 using Xrv.Core.UI.Dialogs;
@@ -25,72 +24,80 @@ namespace Xrv.Core.UI.Windows
             this.assetsService = assetsService;
         }
 
-        public Window CreateWindow() => this.CreateWindow(Vector3.Zero);
-
-        public Window CreateWindow(Vector3 position)
+        public Window ShowWindow()
         {
-            var prefab = this.GetWindowPrefab();
-            var windowEntity = prefab.Instantiate();
-            var window = windowEntity.FindComponentInChildren<Window>();
-            var transform = windowEntity.FindComponent<Transform3D>();
-            transform.Position = position;
-
+            var windowEntity = this.BuildWindow(new Window(), (BaseWindowConfigurator)null);
             this.entityManager.Add(windowEntity);
-            windowEntity.IsEnabled = false;
 
-            return window;
+            return windowEntity.FindComponent<Window>();
         }
 
-        public AlertDialog ShowAlertDialog(string title, string text, string acceptText) =>
-            this.ShowAlertDialog(title, text, acceptText, Vector3.Zero);
-
-        public AlertDialog ShowAlertDialog(string title, string text, string acceptText, Vector3 position)
+        public AlertDialog ShowAlertDialog(string title, string text, string acceptText)
         {
-            var dialog = this.CreateDialogAux<AlertDialog>(title, text, position);
+            var owner = this.CreateDialogAux(new AlertDialog(), title, text);
+            var dialog = owner.FindComponent<AlertDialog>();
             dialog.AcceptOption.Configuration.Text = acceptText;
 
+            this.entityManager.Add(owner);
+
             var contentPrefab = this.GetBaseDialogPrefab();
-            dialog.Configuration.Content = contentPrefab.Instantiate();
+            dialog.Configurator.Content = contentPrefab.Instantiate();
             dialog.Open();
 
             return dialog;
         }
 
-        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText) =>
-            this.ShowConfirmDialog(title, text, cancelText, acceptText, Vector3.Zero);
-
-        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText, Vector3 position)
+        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText)
         {
-            var dialog = this.CreateDialogAux<ConfirmDialog>(title, text, position);
+            var owner = this.CreateDialogAux(new ConfirmDialog(), title, text);
+            var dialog = owner.FindComponent<ConfirmDialog>();
             dialog.CancelOption.Configuration.Text = cancelText;
             dialog.AcceptOption.Configuration.Text = acceptText;
 
+            this.entityManager.Add(owner);
+
             var contentPrefab = this.GetBaseDialogPrefab();
-            dialog.Configuration.Content = contentPrefab.Instantiate();
+            dialog.Configurator.Content = contentPrefab.Instantiate();
             dialog.Open();
 
             return dialog;
         }
 
-        private TDialog CreateDialogAux<TDialog>(string title, string text, Vector3 position)
+        public Entity BuildWindow<TWindow, TConfigurator>(TWindow instance, TConfigurator configInstance)
+            where TWindow : Window
+            where TConfigurator : BaseWindowConfigurator
+        {
+            var prefab = this.GetWindowPrefab();
+            var windowEntity = prefab.Instantiate();
+            windowEntity.AddComponent(instance);
+
+            if (configInstance != default(TConfigurator))
+            {
+                var configurator = windowEntity.FindComponent<BaseWindowConfigurator>(isExactType: false);
+                windowEntity.RemoveComponent(configurator);
+                windowEntity.AddComponent(configInstance);
+            }
+
+            windowEntity.IsEnabled = false;
+
+            return windowEntity;
+        }
+
+        private Entity CreateDialogAux<TDialog>(TDialog instance, string title, string text)
             where TDialog : Dialog
         {
             const float DialogWidth = 0.2f;
             const float DialogHeight = 0.11f;
-
-            var window = this.CreateWindow(position);
-            var dialog = Activator.CreateInstance<TDialog>();
-            dialog.AllowPin = false;
-
-            var owner = window.Owner;
-            owner.RemoveComponent<Window>();
-            owner.RemoveComponent<BaseWindowConfigurator>(false);
 
             var dialogConfigurator = new DialogConfigurator
             {
                 Title = title,
                 Text = text,
             };
+            var owner = this.BuildWindow(instance, dialogConfigurator);
+            var dialog = Activator.CreateInstance<TDialog>();
+            dialog.AllowPin = false;
+
             var size = dialogConfigurator.Size;
             size.X = DialogWidth;
             size.Y = DialogHeight;
@@ -102,10 +109,7 @@ namespace Xrv.Core.UI.Windows
             dialogConfigurator.FrontPlateOffsets = offset;
             dialogConfigurator.DisplayLogo = false;
 
-            owner.AddComponent(dialogConfigurator);
-            owner.AddComponent(dialog);
-
-            return dialog;
+            return owner;
         }
 
         private Prefab GetWindowPrefab() =>

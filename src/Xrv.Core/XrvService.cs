@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
+using Xrv.Core.Settings;
 using Xrv.Core.Themes;
 using Xrv.Core.UI.Tabs;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
@@ -21,6 +22,8 @@ namespace Xrv.Core
         private readonly Dictionary<Type, Module> modules;
 
         public HandMenu HandMenu { get; private set; }
+
+        public SettingsWindow Settings { get; private set; }
 
         public WindowsSystem WindowSystem { get; private set; }
 
@@ -74,19 +77,24 @@ namespace Xrv.Core
             // Register services and managers
             this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
 
-            // Register other helper dependencies
-            TabControl.Builder = new TabControlBuilder(this.assetsService);
-
             // Hand menu initialization
             var handMenuManager = new HandMenuManager(scene.Managers.EntityManager, this.assetsService);
             this.HandMenu = handMenuManager.Initialize();
+
+            // Add controls and systems
+            TabControl.Builder = new TabControlBuilder(this.assetsService);
+            var settingsLoader = new SettingsLoader(
+                scene.Managers.EntityManager, 
+                this.WindowSystem,
+                this.HandMenu);
+            settingsLoader.Load();
 
             foreach(var module in this.modules.Values)
             {
                 // Adding hand menu button for module, if any
                 if (module.HandMenuButton != null)
                 {
-                    this.HandMenu.ButtonDefinitions.Add(module.HandMenuButton);
+                    this.HandMenu.ButtonDescriptions.Add(module.HandMenuButton);
                 }
 
                 // Modules initialization

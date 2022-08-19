@@ -4,6 +4,11 @@ namespace Xrv.Core
 {
     public static class DefaultResourceIDs
     {
+        public static class Materials
+        {
+            public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
+        }
+
         public static class Mrtk
         {            
             public static class Prefabs
