@@ -160,7 +160,7 @@ namespace Xrv.Core.UI.Tabs
             this.frontPlate.Width = this.size.X - (this.currentItemPlate.Width / 2);
             this.frontPlate.Height = this.size.Y;
             var currentItemPosition = this.currentItemPlateTransform.LocalPosition;
-            currentItemPosition.X = -this.size.X / 2;
+            currentItemPosition.X = -this.size.X / 2 - 0.017f;
             currentItemPosition.Y = this.size.Y / 2 - this.currentItemPlate.Height / 2;
             this.currentItemPlateTransform.LocalPosition = currentItemPosition;
             
@@ -170,7 +170,7 @@ namespace Xrv.Core.UI.Tabs
             }
 
             var buttonsPosition = this.buttonsContainerTransform.LocalPosition;
-            buttonsPosition.X = currentItemPosition.X - 0.012f;
+            buttonsPosition.X = currentItemPosition.X;
             buttonsPosition.Y = currentItemPosition.Y;
             this.buttonsContainerTransform.LocalPosition = buttonsPosition;
         }
