@@ -51,7 +51,7 @@ namespace XrvSamples.Scenes
                 .FindComponentInChildren<Window>();
             var tabEntity = TabControl.Builder
                 .Create()
-                .WithSize(new Vector2(0.32f, 0.2f))
+                .WithSize(new Vector2(0.315f, 0.2f))
                 .AddItem(new TabItem
                 {
                     Name = "Repositories",

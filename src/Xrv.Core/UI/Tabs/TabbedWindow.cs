@@ -28,7 +28,7 @@ namespace Xrv.Core.UI.Tabs
 
             var contents = TabControl.Builder
                 .Create()
-                .WithSize(new Vector2(0.32f, 0.2f))
+                .WithSize(new Vector2(0.315f, 0.2f))
                 .Build();
             var tabControl = contents.FindComponent<TabControl>();
             tabControl.DestroyContentOnTabChange = false;
@@ -36,7 +36,7 @@ namespace Xrv.Core.UI.Tabs
 
             var transform = contents.FindComponent<Transform3D>();
             var position = transform.LocalPosition;
-            position.X += 0.036f;
+            position.X += 0.035f;
             transform.LocalPosition = position;
 
             return owner;

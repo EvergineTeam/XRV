@@ -126,7 +126,7 @@ namespace Xrv.Core.UI.Windows
         private void PlaceInFrontOfUser()
         {
             var camera = this.Managers.RenderManager.ActiveCamera3D;
-            var position = camera.Transform.Position + camera.Transform.WorldTransform.Forward;
+            var position = camera.Transform.Position + camera.Transform.WorldTransform.Forward * 0.5f;
             this.transform.Position = position;
 
             // default LookAt makes window to be oriented backwards to the camera
