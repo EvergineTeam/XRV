@@ -27,6 +27,7 @@ namespace Xrv.Ruler
         private Entity rulerEntity;
         private RulerBehavior rulerBehavior;
         private Entity rulerHelp;
+        private Entity rulerSettings;
 
         public RulerModule()
         {
@@ -75,23 +76,21 @@ namespace Xrv.Ruler
         }
 
         private Entity SettingContent()
-        {                        
-            var material = assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+        {    
+            if (this.rulerSettings == null)
+            {
+                var rulerSettingPrefab = this.assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.RulerSettings_weprefab);
+                this.rulerSettings = rulerSettingPrefab.Instantiate();
+            }
 
-            Entity entity = new Entity()
-                .AddComponent(new Transform3D())
-                .AddComponent(new MaterialComponent() { Material = material })
-                .AddComponent(new CubeMesh() { Size = 0.02f })
-                .AddComponent(new MeshRenderer());
-
-            return entity;
+            return this.rulerSettings;
         }
 
         private Entity HelpContent()
         {
             if (this.rulerHelp == null)
             {
-                var rulerHelpPrefab = assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.RulerHelp_weprefab);
+                var rulerHelpPrefab = this.assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.RulerHelp_weprefab);
                 this.rulerHelp = rulerHelpPrefab.Instantiate();
             }
 
