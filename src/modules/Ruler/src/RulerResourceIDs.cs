@@ -27,7 +27,7 @@ namespace Xrv.Ruler
         public sealed class Prefabs
         {
             /// <summary> Asset Path (Prefabs/Ruler.weprefab.weprf) </summary>
-            public static readonly Guid Ruler_weprefab = new Guid("92d84c1e-2a0d-44cd-b10d-b620cb01944b");
+            public static readonly Guid Ruler_weprefab = new Guid("b28d413a-da9d-4269-b289-6c98f05e1b6f");
         }
     }
 }
