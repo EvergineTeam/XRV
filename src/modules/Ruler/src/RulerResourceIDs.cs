@@ -33,7 +33,7 @@ namespace Xrv.Ruler
             public static readonly Guid RulerHelp_weprefab = new Guid("ee76d37e-f934-4583-b50a-09f61a1e4e79");
 
             /// <summary> Asset Path (XRV/Prefabs/RulerSettings.weprefab.weprf) </summary>
-            public static readonly Guid RulerSettings_weprefab = new Guid("b1d3d044-f695-4067-9cad-5f09adeb718a");
+            public static readonly Guid RulerSettings_weprefab = new Guid("86606363-84f4-47c8-955e-7ea8be9dd9bd");
         }
     }
 }
