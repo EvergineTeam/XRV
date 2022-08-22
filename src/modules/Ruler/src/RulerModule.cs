@@ -25,6 +25,8 @@ namespace Xrv.Ruler
 
         public override TabItem Settings => this.settings;
 
+        private RulerBehavior rulerBehavior;
+
         public RulerModule()
         {
             this.handMenuDesc = new HandMenuButtonDescription()
@@ -56,11 +58,18 @@ namespace Xrv.Ruler
 
             this.rulerEntity = rulerPrefab.Instantiate();
             this.rulerEntity.IsEnabled = false;
-            scene.Managers.EntityManager.Add(this.rulerEntity);            
+            scene.Managers.EntityManager.Add(this.rulerEntity);
+
+            this.rulerBehavior = this.rulerEntity.FindComponent<RulerBehavior>();
         }
 
         public override void Run(bool turnOn)
         {
+            if (turnOn)
+            {
+                this.rulerBehavior.Reset();
+            }
+
             this.rulerEntity.IsEnabled = turnOn;
         }
 

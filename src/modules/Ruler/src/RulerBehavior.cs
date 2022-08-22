@@ -78,6 +78,15 @@ namespace Xrv.Ruler
             this.UpdateMeasureString(distance);
         }
 
+        public void Reset()
+        {
+            var cameraTransform = this.Managers.RenderManager.ActiveCamera3D.Transform;
+            var cameraWorldTransform = cameraTransform.WorldTransform;
+            var center = cameraTransform.Position + cameraWorldTransform.Forward * 0.6f;
+            this.handle1Transform.Position = center + cameraWorldTransform.Left * 0.5f;
+            this.handle2Transform.Position = center + cameraWorldTransform.Right * 0.5f;
+        }
+
         private void UpdateMeasureString(float distance)
         {
 
