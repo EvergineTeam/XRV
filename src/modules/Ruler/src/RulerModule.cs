@@ -10,13 +10,7 @@ using Xrv.Core.UI.Tabs;
 namespace Xrv.Ruler
 {
     public class RulerModule : Module
-    {
-        private HandMenuButtonDescription handMenuDesc;
-        private TabItem settings;
-        private TabItem help;
-
-        private Entity rulerEntity;
-
+    {       
         public override string Name => "Ruler";
 
         public override HandMenuButtonDescription HandMenuButton => this.handMenuDesc;
@@ -25,7 +19,14 @@ namespace Xrv.Ruler
 
         public override TabItem Settings => this.settings;
 
+        protected AssetsService assetsService;
+        private HandMenuButtonDescription handMenuDesc;
+        private TabItem settings;
+        private TabItem help;
+
+        private Entity rulerEntity;
         private RulerBehavior rulerBehavior;
+        private Entity rulerHelp;
 
         public RulerModule()
         {
@@ -53,7 +54,7 @@ namespace Xrv.Ruler
 
         public override void Initialize(Scene scene)
         {
-            var assetsService = Application.Current.Container.Resolve<AssetsService>();
+            this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             var rulerPrefab = assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.Ruler_weprefab);
 
             this.rulerEntity = rulerPrefab.Instantiate();
@@ -74,8 +75,7 @@ namespace Xrv.Ruler
         }
 
         private Entity SettingContent()
-        {
-            var assetsService = Application.Current.Container.Resolve<AssetsService>();
+        {                        
             var material = assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
 
             Entity entity = new Entity()
@@ -89,16 +89,13 @@ namespace Xrv.Ruler
 
         private Entity HelpContent()
         {
-            var assetsService = Application.Current.Container.Resolve<AssetsService>();
-            var material = assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+            if (this.rulerHelp == null)
+            {
+                var rulerHelpPrefab = assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.RulerHelp_weprefab);
+                this.rulerHelp = rulerHelpPrefab.Instantiate();
+            }
 
-            Entity entity = new Entity()
-                .AddComponent(new Transform3D())
-                .AddComponent(new MaterialComponent() { Material = material })
-                .AddComponent(new TeapotMesh() { Size = 0.02f })
-                .AddComponent(new MeshRenderer());
-
-            return entity;
+            return this.rulerHelp;
         }
     }
 }

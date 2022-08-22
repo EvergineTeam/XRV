@@ -28,6 +28,9 @@ namespace Xrv.Ruler
         {
             /// <summary> Asset Path (Prefabs/Ruler.weprefab.weprf) </summary>
             public static readonly Guid Ruler_weprefab = new Guid("b28d413a-da9d-4269-b289-6c98f05e1b6f");
+
+            /// <summary> Asset Path (XRV/Prefabs/RulerHelp.weprefab.weprf) </summary>
+            public static readonly Guid RulerHelp_weprefab = new Guid("ee76d37e-f934-4583-b50a-09f61a1e4e79");
         }
     }
 }
