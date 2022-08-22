@@ -1,6 +1,4 @@
-﻿using Evergine.Components.Graphics3D;
-using Evergine.Framework;
-using Evergine.Framework.Graphics;
+﻿using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Xrv.Core.Menu;
@@ -56,13 +54,20 @@ namespace Xrv.Ruler
         public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
-            var rulerPrefab = assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.Ruler_weprefab);
 
+            // Ruler
+            var rulerPrefab = assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.Ruler_weprefab);
             this.rulerEntity = rulerPrefab.Instantiate();
             this.rulerEntity.IsEnabled = false;
             scene.Managers.EntityManager.Add(this.rulerEntity);
 
+            // Settings
+            var rulerSettingPrefab = this.assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.RulerSettings_weprefab);
+            this.rulerSettings = rulerSettingPrefab.Instantiate();
+
+            // RulerBehavior
             this.rulerBehavior = this.rulerEntity.FindComponent<RulerBehavior>();
+            this.rulerBehavior.Settings = rulerSettings;
         }
 
         public override void Run(bool turnOn)
@@ -77,12 +82,6 @@ namespace Xrv.Ruler
 
         private Entity SettingContent()
         {    
-            if (this.rulerSettings == null)
-            {
-                var rulerSettingPrefab = this.assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.RulerSettings_weprefab);
-                this.rulerSettings = rulerSettingPrefab.Instantiate();
-            }
-
             return this.rulerSettings;
         }
 

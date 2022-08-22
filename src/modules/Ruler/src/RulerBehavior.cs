@@ -4,6 +4,7 @@ using Evergine.Components.Primitives;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
+using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 using System.Collections.Generic;
 
@@ -31,14 +32,44 @@ namespace Xrv.Ruler
 
         public enum MeasureUnits
         {
-            Metric,
-            Foots,
+            Meters,
+            Feets,
         }
 
         protected Transform3D lineTransform;
+        protected Entity settings;
+        protected ToggleButton mettersToggle;
+        protected ToggleButton feetsToggle;
 
         public MeasureUnits Units { get; set; }
 
+
+        public Entity Settings
+        {
+            get => this.settings;
+            set
+            {
+                this.settings = value;
+                this.mettersToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Meters", skipOwner: true);
+                this.feetsToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Feets", skipOwner: true);
+
+                this.mettersToggle.Toggled += this.UnitChanged;
+                this.feetsToggle.Toggled += this.UnitChanged;
+            }
+        }
+
+        private void UnitChanged(object sender, EventArgs e)
+        {
+            if (this.mettersToggle.IsOn)
+            {
+                this.Units = MeasureUnits.Meters;
+            }
+            else if (this.feetsToggle.IsOn)
+            {
+                this.Units = MeasureUnits.Feets;
+            }
+        }
+      
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -95,13 +126,13 @@ namespace Xrv.Ruler
 
             switch (this.Units)
             {
-                case MeasureUnits.Foots:
+                case MeasureUnits.Feets:
 
                     measurement = $"{Math.Round(distance * 3.280839895, 2):##.00}";
                     unit = "ft";
 
                     break;
-                case MeasureUnits.Metric:
+                case MeasureUnits.Meters:
                 default:
                     var linearDistanceAbs = Math.Abs(distance);
                     if (linearDistanceAbs < 1)
