@@ -3,6 +3,7 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Framework.XR;
+using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,13 +32,7 @@ namespace Xrv.Core.Menu
         private XrvService xrvService = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_hand_menu_back_plate")]
-        private PlaneMesh backPlateMesh = null;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_hand_menu_back_plate")]
         private Transform3D backPlateTransform = null;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_hand_menu_front_plate")]
-        private PlaneMesh frontPlateMesh = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_hand_menu_front_plate")]
         private Transform3D frontPlateTransform = null;
@@ -183,12 +178,14 @@ namespace Xrv.Core.Menu
             float menuWidth = Math.Max(0.0001f, numberOfColumns * ButtonWidth); // to avoid zero width exception
 
             // Resize back plate
-            this.backPlateMesh.Width = menuWidth;
-            this.backPlateMesh.Height = (this.buttonsPerColumn + 1) * ButtonWidth;
+            this.backPlateTransform.LocalScale = Vector3.One;
+            //this.backPlateMesh.Width = menuWidth;
+            //this.backPlateMesh.Height = (this.buttonsPerColumn + 1) * ButtonWidth;
 
             // Resize front plate
-            this.frontPlateMesh.Width = menuWidth;
-            this.frontPlateMesh.Height = this.buttonsPerColumn * ButtonWidth;
+            //this.frontPlateMesh.Width = menuWidth;
+            //this.frontPlateMesh.Height = this.buttonsPerColumn * ButtonWidth;
+            this.frontPlateTransform.LocalScale = new Vector3(numberOfColumns, this.buttonDescriptions.Count, 1);
 
             // Panels translation (affected when adding columns, origin is not in top-left corner)
             var transform = this.backPlateTransform;
