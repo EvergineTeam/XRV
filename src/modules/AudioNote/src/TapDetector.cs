@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace Xrv.AudioNote
 {
-    public class TapDetector : Component, IMixedRealityTouchHandler
+    public class TapDetector : Component, IMixedRealityPointerHandler
     {
         private Vector3 positionInit;
         private Stopwatch currentPressed;
@@ -18,8 +18,23 @@ namespace Xrv.AudioNote
         public event EventHandler OnTap;
         public event EventHandler OnLongTap;
 
-        public void OnTouchCompleted(HandTrackingInputEventData eventData)
+        public void OnPointerClicked(MixedRealityPointerEventData eventData)
         {
+        }
+
+        public void OnPointerDown(MixedRealityPointerEventData eventData)
+        {
+            this.positionInit = eventData.Position;
+            this.currentPressed = Stopwatch.StartNew();
+        }
+
+        public void OnPointerDragged(MixedRealityPointerEventData eventData)
+        {
+        }
+
+        public void OnPointerUp(MixedRealityPointerEventData eventData)
+        {
+            this.currentPressed.Stop();
             var distance = Vector3.Distance(eventData.Position, positionInit);
             if (distance < this.MaxDistance)
             {
@@ -32,16 +47,6 @@ namespace Xrv.AudioNote
                     this.OnLongTap?.Invoke(this, EventArgs.Empty);
                 }
             }
-        }
-
-        public void OnTouchStarted(HandTrackingInputEventData eventData)
-        {
-            this.positionInit = eventData.Position;
-            currentPressed = Stopwatch.StartNew();
-        }
-
-        public void OnTouchUpdated(HandTrackingInputEventData eventData)
-        {
         }
     }
 }

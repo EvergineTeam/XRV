@@ -37,6 +37,10 @@ namespace Xrv.AudioNote
 
         [BindComponent]
         protected AudioNoteAnchorHandler handler;
+
+        [BindComponent]
+        protected TapDetector tapDetector;
+
         private AudioNoteAnchorVisual visualState;
         private AudioNoteAnchorState anchorState;
 
@@ -95,8 +99,14 @@ namespace Xrv.AudioNote
             if (!base.OnAttached()) return false;
             if (Application.Current.IsEditor) return true;
 
-            this.handler.OnClick += Handler_OnClick;
+            this.tapDetector.OnTap += Handler_OnClick;
             return true;
+        }
+
+        protected override void OnDetach()
+        {
+            base.OnDetach();
+            this.tapDetector.OnTap -= Handler_OnClick;
         }
 
         protected override void OnActivated()

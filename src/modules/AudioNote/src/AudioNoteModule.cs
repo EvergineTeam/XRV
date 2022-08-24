@@ -10,6 +10,7 @@ using Xrv.Core.Modules;
 using Xrv.Core;
 using Xrv.AudioNote.Messages;
 using Evergine.Framework.Graphics;
+using System.Diagnostics;
 
 namespace Xrv.AudioNote
 {
@@ -108,6 +109,7 @@ namespace Xrv.AudioNote
 
         private void CreateAudioNoteWindow(AudioNoteMessage obj)
         {
+            Debug.WriteLine("Touch detected");
         }
     }
 }

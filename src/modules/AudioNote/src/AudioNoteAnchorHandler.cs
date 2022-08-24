@@ -31,8 +31,6 @@ namespace Xrv.AudioNote
 
         protected bool touched;
 
-        public event EventHandler OnClick;
-
         protected override bool OnAttached()
         {
             var result = base.OnAttached();
@@ -46,7 +44,6 @@ namespace Xrv.AudioNote
 
         public void OnPointerClicked(MixedRealityPointerEventData eventData)
         {
-            this.OnClick.Invoke(this, EventArgs.Empty);
         }
 
         public void OnPointerDown(MixedRealityPointerEventData eventData)
