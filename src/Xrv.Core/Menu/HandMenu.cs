@@ -31,14 +31,14 @@ namespace Xrv.Core.Menu
 
         private int maxButtonsPerColumn = 4;
 
-        [BindComponent(isExactType: false, source: BindComponentSource.Scene)]
-        private IPalmPanelBehavior palmPanelBehavior = null;
-
-        [BindService()]
+        [BindService]
         private AssetsService assetsService = null;
 
-        [BindService()]
+        [BindService]
         private XrvService xrvService = null;
+
+        [BindComponent(isExactType: false, source: BindComponentSource.Scene)]
+        private IPalmPanelBehavior palmPanelBehavior = null;
 
         [BindComponent]
         protected Transform3D handMenuTransform = null;
@@ -242,7 +242,7 @@ namespace Xrv.Core.Menu
             this.appearAnimation.Run();
         }
 
-        private void ConvertTo(bool extended)
+        private void ExtendedAnimation(bool extended)
         {
             if (this.menuExtended == extended)
             {
@@ -305,7 +305,8 @@ namespace Xrv.Core.Menu
 
         private void DetachButtonToggle_Toggled(object sender, EventArgs e)
         {
-            this.ConvertTo(this.detachButtonToggle.IsOn);
+            this.palmPanelBehavior.Owner.IsEnabled = this.detachButtonToggle.IsOn;
+            this.ExtendedAnimation(this.detachButtonToggle.IsOn);
         }
 
         // -- Begin Debug area --
@@ -319,11 +320,11 @@ namespace Xrv.Core.Menu
 
             if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
             {
-                this.ConvertTo(true);
+                this.ExtendedAnimation(true);
             }
             else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
             {
-                this.ConvertTo(false);
+                this.ExtendedAnimation(false);
             }
 
             if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)

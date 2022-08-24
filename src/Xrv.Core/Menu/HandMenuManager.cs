@@ -51,7 +51,7 @@ namespace Xrv.Core.Menu
 
             var menuRoot = new Entity("menuRoot")
                 .AddComponent(new Transform3D())
-                .AddComponent(new PinToTransform()
+                .AddComponent(new FollowPalmAnchor()
                 {
                     SmoothTime = 0.06f,
                     Target = palmMenuAnchorTransform,

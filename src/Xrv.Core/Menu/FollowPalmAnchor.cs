@@ -5,7 +5,7 @@ using System;
 
 namespace Xrv.Core.Menu
 {
-    public class PinToTransform : Behavior
+    public class FollowPalmAnchor : Behavior
     {
         [BindComponent]
         private Transform3D transform3D = null;
