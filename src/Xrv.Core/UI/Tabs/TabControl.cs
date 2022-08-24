@@ -14,12 +14,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Xrv.Core.Extensions;
+using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Tabs
 {
     public class TabControl : Component
     {
-        private const float ButtonHeight = 0.032f;
         private readonly ObservableCollection<TabItem> items;
         private readonly Dictionary<Entity, TabItem> mappings;
 
@@ -206,7 +206,7 @@ namespace Xrv.Core.UI.Tabs
                 Workarounds.MrtkRotateButton(buttonInstance);
                 var transform = buttonInstance.FindComponent<Transform3D>();
                 var position = transform.LocalPosition;
-                position.Y = this.buttonsContainer.ChildEntities.Count() * ButtonHeight;
+                position.Y = this.buttonsContainer.ChildEntities.Count() * ButtonConstants.SquareButtonSize;
                 transform.LocalPosition = position;
 
                 var pressableButton = buttonInstance.FindComponentInChildren<PressableButton>();
@@ -279,7 +279,7 @@ namespace Xrv.Core.UI.Tabs
                 var toPosition = new Vector3
                 {
                     X = this.defaultCurrentItemPlatePosition.X,
-                    Y = this.defaultCurrentItemPlatePosition.Y - itemIndex * ButtonHeight,
+                    Y = this.defaultCurrentItemPlatePosition.Y - itemIndex * ButtonConstants.SquareButtonSize,
                     Z = this.defaultCurrentItemPlatePosition.Z,
                 };
 
@@ -347,7 +347,7 @@ namespace Xrv.Core.UI.Tabs
                     var child = this.buttonsContainer.ChildEntities.ElementAt(i);
                     var transform = child.FindComponent<Transform3D>();
                     var position = transform.LocalPosition;
-                    position.Y = -i * ButtonHeight;
+                    position.Y = -i * ButtonConstants.SquareButtonSize;
                     transform.LocalPosition = position;
                 }
 

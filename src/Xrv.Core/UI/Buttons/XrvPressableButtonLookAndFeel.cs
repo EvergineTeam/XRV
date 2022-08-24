@@ -35,7 +35,7 @@ namespace Xrv.Core.UI.Buttons
             {
                 button.AddComponent(new BoxCollider3D()
                 {
-                    Size = new Vector3(0.032f),
+                    Size = new Vector3(ButtonConstants.SquareButtonSize),
                     Offset = new Vector3(0f, 0f, -0.01f),
                 });
             }

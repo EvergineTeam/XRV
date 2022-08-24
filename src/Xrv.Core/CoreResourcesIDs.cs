@@ -34,7 +34,7 @@ namespace Xrv.Core
 
             public static Guid TextButton = new Guid("69925256-16a0-4938-81fb-2810f6afa4eb");
 
-            public static Guid Window = new Guid("a0f44bfe-bd10-4af3-8f76-86c8adad40b5");
+            public static Guid Window = new Guid("6519824e-198f-4969-aed1-e501b925e300");
         }
     }
 }

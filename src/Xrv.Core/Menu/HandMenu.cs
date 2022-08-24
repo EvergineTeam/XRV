@@ -9,13 +9,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Xrv.Core.Extensions;
+using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.Menu
 {
     public class HandMenu : Component
     {
-        private const float ButtonWidth = 0.032f;
-
         private readonly ObservableCollection<HandMenuButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
 
@@ -180,19 +179,19 @@ namespace Xrv.Core.Menu
         private void ReorderButtons()
         {
             int numberOfColumns = (int)Math.Ceiling(this.buttonDescriptions.Count / (float)this.buttonsPerColumn);
-            float menuWidth = Math.Max(0.0001f, numberOfColumns * ButtonWidth); // to avoid zero width exception
+            float menuWidth = Math.Max(0.0001f, numberOfColumns * ButtonConstants.SquareButtonSize); // to avoid zero width exception
 
             // Resize back plate
             this.backPlateMesh.Width = menuWidth;
-            this.backPlateMesh.Height = (this.buttonsPerColumn + 1) * ButtonWidth;
+            this.backPlateMesh.Height = (this.buttonsPerColumn + 1) * ButtonConstants.SquareButtonSize;
 
             // Resize front plate
             this.frontPlateMesh.Width = menuWidth;
-            this.frontPlateMesh.Height = this.buttonsPerColumn * ButtonWidth;
+            this.frontPlateMesh.Height = this.buttonsPerColumn * ButtonConstants.SquareButtonSize;
 
             // Panels translation (affected when adding columns, origin is not in top-left corner)
             var transform = this.backPlateTransform;
-            var padding = (numberOfColumns - 1) * (ButtonWidth / 2);
+            var padding = (numberOfColumns - 1) * (ButtonConstants.SquareButtonSize / 2);
             var position = transform.LocalPosition;
             position.X = padding;
             transform.LocalPosition = position;
@@ -201,7 +200,7 @@ namespace Xrv.Core.Menu
             position.X = padding;
             transform.LocalPosition = position;
 
-            float rowInitialY = (this.buttonsPerColumn - 2) * (ButtonWidth / 2);
+            float rowInitialY = (this.buttonsPerColumn - 2) * (ButtonConstants.SquareButtonSize / 2);
 
             // Add buttons
             for (int i = 0; i < this.buttonDescriptions.Count; i++)
@@ -210,8 +209,8 @@ namespace Xrv.Core.Menu
                 Entity button = this.instantiatedButtons[definition.Id];
                 var buttonTransform = button.FindComponent<Transform3D>();
                 var buttonPosition = buttonTransform.LocalPosition;
-                buttonPosition.X = ButtonWidth * (i / this.buttonsPerColumn);
-                buttonPosition.Y = rowInitialY - ((i % this.buttonsPerColumn) * ButtonWidth);
+                buttonPosition.X = ButtonConstants.SquareButtonSize * (i / this.buttonsPerColumn);
+                buttonPosition.Y = rowInitialY - ((i % this.buttonsPerColumn) * ButtonConstants.SquareButtonSize);
                 buttonTransform.LocalPosition = buttonPosition;
             }
         }

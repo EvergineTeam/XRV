@@ -2,8 +2,10 @@
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics3D;
 using Evergine.Mathematics;
 using System.Linq;
+using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Windows
 {
@@ -42,6 +44,9 @@ namespace Xrv.Core.UI.Windows
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_button_container")]
         protected Transform3D titleButtonContainerTransform;
+
+        [BindComponent(isRequired: false)]
+        protected BoxCollider3D manipulationCollider;
 
         protected Entity logoEntity;
         protected Entity contentEntity;
@@ -207,6 +212,18 @@ namespace Xrv.Core.UI.Windows
             var buttonContainer = this.titleButtonContainerTransform.LocalPosition;
             buttonContainer.X = halfSize.X;
             this.titleButtonContainerTransform.LocalPosition = buttonContainer;
+
+            if (this.manipulationCollider != null)
+            {
+                var colliderSize = this.manipulationCollider.Size;
+                colliderSize.X = this.size.X;
+                colliderSize.Y = this.size.Y + ButtonConstants.SquareButtonSize;
+                this.manipulationCollider.Size = colliderSize;
+
+                var colliderOffset = this.manipulationCollider.Offset;
+                colliderOffset.Y = ButtonConstants.SquareButtonSize / 2;
+                this.manipulationCollider.Offset = colliderOffset;
+            }
         }
 
         private bool CheckCorrectSizes() =>

@@ -91,7 +91,7 @@ namespace Xrv.Core.UI.Windows
             return windowEntity;
         }
 
-        private Entity CreateDialogAux<TDialog>(TDialog instance, string title, string text)
+        private Entity CreateDialogAux<TDialog>(TDialog dialog, string title, string text)
             where TDialog : Dialog
         {
             const float DialogWidth = 0.2f;
@@ -102,9 +102,9 @@ namespace Xrv.Core.UI.Windows
                 Title = title,
                 Text = text,
             };
-            var owner = this.BuildWindow(instance, dialogConfigurator);
-            var dialog = Activator.CreateInstance<TDialog>();
+            var owner = this.BuildWindow(dialog, dialogConfigurator);
             dialog.AllowPin = false;
+            dialog.EnableManipulation = false;
 
             var size = dialogConfigurator.Size;
             size.X = DialogWidth;
