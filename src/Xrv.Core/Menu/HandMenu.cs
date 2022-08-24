@@ -147,12 +147,13 @@ namespace Xrv.Core.Menu
 
         private void PalmPanelBehavior_ActiveHandednessChanged(object sender, XRHandedness hand)
         {
+            this.currentHand = hand;
             this.AppearAnimation(true);
         }
 
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool palmUp)
         {
-            this.AppearAnimation(palmUp);
+            this.AppearAnimation(!palmUp);
         }
 
         private void ButtonDefinitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -237,7 +238,14 @@ namespace Xrv.Core.Menu
             this.appearAnimation?.Cancel();
             this.appearAnimation = new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
             {
-                this.handMenuTransform.LocalRotation = Vector3.Lerp(new Vector3(0, -MathHelper.PiOver2, 0), new Vector3(0, -MathHelper.Pi, 0), f);
+                if (this.currentHand == XRHandedness.LeftHand)
+                {
+                    this.handMenuTransform.LocalRotation = Vector3.Lerp(new Vector3(0, MathHelper.PiOver2, 0), new Vector3(0, -MathHelper.Pi, 0), f);
+                }
+                else
+                {
+                    this.handMenuTransform.LocalRotation = Vector3.Lerp(new Vector3(0, -MathHelper.PiOver2, 0), new Vector3(0, -MathHelper.Pi, 0), f);
+                }
             });
             this.appearAnimation.Run();
         }
@@ -268,13 +276,13 @@ namespace Xrv.Core.Menu
                 {
                     // Front and back plates animation
                     this.frontPlateTransform.Scale = Vector3.Lerp(new Vector3(this.numberOfColumns, this.numberButtonsPerColumns, 1), new Vector3(this.numberButtonsPerColumns, this.numberOfColumns, 1), f);
-                    this.backPlateTransform.Scale = Vector3.Lerp(Vector3.One, new Vector3(this.numberButtonsPerColumns, 1, 1), f);
+                    this.backPlateTransform.Scale = Vector3.Lerp(new Vector3(this.numberOfColumns, 1, 1), new Vector3(this.numberButtonsPerColumns, 1, 1), f);
 
                     // Header animation
                     this.detachButtonTransform.LocalPosition = Vector3.Lerp(new Vector3(ButtonWidthOverTwo, 0, 0.003f), new Vector3(ButtonWidthOverTwo + (ButtonWidth * (this.numberButtonsPerColumns - 1)), 0, 0.003f), f);
                     this.followButtonTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidthOverTwo, 0, 0.003f), new Vector3(-ButtonWidthOverTwo + (ButtonWidth * (this.numberButtonsPerColumns - 1)), 0, 0.003f), f);
 
-                    this.textTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidth * 2, 0, 0.03f), new Vector3(0.015f, 0, 0.03f), f);
+                    this.textTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidth * 2, 0, 0.003f), new Vector3(0.015f, 0, 0.003f), f);
                     this.text3DMesh.Color = Color.Lerp(Color.Transparent, Color.White, f);
 
                     // Buttons animation
@@ -305,7 +313,7 @@ namespace Xrv.Core.Menu
 
         private void DetachButtonToggle_Toggled(object sender, EventArgs e)
         {
-            this.palmPanelBehavior.Owner.IsEnabled = this.detachButtonToggle.IsOn;
+            this.palmPanelBehavior.Owner.IsEnabled = !this.detachButtonToggle.IsOn;
             this.ExtendedAnimation(this.detachButtonToggle.IsOn);
         }
 
@@ -313,6 +321,7 @@ namespace Xrv.Core.Menu
 
         [BindService]
         protected GraphicsPresenter graphicsPresenter;
+        private XRHandedness currentHand;
 
         protected override void Update(TimeSpan gameTime)
         {
