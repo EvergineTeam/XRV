@@ -231,10 +231,13 @@ namespace Xrv.Core.Menu
 
         private void AppearAnimation(bool show)
         {
+            float start = show ? 0 : 1;
+            float end = show ? 1 : 0;
+
             this.appearAnimation?.Cancel();
-            this.appearAnimation = new FloatAnimationWorkAction(this.Owner, 0, 1, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
+            this.appearAnimation = new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
             {
-                this.handMenuTransform.Rotation = Vector3.Lerp(new Vector3(0, (float)-Math.PI, 0), Vector3.Zero, f);
+                this.handMenuTransform.LocalRotation = Vector3.Lerp(new Vector3(0, -MathHelper.PiOver2, 0), new Vector3(0, -MathHelper.Pi, 0), f);
             });
             this.appearAnimation.Run();
         }
@@ -326,6 +329,10 @@ namespace Xrv.Core.Menu
             if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)
             {
                 this.AppearAnimation(true);
+            }
+            else if (keyboardDispatcher?.ReadKeyState(Keys.P) == ButtonState.Pressing)
+            {
+                this.AppearAnimation(false);
             }
 
             if (keyboardDispatcher?.ReadKeyState(Keys.I) == ButtonState.Pressing)
