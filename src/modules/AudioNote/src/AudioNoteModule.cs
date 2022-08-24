@@ -32,8 +32,8 @@ namespace Xrv.AudioNote
         {
             this.handMenuDesc = new HandMenuButtonDescription()
             {
-                //IconOff = AudioNoteResourceIDs.Materials.Icons.Measure,
-                //IconOn = AudioNoteResourceIDs.Materials.Icons.Measure,
+                IconOff = AudioNoteResourceIDs.Materials.Icons.AudioNote,
+                IconOn = AudioNoteResourceIDs.Materials.Icons.AudioNote,
                 IsToggle = true,
                 TextOn = "Hide",
                 TextOff = "Show"
@@ -57,8 +57,10 @@ namespace Xrv.AudioNote
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
 
             // Audio Note
-            
+
             // Settings
+            var rulerSettingPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Settings);
+            this.audioNoteSettings = rulerSettingPrefab.Instantiate();
         }
 
         public override void Run(bool turnOn)
@@ -80,8 +82,8 @@ namespace Xrv.AudioNote
         {
             if (this.audioNoteHelp == null)
             {
-                //var rulerHelpPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.RulerHelp_weprefab);
-                //this.audioNoteHelp = rulerHelpPrefab.Instantiate();
+                var rulerHelpPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Help);
+                this.audioNoteHelp = rulerHelpPrefab.Instantiate();
             }
 
             return this.audioNoteHelp;
