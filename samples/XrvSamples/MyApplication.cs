@@ -1,6 +1,7 @@
 using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Platform;
+using Xrv.AudioNote;
 using Xrv.Core;
 using Xrv.Ruler;
 
@@ -24,6 +25,7 @@ namespace XrvSamples
 
             var xrera = new XrvService();
             xrera.AddModule(new RulerModule());
+            xrera.AddModule(new AudioNoteModule());
 
             this.Container.RegisterInstance(xrera);
         }
