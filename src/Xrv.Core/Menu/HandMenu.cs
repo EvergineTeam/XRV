@@ -16,14 +16,13 @@ using Evergine.Components.WorkActions;
 using Evergine.Common.Graphics;
 using Evergine.Components.Fonts;
 using System.Runtime.CompilerServices;
+using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
+using System.Reflection;
 
 namespace Xrv.Core.Menu
 {
     public class HandMenu : Behavior
     {
-        [BindService]
-        protected GraphicsPresenter graphicsPresenter;
-
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
 
@@ -41,14 +40,20 @@ namespace Xrv.Core.Menu
         [BindService()]
         private XrvService xrvService = null;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_hand_menu_back_plate")]
+        [BindComponent]
+        protected Transform3D handMenuTransform = null;
+
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_back_plate")]
         private Transform3D backPlateTransform = null;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_hand_menu_front_plate")]
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_front_plate")]
         private Transform3D frontPlateTransform = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_detach")]
         protected Transform3D detachButtonTransform = null;
+
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_detach")]
+        protected ToggleButton detachButtonToggle = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_follow")]
         protected Transform3D followButtonTransform = null;
@@ -60,10 +65,13 @@ namespace Xrv.Core.Menu
         protected Text3DMesh text3DMesh = null;
 
         private Entity buttonsContainer = null;
-        private IWorkAction animation;
+        private IWorkAction appearAnimation;
+        private IWorkAction extendedAnimation;
         private int numberOfButtons;
         private int numberOfColumns;
         private int numberButtonsPerColumns;
+
+        protected bool menuExtended = false;
 
         public HandMenu()
         {
@@ -114,8 +122,9 @@ namespace Xrv.Core.Menu
             {
                 this.palmPanelBehavior.PalmUpChanged += this.PalmPanelBehavior_PalmUpChanged;
                 this.palmPanelBehavior.ActiveHandednessChanged += this.PalmPanelBehavior_ActiveHandednessChanged;
-                this.RefreshMenuState();
             }
+
+            this.detachButtonToggle.Toggled += this.DetachButtonToggle_Toggled;
 
             this.followButtonTransform.Owner.IsEnabled = false;
             this.text3DMesh.Owner.IsEnabled = false;
@@ -132,21 +141,18 @@ namespace Xrv.Core.Menu
                 this.palmPanelBehavior.PalmUpChanged -= this.PalmPanelBehavior_PalmUpChanged;
                 this.palmPanelBehavior.ActiveHandednessChanged -= this.PalmPanelBehavior_ActiveHandednessChanged;
             }
+
+            this.detachButtonToggle.Toggled -= this.DetachButtonToggle_Toggled;
         }
 
         private void PalmPanelBehavior_ActiveHandednessChanged(object sender, XRHandedness hand)
         {
-            this.RefreshMenuState();
+            this.AppearAnimation(true);
         }
 
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool palmUp)
         {
-            this.RefreshMenuState();
-        }
-
-        private void RefreshMenuState()
-        {
-            // Perform animation here?
+            this.AppearAnimation(palmUp);
         }
 
         private void ButtonDefinitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -204,8 +210,8 @@ namespace Xrv.Core.Menu
         private void ReorderButtons()
         {
             this.numberOfButtons = this.buttonDescriptions.Count;
-            this.numberOfColumns = (int)Math.Ceiling(this.buttonDescriptions.Count / (float)this.maxButtonsPerColumn);
-            this.numberButtonsPerColumns = this.buttonDescriptions.Count < this.maxButtonsPerColumn ? Math.Max(this.buttonDescriptions.Count, 4) : this.maxButtonsPerColumn;
+            this.numberOfColumns = (int)Math.Ceiling(numberOfButtons / (float)this.maxButtonsPerColumn);
+            this.numberButtonsPerColumns = numberOfButtons < this.maxButtonsPerColumn ? Math.Max(numberOfButtons, 4) : this.maxButtonsPerColumn;
 
             // Resize back plate
             this.backPlateTransform.LocalScale = new Vector3(this.numberOfColumns, 1, 1);
@@ -214,40 +220,39 @@ namespace Xrv.Core.Menu
             this.frontPlateTransform.LocalScale = new Vector3(this.numberOfColumns, this.numberButtonsPerColumns, 1);
 
             // Add buttons
-            for (int i = 0; i < this.buttonDescriptions.Count; i++)
+            int i = 0;
+            foreach (var button in this.instantiatedButtons.Values.Reverse())
             {
-                HandMenuButtonDescription definition = this.buttonDescriptions[i];
-                Entity button = this.instantiatedButtons[definition.Id];
                 var buttonTransform = button.FindComponent<Transform3D>();
-
-                var buttonPosition = buttonTransform.LocalPosition;
-                buttonPosition.X = ButtonWidthOverTwo + (ButtonWidth * (i / this.numberButtonsPerColumns));
-                buttonPosition.Y = -ButtonWidthOverTwo - ((i % this.numberButtonsPerColumns) * ButtonWidth);
-                buttonTransform.LocalPosition = buttonPosition;
+                buttonTransform.LocalPosition = new Vector3(ButtonWidthOverTwo + (ButtonWidth * (i / this.numberButtonsPerColumns)), -ButtonWidthOverTwo - ((i % this.numberButtonsPerColumns) * ButtonWidth), 0);
+                i++;
             }
         }
 
-        protected override void Update(TimeSpan gameTime)
+        private void AppearAnimation(bool show)
         {
-            KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
+            this.appearAnimation?.Cancel();
+            this.appearAnimation = new FloatAnimationWorkAction(this.Owner, 0, 1, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
             {
-                this.ConvertTo(true);
-            }
-            else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
-            {
-                this.ConvertTo(false);
-            }
+                this.handMenuTransform.Rotation = Vector3.Lerp(new Vector3(0, (float)-Math.PI, 0), Vector3.Zero, f);
+            });
+            this.appearAnimation.Run();
         }
 
-        private void ConvertTo(bool windowMode)
+        private void ConvertTo(bool extended)
         {
-            float start = windowMode ? 0 : 1;
-            float end = windowMode ? 1 : 0;
+            if (this.menuExtended == extended)
+            {
+                return;
+            }
 
-            this.animation?.Cancel();
-            this.animation = new ActionWorkAction(() =>
+            this.menuExtended = extended;
+
+            float start = extended ? 0 : 1;
+            float end = extended ? 1 : 0;
+
+            this.extendedAnimation?.Cancel();
+            this.extendedAnimation = new ActionWorkAction(() =>
             {
                 if (end == 1)
                 {
@@ -259,7 +264,7 @@ namespace Xrv.Core.Menu
                 new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
                 {
                     // Front and back plates animation
-                    this.frontPlateTransform.Scale = Vector3.Lerp(new Vector3(this.numberOfColumns, this.numberButtonsPerColumns, 1), new Vector3(this.numberButtonsPerColumns, 1, 1), f);
+                    this.frontPlateTransform.Scale = Vector3.Lerp(new Vector3(this.numberOfColumns, this.numberButtonsPerColumns, 1), new Vector3(this.numberButtonsPerColumns, this.numberOfColumns, 1), f);
                     this.backPlateTransform.Scale = Vector3.Lerp(Vector3.One, new Vector3(this.numberButtonsPerColumns, 1, 1), f);
 
                     // Header animation
@@ -271,7 +276,7 @@ namespace Xrv.Core.Menu
 
                     // Buttons animation
                     int i = 0;
-                    foreach (var button in this.instantiatedButtons.Values)
+                    foreach (var button in this.instantiatedButtons.Values.Reverse())
                     {
                         var buttonTransform = button.FindComponent<Transform3D>();
                         buttonTransform.LocalPosition = Vector3.Lerp(new Vector3(ButtonWidthOverTwo + (ButtonWidth * (i / this.numberButtonsPerColumns)), -ButtonWidthOverTwo - ((i % this.numberButtonsPerColumns) * ButtonWidth), 0),
@@ -292,7 +297,53 @@ namespace Xrv.Core.Menu
                 }
             )
             );
-            this.animation.Run();
+            this.extendedAnimation.Run();
         }
+
+        private void DetachButtonToggle_Toggled(object sender, EventArgs e)
+        {
+            this.ConvertTo(this.detachButtonToggle.IsOn);
+        }
+
+        // -- Begin Debug area --
+
+        [BindService]
+        protected GraphicsPresenter graphicsPresenter;
+
+        protected override void Update(TimeSpan gameTime)
+        {
+            KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
+
+            if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
+            {
+                this.ConvertTo(true);
+            }
+            else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
+            {
+                this.ConvertTo(false);
+            }
+
+            if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)
+            {
+                this.AppearAnimation(true);
+            }
+
+            if (keyboardDispatcher?.ReadKeyState(Keys.I) == ButtonState.Pressing)
+            {
+                this.AddButton();
+            }
+        }
+
+        private void AddButton()
+        {
+            this.ButtonDescriptions.Add(new HandMenuButtonDescription
+            {
+                IsToggle = false,
+                TextOn = this.buttonDescriptions.Count.ToString(),
+                IconOn = CoreResourcesIDs.Materials.Icons.Help,
+            });
+        }
+
+        // -- End Debug area --
     }
 }
