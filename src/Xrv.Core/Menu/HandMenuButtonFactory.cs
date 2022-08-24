@@ -6,6 +6,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Xrv.Core.Extensions;
 using Xrv.Core.Modules;
+using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.Menu
 {
@@ -34,6 +35,8 @@ namespace Xrv.Core.Menu
             });
             this.AssociateActivationPublishers(description, button);
             Workarounds.MrtkForceButtonNullPlate(button);
+            var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
+            lookAndFeel.TextPositionOffset = -0.002f;
 
             return button;
         }
@@ -58,6 +61,8 @@ namespace Xrv.Core.Menu
 
             this.AssociateActivationPublishers(description, button);
             Workarounds.MrtkForceButtonNullPlate(button);
+            var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
+            lookAndFeel.TextPositionOffset = -0.002f;
 
             return button;
         }
