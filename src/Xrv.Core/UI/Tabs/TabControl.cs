@@ -228,6 +228,13 @@ namespace Xrv.Core.UI.Tabs
             {
                 Entity owner = this.mappings.ElementAt(i).Key;
                 TabItem item = this.mappings.ElementAt(i).Value;
+
+                var pressableButton = owner.FindComponentInChildren<PressableButton>();
+                if (pressableButton != null)
+                {
+                    pressableButton.ButtonReleased -= this.PressableButton_ButtonReleased;
+                }
+
                 if (items.Contains(item))
                 {
                     this.Managers.EntityManager.Remove(owner);
@@ -239,9 +246,6 @@ namespace Xrv.Core.UI.Tabs
                         currentItemIndex = i;
                     }
                 }
-
-                var pressableButton = owner.FindComponentInChildren<PressableButton>();
-                pressableButton.ButtonReleased -= this.PressableButton_ButtonReleased;
             }
 
             if (currentItemRemoved)
