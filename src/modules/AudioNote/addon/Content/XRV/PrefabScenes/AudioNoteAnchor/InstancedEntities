@@ -60,7 +60,16 @@ Items:
         IsEnabled: true
       - !Xrv.AudioNote.AudioNoteAnchor,Xrv.AudioNote
         Id: 45be591e-9bf3-4bb2-b257-a33f8b57785d
+        AdutioNote: null
+        AnchorState: Open
         IsEnabled: true
+        VisualState: Empty
+      - !Xrv.AudioNote.TapDetector,Xrv.AudioNote
+        Id: 84b1de61-a1f9-4db0-8991-c25c1522f133
+        IsEnabled: true
+        LongTap: 3.0
+        MaxDistance: 0.100000001
+        Tap: 0.5
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Icon

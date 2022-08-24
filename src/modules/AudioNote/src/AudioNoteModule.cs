@@ -9,6 +9,7 @@ using Xrv.Core.UI.Tabs;
 using Xrv.Core.Modules;
 using Xrv.Core;
 using Xrv.AudioNote.Messages;
+using Evergine.Framework.Graphics;
 
 namespace Xrv.AudioNote
 {
@@ -31,15 +32,17 @@ namespace Xrv.AudioNote
         private Entity audioNoteHelp;
         private Entity audioNoteSettings;
 
+        private Scene scene;
+
+        private List<Entity> audioAnchorList = new List<Entity>();
+
         public AudioNoteModule()
         {
             this.handMenuDesc = new HandMenuButtonDescription()
             {
-                IconOff = AudioNoteResourceIDs.Materials.Icons.AudioNote,
                 IconOn = AudioNoteResourceIDs.Materials.Icons.AudioNote,
-                IsToggle = true,
-                TextOn = "Hide",
-                TextOff = "Show"
+                IsToggle = false,
+                TextOn = "Audio Note",
             };
 
             this.settings = new TabItem()
@@ -59,6 +62,7 @@ namespace Xrv.AudioNote
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
+            this.scene = scene;
 
             // Audio Note
 
@@ -71,6 +75,19 @@ namespace Xrv.AudioNote
 
         public override void Run(bool turnOn)
         {
+            var anchor = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Anchor).Instantiate();
+
+            var anchorTransform = anchor.FindComponent<Transform3D>();
+            var cameraTransform = this.scene.Managers.RenderManager.ActiveCamera3D.Transform;
+            var cameraWorldTransform = cameraTransform.WorldTransform;
+            anchorTransform.Position = cameraTransform.Position + cameraWorldTransform.Forward * 0.6f;
+            this.AddAudioAnchor(anchor);
+        }
+
+        private void AddAudioAnchor(Entity anchor)
+        {
+            this.scene.Managers.EntityManager.Add(anchor);
+            audioAnchorList.Add(anchor);
         }
 
         private Entity SettingContent()
@@ -91,7 +108,6 @@ namespace Xrv.AudioNote
 
         private void CreateAudioNoteWindow(AudioNoteMessage obj)
         {
-            throw new NotImplementedException();
         }
     }
 }

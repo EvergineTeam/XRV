@@ -1,9 +1,7 @@
-﻿using Evergine.Common.Graphics;
-using Evergine.Components.Graphics3D;
+﻿using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
-using Evergine.MRTK.Effects;
 using System;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
@@ -18,13 +16,13 @@ namespace Xrv.AudioNote
     }
     public enum AudioNoteAnchorState
     {
-        Open,
         Closed,
+        Open,
     }
 
     public class AudioNoteAnchor : Component
     {
-        [BindService()]
+        [BindService]
         protected XrvService xrvService;
 
         [BindService]
@@ -40,18 +38,18 @@ namespace Xrv.AudioNote
         [BindComponent]
         protected AudioNoteAnchorHandler handler;
         private AudioNoteAnchorVisual visualState;
-        private AudioNoteAnchorState state;
+        private AudioNoteAnchorState anchorState;
 
         public AudioNoteData AdutioNote { get; set; }
 
         public AudioNoteAnchorState AnchorState
         {
-            get => state; set
+            get => anchorState; set
             {
-                state = value;
+                anchorState = value;
                 if (this.IsAttached)
                 {
-                    this.UpdateState(state);
+                    this.UpdateState(anchorState);
                 }
             }
         }
@@ -70,20 +68,17 @@ namespace Xrv.AudioNote
 
         public void UpdateVisualState(AudioNoteAnchorVisual current)
         {
-            var primary = xrvService.CurrentTheme.BackgroundPrimaryColor;
-            var secondary = Color.White;
-
-            var icon = new HoloGraphic(iconMaterial.Material);
-            var back = new HoloGraphic(backMaterial.Material);
-
-            if (current != AudioNoteAnchorVisual.Empty)
+            switch (current)
             {
-                primary = Color.White;
-                secondary = xrvService.CurrentTheme.BackgroundPrimaryColor;
+                case AudioNoteAnchorVisual.Empty:
+                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteIconEmpty);
+                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteBackEmpty);
+                    break;
+                default:
+                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteIconFull);
+                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteBackFull);
+                    break;
             }
-
-            icon.Parameters_Color = secondary.ToVector3();
-            back.Parameters_Color = primary.ToVector3();
         }
 
         public void UpdateState(AudioNoteAnchorState current)
@@ -99,11 +94,15 @@ namespace Xrv.AudioNote
         {
             if (!base.OnAttached()) return false;
             if (Application.Current.IsEditor) return true;
-            this.iconMaterial.Material = this.assetsService.Load<Material>(this.iconMaterial.Material.Id, forceNewInstance: true);
-            this.backMaterial.Material = this.assetsService.Load<Material>(this.backMaterial.Material.Id, forceNewInstance: true);
 
             this.handler.OnClick += Handler_OnClick;
             return true;
+        }
+
+        protected override void OnActivated()
+        {
+            base.OnActivated();
+            this.AnchorState = this.anchorState;
         }
 
         private void Handler_OnClick(object sender, EventArgs e)
