@@ -7,6 +7,8 @@ using System.Text;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.Modules;
+using Xrv.Core;
+using Xrv.AudioNote.Messages;
 
 namespace Xrv.AudioNote
 {
@@ -21,6 +23,7 @@ namespace Xrv.AudioNote
         public override TabItem Settings => this.settings;
 
         protected AssetsService assetsService;
+        private XrvService xrv;
         private HandMenuButtonDescription handMenuDesc;
         private TabItem settings;
         private TabItem help;
@@ -55,22 +58,19 @@ namespace Xrv.AudioNote
         public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
+            this.xrv = Application.Current.Container.Resolve<XrvService>();
 
             // Audio Note
 
             // Settings
             var rulerSettingPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Settings);
             this.audioNoteSettings = rulerSettingPrefab.Instantiate();
+
+            this.xrv.PubSub.Subscribe<AudioNoteMessage>(this.CreateAudioNoteWindow);
         }
 
         public override void Run(bool turnOn)
         {
-            if (turnOn)
-            {
-                //this.rulerBehavior.Reset();
-            }
-
-            //this.rulerEntity.IsEnabled = turnOn;
         }
 
         private Entity SettingContent()
@@ -87,6 +87,11 @@ namespace Xrv.AudioNote
             }
 
             return this.audioNoteHelp;
+        }
+
+        private void CreateAudioNoteWindow(AudioNoteMessage obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }

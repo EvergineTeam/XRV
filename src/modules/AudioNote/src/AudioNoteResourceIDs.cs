@@ -16,6 +16,15 @@ namespace Xrv.AudioNote
                 public static readonly Guid Play = new Guid("eaeff01b-40ad-4239-b936-8c59dd77f915");
                 public static readonly Guid Stop = new Guid("eaeff01b-40ad-4239-b936-8c59dd77f916");
             }
+
+            /// <summary> Asset Path (XRV/Materials/HandleGrabbed.wemt) </summary>
+            public static readonly Guid HandleGrabbed = new Guid("05c2c50c-36c4-424c-9355-3e5c7ad8af09");
+
+            /// <summary> Asset Path (XRV/Materials/HandleIdle.wemt) </summary>
+            public static readonly Guid HandleIdle = new Guid("55c2c50c-36c4-424c-9355-3e5c7ad8af03");
+
+            /// <summary> Asset Path (XRV/Materials/HandleSelected.wemt) </summary>
+            public static readonly Guid HandleSelected = new Guid("5552c50c-36c4-424c-9355-3e5c7ad8af06");
         }
 
         public sealed class Prefabs
