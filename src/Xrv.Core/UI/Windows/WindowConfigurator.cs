@@ -6,7 +6,7 @@ using System;
 
 namespace Xrv.Core.UI.Windows
 {
-    public class WindowConfiguration : BaseWindowConfigurator
+    public class WindowConfigurator : BaseWindowConfigurator
     {
         private Vector2 logoOffsets = new Vector2(0.03f, 0.025f);
         private Material logoMaterial;

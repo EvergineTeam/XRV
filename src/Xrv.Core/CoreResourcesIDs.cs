@@ -12,6 +12,8 @@ namespace Xrv.Core
 
                 public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
             }
+
+            public static Guid logoMaterial = new Guid("db59d1e4-43a8-4e6b-94c8-bf5bf44a7d7b");
         }
 
         public static class Mrtk
@@ -32,7 +34,7 @@ namespace Xrv.Core
 
             public static Guid TextButton = new Guid("69925256-16a0-4938-81fb-2810f6afa4eb");
 
-            public static Guid Window = new Guid("15e0bc62-56fe-4535-9422-55c129582dd4");
+            public static Guid Window = new Guid("a0f44bfe-bd10-4af3-8f76-86c8adad40b5");
         }
     }
 }

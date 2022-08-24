@@ -35,8 +35,8 @@ namespace XrvSamples.Scenes
             xrv.Initialize(this);
 
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
-
             this.windowsSystem = xrv.WindowSystem;
+            this.windowsSystem.OverrideIconMaterial = this.assetsService.Load<Material>(EvergineContent.Materials.EvergineLogo);
             this.messageText = this.Managers.EntityManager.FindAllByTag("message").First().FindComponent<Text3DMesh>();
             this.messageText.Text = string.Empty;
 
@@ -114,7 +114,6 @@ namespace XrvSamples.Scenes
                 this.window2 = this.windowsSystem.ShowWindow();
                 this.window2.Configurator.Title = "Window #2";
                 this.window2.Configurator.Size = new Vector2(0.2f, 0.3f);
-                ((WindowConfiguration)this.window2.Configurator).LogoMaterial = assetsService.Load<Material>(EvergineContent.Materials.EvergineLogo);
                 this.window2.Configurator.FrontPlateSize = new Vector2(0.2f, 0.25f);
                 this.window2.Configurator.FrontPlateOffsets = new Vector2(0f, 0.025f);
                 this.window2.Configurator.Content = this.CreateText3D(

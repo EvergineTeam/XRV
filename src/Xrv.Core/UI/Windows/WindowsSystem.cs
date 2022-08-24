@@ -1,4 +1,5 @@
 ﻿using Evergine.Framework;
+using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
@@ -23,6 +24,8 @@ namespace Xrv.Core.UI.Windows
             this.entityManager = entityManager;
             this.assetsService = assetsService;
         }
+
+        public Material OverrideIconMaterial { get; set; }
 
         public Window ShowWindow()
         {
@@ -76,6 +79,11 @@ namespace Xrv.Core.UI.Windows
                 var configurator = windowEntity.FindComponent<BaseWindowConfigurator>(isExactType: false);
                 windowEntity.RemoveComponent(configurator);
                 windowEntity.AddComponent(configInstance);
+            }
+            else if (this.OverrideIconMaterial != null)
+            {
+                var configurator = windowEntity.FindComponent<WindowConfigurator>(isExactType: false);
+                configurator.LogoMaterial = this.OverrideIconMaterial;
             }
 
             windowEntity.IsEnabled = false;

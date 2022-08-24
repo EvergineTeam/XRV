@@ -21,8 +21,8 @@ Root:
         X: 1.0
         Y: 1.0
         Z: 1.0
-    - !Xrv.Core.UI.Windows.WindowConfiguration,Xrv.Core
-      Id: 6ec03ba6-7ac4-4b1b-ad72-fae41ba8b731
+    - !Xrv.Core.UI.Windows.WindowConfigurator,Xrv.Core
+      Id: 447e11ce-6204-4245-be59-2b9d3b967e84
       Content: null
       DisplayFrontPlate: true
       DisplayLogo: true
@@ -37,7 +37,7 @@ Root:
       Size:
         X: 0.300000012
         Y: 0.200000003
-      Title: Title
+      Title: Title goes here
   Children:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: back
@@ -201,7 +201,7 @@ Root:
                   Size:
                     X: 1.0
                     Y: 0.0149999997
-                  Text: Title
+                  Text: Title goes here
                   VerticalAlignment: Top
                   Wrapping: true
                 - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components

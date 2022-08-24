@@ -3,7 +3,6 @@ using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
-using System;
 using System.Linq;
 
 namespace Xrv.Core.UI.Windows
@@ -49,10 +48,10 @@ namespace Xrv.Core.UI.Windows
 
         public Entity Content
         {
-            get => content;
+            get => this.content;
             set
             {
-                content = value;
+                this.content = value;
                 if (this.IsAttached)
                 {
                     this.UpdateContent();
@@ -62,10 +61,10 @@ namespace Xrv.Core.UI.Windows
 
         public string Title
         {
-            get => title; 
+            get => this.title; 
             set
             {
-                title = value;
+                this.title = value;
                 if (this.IsAttached)
                 {
                     this.UpdateTitle();
@@ -75,10 +74,10 @@ namespace Xrv.Core.UI.Windows
 
         public Vector2 Size
         {
-            get => size;
+            get => this.size;
             set
             {
-                size = value;
+                this.size = value;
                 if (this.IsAttached)
                 {
                     this.UpdateSize();
@@ -88,10 +87,10 @@ namespace Xrv.Core.UI.Windows
 
         public Vector2 FrontPlateOffsets
         {
-            get => frontPlateOffsets;
+            get => this.frontPlateOffsets;
             set
             {
-                frontPlateOffsets = value;
+                this.frontPlateOffsets = value;
                 if (this.IsAttached)
                 {
                     this.UpdateFrontPlateOffsets();
@@ -101,10 +100,10 @@ namespace Xrv.Core.UI.Windows
 
         public Vector2 FrontPlateSize
         {
-            get => frontPlateSize;
+            get => this.frontPlateSize;
             set
             {
-                frontPlateSize = value;
+                this.frontPlateSize = value;
                 if (this.IsAttached)
                 {
                     this.UpdateFrontPlateSize();
@@ -216,7 +215,7 @@ namespace Xrv.Core.UI.Windows
             && this.frontPlateSize.X != 0
             && this.frontPlateSize.Y != 0;
 
-        private void UpdateTitle() => this.titleMesh.Text = title;
+        private void UpdateTitle() => this.titleMesh.Text = this.title;
 
         private void UpdateContent()
         {
@@ -232,16 +231,16 @@ namespace Xrv.Core.UI.Windows
                     continue;
                 }
 
-                if (content != null && content.Id != item.Id)
+                if (this.content != null && this.content.Id != item.Id)
                 {
                     this.contentEntity.RemoveChild(item);
                 }
             }
 
-            if (content != null
+            if (this.content != null
                 && this.contentEntity.ChildEntities.Count() == 1)
             {
-                this.contentEntity.AddChild(content);
+                this.contentEntity.AddChild(this.content);
             }
         }
 
