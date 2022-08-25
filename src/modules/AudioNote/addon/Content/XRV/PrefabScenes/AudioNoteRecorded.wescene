@@ -100,7 +100,7 @@ Items:
               Z: 1.0
         Children:
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-            Name: Microphone
+            Name: Play
             Tag: ContentAction
             IsEnabled: true
             IsStatic: false
@@ -133,7 +133,7 @@ Items:
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
-                Icon: eaeff01b-40ad-4239-b936-8c59dd77f916
+                Icon: eaeff01b-40ad-4239-b936-8c59dd77f915
                 IsEnabled: true
                 Plate: 1a7070d5-cccf-4b60-93c8-eddafd9b51d5
                 PrimaryColor:
@@ -142,13 +142,13 @@ Items:
                   G: 255
                   R: 255
                 TargetState: Off
-                Text: Follow
+                Text: Play
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                 Id: 36c0303c-67c7-4414-8888-faa3e308290e
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
-                Icon: eaeff01b-40ad-4239-b936-8c59dd77f915
+                Icon: eaeff01b-40ad-4239-b936-8c59dd77f916
                 IsEnabled: false
                 Plate: null
                 PrimaryColor:
@@ -157,7 +157,7 @@ Items:
                   G: 255
                   R: 255
                 TargetState: On
-                Text: Pin
+                Text: Stop
               - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                 Id: e2cca79c-06e9-496a-9d66-7c7c00373181
                 IsEnabled: true
@@ -425,7 +425,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
-                            Text: Follow
+                            Text: Play
                             VerticalAlignment: Center
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -653,7 +653,7 @@ Items:
                   B: 255
                   G: 255
                   R: 255
-                Text: '  Close'
+                Text: Delete
               - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                 Id: 3a88b0ce-3605-4826-8062-cd0d980b8ff1
                 IsEnabled: true
@@ -679,7 +679,7 @@ Items:
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
-                Tag: Delete
+                Tag: 
                 IsEnabled: true
                 IsStatic: false
                 Components:
@@ -921,7 +921,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
-                            Text: '  Close'
+                            Text: Delete
                             VerticalAlignment: Center
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -1305,12 +1305,6 @@ Items:
             Id: b69c2437-b197-4342-ba15-b0b854321bc8
         Id: 97a2728b-ba0c-4895-b365-75630cf4ae15
     Id: cb8d3ad3-7da2-4d6f-8c5d-5001a063ef20
-  - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: e81ecf3d-e690-46e0-b508-5cb703809761
-    Source: 0ce4879a-bb7a-4e92-b8ed-b257d29c179f
-    entityLinks: {}
-    modificationList: []
-    removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: 5dbf054f-13fe-4f0d-a352-35f645bc57c8

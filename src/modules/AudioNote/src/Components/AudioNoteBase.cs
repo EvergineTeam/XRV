@@ -13,13 +13,16 @@ namespace Xrv.AudioNote
         [BindService]
         protected XrvService xrvService;
 
-        [BindEntity(tag: "Content", isRequired: false)]
+        [BindEntity(source: BindEntitySource.Children, tag: "Content")]
         protected Entity content;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "ContentAction", isRequired: false)]
-        protected PressableButton actionButton;
+        [BindEntity(source: BindEntitySource.Children, tag: "ContentAction", isRecursive: true)]
+        protected Entity contentActionEntity;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "Delete", isRequired: false)]
+        [BindEntity(source: BindEntitySource.Children, tag: "Delete", isRecursive:true)]
+        protected Entity deleteEntity;
+
+        protected PressableButton actionButton;
         protected PressableButton deleteButton;
 
         public AudioNoteData Data { get; set; }
@@ -29,15 +32,8 @@ namespace Xrv.AudioNote
             if (!base.OnAttached()) return false;
             if (Application.Current.IsEditor) return true;
 
-            if (content == null)
-            {
-                this.content = this.Owner.FindChildrenByTag("Content").FirstOrDefault();
-            }
-
-            if (actionButton == null)
-            {
-                this.actionButton = this.Owner.FindChildrenByTag("ContentAction", isRecursive:true).FirstOrDefault().FindComponentInChildren<PressableButton>();
-            }
+            this.actionButton = this.contentActionEntity.FindComponentInChildren<PressableButton>();
+            this.deleteButton = this.deleteEntity.FindComponentInChildren<PressableButton>();
 
             this.ShowContent(false);
 

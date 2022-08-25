@@ -133,7 +133,7 @@ Items:
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
-                Icon: eaeff01b-40ad-4239-b936-8c59dd77f916
+                Icon: eaeff01b-40ad-4239-b936-8c59dd77f918
                 IsEnabled: true
                 Plate: 1a7070d5-cccf-4b60-93c8-eddafd9b51d5
                 PrimaryColor:
@@ -142,13 +142,13 @@ Items:
                   G: 255
                   R: 255
                 TargetState: Off
-                Text: Follow
+                Text: Record
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                 Id: 5326b3fd-24a9-42e5-93e2-24f5b13f42c6
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
-                Icon: eaeff01b-40ad-4239-b936-8c59dd77f918
+                Icon: eaeff01b-40ad-4239-b936-8c59dd77f916
                 IsEnabled: false
                 Plate: null
                 PrimaryColor:
@@ -157,7 +157,7 @@ Items:
                   G: 255
                   R: 255
                 TargetState: On
-                Text: Pin
+                Text: Stop
               - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                 Id: 0813f903-014d-42ff-8f1f-03047a81df5e
                 IsEnabled: true
@@ -425,7 +425,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
-                            Text: Follow
+                            Text: Stop
                             VerticalAlignment: Center
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -653,7 +653,7 @@ Items:
                   B: 255
                   G: 255
                   R: 255
-                Text: '  Close'
+                Text: Delete
               - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                 Id: 13041e8b-51d4-4e9f-ba35-85ab1401c64d
                 IsEnabled: true
@@ -679,7 +679,7 @@ Items:
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
-                Tag: Delete
+                Tag: 
                 IsEnabled: true
                 IsStatic: false
                 Components:
@@ -921,7 +921,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
-                            Text: '  Close'
+                            Text: Delete
                             VerticalAlignment: Center
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -1300,7 +1300,7 @@ Items:
         Id: 85172d66-1a33-472c-86cb-8d49cf1a4cd2
     Id: d970f4f2-16c6-409f-9bdd-6ef1ec57885b
   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 23a3871b-4429-437e-ac4e-2cdb78f667d8
+    Id: 96a9b86a-85ac-4391-8072-29e0283706a1
     Source: 94c5a21c-f1b3-4c6c-91ae-55650ced3c8b
     entityLinks: {}
     modificationList: []

@@ -14,11 +14,6 @@ namespace Xrv.AudioNote
         Empty,
         Recorded,
     }
-    public enum AudioNoteAnchorState
-    {
-        Closed,
-        Open,
-    }
 
     public class AudioNoteAnchor : Component
     {
@@ -41,31 +36,20 @@ namespace Xrv.AudioNote
         [BindComponent]
         protected TapDetector tapDetector;
 
-        private AudioNoteAnchorVisual visualState;
-        private AudioNoteAnchorState anchorState;
+        private AudioNoteData audioNote;
 
-        public AudioNoteData AudioNote { get; set; }
-
-        public AudioNoteAnchorState AnchorState
+        public AudioNoteData AudioNote
         {
-            get => anchorState; set
+            get => audioNote;
+            set
             {
-                anchorState = value;
+                audioNote = value;
                 if (this.IsAttached)
                 {
-                    this.UpdateState(anchorState);
-                }
-            }
-        }
-
-        public AudioNoteAnchorVisual VisualState
-        {
-            get => visualState; set
-            {
-                visualState = value;
-                if (this.IsAttached)
-                {
-                    this.UpdateVisualState(visualState);
+                    if (!string.IsNullOrEmpty(audioNote.Path))
+                    {
+                        this.UpdateVisualState(AudioNoteAnchorVisual.Recorded);
+                    }
                 }
             }
         }
@@ -83,15 +67,6 @@ namespace Xrv.AudioNote
                     backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteBackFull);
                     break;
             }
-        }
-
-        public void UpdateState(AudioNoteAnchorState current)
-        {
-            this.xrvService.PubSub.Publish(new AudioNoteMessage()
-            {
-                Data = this.AudioNote,
-                State = current
-            });
         }
 
         protected override bool OnAttached()
@@ -121,13 +96,10 @@ namespace Xrv.AudioNote
 
         private void Handler_OnClick(object sender, EventArgs e)
         {
-            var state = AudioNoteAnchorState.Open;
-            if (this.AnchorState == AudioNoteAnchorState.Open)
+            this.xrvService.PubSub.Publish(new AudioNoteMessage()
             {
-                state = AudioNoteAnchorState.Closed;
-            }
-
-            this.AnchorState = state;
+                Data = this.AudioNote,
+            });
         }
     }
 }

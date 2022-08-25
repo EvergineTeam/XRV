@@ -2,7 +2,7 @@
 
 namespace Xrv.AudioNote.Messages
 {
-    public class AudioNoteMessage
+    public class AudioNoteUpdateMessage
     {
         public AudioNoteData Data { get; set; }
     }

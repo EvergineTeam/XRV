@@ -11,6 +11,7 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Dialogs;
 using Xrv.Core.UI.Tabs;
+using Xrv.Core.UI.Windows;
 
 namespace Xrv.AudioNote
 {
@@ -73,6 +74,28 @@ namespace Xrv.AudioNote
 
             this.xrv.PubSub.Subscribe<AudioNoteMessage>(this.CreateAudioNoteWindow);
             this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.CreateAudioNoteDeleteWindow);
+            this.xrv.PubSub.Subscribe<AudioNoteUpdateMessage>(this.AudioNoteUpdateMessage);
+            this.xrv.PubSub.Subscribe<AudioNoteWindowDeleteMessage>(this.AudioNoteWindowDeleteMessage);
+        }
+
+        private void AudioNoteWindowDeleteMessage(AudioNoteWindowDeleteMessage msg)
+        {
+            var key = msg.Data.Guid;
+            if (this.windowsDic.TryGetValue(key, out var window))
+            {
+                this.windowsDic.Remove(key);
+                this.scene.Managers.EntityManager.Remove(window);
+            }
+        }
+
+        private void AudioNoteUpdateMessage(AudioNoteUpdateMessage msg)
+        {
+            var key = msg.Data.Guid;
+            if (this.anchorsDic.TryGetValue(key, out var anchor))
+            {
+                var anchorComponent = anchor.FindComponent<AudioNoteAnchor>();
+                anchorComponent.AudioNote = msg.Data;
+            }
         }
 
         public override void Run(bool turnOn)
@@ -136,6 +159,11 @@ namespace Xrv.AudioNote
                 }
 
                 this.windowsDic.Add(msg.Data.Guid, note);
+            }
+            else
+            {
+                var w = note.FindComponent<Window>();
+                w.Open();
             }
 
             this.SetFrontPosition(this.scene, note);
