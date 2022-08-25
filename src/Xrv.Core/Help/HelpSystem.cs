@@ -1,4 +1,7 @@
-﻿using Evergine.Framework.Managers;
+﻿using Evergine.Framework;
+using Evergine.Framework.Managers;
+using Evergine.Framework.Prefabs;
+using Evergine.Framework.Services;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
@@ -10,6 +13,9 @@ namespace Xrv.Core.Help
         private readonly EntityManager entityManager;
         private readonly XrvService xrvService;
         private HandMenuButtonDescription handMenuButtonDescription;
+
+        private Entity generalHelp;
+        private Entity about;
 
         public HelpSystem(XrvService xrvService, EntityManager entityManager)
         {
@@ -42,7 +48,13 @@ namespace Xrv.Core.Help
             window.Tabs.Add(new TabItem
             {
                 Name = "General",
-                Contents = () => null,
+                Contents = GeneralHelp,
+            });
+
+            window.Tabs.Add(new TabItem
+            {
+                Name = "About",
+                Contents = AboutHelp,
             });
 
             return window;
@@ -66,6 +78,30 @@ namespace Xrv.Core.Help
             {
                 this.Window.Open();
             }
+        }
+
+        private Entity GeneralHelp()
+        {
+            if (this.generalHelp == null)
+            {
+                var assetsService = Application.Current.Container.Resolve<AssetsService>();
+                var generalHelpPrefab = assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.GeneralHelp_weprefab);
+                this.generalHelp = generalHelpPrefab.Instantiate();
+            }
+
+            return this.generalHelp;
+        }
+
+        private Entity AboutHelp()
+        {
+            if (this.about == null)
+            {
+                var assetsService = Application.Current.Container.Resolve<AssetsService>();
+                var aboutPrefab = assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.About_weprefab);
+                this.about = aboutPrefab.Instantiate();
+            }
+
+            return this.about;
         }
     }
 }
