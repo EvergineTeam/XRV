@@ -55,6 +55,7 @@ namespace XrvSamples.Scenes
                 .AddItem(new TabItem
                 {
                     Name = "Repositories",
+                    Contents = () => this.CreateText(0),
                 })
                 .Build();
             this.tabControl = tabEntity.FindComponent<TabControl>();
