@@ -40,7 +40,7 @@ namespace Xrv.Core.Menu
         [BindComponent(isExactType: false, source: BindComponentSource.Scene)]
         private IPalmPanelBehavior palmPanelBehavior = null;
 
-        [BindComponent]
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu")]
         protected Transform3D handMenuTransform = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_back_plate")]
@@ -64,7 +64,9 @@ namespace Xrv.Core.Menu
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_text")]
         protected Text3DMesh text3DMesh = null;
 
-        private Entity buttonsContainer = null;
+        [BindEntity(source: BindEntitySource.Scene, tag: "PART_hand_menu_buttons_container")]
+        protected Entity buttonsContainer = null;
+
         private IWorkAction appearAnimation;
         private IWorkAction extendedAnimation;
         private int numberOfButtons;
@@ -100,9 +102,8 @@ namespace Xrv.Core.Menu
             bool attached = base.OnAttached();
             if (attached)
             {
-                this.buttonsContainer = this.Owner.FindChildrenByTag("PART_hand_menu_buttons_container").First();
                 this.InternalAddButtons(this.buttonDescriptions); // We can have items added before this component has been attached
-                this.buttonDescriptions.CollectionChanged += this.ButtonDefinitions_CollectionChanged;
+                this.buttonDescriptions.CollectionChanged += this.ButtonDefinitions_CollectionChanged;                
             }
 
             return attached;
@@ -147,13 +148,12 @@ namespace Xrv.Core.Menu
 
         private void PalmPanelBehavior_ActiveHandednessChanged(object sender, XRHandedness hand)
         {
-            this.currentHand = hand;
-            this.AppearAnimation(true);
+            
         }
 
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool palmUp)
         {
-            this.AppearAnimation(!palmUp);
+            this.AppearAnimation(palmUp);
         }
 
         private void ButtonDefinitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -236,17 +236,29 @@ namespace Xrv.Core.Menu
             float end = show ? 1 : 0;
 
             this.appearAnimation?.Cancel();
-            this.appearAnimation = new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
+            this.appearAnimation = new ActionWorkAction(() =>
             {
-                if (this.currentHand == XRHandedness.LeftHand)
+                this.handMenuTransform.LocalRotation = show ? new Vector3(0, MathHelper.PiOver2, 0) : new Vector3(0, -MathHelper.Pi, 0);
+                if (show)
                 {
-                    this.handMenuTransform.LocalRotation = Vector3.Lerp(new Vector3(0, MathHelper.PiOver2, 0), new Vector3(0, -MathHelper.Pi, 0), f);
+                    this.handMenuTransform.Owner.IsEnabled = true;
                 }
-                else
+            })
+            .ContinueWith(
+                new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
                 {
                     this.handMenuTransform.LocalRotation = Vector3.Lerp(new Vector3(0, -MathHelper.PiOver2, 0), new Vector3(0, -MathHelper.Pi, 0), f);
+                })
+             ).ContinueWith(
+                new ActionWorkAction(() =>
+                {
+                    if (!show)
+                    {
+                        this.handMenuTransform.Owner.IsEnabled = false;
+                    }
                 }
-            });
+            )
+            );
             this.appearAnimation.Run();
         }
 
@@ -320,8 +332,7 @@ namespace Xrv.Core.Menu
         // -- Begin Debug area --
 
         [BindService]
-        protected GraphicsPresenter graphicsPresenter;
-        private XRHandedness currentHand;
+        protected GraphicsPresenter graphicsPresenter;        
 
         protected override void Update(TimeSpan gameTime)
         {

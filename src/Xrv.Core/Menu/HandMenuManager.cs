@@ -26,6 +26,7 @@ namespace Xrv.Core.Menu
         {
             if (Tools.IsXRPlatformInputTrackingAvailable())
             {
+                // Quest / Hololens
                 this.palmPanelBehavior = new PalmPanelBehavior();
             }
             else
@@ -36,29 +37,27 @@ namespace Xrv.Core.Menu
 
             this.palmPanelBehavior.DistanceFromHand = 0.1f;
             this.palmPanelBehavior.LookAtCameraUpperThreshold = 0.6f;
-            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.6f;
-            this.palmPanelBehavior.PalmUpChanged += this.PalmPanelBehavior_PalmUpChanged;
+            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.6f;            
 
             var menuPrefab = this.GetMenuPrefab();
             this.menuEntity = menuPrefab.Instantiate();
-            this.menuEntity.Name = "menuEntity";
-            this.menuEntity.IsEnabled = false;
+            this.menuEntity.Name = "menuEntity";            
 
             var palmMenuAnchorTransform = new Transform3D();
             var palmMenuAnchor = new Entity("palmMenuAnchor")
                 .AddComponent(palmMenuAnchorTransform)
                 .AddComponent(this.palmPanelBehavior as Component);
 
+            var handMenu = new HandMenu();
             var menuRoot = new Entity("menuRoot")
                 .AddComponent(new Transform3D())
                 .AddComponent(new FollowPalmAnchor()
                 {
                     SmoothTime = 0.06f,
                     Target = palmMenuAnchorTransform,
-                });
-
-            var handMenu = new HandMenu();
-            this.menuEntity.AddComponent(handMenu);
+                })
+                .AddComponent(handMenu);
+            
             menuRoot.AddChild(this.menuEntity);
 
             // On a first approach, palm menu seems to be rotated 180º.
@@ -75,9 +74,5 @@ namespace Xrv.Core.Menu
         private Prefab GetMenuPrefab() =>
             this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.HandMenu);
 
-        private void PalmPanelBehavior_PalmUpChanged(object sender, bool isPalmUp)
-        {
-            this.menuEntity.IsEnabled = isPalmUp;
-        }
     }
 }
