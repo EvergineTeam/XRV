@@ -1,0 +1,184 @@
+!Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
+Root:
+  Name: GeneralHelp
+  Tag: null
+  IsEnabled: true
+  IsStatic: false
+  Components:
+    - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+      Id: 09e34e4f-02e9-4010-9ee7-def28189b4f3
+      IsEnabled: true
+      LocalOrientation:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalPosition:
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalScale:
+        X: 1.0
+        Y: 1.0
+        Z: 1.0
+  Children:
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: text1
+      Tag: null
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: 1faa8b80-7543-4925-af4e-f990398e8cef
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0800241977
+            Z: 0.00800000038
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
+          Id: 3951e353-2eba-4010-8cae-3cebbd1640ed
+          Color:
+            A: 255
+            B: 255
+            G: 255
+            R: 255
+          Ellipsis: true
+          Font: 1c6e2929-d555-4c02-af49-50b4ecb01ce3
+          HorizontalAlignment: Left
+          IsEnabled: true
+          Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+          LineSpacing: 0.0
+          Origin:
+            X: 0.5
+            Y: 0.5
+          ScaleFactor: 0.00600000005
+          Size:
+            X: 0.230000019
+            Y: 0.00800000038
+          Text: From here you can access all the main options of the application.
+          VerticalAlignment: Top
+          Wrapping: true
+        - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
+          Id: 67e8364a-a02f-43b1-95fc-293c8a1cca5c
+          DebugBoundingbox: true
+          DebugMode: false
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+      Children: []
+      Id: 68436516-ca0f-4c49-9794-e2ec7b56fbb1
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: image1
+      Tag: null
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: a6456f0e-d40a-4e3c-b3ae-66d59eb47f03
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.031598635
+            Z: 0.0080000516
+          LocalScale:
+            X: 0.234168276
+            Y: 0.234168276
+            Z: 0.234168276
+        - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+          Id: b673d9c2-31a1-40e2-9074-e14933b6bd44
+          AsignedTo: Default
+          IsEnabled: true
+          Material: 9a3fedee-e768-421f-97c8-0fa4781b56d0
+        - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+          Id: 6835153a-8bdf-4e07-b4cb-5a62303ca812
+          Height: 0.345999986
+          InitialU: 0.0
+          InitialV: 0.0
+          IsEnabled: true
+          PlaneNormal: ZPositive
+          TwoSides: false
+          UTile: 1.0
+          UVHorizontalFlip: false
+          UVVerticalFlip: false
+          Width: 0.824999988
+          YTile: 1.0
+        - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+          Id: 8dc76d08-a4fb-43ed-a772-109eca18b1df
+          DebugBoundingbox: true
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: None
+      Children: []
+      Id: 75aacbef-0a71-4503-8897-41fffadb3ab9
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: text2
+      Tag: null
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: e64ef377-1b58-4aa4-a389-066ef352c776
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: -0.0287244096
+            Z: 0.0079999892
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
+          Id: 57cf7be6-fbab-4ff3-a7ce-4ce1a980b40b
+          Color:
+            A: 255
+            B: 255
+            G: 255
+            R: 255
+          Ellipsis: true
+          Font: 1c6e2929-d555-4c02-af49-50b4ecb01ce3
+          HorizontalAlignment: Left
+          IsEnabled: true
+          Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+          LineSpacing: 0.0
+          Origin:
+            X: 0.5
+            Y: 0.5
+          ScaleFactor: 0.00600000005
+          Size:
+            X: 0.230000019
+            Y: 0.0250000358
+          Text: To show the Main Menu hold out your  palm facing you. You'll see the main bar with the section buttons next to your hand and it will stays attached to your hand as long as you hold the gesture. The Main Menu will disappear if your hand is not facing you or open.
+          VerticalAlignment: Top
+          Wrapping: true
+        - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
+          Id: 4f33914e-cbb9-4aaa-b66d-f7480762b6fe
+          DebugBoundingbox: true
+          DebugMode: false
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+      Children: []
+      Id: a4225f22-6528-4efd-aa78-bf808ad4847e
+  Id: ede07b82-15ef-49dd-a316-f124c63c3751
