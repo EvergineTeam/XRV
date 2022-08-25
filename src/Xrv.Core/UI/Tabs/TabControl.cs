@@ -128,8 +128,7 @@ namespace Xrv.Core.UI.Tabs
                 this.items.CollectionChanged += this.Items_CollectionChanged;
                 this.buttonsContainer = this.Owner.FindChildrenByTag("PART_tab_control_buttons_container", isRecursive: true).First();
                 this.contentsContainer = this.Owner.FindChildrenByTag("PART_tab_control_current_item_contents", isRecursive: true).First();
-                this.InternalAddItems(this.items); // We can have items added before this component has been attached
-                this.selectedItem = this.items.FirstOrDefault();
+                this.InternalAddItems(this.items); // We can have items added before this component has been attached         
             }
 
             return attached;
@@ -141,6 +140,7 @@ namespace Xrv.Core.UI.Tabs
             this.UpdateFrontPlateSize();
             this.ReorderItems();
             this.UpdateItemsTextColor();
+            this.selectedItem = this.items.FirstOrDefault();
             this.UpdateSelectedItem();
         }
 
