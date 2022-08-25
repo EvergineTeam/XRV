@@ -103,7 +103,7 @@ namespace Xrv.Core.Menu
             if (attached)
             {
                 this.InternalAddButtons(this.buttonDescriptions); // We can have items added before this component has been attached
-                this.buttonDescriptions.CollectionChanged += this.ButtonDefinitions_CollectionChanged;                
+                this.buttonDescriptions.CollectionChanged += this.ButtonDefinitions_CollectionChanged;
             }
 
             return attached;
@@ -148,7 +148,7 @@ namespace Xrv.Core.Menu
 
         private void PalmPanelBehavior_ActiveHandednessChanged(object sender, XRHandedness hand)
         {
-            
+
         }
 
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool palmUp)
@@ -281,6 +281,7 @@ namespace Xrv.Core.Menu
                 {
                     this.text3DMesh.Owner.IsEnabled = true;
                     this.followButtonTransform.Owner.IsEnabled = true;
+                    this.palmPanelBehavior.Owner.IsEnabled = false;
                 }
             })
             .ContinueWith(
@@ -316,6 +317,7 @@ namespace Xrv.Core.Menu
                     {
                         this.text3DMesh.Owner.IsEnabled = false;
                         this.followButtonTransform.Owner.IsEnabled = false;
+                        this.palmPanelBehavior.Owner.IsEnabled = true;
                     }
                 }
             )
@@ -325,14 +327,13 @@ namespace Xrv.Core.Menu
 
         private void DetachButtonToggle_Toggled(object sender, EventArgs e)
         {
-            this.palmPanelBehavior.Owner.IsEnabled = !this.detachButtonToggle.IsOn;
             this.ExtendedAnimation(this.detachButtonToggle.IsOn);
         }
 
         // -- Begin Debug area --
 
         [BindService]
-        protected GraphicsPresenter graphicsPresenter;        
+        protected GraphicsPresenter graphicsPresenter;
 
         protected override void Update(TimeSpan gameTime)
         {
