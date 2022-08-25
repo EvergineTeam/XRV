@@ -1,4 +1,6 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
@@ -22,7 +24,7 @@ namespace Xrv.Core.Menu
         }
 
         public Entity CreateInstance(HandMenuButtonDescription description) =>
-            description.IsToggle ? CreateToggleButton(description) : CreateStandardButton(description);
+            description.IsToggle ? this.CreateToggleButton(description) : this.CreateStandardButton(description);
 
         private Entity CreateStandardButton(HandMenuButtonDescription description)
         {

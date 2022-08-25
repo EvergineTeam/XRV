@@ -1,4 +1,5 @@
-﻿using Evergine.Common.Graphics;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -6,7 +7,6 @@ using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.Base.EventDatum.Input;
 using Evergine.MRTK.Base.Interfaces.InputSystem.Handlers;
-using Evergine.MRTK.Effects;
 using Evergine.MRTK.Emulation;
 
 namespace Xrv.Ruler

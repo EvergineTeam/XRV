@@ -1,9 +1,10 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using System;
 using System.Collections.Generic;
 using Xrv.Core.UI.Dialogs;
 
@@ -14,9 +15,9 @@ namespace Xrv.Core.UI.Windows
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
 
-        public IEnumerable<Window> AllWindows 
-        { 
-            get => this.entityManager.FindComponentsOfType<Window>(isExactType: false); 
+        public IEnumerable<Window> AllWindows
+        {
+            get => this.entityManager.FindComponentsOfType<Window>(isExactType: false);
         }
 
         public WindowsSystem(EntityManager entityManager, AssetsService assetsService)

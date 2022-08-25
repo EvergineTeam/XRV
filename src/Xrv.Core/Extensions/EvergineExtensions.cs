@@ -1,4 +1,6 @@
-﻿using Evergine.Common;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common;
 using Evergine.Framework;
 using Evergine.Framework.Services;
 using System;

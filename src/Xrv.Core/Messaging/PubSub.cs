@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +13,19 @@ namespace Xrv.Core.Messaging
 
         public PubSub()
         {
-            subscriptions = new Dictionary<Type, IList>();
+            this.subscriptions = new Dictionary<Type, IList>();
         }
 
         public Guid Subscribe<TMessage>(Action<TMessage> action)
         {
             var type = typeof(TMessage);
 
-            if (!subscriptions.ContainsKey(type))
+            if (!this.subscriptions.ContainsKey(type))
             {
-                subscriptions.Add(type, new List<Subscription<TMessage>>());
+                this.subscriptions.Add(type, new List<Subscription<TMessage>>());
             }
 
-            var typeSubs = subscriptions[type];
+            var typeSubs = this.subscriptions[type];
             var newSub = new Subscription<TMessage>
             {
                 Action = action,
@@ -35,7 +37,7 @@ namespace Xrv.Core.Messaging
 
         public void Unsubscribe(Guid token)
         {
-            foreach (var typeSubs in subscriptions.Values)
+            foreach (var typeSubs in this.subscriptions.Values)
             {
                 foreach (var item in typeSubs.OfType<Subscription>())
                 {
@@ -51,7 +53,7 @@ namespace Xrv.Core.Messaging
         public void Publish<TMessage>(TMessage message)
         {
             var type = typeof(TMessage);
-            if (subscriptions.ContainsKey(type))
+            if (this.subscriptions.ContainsKey(type))
             {
                 var subscriptions = this.subscriptions[type].OfType<Subscription<TMessage>>();
                 foreach (var subscription in subscriptions)
@@ -65,7 +67,7 @@ namespace Xrv.Core.Messaging
         {
             public Subscription()
             {
-                Token = Guid.NewGuid();
+                this.Token = Guid.NewGuid();
             }
 
             public Guid Token { get; private set; }
@@ -73,7 +75,6 @@ namespace Xrv.Core.Messaging
 
         private class Subscription<T> : Subscription
         {
-
             public Action<T> Action { get; set; }
         }
     }

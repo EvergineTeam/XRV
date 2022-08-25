@@ -1,7 +1,8 @@
-﻿using Evergine.Common.Attributes;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Physics3D;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -11,6 +12,9 @@ using System.Linq;
 
 namespace Xrv.Core.UI.Windows
 {
+    /// <summary>
+    /// Component to work with windows.
+    /// </summary>
     public class Window : Component
     {
         private Entity closeButton = null;
@@ -25,7 +29,7 @@ namespace Xrv.Core.UI.Windows
         private Transform3D transform = null;
 
         [BindComponent(isRequired: false)]
-        private SimpleManipulationHandler simpleManipulationHandler;
+        private SimpleManipulationHandler simpleManipulationHandler = null;
 
         [IgnoreEvergine]
         public BaseWindowConfigurator Configurator { get => this.configurator; }
@@ -155,7 +159,7 @@ namespace Xrv.Core.UI.Windows
         private void PlaceInFrontOfUser()
         {
             var camera = this.Managers.RenderManager.ActiveCamera3D;
-            var position = camera.Transform.Position + camera.Transform.WorldTransform.Forward * 0.5f;
+            var position = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * 0.5f);
             this.transform.Position = position;
 
             // default LookAt makes window to be oriented backwards to the camera

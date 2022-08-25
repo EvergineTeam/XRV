@@ -1,4 +1,6 @@
-﻿using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 
 namespace Xrv.Core.UI.Dialogs
 {

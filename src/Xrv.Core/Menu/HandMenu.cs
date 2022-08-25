@@ -1,23 +1,22 @@
-﻿using Evergine.Common.Input.Keyboard;
-using Evergine.Common.Input;
-using Evergine.Components.Graphics3D;
-using Evergine.Framework;
-using Evergine.Framework.Graphics;
-using Evergine.Framework.Services;
-using Evergine.Framework.XR;
-using Evergine.Mathematics;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using Xrv.Core.Extensions;
-using Evergine.Components.WorkActions;
 using Evergine.Common.Graphics;
+using Evergine.Common.Input;
+using Evergine.Common.Input.Keyboard;
 using Evergine.Components.Fonts;
-using System.Runtime.CompilerServices;
+using Evergine.Components.WorkActions;
+using Evergine.Framework;
+using Evergine.Framework.Graphics;
+using Evergine.Framework.Services;
+using Evergine.Framework.XR;
+using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using System.Reflection;
+using Xrv.Core.Extensions;
 
 namespace Xrv.Core.Menu
 {
@@ -148,7 +147,6 @@ namespace Xrv.Core.Menu
 
         private void PalmPanelBehavior_ActiveHandednessChanged(object sender, XRHandedness hand)
         {
-
         }
 
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool palmUp)
@@ -211,8 +209,8 @@ namespace Xrv.Core.Menu
         private void ReorderButtons()
         {
             this.numberOfButtons = this.buttonDescriptions.Count;
-            this.numberOfColumns = (int)Math.Ceiling(numberOfButtons / (float)this.maxButtonsPerColumn);
-            this.numberButtonsPerColumns = numberOfButtons < this.maxButtonsPerColumn ? Math.Max(numberOfButtons, 4) : this.maxButtonsPerColumn;
+            this.numberOfColumns = (int)Math.Ceiling(this.numberOfButtons / (float)this.maxButtonsPerColumn);
+            this.numberButtonsPerColumns = this.numberOfButtons < this.maxButtonsPerColumn ? Math.Max(this.numberOfButtons, 4) : this.maxButtonsPerColumn;
 
             // Resize back plate
             this.backPlateTransform.LocalScale = new Vector3(this.numberOfColumns, 1, 1);
@@ -248,17 +246,15 @@ namespace Xrv.Core.Menu
                 new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
                 {
                     this.handMenuTransform.LocalRotation = Vector3.Lerp(new Vector3(0, -MathHelper.PiOver2, 0), new Vector3(0, -MathHelper.Pi, 0), f);
-                })
-             ).ContinueWith(
+                }))
+            .ContinueWith(
                 new ActionWorkAction(() =>
                 {
                     if (!show)
                     {
                         this.handMenuTransform.Owner.IsEnabled = false;
                     }
-                }
-            )
-            );
+                }));
             this.appearAnimation.Run();
         }
 
@@ -303,14 +299,15 @@ namespace Xrv.Core.Menu
                     foreach (var button in this.instantiatedButtons.Values.Reverse())
                     {
                         var buttonTransform = button.FindComponent<Transform3D>();
-                        buttonTransform.LocalPosition = Vector3.Lerp(new Vector3(ButtonWidthOverTwo + (ButtonWidth * (i / this.numberButtonsPerColumns)), -ButtonWidthOverTwo - ((i % this.numberButtonsPerColumns) * ButtonWidth), 0),
-                                                                     new Vector3(ButtonWidthOverTwo + ((i % this.numberButtonsPerColumns) * ButtonWidth), -ButtonWidthOverTwo - (ButtonWidth * (i / this.numberButtonsPerColumns)), 0),
-                                                                        f);
+                        buttonTransform.LocalPosition = Vector3.Lerp(
+                            new Vector3(ButtonWidthOverTwo + (ButtonWidth * (i / this.numberButtonsPerColumns)), -ButtonWidthOverTwo - ((i % this.numberButtonsPerColumns) * ButtonWidth), 0),
+                            new Vector3(ButtonWidthOverTwo + ((i % this.numberButtonsPerColumns) * ButtonWidth), -ButtonWidthOverTwo - (ButtonWidth * (i / this.numberButtonsPerColumns)), 0),
+                            f);
 
                         i++;
                     }
-                })
-            ).ContinueWith(
+                }))
+            .ContinueWith(
                 new ActionWorkAction(() =>
                 {
                     if (end == 0)
@@ -319,9 +316,7 @@ namespace Xrv.Core.Menu
                         this.followButtonTransform.Owner.IsEnabled = false;
                         this.palmPanelBehavior.Owner.IsEnabled = true;
                     }
-                }
-            )
-            );
+                }));
             this.extendedAnimation.Run();
         }
 
@@ -329,8 +324,6 @@ namespace Xrv.Core.Menu
         {
             this.ExtendedAnimation(this.detachButtonToggle.IsOn);
         }
-
-        // -- Begin Debug area --
 
         [BindService]
         protected GraphicsPresenter graphicsPresenter;

@@ -1,4 +1,6 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Xrv.Core.Menu;
@@ -35,19 +37,19 @@ namespace Xrv.Ruler
                 IconOn = RulerResourceIDs.Materials.Icons.Measure,
                 IsToggle = true,
                 TextOn = "Hide",
-                TextOff = "Show"
+                TextOff = "Show",
             };
 
             this.settings = new TabItem()
             {
                 Name = "Ruler",
-                Contents = SettingContent,
+                Contents = this.SettingContent,
             };
 
             this.help = new TabItem()
             {
                 Name = "Ruler",
-                Contents = HelpContent,
+                Contents = this.HelpContent,
             };
         }
 
@@ -56,7 +58,7 @@ namespace Xrv.Ruler
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
 
             // Ruler
-            var rulerPrefab = assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.Ruler_weprefab);
+            var rulerPrefab = this.assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.Ruler_weprefab);
             this.rulerEntity = rulerPrefab.Instantiate();
             this.rulerEntity.IsEnabled = false;
             scene.Managers.EntityManager.Add(this.rulerEntity);
@@ -67,7 +69,7 @@ namespace Xrv.Ruler
 
             // RulerBehavior
             this.rulerBehavior = this.rulerEntity.FindComponent<RulerBehavior>();
-            this.rulerBehavior.Settings = rulerSettings;
+            this.rulerBehavior.Settings = this.rulerSettings;
         }
 
         public override void Run(bool turnOn)

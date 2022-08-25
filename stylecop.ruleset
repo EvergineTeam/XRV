@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Evergine StyleCop Ruleset" Description="Ruleset used in Evergine team." ToolsVersion="17.0">
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CS1591" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0005" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
+    <Rule Id="CA1823" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA0000" Action="Error" />
+    <Rule Id="SA0001" Action="None" />
+    <Rule Id="SA1123" Action="None" />
+    <Rule Id="SA1124" Action="None" />
+    <Rule Id="SA1129" Action="None" />
+    <Rule Id="SA1200" Action="None" />
+    <Rule Id="SA1203" Action="None" />
+    <Rule Id="SA1204" Action="None" />
+    <Rule Id="SA1206" Action="None" />
+    <Rule Id="SA1207" Action="None" />
+    <Rule Id="SA1208" Action="None" />
+    <Rule Id="SA1211" Action="None" />
+    <Rule Id="SA1215" Action="Warning" />
+    <Rule Id="SA1300" Action="None" />
+    <Rule Id="SA1306" Action="None" />
+    <Rule Id="SA1307" Action="None" />
+    <Rule Id="SA1310" Action="None" />
+    <Rule Id="SA1311" Action="None" />
+    <Rule Id="SA1314" Action="None" />
+    <Rule Id="SA1401" Action="None" />
+    <Rule Id="SA1405" Action="None" />
+    <Rule Id="SA1406" Action="None" />
+    <Rule Id="SA1412" Action="Warning" />
+    <Rule Id="SA1639" Action="Warning" />
+    <Rule Id="SA1652" Action="None" />
+  </Rules>
+</RuleSet>

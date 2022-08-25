@@ -1,4 +1,6 @@
-﻿using Evergine.Components.WorkActions;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
@@ -24,7 +26,7 @@ namespace Xrv.Core.UI.Buttons
             if (attached)
             {
                 this.contentDefaultPosition = this.contentTransform.LocalPosition;
-                this.contentHoverPosition = this.contentTransform.LocalPosition + Vector3.Forward * 0.002f;
+                this.contentHoverPosition = this.contentTransform.LocalPosition + (Vector3.Forward * 0.002f);
             }
 
             return attached;

@@ -1,4 +1,6 @@
-﻿using Evergine.Components.Fonts;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -66,7 +68,7 @@ namespace Xrv.Core.UI.Windows
 
         public string Title
         {
-            get => this.title; 
+            get => this.title;
             set
             {
                 this.title = value;

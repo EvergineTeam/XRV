@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Attributes;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
@@ -83,7 +85,7 @@ namespace Xrv.Core.Menu
             // Update positions
             var cameraPosition = cameraTransform.Position;
 
-            var desiredPosition = middleProximalJoint.Pose.Position + offset * this.DistanceFromHand;
+            var desiredPosition = middleProximalJoint.Pose.Position + (offset * this.DistanceFromHand);
             var desiredDirection = cameraPosition - desiredPosition;
             desiredDirection.Normalize();
 

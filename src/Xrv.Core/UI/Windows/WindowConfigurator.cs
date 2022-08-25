@@ -1,8 +1,9 @@
-﻿using Evergine.Components.Graphics3D;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
-using System;
 
 namespace Xrv.Core.UI.Windows
 {
@@ -49,8 +50,8 @@ namespace Xrv.Core.UI.Windows
 
         private void UpdateLogoMaterial()
         {
-            this.logoMaterialComponent.Owner.IsEnabled = logoMaterial != null;
-            this.logoMaterialComponent.Material = logoMaterial;
+            this.logoMaterialComponent.Owner.IsEnabled = this.logoMaterial != null;
+            this.logoMaterialComponent.Material = this.logoMaterial;
         }
     }
 }

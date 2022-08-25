@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Attributes;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Attributes;
 using Evergine.Common.Input;
 using Evergine.Common.Input.Keyboard;
 using Evergine.Framework;
@@ -88,7 +90,7 @@ namespace Xrv.Core.Menu
                 {
                     Handedness = cursorEntity.Name.Contains($"{XRHandedness.LeftHand}") ? XRHandedness.LeftHand : XRHandedness.RightHand,
                     MouseControlBehavior = item,
-                    Transform = cursorEntity.FindComponent<Transform3D>()
+                    Transform = cursorEntity.FindComponent<Transform3D>(),
                 });
             }
 
@@ -157,7 +159,7 @@ namespace Xrv.Core.Menu
             // Update positions
             var cameraPosition = cameraTransform.Position;
 
-            var desiredPosition = this.activeCursor.Transform.Position + offset * this.DistanceFromHand;
+            var desiredPosition = this.activeCursor.Transform.Position + (offset * this.DistanceFromHand);
             var desiredDirection = cameraPosition - desiredPosition;
             desiredDirection.Normalize();
 
