@@ -6,7 +6,7 @@ namespace Xrv.AudioNote.Models
 {
     public class AudioNoteData
     {
-        public Guid Guid { get; set; }
+        public string Guid { get; set; }
         public string Path { get; set; }
     }
 }

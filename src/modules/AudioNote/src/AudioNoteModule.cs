@@ -1,20 +1,16 @@
-﻿using Evergine.Framework.Prefabs;
+﻿using Evergine.Framework;
+using Evergine.Framework.Graphics;
+using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using Evergine.Framework;
+using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Xrv.Core.Menu;
-using Xrv.Core.UI.Tabs;
-using Xrv.Core.Modules;
-using Xrv.Core;
 using Xrv.AudioNote.Messages;
-using Evergine.Framework.Graphics;
-using System.Diagnostics;
+using Xrv.Core;
+using Xrv.Core.Menu;
+using Xrv.Core.Modules;
 using Xrv.Core.UI.Dialogs;
-using Evergine.Mathematics;
-using System.Linq;
-using SharpYaml.Tokens;
+using Xrv.Core.UI.Tabs;
 
 namespace Xrv.AudioNote
 {
@@ -39,8 +35,9 @@ namespace Xrv.AudioNote
 
         private Scene scene;
 
-        private List<Entity> audioAnchorList = new List<Entity>();
-        private List<Entity> audioWindowList = new List<Entity>();
+        private Dictionary<string, Entity> anchorsDic = new Dictionary<string, Entity>();
+        private Dictionary<string, Entity> windowsDic = new Dictionary<string, Entity>();
+        private AudioNoteDeleteMessage audionoteToRemove;
 
         public AudioNoteModule()
         {
@@ -75,6 +72,7 @@ namespace Xrv.AudioNote
             this.audioNoteSettings = rulerSettingPrefab.Instantiate();
 
             this.xrv.PubSub.Subscribe<AudioNoteMessage>(this.CreateAudioNoteWindow);
+            this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.CreateAudioNoteDeleteWindow);
         }
 
         public override void Run(bool turnOn)
@@ -87,8 +85,12 @@ namespace Xrv.AudioNote
 
         private void AddAudioAnchor(Entity anchor)
         {
-            this.scene.Managers.EntityManager.Add(anchor);
-            audioAnchorList.Add(anchor);
+            var c = anchor.FindComponent<AudioNoteAnchor>();
+            if (c != null)
+            {
+                this.scene.Managers.EntityManager.Add(anchor);
+                anchorsDic.Add(c.AudioNote.Guid, anchor);
+            }
         }
 
         public Vector3 GetFrontPosition(Scene scene)
@@ -120,14 +122,80 @@ namespace Xrv.AudioNote
             return this.audioNoteHelp;
         }
 
-        private void CreateAudioNoteWindow(AudioNoteMessage obj)
+        private void CreateAudioNoteWindow(AudioNoteMessage msg)
         {
-            var note = this.ShowEmptyAudionote(obj);
+            if (!this.windowsDic.TryGetValue(msg.Data.Guid, out var note))
+            {
+                if (string.IsNullOrEmpty(msg.Data.Path))
+                {
+                    note = this.ShowEmptyAudionote(msg);
+                }
+                else
+                {
+                    note = this.ShowRecordedAudionote(msg);
+                }
+
+                this.windowsDic.Add(msg.Data.Guid, note);
+            }
+
             this.SetFrontPosition(this.scene, note);
-            this.audioWindowList.Add(note);
+        }
+
+        private void CreateAudioNoteDeleteWindow(AudioNoteDeleteMessage msg)
+        {
+            var alert = this.xrv.WindowSystem.ShowConfirmDialog("Delete this note?", "This action can’t be undone.", "No", "Yes");
+            alert.Open();
+            this.audionoteToRemove = msg;
+            alert.Closed += Alert_Closed;
+        }
+
+        private void Alert_Closed(object sender, System.EventArgs e)
+        {
+            if (sender is Dialog dialog)
+            {
+                dialog.Closed -= this.Alert_Closed;
+                var audioNote = this.audionoteToRemove;
+                this.audionoteToRemove = null;
+
+                var isAcceted = dialog.Result == ConfirmDialog.AcceptKey;
+                if (!isAcceted) return;
+
+                var guid = audioNote?.Data.Guid;
+                if (string.IsNullOrEmpty(guid)) return;
+
+                this.RemoveAnchor(guid);
+            }
+        }
+
+        public void RemoveAnchor(string guid)
+        {
+            if (this.anchorsDic.TryGetValue(guid, out var anchor))
+            {
+                this.scene.Managers.EntityManager.Remove(anchor);
+            }
+
+            this.RemoveWindow(guid);
+        }
+
+        public void RemoveWindow(string guid)
+        {
+            if (this.windowsDic.TryGetValue(guid, out var window))
+            {
+                this.scene.Managers.EntityManager.Remove(window);
+            }
+        }
+
+        public Entity ShowRecordedAudionote(AudioNoteMessage message)
+        {
+            return ShowAudionoteWindow(message, AudioNoteResourceIDs.Prefabs.Recorded);
         }
 
         public Entity ShowEmptyAudionote(AudioNoteMessage message)
+        {
+            return ShowAudionoteWindow(message, AudioNoteResourceIDs.Prefabs.Empty);
+        }
+
+        private Entity ShowAudionoteWindow(AudioNoteMessage message, Guid prefabId)
         {
             var audioNoteSize = new Vector2(0.15f, 0.04f);
             var window = this.xrv.WindowSystem.ShowWindow();
@@ -137,7 +205,10 @@ namespace Xrv.AudioNote
             config.FrontPlateSize = audioNoteSize;
             config.FrontPlateOffsets = Vector2.Zero;
             config.DisplayLogo = false;
-            config.Content = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Empty).Instantiate();
+            config.Content = this.assetsService.Load<Prefab>(prefabId).Instantiate();
+
+            var audionoteBase = config.Content.FindComponent<AudioNoteBase>(isExactType: false);
+            audionoteBase.Data = message.Data;
             window.Open();
 
             return window.Owner;

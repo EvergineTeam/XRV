@@ -44,7 +44,7 @@ namespace Xrv.AudioNote
         private AudioNoteAnchorVisual visualState;
         private AudioNoteAnchorState anchorState;
 
-        public AudioNoteData AdutioNote { get; set; }
+        public AudioNoteData AudioNote { get; set; }
 
         public AudioNoteAnchorState AnchorState
         {
@@ -89,7 +89,7 @@ namespace Xrv.AudioNote
         {
             this.xrvService.PubSub.Publish(new AudioNoteMessage()
             {
-                Data = this.AdutioNote,
+                Data = this.AudioNote,
                 State = current
             });
         }
@@ -98,6 +98,11 @@ namespace Xrv.AudioNote
         {
             if (!base.OnAttached()) return false;
             if (Application.Current.IsEditor) return true;
+
+            this.AudioNote = new AudioNoteData()
+            {
+                Guid = Guid.NewGuid().ToString(),
+            };
 
             this.tapDetector.OnTap += Handler_OnClick;
             return true;

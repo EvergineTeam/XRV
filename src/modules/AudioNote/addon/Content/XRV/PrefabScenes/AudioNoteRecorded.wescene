@@ -71,6 +71,10 @@ Items:
           X: 1.0
           Y: 1.0
           Z: 1.0
+      - !Xrv.AudioNote.AudioNoteRecorded,Xrv.AudioNote
+        Id: 87bfac10-7cf4-441b-a983-2b03a13cc6b2
+        Data: null
+        IsEnabled: true
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Buttons
@@ -97,7 +101,7 @@ Items:
         Children:
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: Microphone
-            Tag: 
+            Tag: ContentAction
             IsEnabled: true
             IsStatic: false
             Components:
@@ -616,7 +620,7 @@ Items:
             Id: 7b5269cd-512c-4f34-8eaa-f292695205b0
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: Delete
-            Tag: 
+            Tag: Delete
             IsEnabled: true
             IsStatic: false
             Components:
@@ -1064,7 +1068,7 @@ Items:
         Id: 551572ae-7d55-4cdb-9266-1f9e622f68e0
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Content
-        Tag: null
+        Tag: Content
         IsEnabled: true
         IsStatic: false
         Components:
@@ -1302,7 +1306,7 @@ Items:
         Id: 97a2728b-ba0c-4895-b365-75630cf4ae15
     Id: cb8d3ad3-7da2-4d6f-8c5d-5001a063ef20
   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 0a992b01-4336-4423-8c66-eedd228e003c
+    Id: e81ecf3d-e690-46e0-b508-5cb703809761
     Source: 0ce4879a-bb7a-4e92-b8ed-b257d29c179f
     entityLinks: {}
     modificationList: []
