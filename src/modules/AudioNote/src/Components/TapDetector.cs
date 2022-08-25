@@ -7,6 +7,7 @@ using System.Diagnostics;
 
 namespace Xrv.AudioNote
 {
+    // TODO move to core?
     public class TapDetector : Component, IMixedRealityPointerHandler
     {
         private Vector3 positionInit;
