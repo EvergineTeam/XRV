@@ -30,6 +30,8 @@ namespace Xrv.AudioNote
             public static readonly Guid Settings = new Guid("78a5a6f4-cf3b-4611-984b-0bd411b1f050");
             public static readonly Guid Help = new Guid("b9be9e62-a68c-4eae-b52a-b12cc26b0a05");
             public static readonly Guid Anchor = new Guid("b0bb7495-b379-4af8-8458-018e0edebdb0");
+            public static readonly Guid Recorded = new Guid("0ce4879a-bb7a-4e92-b8ed-b257d29c179f");
+            public static readonly Guid Empty = new Guid("94c5a21c-f1b3-4c6c-91ae-55650ced3c8b");
         }
     }
 }

@@ -112,7 +112,6 @@ namespace Xrv.AudioNote
         protected override void OnActivated()
         {
             base.OnActivated();
-            this.AnchorState = this.anchorState;
         }
 
         private void Handler_OnClick(object sender, EventArgs e)
