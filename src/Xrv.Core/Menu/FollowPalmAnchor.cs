@@ -5,7 +5,7 @@ using System;
 
 namespace Xrv.Core.Menu
 {
-    public class PinToTransform : Behavior
+    public class FollowPalmAnchor : Behavior
     {
         [BindComponent]
         private Transform3D transform3D = null;
@@ -21,6 +21,8 @@ namespace Xrv.Core.Menu
             get => this.target;
             set => this.UpateTargetTransform(value);
         }
+
+        public Vector3 TargetOffset { get; set; } = new Vector3(-0.016f, 0.05f, 0);
 
         public float SmoothTime { get; set; }
 
@@ -53,7 +55,11 @@ namespace Xrv.Core.Menu
             }
 
             float dt = (float)gameTime.TotalSeconds;
-            this.transform3D.Position = Vector3.SmoothDamp(this.transform3D.Position, this.Target.Position, ref this.currentPositionVelocity, this.SmoothTime, dt);
+
+            ////this.Managers.RenderManager.LineBatch3D.DrawPoint(this.target.Position, 0.01f, Evergine.Common.Graphics.Color.Red);
+            ////this.Managers.RenderManager.LineBatch3D.DrawPoint(this.transform3D.Position, 0.01f, Evergine.Common.Graphics.Color.Orange);
+
+            this.transform3D.Position = Vector3.SmoothDamp(this.transform3D.Position, this.Target.Position + this.TargetOffset, ref this.currentPositionVelocity, this.SmoothTime, dt);
             this.transform3D.Orientation = Quaternion.SmoothDamp(this.transform3D.Orientation, this.Target.Orientation, ref this.currentOrientationVelocity, this.SmoothTime * 0.1f, dt);
             this.transform3D.Scale = Vector3.SmoothDamp(this.transform3D.Scale, this.Target.Scale, ref this.currentScaleVelocity, this.SmoothTime * 0.1f, dt);
         }

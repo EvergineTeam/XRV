@@ -2,9 +2,10 @@
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics3D;
 using Evergine.Mathematics;
-using System;
 using System.Linq;
+using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Windows
 {
@@ -44,15 +45,18 @@ namespace Xrv.Core.UI.Windows
         [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_button_container")]
         protected Transform3D titleButtonContainerTransform;
 
+        [BindComponent(isRequired: false)]
+        protected BoxCollider3D manipulationCollider;
+
         protected Entity logoEntity;
         protected Entity contentEntity;
 
         public Entity Content
         {
-            get => content;
+            get => this.content;
             set
             {
-                content = value;
+                this.content = value;
                 if (this.IsAttached)
                 {
                     this.UpdateContent();
@@ -62,10 +66,10 @@ namespace Xrv.Core.UI.Windows
 
         public string Title
         {
-            get => title; 
+            get => this.title; 
             set
             {
-                title = value;
+                this.title = value;
                 if (this.IsAttached)
                 {
                     this.UpdateTitle();
@@ -75,10 +79,10 @@ namespace Xrv.Core.UI.Windows
 
         public Vector2 Size
         {
-            get => size;
+            get => this.size;
             set
             {
-                size = value;
+                this.size = value;
                 if (this.IsAttached)
                 {
                     this.UpdateSize();
@@ -88,10 +92,10 @@ namespace Xrv.Core.UI.Windows
 
         public Vector2 FrontPlateOffsets
         {
-            get => frontPlateOffsets;
+            get => this.frontPlateOffsets;
             set
             {
-                frontPlateOffsets = value;
+                this.frontPlateOffsets = value;
                 if (this.IsAttached)
                 {
                     this.UpdateFrontPlateOffsets();
@@ -101,10 +105,10 @@ namespace Xrv.Core.UI.Windows
 
         public Vector2 FrontPlateSize
         {
-            get => frontPlateSize;
+            get => this.frontPlateSize;
             set
             {
-                frontPlateSize = value;
+                this.frontPlateSize = value;
                 if (this.IsAttached)
                 {
                     this.UpdateFrontPlateSize();
@@ -208,6 +212,18 @@ namespace Xrv.Core.UI.Windows
             var buttonContainer = this.titleButtonContainerTransform.LocalPosition;
             buttonContainer.X = halfSize.X;
             this.titleButtonContainerTransform.LocalPosition = buttonContainer;
+
+            if (this.manipulationCollider != null)
+            {
+                var colliderSize = this.manipulationCollider.Size;
+                colliderSize.X = this.size.X;
+                colliderSize.Y = this.size.Y + ButtonConstants.SquareButtonSize;
+                this.manipulationCollider.Size = colliderSize;
+
+                var colliderOffset = this.manipulationCollider.Offset;
+                colliderOffset.Y = ButtonConstants.SquareButtonSize / 2;
+                this.manipulationCollider.Offset = colliderOffset;
+            }
         }
 
         private bool CheckCorrectSizes() =>
@@ -216,7 +232,7 @@ namespace Xrv.Core.UI.Windows
             && this.frontPlateSize.X != 0
             && this.frontPlateSize.Y != 0;
 
-        private void UpdateTitle() => this.titleMesh.Text = title;
+        private void UpdateTitle() => this.titleMesh.Text = this.title;
 
         private void UpdateContent()
         {
@@ -232,16 +248,16 @@ namespace Xrv.Core.UI.Windows
                     continue;
                 }
 
-                if (content != null && content.Id != item.Id)
+                if (this.content != null && this.content.Id != item.Id)
                 {
                     this.contentEntity.RemoveChild(item);
                 }
             }
 
-            if (content != null
+            if (this.content != null
                 && this.contentEntity.ChildEntities.Count() == 1)
             {
-                this.contentEntity.AddChild(content);
+                this.contentEntity.AddChild(this.content);
             }
         }
 

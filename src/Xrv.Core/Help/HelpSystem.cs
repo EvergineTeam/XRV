@@ -32,7 +32,7 @@ namespace Xrv.Core.Help
         private TabbedWindow CreateHelpWindow()
         {
             var owner = TabbedWindow.Create(this.xrvService);
-            var configurator = owner.FindComponent<WindowConfiguration>();
+            var configurator = owner.FindComponent<WindowConfigurator>();
             var window = owner.FindComponent<TabbedWindow>();
             configurator.Title = "Help";
 

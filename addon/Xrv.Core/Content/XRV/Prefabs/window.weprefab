@@ -21,8 +21,8 @@ Root:
         X: 1.0
         Y: 1.0
         Z: 1.0
-    - !Xrv.Core.UI.Windows.WindowConfiguration,Xrv.Core
-      Id: 6ec03ba6-7ac4-4b1b-ad72-fae41ba8b731
+    - !Xrv.Core.UI.Windows.WindowConfigurator,Xrv.Core
+      Id: 447e11ce-6204-4245-be59-2b9d3b967e84
       Content: null
       DisplayFrontPlate: true
       DisplayLogo: true
@@ -37,7 +37,34 @@ Root:
       Size:
         X: 0.300000012
         Y: 0.200000003
-      Title: Title
+      Title: Title goes here
+    - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
+      Id: cf2db15c-0114-47ef-9cdc-b491f2720d65
+      IsEnabled: true
+      Margin: 0.0399999991
+      Offset:
+        X: 0.0
+        Y: 0.0160000008
+        Z: -0.00700000115
+      OrientationOffset:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      Size:
+        X: 0.300000012
+        Y: 0.232000008
+        Z: 0.020000007
+    - !Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation.SimpleManipulationHandler,Evergine.MRTK
+      Id: 83ae99a1-1d7a-4403-9808-c7f677b45a79
+      Constraints: ConstraintScaleAll
+      EnableSinglePointerRotation: true
+      IncludeChildrenColliders: false
+      IsEnabled: true
+      KeepRigidBodyActiveDuringDrag: false
+      SmoothingActive: true
+      SmoothingAmount: 0.00100000005
+      UpdateOrder: 0.5
   Children:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: back
@@ -201,7 +228,7 @@ Root:
                   Size:
                     X: 1.0
                     Y: 0.0149999997
-                  Text: Title
+                  Text: Title goes here
                   VerticalAlignment: Top
                   Wrapping: true
                 - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
