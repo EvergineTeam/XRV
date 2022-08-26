@@ -2,6 +2,7 @@ using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Platform;
 using Xrv.Core;
+using Xrv.LoadModel;
 using Xrv.Ruler;
 
 namespace XrvSamples
@@ -24,6 +25,7 @@ namespace XrvSamples
 
             var xrera = new XrvService();
             xrera.AddModule(new RulerModule());
+            xrera.AddModule(new LoadModelModule());
 
             this.Container.RegisterInstance(xrera);
         }
