@@ -1,4 +1,5 @@
-﻿using Evergine.Framework;
+﻿using Evergine.Components.WorkActions;
+using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
@@ -33,11 +34,10 @@ namespace Xrv.AudioNote
 
         private Entity audioNoteHelp;
         private Entity audioNoteSettings;
-
+        private Window window;
         private Scene scene;
 
         private Dictionary<string, Entity> anchorsDic = new Dictionary<string, Entity>();
-        private Dictionary<string, Entity> windowsDic = new Dictionary<string, Entity>();
         private AudioNoteDeleteMessage audionoteToRemove;
 
         public AudioNoteModule()
@@ -72,30 +72,16 @@ namespace Xrv.AudioNote
             var rulerSettingPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Settings);
             this.audioNoteSettings = rulerSettingPrefab.Instantiate();
 
+            // TODO change with showwindow with defered
+            WorkActionFactory.CreateDelayWorkAction(scene, TimeSpan.FromSeconds(1)).ContinueWithAction(() =>
+                {
+                    // Audio Note Window
+                    this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
+                })
+                .Run();
+
             this.xrv.PubSub.Subscribe<AudioNoteMessage>(this.CreateAudioNoteWindow);
-            this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.CreateAudioNoteDeleteWindow);
-            this.xrv.PubSub.Subscribe<AudioNoteUpdateMessage>(this.AudioNoteUpdateMessage);
-            this.xrv.PubSub.Subscribe<AudioNoteWindowDeleteMessage>(this.AudioNoteWindowDeleteMessage);
-        }
-
-        private void AudioNoteWindowDeleteMessage(AudioNoteWindowDeleteMessage msg)
-        {
-            var key = msg.Data.Guid;
-            if (this.windowsDic.TryGetValue(key, out var window))
-            {
-                this.windowsDic.Remove(key);
-                this.scene.Managers.EntityManager.Remove(window);
-            }
-        }
-
-        private void AudioNoteUpdateMessage(AudioNoteUpdateMessage msg)
-        {
-            var key = msg.Data.Guid;
-            if (this.anchorsDic.TryGetValue(key, out var anchor))
-            {
-                var anchorComponent = anchor.FindComponent<AudioNoteAnchor>();
-                anchorComponent.AudioNote = msg.Data;
-            }
+            this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
         }
 
         public override void Run(bool turnOn)
@@ -104,6 +90,7 @@ namespace Xrv.AudioNote
 
             this.SetFrontPosition(this.scene, anchor);
             this.AddAudioAnchor(anchor);
+            this.window.Open();
         }
 
         private void AddAudioAnchor(Entity anchor)
@@ -120,6 +107,7 @@ namespace Xrv.AudioNote
         {
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
+            // TODO uses NEAR position instead of 0.6f
             return cameraTransform.Position + cameraWorldTransform.Forward * 0.6f;
         }
 
@@ -147,34 +135,18 @@ namespace Xrv.AudioNote
 
         private void CreateAudioNoteWindow(AudioNoteMessage msg)
         {
-            if (!this.windowsDic.TryGetValue(msg.Data.Guid, out var note))
-            {
-                if (string.IsNullOrEmpty(msg.Data.Path))
-                {
-                    note = this.ShowEmptyAudionote(msg);
-                }
-                else
-                {
-                    note = this.ShowRecordedAudionote(msg);
-                }
-
-                this.windowsDic.Add(msg.Data.Guid, note);
-            }
-            else
-            {
-                var w = note.FindComponent<Window>();
-                w.Open();
-            }
-
-            this.SetFrontPosition(this.scene, note);
+            var note = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
+            note.Data = msg.Data;
+            this.window.Open();
         }
 
-        private void CreateAudioNoteDeleteWindow(AudioNoteDeleteMessage msg)
+        private void ConfirmDelete(AudioNoteDeleteMessage msg)
         {
-            var alert = this.xrv.WindowSystem.ShowConfirmDialog("Delete this note?", "This action can’t be undone.", "No", "Yes");
-            alert.Open();
+            var confirmDelete = this.xrv.WindowSystem.ShowConfirmDialog("Delete this note?", "This action can’t be undone.", "No", "Yes");
+            
+            confirmDelete.Open();
             this.audionoteToRemove = msg;
-            alert.Closed += Alert_Closed;
+            confirmDelete.Closed += Alert_Closed;
         }
 
         private void Alert_Closed(object sender, System.EventArgs e)
@@ -197,36 +169,18 @@ namespace Xrv.AudioNote
 
         public void RemoveAnchor(string guid)
         {
+            // TODO when anchor is serialized, remove from there also
             if (this.anchorsDic.TryGetValue(guid, out var anchor))
             {
                 this.scene.Managers.EntityManager.Remove(anchor);
             }
-
-            this.RemoveWindow(guid);
         }
 
-        public void RemoveWindow(string guid)
+        private Window ShowAudionoteWindow(Guid prefabId)
         {
-            if (this.windowsDic.TryGetValue(guid, out var window))
-            {
-                this.scene.Managers.EntityManager.Remove(window);
-            }
-        }
-
-        public Entity ShowRecordedAudionote(AudioNoteMessage message)
-        {
-            return ShowAudionoteWindow(message, AudioNoteResourceIDs.Prefabs.Recorded);
-        }
-
-        public Entity ShowEmptyAudionote(AudioNoteMessage message)
-        {
-            return ShowAudionoteWindow(message, AudioNoteResourceIDs.Prefabs.Empty);
-        }
-
-        private Entity ShowAudionoteWindow(AudioNoteMessage message, Guid prefabId)
-        {
-            var audioNoteSize = new Vector2(0.15f, 0.04f);
+            var audioNoteSize = new Vector2(0.18f, 0.04f);
             var window = this.xrv.WindowSystem.ShowWindow();
+
             var config = window.Configurator;
             config.Title = "Audio Note";
             config.Size = audioNoteSize;
@@ -234,12 +188,7 @@ namespace Xrv.AudioNote
             config.FrontPlateOffsets = Vector2.Zero;
             config.DisplayLogo = false;
             config.Content = this.assetsService.Load<Prefab>(prefabId).Instantiate();
-
-            var audionoteBase = config.Content.FindComponent<AudioNoteBase>(isExactType: false);
-            audionoteBase.Data = message.Data;
-            window.Open();
-
-            return window.Owner;
+            return window;
         }
     }
 }

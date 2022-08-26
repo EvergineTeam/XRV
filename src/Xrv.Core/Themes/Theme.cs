@@ -5,13 +5,13 @@ namespace Xrv.Core.Themes
 {
     public class Theme
     {
-        public Color BackgroundPrimaryColor { get; }
+        public Color BackgroundPrimaryColor { get; } = new Color("#041C2CFF");
 
-        public Color BackgroundSecondaryColor { get; }
+        public Color BackgroundSecondaryColor { get; } = new Color("#000000FF");
 
-        public Color ForegroundPrimaryColor { get; }
+        public Color ForegroundPrimaryColor { get; private set; } = new Color("#115BB8FF");
 
-        public Color ForegroundSecondaryColor { get; }
+        public Color ForegroundSecondaryColor { get; } = new Color("#DF4661FF");
 
         public Guid FontPath { get; }
     }

@@ -1,7 +1,9 @@
-﻿using Evergine.Components.Graphics3D;
+﻿using Evergine.Common.Graphics;
+using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
+using Evergine.MRTK.Effects;
 using System;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
@@ -11,8 +13,9 @@ namespace Xrv.AudioNote
 {
     public enum AudioNoteAnchorVisual
     {
-        Empty,
-        Recorded,
+        Idle,
+        Selected,
+        Grabbed
     }
 
     public class AudioNoteAnchor : Component
@@ -27,11 +30,6 @@ namespace Xrv.AudioNote
         protected MaterialComponent iconMaterial;
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "Back")]
         protected MaterialComponent backMaterial;
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "Grab")]
-        protected MaterialComponent grabMaterial;
-
-        [BindComponent]
-        protected AudioNoteAnchorHandler handler;
 
         [BindComponent]
         protected TapDetector tapDetector;
@@ -44,13 +42,6 @@ namespace Xrv.AudioNote
             set
             {
                 audioNote = value;
-                if (this.IsAttached)
-                {
-                    if (!string.IsNullOrEmpty(audioNote.Path))
-                    {
-                        this.UpdateVisualState(AudioNoteAnchorVisual.Recorded);
-                    }
-                }
             }
         }
 
@@ -58,13 +49,14 @@ namespace Xrv.AudioNote
         {
             switch (current)
             {
-                case AudioNoteAnchorVisual.Empty:
-                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteIconEmpty);
-                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteBackEmpty);
+                case AudioNoteAnchorVisual.Grabbed:
+                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorGrabbed);
+                    break;
+                case AudioNoteAnchorVisual.Selected:
+                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorSelected);
                     break;
                 default:
-                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteIconFull);
-                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteBackFull);
+                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorIdle);
                     break;
             }
         }
@@ -80,6 +72,23 @@ namespace Xrv.AudioNote
             };
 
             this.tapDetector.OnTap += Handler_OnClick;
+
+            //BackgroundPrimaryColor "#041C2CFF"
+            //BackgroundSecondaryColor "#000000FF"
+            //ForegroundPrimaryColor "#115BB8FF"
+            //ForegroundSecondaryColor "#DF4661FF"
+
+            // Set Anchor colo themes
+            var anchorGrabbed = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorGrabbed);
+            var grabMat = new HoloGraphic(anchorGrabbed);
+            //grabMat.Albedo = this.xrvService.CurrentTheme.ForegroundPrimaryColor; // TODO change wit theme colors
+            grabMat.Albedo = new Color("#115BB8FF");
+
+            var anchorback = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteAnchorBack);
+            var backMat = new HoloGraphic(anchorback);
+            //grabMat.Albedo = this.xrvService.CurrentTheme.BackgroundPrimaryColor; // TODO change wit theme colors
+            backMat.Albedo = new Color("#041C2CFF");
+
             return true;
         }
 

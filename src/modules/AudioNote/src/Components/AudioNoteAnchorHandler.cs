@@ -7,6 +7,7 @@ using Evergine.MRTK.Base.EventDatum.Input;
 using Evergine.MRTK.Base.Interfaces.InputSystem.Handlers;
 using Evergine.MRTK.Emulation;
 using System;
+using System.Diagnostics;
 
 namespace Xrv.AudioNote
 {
@@ -18,28 +19,20 @@ namespace Xrv.AudioNote
         [BindComponent]
         protected Transform3D transform = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "Grab")]
-        protected MaterialComponent materialComponent = null;
-
         protected Cursor currentCursor;
         protected Vector3 initialOffset;
         protected Vector3 lastCursorPosition;
 
-        protected Material idle;
-        protected Material grabbed;
-        protected Material selected;
+        [BindComponent]
+        protected AudioNoteAnchor anchor;
 
         protected bool touched;
+        private Stopwatch watch;
+        private TimeSpan tapTime = TimeSpan.FromSeconds(0.4f);
 
         protected override bool OnAttached()
         {
-            var result = base.OnAttached();
-
-            this.idle = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.HandleIdle);
-            this.selected = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.HandleSelected);
-            this.grabbed = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.HandleGrabbed);
-
-            return result;
+            return base.OnAttached();
         }
 
         public void OnPointerClicked(MixedRealityPointerEventData eventData)
@@ -53,6 +46,8 @@ namespace Xrv.AudioNote
                 return;
             }
 
+            this.watch = Stopwatch.StartNew();
+
             if (this.currentCursor == null)
             {
                 if (eventData.CurrentTarget == this.Owner)
@@ -62,7 +57,7 @@ namespace Xrv.AudioNote
                     this.initialOffset = this.transform.Position - eventData.Position;
                     this.transform.Position = eventData.Position + this.initialOffset;
                     this.lastCursorPosition = eventData.Position;
-                    this.materialComponent.Material = this.grabbed;
+                    this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Grabbed);
 
                     eventData.SetHandled();
                 }
@@ -75,6 +70,9 @@ namespace Xrv.AudioNote
             {
                 return;
             }
+
+            if (this.watch.Elapsed < this.tapTime) return;
+            this.watch.Stop();
 
             if (this.currentCursor == eventData.Cursor)
             {
@@ -97,20 +95,21 @@ namespace Xrv.AudioNote
             if (this.currentCursor == eventData.Cursor)
             {
                 this.currentCursor = null;
-                this.materialComponent.Material = this.touched ? this.selected : this.idle;
+                this.anchor.UpdateVisualState(this.touched ? AudioNoteAnchorVisual.Selected : AudioNoteAnchorVisual.Idle);
                 eventData.SetHandled();
             }
         }
 
         public void OnTouchCompleted(HandTrackingInputEventData eventData)
         {
-            this.materialComponent.Material = this.idle;
+
+            this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Idle);
             this.touched = false;
         }
 
         public void OnTouchStarted(HandTrackingInputEventData eventData)
         {
-            this.materialComponent.Material = this.selected;
+            this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Selected);
             this.touched = true;
         }
 
