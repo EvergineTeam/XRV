@@ -13,6 +13,7 @@ namespace Xrv.AudioNote
 {
     public enum AudioNoteWindowState
     {
+        None,
         Recording,
         Playing,
         StopPlaying,
@@ -83,11 +84,6 @@ namespace Xrv.AudioNote
             this.deleteButton.ButtonReleased += this.DeleteButton_ButtonReleased;
             this.playButton.ButtonReleased += this.PlayButton_ButtonReleased;
             this.recordButton.ButtonReleased += this.RecordButton_ButtonReleased;
-
-            this.data = new AudioNoteData()
-            {
-                Guid = Guid.NewGuid().ToString(),
-            };
 
             return true;
         }
@@ -162,21 +158,6 @@ namespace Xrv.AudioNote
             });
         }
 
-        protected override void OnActivated()
-        {
-            base.OnActivated();
-            if (Application.Current.IsEditor) return;
-
-            if (string.IsNullOrEmpty(this.Data.Path))
-            {
-                this.WindowState = AudioNoteWindowState.Recording;
-            }
-            else
-            {
-                this.WindowState = AudioNoteWindowState.Playing;
-            }
-        }
-
         private void UpdateWindowState(AudioNoteWindowState windowState)
         {
             WorkActionFactory.CreateDelayWorkAction(this.Owner.Scene, TimeSpan.FromSeconds(0.1f))
@@ -220,7 +201,7 @@ namespace Xrv.AudioNote
             // TODO begin record            
         }
 
-        private void SaveContent()
+        public void SaveContent()
         {
             // TODO stop record
             // TODO do save content here
@@ -232,5 +213,9 @@ namespace Xrv.AudioNote
             this.Data.Path = Guid.NewGuid().ToString();
         }
 
+        public void PlayAudio(bool play = true)
+        {
+            // TODO stop playing
+        }
     }
 }

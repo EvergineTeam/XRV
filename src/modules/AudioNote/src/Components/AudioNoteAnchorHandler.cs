@@ -8,11 +8,16 @@ using Evergine.MRTK.Base.Interfaces.InputSystem.Handlers;
 using Evergine.MRTK.Emulation;
 using System;
 using System.Diagnostics;
+using Xrv.AudioNote.Messages;
+using Xrv.Core;
 
 namespace Xrv.AudioNote
 {
     public class AudioNoteAnchorHandler : Component, IMixedRealityPointerHandler, IMixedRealityTouchHandler
     {
+        [BindService]
+        protected XrvService xrvService;
+
         [BindService]
         protected AssetsService assetsService = null;
 
@@ -26,14 +31,24 @@ namespace Xrv.AudioNote
         [BindComponent]
         protected AudioNoteAnchor anchor;
 
+        [BindComponent]
+        protected TapDetector tapDetector;
+
         protected bool touched;
         private Stopwatch watch;
         private TimeSpan tapTime = TimeSpan.FromSeconds(0.4f);
 
+
         protected override bool OnAttached()
         {
-            return base.OnAttached();
+            if (!base.OnAttached()) return false;
+            if (Application.Current.IsEditor) return true;
+
+
+            this.tapDetector.OnTap += Handler_OnClick;
+            return true;
         }
+
 
         public void OnPointerClicked(MixedRealityPointerEventData eventData)
         {
@@ -95,15 +110,13 @@ namespace Xrv.AudioNote
             if (this.currentCursor == eventData.Cursor)
             {
                 this.currentCursor = null;
-                this.anchor.UpdateVisualState(this.touched ? AudioNoteAnchorVisual.Selected : AudioNoteAnchorVisual.Idle);
                 eventData.SetHandled();
             }
         }
 
         public void OnTouchCompleted(HandTrackingInputEventData eventData)
         {
-
-            this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Idle);
+            this.anchor.UpdateVisualState(this.anchor.IsSelected? AudioNoteAnchorVisual.Selected : AudioNoteAnchorVisual.Idle);
             this.touched = false;
         }
 
@@ -115,6 +128,15 @@ namespace Xrv.AudioNote
 
         public void OnTouchUpdated(HandTrackingInputEventData eventData)
         {
+        }
+
+
+        private void Handler_OnClick(object sender, EventArgs e)
+        {
+            this.xrvService.PubSub.Publish(new AudioAnchorSelected()
+            {
+                Anchor = this.anchor,
+            });
         }
     }
 }

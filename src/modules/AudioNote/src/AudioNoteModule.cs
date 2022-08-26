@@ -7,6 +7,7 @@ using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
 using Xrv.AudioNote.Messages;
+using Xrv.AudioNote.Models;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -36,6 +37,8 @@ namespace Xrv.AudioNote
         private Entity audioNoteSettings;
         private Window window;
         private Scene scene;
+        private AudioNoteAnchor lastAnchorSelected;
+        private AudioNoteWindow windowAudioNote;
 
         private Dictionary<string, Entity> anchorsDic = new Dictionary<string, Entity>();
         private AudioNoteDeleteMessage audionoteToRemove;
@@ -77,10 +80,11 @@ namespace Xrv.AudioNote
                 {
                     // Audio Note Window
                     this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
+                    this.windowAudioNote = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
                 })
                 .Run();
 
-            this.xrv.PubSub.Subscribe<AudioNoteMessage>(this.CreateAudioNoteWindow);
+            this.xrv.PubSub.Subscribe<AudioAnchorSelected>(this.CreateAudioNoteWindow);
             this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
         }
 
@@ -90,7 +94,11 @@ namespace Xrv.AudioNote
 
             this.SetFrontPosition(this.scene, anchor);
             this.AddAudioAnchor(anchor);
-            this.window.Open();
+
+            this.xrv.PubSub.Publish(new AudioAnchorSelected()
+            {
+                Anchor = anchor.FindComponent<AudioNoteAnchor>(),
+            });
         }
 
         private void AddAudioAnchor(Entity anchor)
@@ -133,17 +141,50 @@ namespace Xrv.AudioNote
             return this.audioNoteHelp;
         }
 
-        private void CreateAudioNoteWindow(AudioNoteMessage msg)
+        private void CreateAudioNoteWindow(AudioAnchorSelected msg)
+        {
+            if (this.windowAudioNote.WindowState == AudioNoteWindowState.Recording)
+            {
+                this.windowAudioNote.SaveContent();
+            }
+            else if (this.windowAudioNote.WindowState == AudioNoteWindowState.Recording)
+            {
+                this.windowAudioNote.PlayAudio(false);
+            }
+
+            if (lastAnchorSelected != null)
+            {
+                this.lastAnchorSelected.UpdateVisualState(AudioNoteAnchorVisual.Idle);
+                this.lastAnchorSelected.IsSelected = false;
+            }
+
+            msg.Anchor.UpdateVisualState(AudioNoteAnchorVisual.Selected);
+            msg.Anchor.IsSelected = true;
+            this.lastAnchorSelected = msg.Anchor;
+
+            this.SetWindowInitialState(msg.Anchor.AudioNote);
+            this.window.Open();
+        }
+
+        private void SetWindowInitialState(AudioNoteData data)
         {
             var note = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
-            note.Data = msg.Data;
+            note.Data = data;
             this.window.Open();
+            if (string.IsNullOrEmpty(data.Path))
+            {
+                note.WindowState = AudioNoteWindowState.Recording;
+            }
+            else
+            {
+                note.WindowState = AudioNoteWindowState.Playing;
+            }
         }
 
         private void ConfirmDelete(AudioNoteDeleteMessage msg)
         {
             var confirmDelete = this.xrv.WindowSystem.ShowConfirmDialog("Delete this note?", "This action can’t be undone.", "No", "Yes");
-            
+
             confirmDelete.Open();
             this.audionoteToRemove = msg;
             confirmDelete.Closed += Alert_Closed;

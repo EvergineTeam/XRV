@@ -75,7 +75,7 @@ Items:
         Id: 66b253eb-7cfe-407b-9706-420cd17bccf6
         Data: null
         IsEnabled: true
-        WindowState: Recording
+        WindowState: None
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Buttons
@@ -1491,7 +1491,7 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Recording
         Tag: Recording
-        IsEnabled: true
+        IsEnabled: false
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -1723,7 +1723,7 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Playing
         Tag: Playing
-        IsEnabled: true
+        IsEnabled: false
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -1959,6 +1959,12 @@ Items:
             Id: 2fcac41f-4dde-4aa4-877d-bde8e0a502af
         Id: ec7b8314-462f-4899-9f96-003dc68e29cb
     Id: d970f4f2-16c6-409f-9bdd-6ef1ec57885b
+  - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
+    Id: 6c30f75a-285d-47fb-bcb0-e643280eefe2
+    Source: 7bbcca2b-4383-4fcb-b577-bd191867a7bd
+    entityLinks: {}
+    modificationList: []
+    removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: d3bce9ba-ddcf-4084-a09d-975ecba6b541

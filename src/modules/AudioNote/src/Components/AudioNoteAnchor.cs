@@ -31,10 +31,9 @@ namespace Xrv.AudioNote
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "Back")]
         protected MaterialComponent backMaterial;
 
-        [BindComponent]
-        protected TapDetector tapDetector;
-
         private AudioNoteData audioNote;
+
+        public bool IsSelected { get; set; }
 
         public AudioNoteData AudioNote
         {
@@ -71,8 +70,6 @@ namespace Xrv.AudioNote
                 Guid = Guid.NewGuid().ToString(),
             };
 
-            this.tapDetector.OnTap += Handler_OnClick;
-
             //BackgroundPrimaryColor "#041C2CFF"
             //BackgroundSecondaryColor "#000000FF"
             //ForegroundPrimaryColor "#115BB8FF"
@@ -92,23 +89,9 @@ namespace Xrv.AudioNote
             return true;
         }
 
-        protected override void OnDetach()
-        {
-            base.OnDetach();
-            this.tapDetector.OnTap -= Handler_OnClick;
-        }
-
         protected override void OnActivated()
         {
             base.OnActivated();
-        }
-
-        private void Handler_OnClick(object sender, EventArgs e)
-        {
-            this.xrvService.PubSub.Publish(new AudioNoteMessage()
-            {
-                Data = this.AudioNote,
-            });
         }
     }
 }
