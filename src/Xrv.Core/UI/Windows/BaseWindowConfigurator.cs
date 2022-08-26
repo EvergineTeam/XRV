@@ -146,6 +146,33 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        internal void UpdateContent()
+        {
+            if (this.contentEntity == null)
+            {
+                return;
+            }
+
+            foreach (var item in this.contentEntity.ChildEntities.ToList())
+            {
+                if (item.Tag == "PART_window_front_plate")
+                {
+                    continue;
+                }
+
+                if (this.content != null && this.content.Id != item.Id)
+                {
+                    this.contentEntity.RemoveChild(item);
+                }
+            }
+
+            if (this.content != null
+                && this.contentEntity.ChildEntities.Count() == 1)
+            {
+                this.contentEntity.AddChild(this.content);
+            }
+        }
+
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -235,33 +262,6 @@ namespace Xrv.Core.UI.Windows
             && this.frontPlateSize.Y != 0;
 
         private void UpdateTitle() => this.titleMesh.Text = this.title;
-
-        private void UpdateContent()
-        {
-            if (this.contentEntity == null)
-            {
-                return;
-            }
-
-            foreach (var item in this.contentEntity.ChildEntities.ToList())
-            {
-                if (item.Tag == "PART_window_front_plate")
-                {
-                    continue;
-                }
-
-                if (this.content != null && this.content.Id != item.Id)
-                {
-                    this.contentEntity.RemoveChild(item);
-                }
-            }
-
-            if (this.content != null
-                && this.contentEntity.ChildEntities.Count() == 1)
-            {
-                this.contentEntity.AddChild(this.content);
-            }
-        }
 
         private void UpdateDisplayLogo()
         {

@@ -37,9 +37,7 @@ namespace Xrv.Core.UI.Windows
         [IgnoreEvergine]
         public BaseWindowConfigurator Configurator { get => this.configurator; }
 
-        public bool IsClosed { get => !this.Owner.IsEnabled; }
-
-        public bool DestroyOnClose { get; set; } = false;
+        public bool IsOpened { get => this.Owner.IsEnabled; }
 
         public bool AllowPin
         {
@@ -78,7 +76,7 @@ namespace Xrv.Core.UI.Windows
 
         public void Open()
         {
-            if (this.IsClosed)
+            if (!this.IsOpened)
             {
                 this.PlaceInFrontOfUser();
                 this.Owner.IsEnabled = true;
@@ -88,15 +86,10 @@ namespace Xrv.Core.UI.Windows
 
         public void Close()
         {
-            if (!this.IsClosed)
+            if (this.IsOpened)
             {
                 this.Owner.IsEnabled = false;
                 this.Closed?.Invoke(this, EventArgs.Empty);
-
-                if (this.DestroyOnClose)
-                {
-                    this.Managers.EntityManager.Remove(this.Owner);
-                }
             }
         }
 

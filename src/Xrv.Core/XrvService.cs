@@ -90,6 +90,7 @@ namespace Xrv.Core
 
             // Register services and managers
             this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
+            this.WindowSystem.Load();
 
             // Hand menu initialization
             var handMenuManager = new HandMenuManager(scene.Managers.EntityManager, this.assetsService);

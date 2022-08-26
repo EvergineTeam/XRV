@@ -5,7 +5,10 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xrv.Core.UI.Dialogs;
 
 namespace Xrv.Core.UI.Windows
@@ -14,6 +17,9 @@ namespace Xrv.Core.UI.Windows
     {
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
+
+        private AlertDialog alertDialog;
+        private ConfirmDialog confirmDialog;
 
         public IEnumerable<Window> AllWindows
         {
@@ -31,43 +37,77 @@ namespace Xrv.Core.UI.Windows
 
         public Material OverrideIconMaterial { get; set; }
 
-        public Window ShowWindow()
+        internal void Load()
         {
-            var windowEntity = this.BuildWindow(new Window(), (BaseWindowConfigurator)null);
-            this.entityManager.Add(windowEntity);
+            this.CreateAlertDialogInstance();
+            this.CreateConfirmDialogInstance();
+        }
 
-            return windowEntity.FindComponent<Window>();
+        private void CreateAlertDialogInstance()
+        {
+            this.alertDialog = new AlertDialog();
+            var owner = this.CreateDialogAux(this.alertDialog, string.Empty, string.Empty);
+            this.entityManager.Add(owner);
+
+            var contentPrefab = this.GetBaseDialogPrefab();
+            var configurator = owner.FindComponent<DialogConfigurator>();
+            configurator.Content = contentPrefab.Instantiate();
+
+            owner.IsEnabled = false;
+        }
+
+        private void CreateConfirmDialogInstance()
+        {
+            this.confirmDialog = new ConfirmDialog();
+            var owner = this.CreateDialogAux(this.confirmDialog, string.Empty, string.Empty);
+            this.entityManager.Add(owner);
+
+            var contentPrefab = this.GetBaseDialogPrefab();
+            var configurator = owner.FindComponent<DialogConfigurator>();
+            configurator.Content = contentPrefab.Instantiate();
+
+            owner.IsEnabled = false;
+        }
+
+        public Window CreateWindow(Action<WindowConfigurator> configure = null)
+        {
+            var window = new Window();
+            var windowEntity = this.BuildWindow(window, (BaseWindowConfigurator)null);
+            if (configure != null)
+            {
+                var configurator = windowEntity.FindComponent<WindowConfigurator>();
+                configure.Invoke(configurator);
+            }
+
+            this.entityManager.Add(windowEntity);
+            return window;
         }
 
         public AlertDialog ShowAlertDialog(string title, string text, string acceptText)
         {
-            var owner = this.CreateDialogAux(new AlertDialog(), title, text);
-            var dialog = owner.FindComponent<AlertDialog>();
-            dialog.AcceptOption.Configuration.Text = acceptText;
+            bool anyOpened = this.CloseAllDialogs();
 
-            this.entityManager.Add(owner);
+            var configurator = this.alertDialog.Configurator as DialogConfigurator;
+            configurator.Title = title;
+            configurator.Text = text;
+            this.alertDialog.AcceptOption.Configuration.Text = acceptText;
+            this.OpenDialogWithDelayIfRequired(this.alertDialog, anyOpened);
 
-            var contentPrefab = this.GetBaseDialogPrefab();
-            dialog.Configurator.Content = contentPrefab.Instantiate();
-            dialog.Open();
-
-            return dialog;
+            return this.alertDialog;
         }
 
         public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText)
         {
-            var owner = this.CreateDialogAux(new ConfirmDialog(), title, text);
-            var dialog = owner.FindComponent<ConfirmDialog>();
-            dialog.CancelOption.Configuration.Text = cancelText;
-            dialog.AcceptOption.Configuration.Text = acceptText;
+            bool anyOpened = this.CloseAllDialogs();
 
-            this.entityManager.Add(owner);
+            var configurator = this.confirmDialog.Configurator as DialogConfigurator;
+            configurator.Title = title;
+            configurator.Text = text;
+            this.confirmDialog.CancelOption.Configuration.Text = cancelText;
+            this.confirmDialog.AcceptOption.Configuration.Text = acceptText;
+            this.OpenDialogWithDelayIfRequired(this.confirmDialog, anyOpened);
 
-            var contentPrefab = this.GetBaseDialogPrefab();
-            dialog.Configurator.Content = contentPrefab.Instantiate();
-            dialog.Open();
-
-            return dialog;
+            return this.confirmDialog;
         }
 
         public Entity BuildWindow<TWindow, TConfigurator>(TWindow instance, TConfigurator configInstance)
@@ -122,6 +162,34 @@ namespace Xrv.Core.UI.Windows
             dialogConfigurator.DisplayLogo = false;
 
             return owner;
+        }
+
+        private bool CloseAllDialogs()
+        {
+            bool anyOpen = false;
+
+            if (this.confirmDialog.IsOpened)
+            {
+                anyOpen = true;
+                this.confirmDialog.Close();
+            }
+            else if (this.alertDialog.IsOpened)
+            {
+                anyOpen = true;
+                this.alertDialog.Close();
+            }
+
+            return anyOpen;
+        }
+
+        private void OpenDialogWithDelayIfRequired(Dialog dialog, bool delayed)
+        {
+            var delay = TimeSpan.FromMilliseconds(delayed ? 200 : 0);
+            var ignore = EvergineForegroundTask.Run(async () =>
+            {
+                await Task.Delay(delay);
+                dialog.Open();
+            });
         }
 
         private Prefab GetWindowPrefab() =>
