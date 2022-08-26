@@ -24,7 +24,10 @@ namespace Xrv.Core.UI.Windows
         {
             this.entityManager = entityManager;
             this.assetsService = assetsService;
+            this.Distances = new Distances();
         }
+
+        public Distances Distances { get; private set; }
 
         public Material OverrideIconMaterial { get; set; }
 

@@ -22,6 +22,9 @@ namespace Xrv.Core.UI.Windows
         private bool allowPin = true;
         private bool enableManipulation = true;
 
+        [BindService]
+        protected XrvService xrvService = null;
+
         [BindComponent(source: BindComponentSource.Owner, isExactType: false)]
         private BaseWindowConfigurator configurator = null;
 
@@ -65,6 +68,9 @@ namespace Xrv.Core.UI.Windows
                 }
             }
         }
+
+        [IgnoreEvergine]
+        public string DistanceKey { get; set; }
 
         public event EventHandler Opened;
 
@@ -120,6 +126,12 @@ namespace Xrv.Core.UI.Windows
             this.UnsubscribeEvents();
         }
 
+        protected virtual float GetOpenDistance()
+        {
+            var distances = this.xrvService.WindowSystem.Distances;
+            return distances.GetDistanceOrAlternative(this.DistanceKey, Distances.MediumKey);
+        }
+
         private void SubscribeEvents()
         {
             var followButtonPressable = this.followButton.FindComponentInChildren<ToggleButton>();
@@ -159,7 +171,8 @@ namespace Xrv.Core.UI.Windows
         private void PlaceInFrontOfUser()
         {
             var camera = this.Managers.RenderManager.ActiveCamera3D;
-            var position = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * 0.5f);
+            var distance = this.GetOpenDistance();
+            var position = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * distance);
             this.transform.Position = position;
 
             // default LookAt makes window to be oriented backwards to the camera

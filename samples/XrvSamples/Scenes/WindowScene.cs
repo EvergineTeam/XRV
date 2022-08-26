@@ -22,6 +22,7 @@ namespace XrvSamples.Scenes
         private WindowsSystem windowsSystem;
         private Window window1;
         private Window window2;
+        private string customDistanceKey = nameof(customDistanceKey);
 
         private PressableButton createAlert;
         private PressableButton createConfirm;
@@ -36,6 +37,7 @@ namespace XrvSamples.Scenes
 
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.windowsSystem = xrv.WindowSystem;
+            this.windowsSystem.Distances.SetDistance(this.customDistanceKey, 0.5f);
             this.windowsSystem.OverrideIconMaterial = this.assetsService.Load<Material>(EvergineContent.Materials.EvergineLogo);
             this.messageText = this.Managers.EntityManager.FindAllByTag("message").First().FindComponent<Text3DMesh>();
             this.messageText.Text = string.Empty;
@@ -112,6 +114,7 @@ namespace XrvSamples.Scenes
             {
                 var assetsService = Application.Current.Container.Resolve<AssetsService>();
                 this.window2 = this.windowsSystem.ShowWindow();
+                this.window2.DistanceKey = this.customDistanceKey;
                 this.window2.Configurator.Title = "Window #2";
                 this.window2.Configurator.Size = new Vector2(0.2f, 0.3f);
                 this.window2.Configurator.FrontPlateSize = new Vector2(0.2f, 0.25f);

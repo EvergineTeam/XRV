@@ -78,6 +78,12 @@ namespace Xrv.Core.UI.Dialogs
             return buttonInstance;
         }
 
+        protected override float GetOpenDistance()
+        {
+            var distances = this.xrvService.WindowSystem.Distances;
+            return distances.GetDistanceOrAlternative(this.DistanceKey, Distances.NearKey);
+        }
+
         private void Button_ButtonReleased(object sender, EventArgs args)
         {
             if (sender is PressableButton button)
