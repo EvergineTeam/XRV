@@ -111,7 +111,7 @@ namespace Xrv.AudioNote
             {
                 this.currentCursor = null;
 
-                this.anchor.UpdateVisualState(this.touched ? AudioNoteAnchorVisual.Selected : AudioNoteAnchorVisual.Idle);
+                this.anchor.UpdateVisualState(this.touched ? AudioNoteAnchorVisual.Grabbed : AudioNoteAnchorVisual.Idle);
                 eventData.SetHandled();
             }
         }
@@ -124,7 +124,7 @@ namespace Xrv.AudioNote
 
         public void OnTouchStarted(HandTrackingInputEventData eventData)
         {
-            this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Selected);
+            this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Grabbed);
             this.touched = true;
         }
 

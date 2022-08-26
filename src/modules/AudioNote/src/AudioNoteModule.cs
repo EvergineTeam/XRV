@@ -205,18 +205,19 @@ namespace Xrv.AudioNote
                 if (string.IsNullOrEmpty(guid)) return;
 
                 this.RemoveAnchor(guid);
+                this.window.Close();
             }
         }
 
         public void RemoveAnchor(string guid)
         {
+            this.lastAnchorSelected = null;
+
             // TODO when anchor is serialized, remove from there also
             if (this.anchorsDic.TryGetValue(guid, out var anchor))
             {
                 this.scene.Managers.EntityManager.Remove(anchor);
             }
-
-            this.lastAnchorSelected = null;
         }
 
         private Window ShowAudionoteWindow(Guid prefabId)

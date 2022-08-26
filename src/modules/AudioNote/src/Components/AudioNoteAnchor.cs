@@ -51,7 +51,7 @@ namespace Xrv.AudioNote
             {
                 case AudioNoteAnchorVisual.Grabbed:
                     iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorGrabbed);
-                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteAnchorBack);
+                    ////backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteAnchorBack);
                     break;
                 case AudioNoteAnchorVisual.Selected:
                     iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorIdle);
