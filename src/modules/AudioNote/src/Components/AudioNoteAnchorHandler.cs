@@ -110,6 +110,8 @@ namespace Xrv.AudioNote
             if (this.currentCursor == eventData.Cursor)
             {
                 this.currentCursor = null;
+
+                this.anchor.UpdateVisualState(this.touched ? AudioNoteAnchorVisual.Selected : AudioNoteAnchorVisual.Idle);
                 eventData.SetHandled();
             }
         }

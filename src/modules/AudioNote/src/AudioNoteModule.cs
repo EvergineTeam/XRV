@@ -215,6 +215,8 @@ namespace Xrv.AudioNote
             {
                 this.scene.Managers.EntityManager.Remove(anchor);
             }
+
+            this.lastAnchorSelected = null;
         }
 
         private Window ShowAudionoteWindow(Guid prefabId)

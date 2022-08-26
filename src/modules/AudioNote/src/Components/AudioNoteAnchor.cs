@@ -5,6 +5,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.MRTK.Effects;
 using System;
+using System.Diagnostics;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
 using Xrv.Core;
@@ -50,14 +51,19 @@ namespace Xrv.AudioNote
             {
                 case AudioNoteAnchorVisual.Grabbed:
                     iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorGrabbed);
+                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteAnchorBack);
                     break;
                 case AudioNoteAnchorVisual.Selected:
-                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorSelected);
+                    iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorIdle);
+                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorSelected);
                     break;
                 default:
                     iconMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorIdle);
+                    backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteAnchorBack);
                     break;
             }
+
+            Debug.WriteLine($"current : {current}");
         }
 
         protected override bool OnAttached()
@@ -76,7 +82,7 @@ namespace Xrv.AudioNote
             //ForegroundSecondaryColor "#DF4661FF"
 
             // Set Anchor colo themes
-            var anchorGrabbed = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorGrabbed);
+            var anchorGrabbed = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AnchorSelected);
             var grabMat = new HoloGraphic(anchorGrabbed);
             //grabMat.Albedo = this.xrvService.CurrentTheme.ForegroundPrimaryColor; // TODO change wit theme colors
             grabMat.Albedo = new Color("#115BB8FF");
