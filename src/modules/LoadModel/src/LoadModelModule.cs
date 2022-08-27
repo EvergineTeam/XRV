@@ -3,6 +3,7 @@
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Xrv.Core.Menu;
@@ -51,12 +52,25 @@ namespace Xrv.LoadModel
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
 
             // PiggyBot
-            var piggyBot = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
-            this.modelEntity = piggyBot.InstantiateModelHierarchy(this.assetsService);
-            this.modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * 0.04f;
-            this.modelEntity.IsEnabled = false;
+            ////var piggyBot = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
+            ////this.modelEntity = piggyBot.InstantiateModelHierarchy(this.assetsService);
+            ////this.modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * 0.04f;
+
+            var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+
+            this.modelEntity = new Entity()
+                            .AddComponent(new Transform3D())
+                            .AddComponent(new MaterialComponent() { Material = material })
+                            .AddComponent(new TeapotMesh())
+                            .AddComponent(new MeshRenderer());
+
+            // Manipulators
+            this.modelEntity.AddComponent(new BoxCollider3D());
+            this.modelEntity.AddComponent(new StaticBody3D() { IsSensor = true });
+            this.modelEntity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox());
 
             scene.Managers.EntityManager.Add(this.modelEntity);
+            this.modelEntity.IsEnabled = false;
         }
 
         /// <inheritdoc/>
