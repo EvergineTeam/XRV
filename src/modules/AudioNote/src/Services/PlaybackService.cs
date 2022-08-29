@@ -27,14 +27,27 @@ namespace Xrv.AudioNote.Services
 
         public TimeSpan Duration { get; protected set; } = TimeSpan.Zero;
 
+        public float Volume { get; set; }
+
+        public PlaybackService()
+        {
+            // TODO this is config of sample
+            this.format = new WaveFormat(true, sampleRate: 22050, encoding: WaveFormatEncodings.PCM8);
+        }
+
         public async Task<bool> Load(Stream stream)
         {
             try
             {
-                // TODO this is config of sample
-                this.format = new WaveFormat(true, sampleRate: 22050, encoding: WaveFormatEncodings.PCM8);
-                this.buffer = this.audioDevice.CreateAudioBuffer();
+                if (this.audioDevice != null && this.audioSource == null)
+                {
+                    this.audioSource = this.audioDevice.CreateAudioSource(this.format);
+                    this.audioSource.Volume = 0.1f;
+                }
+
                 this.audioSource.Stop();
+                this.audioSource.FlushBuffers();
+                this.buffer = this.audioDevice.CreateAudioBuffer();
                 await this.buffer.FillAsync(stream, (int)stream.Length, this.format);
                 this.Duration = this.buffer.Duration;
             }
@@ -76,6 +89,7 @@ namespace Xrv.AudioNote.Services
             this.Position = TimeSpan.Zero;
             this.CurrentPosition?.Invoke(this, this.Position);
             this.AudioEnd?.Invoke(this, EventArgs.Empty);
+            this.audioSource.BufferEnded -= this.AudioSource_BufferEnded;
         }
 
         public override void Update(TimeSpan gameTime)

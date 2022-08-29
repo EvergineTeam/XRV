@@ -1491,7 +1491,7 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Recording
         Tag: Recording
-        IsEnabled: false
+        IsEnabled: true
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -1793,8 +1793,8 @@ Items:
             Children: []
             Id: 985cf043-5632-473e-ad54-3bb7f90aee4f
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-            Name: playingPlate
-            Tag: PART_Plate
+            Name: PlayingPlate
+            Tag: PlayingPlate
             IsEnabled: true
             IsStatic: false
             Components:
@@ -2008,12 +2008,6 @@ Items:
             Id: 2fcac41f-4dde-4aa4-877d-bde8e0a502af
         Id: ec7b8314-462f-4899-9f96-003dc68e29cb
     Id: d970f4f2-16c6-409f-9bdd-6ef1ec57885b
-  - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 24d7646c-ce51-490c-abac-e5d8c1827a8e
-    Source: 7bbcca2b-4383-4fcb-b577-bd191867a7bd
-    entityLinks: {}
-    modificationList: []
-    removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: d3bce9ba-ddcf-4084-a09d-975ecba6b541
