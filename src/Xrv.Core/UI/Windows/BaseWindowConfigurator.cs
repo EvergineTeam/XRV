@@ -11,48 +11,80 @@ using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Windows
 {
+    /// <summary>
+    /// Base configurator component for windows.
+    /// </summary>
     public abstract class BaseWindowConfigurator : Component
     {
+        /// <summary>
+        /// Back plate mesh.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_back_plate")]
+        protected PlaneMesh backPlate;
+
+        /// <summary>
+        /// Header plate mesh.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_header_plate")]
+        protected PlaneMesh headerPlate;
+
+        /// <summary>
+        /// Header plate transform.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_header_plate")]
+        protected Transform3D headerTransform;
+
+        /// <summary>
+        /// Front plate mesh.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_front_plate")]
+        protected PlaneMesh frontPlate;
+
+        /// <summary>
+        /// Front plate transform.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_front_plate")]
+        protected Transform3D frontTransform;
+
+        /// <summary>
+        /// Title text mesh.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_text")]
+        protected Text3DMesh titleMesh;
+
+        /// <summary>
+        /// Title text container transform.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_text_container")]
+        protected Transform3D titleTextContainerTransform;
+
+        /// <summary>
+        /// Title button container transform.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_button_container")]
+        protected Transform3D titleButtonContainerTransform;
+
+        /// <summary>
+        /// Box collider for window manipulation.
+        /// </summary>
+        [BindComponent(isRequired: false)]
+        protected BoxCollider3D manipulationCollider;
+
         private Vector2 size = new Vector2(0.35f, 0.3f);
         private Vector2 frontPlateOffsets = new Vector2(0f);
 
         private Vector2 frontPlateSize;
         private string title;
+        private Entity logoEntity;
+        private Entity contentEntity;
         private Entity content;
 
         private bool displayFrontPlate = true;
         private bool displayLogo = true;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_back_plate")]
-        protected PlaneMesh backPlate;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_header_plate")]
-        protected PlaneMesh headerPlate;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_header_plate")]
-        protected Transform3D headerTransform;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_front_plate")]
-        protected PlaneMesh frontPlate;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_front_plate")]
-        protected Transform3D frontTransform;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_text")]
-        protected Text3DMesh titleMesh;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_text_container")]
-        protected Transform3D titleTextContainerTransform;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_button_container")]
-        protected Transform3D titleButtonContainerTransform;
-
-        [BindComponent(isRequired: false)]
-        protected BoxCollider3D manipulationCollider;
-
-        protected Entity logoEntity;
-        protected Entity contentEntity;
-
+        /// <summary>
+        /// Gets or sets window contents.
+        /// </summary>
         public Entity Content
         {
             get => this.content;
@@ -66,6 +98,9 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets window title.
+        /// </summary>
         public string Title
         {
             get => this.title;
@@ -79,6 +114,9 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets window size.
+        /// </summary>
         public Vector2 Size
         {
             get => this.size;
@@ -92,6 +130,9 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets front plate XY plane offset relative to back plate.
+        /// </summary>
         public Vector2 FrontPlateOffsets
         {
             get => this.frontPlateOffsets;
@@ -105,6 +146,9 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets front plate XY size.
+        /// </summary>
         public Vector2 FrontPlateSize
         {
             get => this.frontPlateSize;
@@ -118,6 +162,9 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether front plate should be displayed or not.
+        /// </summary>
         public bool DisplayFrontPlate
         {
             get => this.displayFrontPlate;
@@ -132,6 +179,9 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether bottom left icon should be displayed or not.
+        /// </summary>
         public bool DisplayLogo
         {
             get => this.displayLogo;
@@ -173,6 +223,7 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -185,6 +236,7 @@ namespace Xrv.Core.UI.Windows
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -198,6 +250,9 @@ namespace Xrv.Core.UI.Windows
             this.UpdateDisplayFrontPlate();
         }
 
+        /// <summary>
+        /// Updates front plate size.
+        /// </summary>
         protected virtual void UpdateFrontPlateSize()
         {
             if (!this.CheckCorrectSizes())
@@ -209,6 +264,9 @@ namespace Xrv.Core.UI.Windows
             this.frontPlate.Height = this.frontPlateSize.Y;
         }
 
+        /// <summary>
+        /// Updates front plate offsets.
+        /// </summary>
         protected virtual void UpdateFrontPlateOffsets()
         {
             var frontOffset = this.frontTransform.LocalPosition;
@@ -217,6 +275,9 @@ namespace Xrv.Core.UI.Windows
             this.frontTransform.LocalPosition = frontOffset;
         }
 
+        /// <summary>
+        /// Updates window size.
+        /// </summary>
         protected virtual void UpdateSize()
         {
             if (!this.CheckCorrectSizes())

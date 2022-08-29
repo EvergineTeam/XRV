@@ -49,6 +49,7 @@ namespace Xrv.Core.UI.Tabs
             {
                 this.control.Items.Add(item);
             }
+
             return this;
         }
 

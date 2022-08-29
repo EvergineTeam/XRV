@@ -48,6 +48,7 @@ namespace Xrv.Core.UI.Buttons
             return component;
         }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -68,6 +69,7 @@ namespace Xrv.Core.UI.Buttons
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnCursorDetected(bool isDetected)
         {
             if (isDetected)

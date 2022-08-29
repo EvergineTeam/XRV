@@ -13,6 +13,7 @@ namespace Xrv.Core.Messaging
         private PubSub pubSub = null;
         private Guid subToken;
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -25,6 +26,7 @@ namespace Xrv.Core.Messaging
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnDetach()
         {
             base.OnDetach();

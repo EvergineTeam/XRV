@@ -39,6 +39,7 @@ namespace Xrv.Core.UI.Dialogs
             button.ButtonReleased += this.Button_ButtonReleased;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -76,6 +77,7 @@ namespace Xrv.Core.UI.Dialogs
             return buttonInstance;
         }
 
+        /// <inheritdoc/>
         protected override float GetOpenDistance()
         {
             var distances = this.xrvService.WindowSystem.Distances;

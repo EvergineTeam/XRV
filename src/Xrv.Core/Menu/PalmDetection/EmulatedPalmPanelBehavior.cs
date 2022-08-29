@@ -14,19 +14,12 @@ using System.Linq;
 
 namespace Xrv.Core.Menu
 {
+    /// <summary>
+    /// Emulates palm panel for platforms like Windows, where users do not use their
+    /// hands to load hand menu.
+    /// </summary>
     public class EmulatedPalmPanelBehavior : Behavior, IPalmPanelBehavior
     {
-        private class CursorInfo
-        {
-            public Transform3D Transform;
-
-            public MouseControlBehavior MouseControlBehavior;
-
-            public XRHandedness Handedness;
-
-            public bool IsPalmUp;
-        }
-
         private bool isPalmUp;
         private float accumulatedTime;
         private List<CursorInfo> emulatedCursorInfos;
@@ -36,44 +29,59 @@ namespace Xrv.Core.Menu
         private CursorInfo activeCursor;
 
         [BindService]
-        protected GraphicsPresenter graphicsPresenter;
+        private GraphicsPresenter graphicsPresenter = null;
 
         [BindComponent]
-        protected Transform3D transform;
+        private Transform3D transform = null;
 
+        /// <inheritdoc/>
+        public event EventHandler<bool> PalmUpChanged;
+
+        /// <inheritdoc/>
+#pragma warning disable CS0067 // The event is never used.
+        public event EventHandler<XRHandedness> ActiveHandednessChanged;
+#pragma warning restore CS0067 // The event is never used.
+
+        /// <inheritdoc/>
         [RenderProperty(Tooltip = "Distance from the hand to the entity")]
         public float DistanceFromHand { get; set; } = 0.2f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the palm has to be looking to the camera to consider it as up", MinLimit = 0, MaxLimit = 1)]
         public float LookAtCameraUpperThreshold { get; set; } = 0.8f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the palm has to be looking away from the camera to consider it as down", MinLimit = 0, MaxLimit = 1)]
         public float LookAtCameraLowerThreshold { get; set; } = 0.7f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the hand has to be open to consider the palm as up", MinLimit = 0, MaxLimit = 1)]
         public float OpenPalmUpperThreshold { get; set; } = 0.8f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the hand has to be closed to consider the palm as down", MinLimit = 0, MaxLimit = 1)]
         public float OpenPalmLowerThreshold { get; set; } = 0.7f;
 
+        /// <inheritdoc/>
         [RenderProperty(Tooltip = "Minimum amount of time in seconds between two consecutive activation changes")]
         public float TimeBetweenActivationChanges { get; set; } = 0.5f;
 
+        /// <inheritdoc/>
         [RenderProperty(Tooltip = "The desired handedness to consider by the component. Set to Undefined to consider both hands.")]
         public XRHandedness Handedness { get; set; } = XRHandedness.Undefined;
 
+        /// <inheritdoc/>
         public XRHandedness ActiveHandedness => this.activeCursor?.Handedness ?? XRHandedness.Undefined;
 
+        /// <inheritdoc/>
         public bool IsPalmUp => this.isPalmUp;
 
+        /// <summary>
+        /// Gets or sets keyboard key to simulate palm twist.
+        /// </summary>
         public Keys ToggleHandKey { get; set; } = Keys.M;
 
-        public event EventHandler<bool> PalmUpChanged;
-
-#pragma warning disable CS0067
-        public event EventHandler<XRHandedness> ActiveHandednessChanged;
-#pragma warning restore CS0067
-
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             if (!base.OnAttached())
@@ -97,34 +105,7 @@ namespace Xrv.Core.Menu
             return true;
         }
 
-        private void ReadKeys()
-        {
-            var keyboardDispatcher = this.graphicsPresenter.FocusedDisplay.KeyboardDispatcher;
-            foreach (var cursor in this.emulatedCursorInfos)
-            {
-                var cursorkey = cursor.MouseControlBehavior.Key;
-                if (keyboardDispatcher.IsKeyDown(cursorkey) &&
-                    keyboardDispatcher.ReadKeyState(this.ToggleHandKey) == ButtonState.Pressing)
-                {
-                    this.isActiveCursorDirty = true;
-                    cursor.IsPalmUp = !cursor.IsPalmUp;
-                }
-            }
-        }
-
-        private void RefreshActiveCursor()
-        {
-            if (this.isActiveCursorDirty)
-            {
-                this.isActiveCursorDirty = false;
-                if (this.activeCursor == null ||
-                    !this.activeCursor.IsPalmUp)
-                {
-                    this.activeCursor = this.emulatedCursorInfos.FirstOrDefault(c => c.IsPalmUp && (this.Handedness == XRHandedness.Undefined || this.Handedness == c.Handedness));
-                }
-            }
-        }
-
+        /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             this.accumulatedTime += (float)gameTime.TotalSeconds;
@@ -167,6 +148,34 @@ namespace Xrv.Core.Menu
             this.transform.LookAt(desiredPosition + desiredDirection);
         }
 
+        private void ReadKeys()
+        {
+            var keyboardDispatcher = this.graphicsPresenter.FocusedDisplay.KeyboardDispatcher;
+            foreach (var cursor in this.emulatedCursorInfos)
+            {
+                var cursorkey = cursor.MouseControlBehavior.Key;
+                if (keyboardDispatcher.IsKeyDown(cursorkey) &&
+                    keyboardDispatcher.ReadKeyState(this.ToggleHandKey) == ButtonState.Pressing)
+                {
+                    this.isActiveCursorDirty = true;
+                    cursor.IsPalmUp = !cursor.IsPalmUp;
+                }
+            }
+        }
+
+        private void RefreshActiveCursor()
+        {
+            if (this.isActiveCursorDirty)
+            {
+                this.isActiveCursorDirty = false;
+                if (this.activeCursor == null ||
+                    !this.activeCursor.IsPalmUp)
+                {
+                    this.activeCursor = this.emulatedCursorInfos.FirstOrDefault(c => c.IsPalmUp && (this.Handedness == XRHandedness.Undefined || this.Handedness == c.Handedness));
+                }
+            }
+        }
+
         private void SetPalmUp(bool value)
         {
             if (this.isPalmUp != value)
@@ -176,6 +185,17 @@ namespace Xrv.Core.Menu
 
                 this.accumulatedTime = 0;
             }
+        }
+
+        private class CursorInfo
+        {
+            public Transform3D Transform;
+
+            public MouseControlBehavior MouseControlBehavior;
+
+            public XRHandedness Handedness;
+
+            public bool IsPalmUp;
         }
     }
 }
