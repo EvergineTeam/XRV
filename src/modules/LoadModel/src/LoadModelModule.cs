@@ -63,8 +63,7 @@ namespace Xrv.LoadModel
             // Create manipulator prefab
             var manipulatorPrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.Prefabs.Manipulator_weprefab);
             var manipulatorEntity = manipulatorPrefab.Instantiate();
-            var loadModelBehavior = new LoadModelBehavior();
-            manipulatorEntity.AddComponent(loadModelBehavior);
+            var loadModelBehavior = manipulatorEntity.FindComponent<LoadModelBehavior>();
 
             // Create in front of the viewer
             var cameraTransform = this.scene.Managers.RenderManager.ActiveCamera3D.Transform;
