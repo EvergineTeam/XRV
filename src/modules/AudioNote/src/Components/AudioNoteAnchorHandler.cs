@@ -1,5 +1,4 @@
-﻿using Evergine.Components.Graphics3D;
-using Evergine.Framework;
+﻿using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
@@ -35,8 +34,10 @@ namespace Xrv.AudioNote
         protected TapDetector tapDetector;
 
         protected bool touched;
-        private Stopwatch watch;
+        private Stopwatch clickWatch;
+        private Stopwatch touchWatch;
         private TimeSpan tapTime = TimeSpan.FromSeconds(0.4f);
+        private TimeSpan touchTime = TimeSpan.FromSeconds(0.8f);
 
 
         protected override bool OnAttached()
@@ -61,7 +62,7 @@ namespace Xrv.AudioNote
                 return;
             }
 
-            this.watch = Stopwatch.StartNew();
+            this.clickWatch = Stopwatch.StartNew();
 
             if (this.currentCursor == null)
             {
@@ -86,8 +87,8 @@ namespace Xrv.AudioNote
                 return;
             }
 
-            if (this.watch.Elapsed < this.tapTime) return;
-            this.watch.Stop();
+            if (this.clickWatch.Elapsed < this.tapTime) return;
+            this.clickWatch.Stop();
 
             if (this.currentCursor == eventData.Cursor)
             {
@@ -118,12 +119,19 @@ namespace Xrv.AudioNote
 
         public void OnTouchCompleted(HandTrackingInputEventData eventData)
         {
+            this.touchWatch.Stop();
+            if (touchWatch.Elapsed < touchTime)
+            {
+                this.Handler_OnClick(this, EventArgs.Empty);
+            }
+
             this.anchor.UpdateVisualState(this.anchor.IsSelected? AudioNoteAnchorVisual.Selected : AudioNoteAnchorVisual.Idle);
             this.touched = false;
         }
 
         public void OnTouchStarted(HandTrackingInputEventData eventData)
         {
+            this.touchWatch = Stopwatch.StartNew();
             this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Grabbed);
             this.touched = true;
         }

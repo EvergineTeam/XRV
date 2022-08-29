@@ -5,8 +5,6 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.MRTK.Effects;
 using System;
-using System.Diagnostics;
-using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
 using Xrv.Core;
 
@@ -62,8 +60,6 @@ namespace Xrv.AudioNote
                     backMaterial.Material = this.assetsService.Load<Material>(AudioNoteResourceIDs.Materials.AudioNoteAnchorBack);
                     break;
             }
-
-            Debug.WriteLine($"current : {current}");
         }
 
         protected override bool OnAttached()
