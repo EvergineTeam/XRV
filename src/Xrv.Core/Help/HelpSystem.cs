@@ -1,4 +1,6 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
@@ -48,13 +50,13 @@ namespace Xrv.Core.Help
             window.Tabs.Add(new TabItem
             {
                 Name = "General",
-                Contents = GeneralHelp,
+                Contents = this.GeneralHelp,
             });
 
             window.Tabs.Add(new TabItem
             {
                 Name = "About",
-                Contents = AboutHelp,
+                Contents = this.AboutHelp,
             });
 
             return window;

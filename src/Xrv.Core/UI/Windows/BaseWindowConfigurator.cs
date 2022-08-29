@@ -1,4 +1,6 @@
-﻿using Evergine.Components.Fonts;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -66,7 +68,7 @@ namespace Xrv.Core.UI.Windows
 
         public string Title
         {
-            get => this.title; 
+            get => this.title;
             set
             {
                 this.title = value;
@@ -141,6 +143,33 @@ namespace Xrv.Core.UI.Windows
                     this.displayLogo = value;
                     this.UpdateDisplayLogo();
                 }
+            }
+        }
+
+        internal void UpdateContent()
+        {
+            if (this.contentEntity == null)
+            {
+                return;
+            }
+
+            foreach (var item in this.contentEntity.ChildEntities.ToList())
+            {
+                if (item.Tag == "PART_window_front_plate")
+                {
+                    continue;
+                }
+
+                if (this.content != null && this.content.Id != item.Id)
+                {
+                    this.contentEntity.RemoveChild(item);
+                }
+            }
+
+            if (this.content != null
+                && this.contentEntity.ChildEntities.Count() == 1)
+            {
+                this.contentEntity.AddChild(this.content);
             }
         }
 
@@ -233,33 +262,6 @@ namespace Xrv.Core.UI.Windows
             && this.frontPlateSize.Y != 0;
 
         private void UpdateTitle() => this.titleMesh.Text = this.title;
-
-        private void UpdateContent()
-        {
-            if (this.contentEntity == null)
-            {
-                return;
-            }
-
-            foreach (var item in this.contentEntity.ChildEntities.ToList())
-            {
-                if (item.Tag == "PART_window_front_plate")
-                {
-                    continue;
-                }
-
-                if (this.content != null && this.content.Id != item.Id)
-                {
-                    this.contentEntity.RemoveChild(item);
-                }
-            }
-
-            if (this.content != null
-                && this.contentEntity.ChildEntities.Count() == 1)
-            {
-                this.contentEntity.AddChild(this.content);
-            }
-        }
 
         private void UpdateDisplayLogo()
         {

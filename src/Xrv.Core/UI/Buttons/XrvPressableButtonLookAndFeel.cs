@@ -1,4 +1,6 @@
-﻿using Evergine.Components.Fonts;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Components.Fonts;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -58,9 +60,9 @@ namespace Xrv.Core.UI.Buttons
                 this.textTransform.LocalPosition = textPosition;
 
                 this.textDefaultPosition = this.textTransform.LocalPosition;
-                this.textHoverPosition = this.textDefaultPosition + Vector3.Forward * 0.01f;
+                this.textHoverPosition = this.textDefaultPosition + (Vector3.Forward * 0.01f);
                 this.iconDefaultPosition = this.iconTransform.LocalPosition;
-                this.iconHoverPosition = this.iconDefaultPosition + Vector3.Forward * 0.01f;
+                this.iconHoverPosition = this.iconDefaultPosition + (Vector3.Forward * 0.01f);
             }
 
             return attached;

@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Attributes;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Attributes;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 
 namespace Xrv.Core.UI.Dialogs
@@ -16,8 +18,6 @@ namespace Xrv.Core.UI.Dialogs
 
         protected override void InstantiateOptions()
         {
-            this.Clear();
-
             var cancelButton = this.CreateButtonInstance(this.CancelOption);
             this.AddOption(cancelButton.FindComponent<PressableButton>(), this.CancelOption);
             this.cancelHolder.AddChild(cancelButton);

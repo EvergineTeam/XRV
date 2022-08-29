@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Attributes;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Components.WorkActions;
@@ -18,6 +20,9 @@ using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Tabs
 {
+    /// <summary>
+    /// Component to work with tab control.
+    /// </summary>
     public class TabControl : Component
     {
         private readonly ObservableCollection<TabItem> items;
@@ -129,7 +134,6 @@ namespace Xrv.Core.UI.Tabs
                 this.buttonsContainer = this.Owner.FindChildrenByTag("PART_tab_control_buttons_container", isRecursive: true).First();
                 this.contentsContainer = this.Owner.FindChildrenByTag("PART_tab_control_current_item_contents", isRecursive: true).First();
                 this.InternalAddItems(this.items); // We can have items added before this component has been attached
-                this.selectedItem = this.items.FirstOrDefault();
             }
 
             return attached;
@@ -141,6 +145,7 @@ namespace Xrv.Core.UI.Tabs
             this.UpdateFrontPlateSize();
             this.ReorderItems();
             this.UpdateItemsTextColor();
+            this.selectedItem = this.items.FirstOrDefault();
             this.UpdateSelectedItem();
         }
 
@@ -160,10 +165,10 @@ namespace Xrv.Core.UI.Tabs
             this.frontPlate.Width = this.size.X - (this.currentItemPlate.Width / 2);
             this.frontPlate.Height = this.size.Y;
             var currentItemPosition = this.currentItemPlateTransform.LocalPosition;
-            currentItemPosition.X = -this.size.X / 2 - 0.017f;
-            currentItemPosition.Y = this.size.Y / 2 - this.currentItemPlate.Height / 2;
+            currentItemPosition.X = (-this.size.X / 2) - 0.017f;
+            currentItemPosition.Y = (this.size.Y / 2) - (this.currentItemPlate.Height / 2);
             this.currentItemPlateTransform.LocalPosition = currentItemPosition;
-            
+
             if (this.defaultCurrentItemPlatePosition == default)
             {
                 this.defaultCurrentItemPlatePosition = this.currentItemPlateTransform.LocalPosition;
@@ -279,7 +284,7 @@ namespace Xrv.Core.UI.Tabs
                 var toPosition = new Vector3
                 {
                     X = this.defaultCurrentItemPlatePosition.X,
-                    Y = this.defaultCurrentItemPlatePosition.Y - itemIndex * ButtonConstants.SquareButtonSize,
+                    Y = this.defaultCurrentItemPlatePosition.Y - (itemIndex * ButtonConstants.SquareButtonSize),
                     Z = this.defaultCurrentItemPlatePosition.Z,
                 };
 
@@ -288,7 +293,8 @@ namespace Xrv.Core.UI.Tabs
                     this.currentItemPlateTransform.LocalPosition,
                     toPosition,
                     animationDuration,
-                    EaseFunction.CubicOutEase, @value =>
+                    EaseFunction.CubicOutEase,
+                    @value =>
                     {
                         var position = this.currentItemPlateTransform.LocalPosition;
                         position.X = @value.X;
@@ -324,7 +330,7 @@ namespace Xrv.Core.UI.Tabs
                 return;
             }
 
-            var content = selectedItem.Contents?.Invoke();
+            var content = this.selectedItem.Contents?.Invoke();
             if (content == null)
             {
                 return;

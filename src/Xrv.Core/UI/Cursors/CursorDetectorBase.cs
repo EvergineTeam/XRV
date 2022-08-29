@@ -1,4 +1,6 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Physics3D;
 using Evergine.MRTK.Emulation;
@@ -74,7 +76,7 @@ namespace Xrv.Core.UI.Cursors
             if (!detected)
             {
                 this.detectedCursorIndex = -1;
-                for (int i = 0; i < cursors.Length; i++)
+                for (int i = 0; i < this.cursors.Length; i++)
                 {
                     if (lastDetectedIndex == i)
                     {

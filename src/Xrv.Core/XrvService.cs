@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Graphics;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
@@ -18,10 +20,10 @@ namespace Xrv.Core
 {
     public class XrvService : Service
     {
+        private readonly Dictionary<Type, Module> modules;
+
         [BindService]
         private AssetsService assetsService = null;
-
-        private readonly Dictionary<Type, Module> modules;
 
         public HandMenu HandMenu { get; private set; }
 
@@ -61,7 +63,8 @@ namespace Xrv.Core
             this.modules.Add(type, module);
         }
 
-        public T FindModule<T>() where T : Module => (T)this.FindModule(typeof(T));
+        public T FindModule<T>()
+            where T : Module => (T)this.FindModule(typeof(T));
 
         public Module FindModule(Type type) =>
             this.modules.TryGetValue(type, out var module) ? module : null;
@@ -87,6 +90,7 @@ namespace Xrv.Core
 
             // Register services and managers
             this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
+            this.WindowSystem.Load();
 
             // Hand menu initialization
             var handMenuManager = new HandMenuManager(scene.Managers.EntityManager, this.assetsService);

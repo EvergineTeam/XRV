@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Graphics;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;

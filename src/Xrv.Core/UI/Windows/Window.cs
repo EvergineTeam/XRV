@@ -1,7 +1,8 @@
-﻿using Evergine.Common.Attributes;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Physics3D;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -11,12 +12,18 @@ using System.Linq;
 
 namespace Xrv.Core.UI.Windows
 {
+    /// <summary>
+    /// Component to work with windows.
+    /// </summary>
     public class Window : Component
     {
         private Entity closeButton = null;
         private Entity followButton = null;
         private bool allowPin = true;
         private bool enableManipulation = true;
+
+        [BindService]
+        protected XrvService xrvService = null;
 
         [BindComponent(source: BindComponentSource.Owner, isExactType: false)]
         private BaseWindowConfigurator configurator = null;
@@ -25,14 +32,12 @@ namespace Xrv.Core.UI.Windows
         private Transform3D transform = null;
 
         [BindComponent(isRequired: false)]
-        private SimpleManipulationHandler simpleManipulationHandler;
+        private SimpleManipulationHandler simpleManipulationHandler = null;
 
         [IgnoreEvergine]
         public BaseWindowConfigurator Configurator { get => this.configurator; }
 
-        public bool IsClosed { get => !this.Owner.IsEnabled; }
-
-        public bool DestroyOnClose { get; set; } = false;
+        public bool IsOpened { get => this.Owner.IsEnabled; }
 
         public bool AllowPin
         {
@@ -62,13 +67,16 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        [IgnoreEvergine]
+        public string DistanceKey { get; set; }
+
         public event EventHandler Opened;
 
         public event EventHandler Closed;
 
         public void Open()
         {
-            if (this.IsClosed)
+            if (!this.IsOpened)
             {
                 this.PlaceInFrontOfUser();
                 this.Owner.IsEnabled = true;
@@ -78,15 +86,10 @@ namespace Xrv.Core.UI.Windows
 
         public void Close()
         {
-            if (!this.IsClosed)
+            if (this.IsOpened)
             {
                 this.Owner.IsEnabled = false;
                 this.Closed?.Invoke(this, EventArgs.Empty);
-
-                if (this.DestroyOnClose)
-                {
-                    this.Managers.EntityManager.Remove(this.Owner);
-                }
             }
         }
 
@@ -114,6 +117,12 @@ namespace Xrv.Core.UI.Windows
         {
             base.OnDetach();
             this.UnsubscribeEvents();
+        }
+
+        protected virtual float GetOpenDistance()
+        {
+            var distances = this.xrvService.WindowSystem.Distances;
+            return distances.GetDistanceOrAlternative(this.DistanceKey, Distances.MediumKey);
         }
 
         private void SubscribeEvents()
@@ -155,7 +164,8 @@ namespace Xrv.Core.UI.Windows
         private void PlaceInFrontOfUser()
         {
             var camera = this.Managers.RenderManager.ActiveCamera3D;
-            var position = camera.Transform.Position + camera.Transform.WorldTransform.Forward * 0.5f;
+            var distance = this.GetOpenDistance();
+            var position = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * distance);
             this.transform.Position = position;
 
             // default LookAt makes window to be oriented backwards to the camera

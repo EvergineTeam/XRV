@@ -22,6 +22,7 @@ namespace XrvSamples.Scenes
         private WindowsSystem windowsSystem;
         private Window window1;
         private Window window2;
+        private string customDistanceKey = nameof(customDistanceKey);
 
         private PressableButton createAlert;
         private PressableButton createConfirm;
@@ -36,6 +37,7 @@ namespace XrvSamples.Scenes
 
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.windowsSystem = xrv.WindowSystem;
+            this.windowsSystem.Distances.SetDistance(this.customDistanceKey, 0.5f);
             this.windowsSystem.OverrideIconMaterial = this.assetsService.Load<Material>(EvergineContent.Materials.EvergineLogo);
             this.messageText = this.Managers.EntityManager.FindAllByTag("message").First().FindComponent<Text3DMesh>();
             this.messageText.Text = string.Empty;
@@ -56,6 +58,35 @@ namespace XrvSamples.Scenes
             this.createConfirm = entityManager.FindAllByTag("createConfirm").First().FindComponentInChildren<PressableButton>();
             this.createAlert.ButtonReleased += this.CreateAlert_ButtonReleased;
             this.createConfirm.ButtonReleased += this.CreateConfirm_ButtonReleased;
+
+            // Window instances
+            this.window1 = this.windowsSystem.CreateWindow(configurator =>
+            {
+                configurator.Title = "Window #1";
+                configurator.Content = this.CreateText3D(
+                    Text,
+                    new Vector2(0.3f, 0.2f),
+                    new Vector3(0.01f, -0.01f, 0f));
+            });
+
+            this.window1.Opened += this.Window1_Opened;
+            this.window1.Closed += this.Window1_Closed;
+
+            this.window2 = this.windowsSystem.CreateWindow(configurator =>
+            {
+                configurator.Title = "Window #2";
+                configurator.Size = new Vector2(0.2f, 0.3f);
+                configurator.FrontPlateSize = new Vector2(0.2f, 0.25f);
+                configurator.FrontPlateOffsets = new Vector2(0f, 0.025f);
+                configurator.Content = this.CreateText3D(
+                    Text,
+                    new Vector2(0.18f, 0.25f),
+                    new Vector3(0f, 0.01f, 0f));
+            });
+
+            this.window2.DistanceKey = this.customDistanceKey;
+            this.window2.Opened += this.Window2_Opened;
+            this.window2.Closed += this.Window2_Closed;
         }
 
         private void CreateAlert_ButtonReleased(object sender, EventArgs e)
@@ -79,58 +110,36 @@ namespace XrvSamples.Scenes
             {
                 dialog.Closed -= this.Dialog_Closed;
                 this.dialogMessageText.Text = $"Dialog result: {dialog.Result ?? "<null>"}";
+
+                if (dialog is ConfirmDialog confirm && confirm.Result == confirm.AcceptOption.Key)
+                {
+                    var confirmDialog = this.windowsSystem.ShowConfirmDialog("test 2!", "this is other message", "nope", "yup");
+                    confirmDialog.Closed += this.Dialog_Closed;
+                }
             }
         }
 
         private void ButtonWindow1_ButtonReleased(object sender, EventArgs e)
         {
-            if (this.window1 == null)
+            if (this.window1.IsOpened)
             {
-                this.window1 = this.windowsSystem.ShowWindow();
-                this.window1.Configurator.Title = "Window #1";
-                this.window1.Configurator.Content = this.CreateText3D(
-                    Text, 
-                    new Vector2(0.3f, 0.2f),
-                    new Vector3(0.01f, -0.01f, 0f));
-                this.window1.Opened += this.Window1_Opened;
-                this.window1.Closed += this.Window1_Closed;
-            }
-
-            if (this.window1.IsClosed)
-            {
-                this.window1.Open();
+                this.window1.Close();
             }
             else
             {
-                this.window1.Close();
+                this.window1.Open();
             }
         }
 
         private void ButtonWindow2_ButtonReleased(object sender, EventArgs e)
         {
-            if (this.window2 == null)
+            if (this.window2.IsOpened)
             {
-                var assetsService = Application.Current.Container.Resolve<AssetsService>();
-                this.window2 = this.windowsSystem.ShowWindow();
-                this.window2.Configurator.Title = "Window #2";
-                this.window2.Configurator.Size = new Vector2(0.2f, 0.3f);
-                this.window2.Configurator.FrontPlateSize = new Vector2(0.2f, 0.25f);
-                this.window2.Configurator.FrontPlateOffsets = new Vector2(0f, 0.025f);
-                this.window2.Configurator.Content = this.CreateText3D(
-                    Text, 
-                    new Vector2(0.18f, 0.25f),
-                    new Vector3(0f, 0.01f, 0f));
-                this.window2.Opened += this.Window2_Opened;
-                this.window2.Closed += this.Window2_Closed;
-            }
-
-            if (this.window2.IsClosed)
-            {
-                this.window2.Open();
+                this.window2.Close();
             }
             else
             {
-                this.window2.Close();
+                this.window2.Open();
             }
         }
 

@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Attributes;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Attributes;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 
 namespace Xrv.Core.UI.Dialogs
@@ -12,8 +14,6 @@ namespace Xrv.Core.UI.Dialogs
 
         protected override void InstantiateOptions()
         {
-            this.Clear();
-
             var acceptButton = this.CreateButtonInstance(this.AcceptOption);
             this.AddOption(acceptButton.FindComponent<PressableButton>(), this.AcceptOption);
             this.singleButtonHolder?.AddChild(acceptButton);

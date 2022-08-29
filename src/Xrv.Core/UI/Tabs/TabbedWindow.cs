@@ -1,4 +1,6 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
 using System.Collections.Generic;
@@ -46,14 +48,14 @@ namespace Xrv.Core.UI.Tabs
         {
             base.OnActivated();
 
-            if (tabControl == null)
+            if (this.tabControl == null)
             {
-                tabControl = Owner.FindComponentInChildren<TabControl>();
+                this.tabControl = this.Owner.FindComponentInChildren<TabControl>();
 
-                tabControl.Items.Clear();
+                this.tabControl.Items.Clear();
                 foreach (var item in this.tabsToBeLoadedWhenAvailable)
                 {
-                    tabControl.Items.Add(item);
+                    this.tabControl.Items.Add(item);
                 }
 
                 this.tabsToBeLoadedWhenAvailable.Clear();

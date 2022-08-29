@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Graphics;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Graphics;
 using Evergine.Components.Fonts;
 using Evergine.Components.Primitives;
 using Evergine.Framework;
@@ -42,7 +44,6 @@ namespace Xrv.Ruler
         protected ToggleButton feetsToggle;
 
         public MeasureUnits Units { get; set; }
-
 
         public Entity Settings
         {

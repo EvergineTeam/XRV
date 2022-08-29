@@ -1,4 +1,6 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
@@ -37,11 +39,11 @@ namespace Xrv.Core.Menu
 
             this.palmPanelBehavior.DistanceFromHand = 0.1f;
             this.palmPanelBehavior.LookAtCameraUpperThreshold = 0.6f;
-            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.6f;            
+            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.6f;
 
             var menuPrefab = this.GetMenuPrefab();
             this.menuEntity = menuPrefab.Instantiate();
-            this.menuEntity.Name = "menuEntity";            
+            this.menuEntity.Name = "menuEntity";
 
             var palmMenuAnchorTransform = new Transform3D();
             var palmMenuAnchor = new Entity("palmMenuAnchor")
@@ -57,7 +59,7 @@ namespace Xrv.Core.Menu
                     Target = palmMenuAnchorTransform,
                 })
                 .AddComponent(handMenu);
-            
+
             menuRoot.AddChild(this.menuEntity);
 
             // On a first approach, palm menu seems to be rotated 180º.
@@ -73,6 +75,5 @@ namespace Xrv.Core.Menu
 
         private Prefab GetMenuPrefab() =>
             this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.HandMenu);
-
     }
 }
