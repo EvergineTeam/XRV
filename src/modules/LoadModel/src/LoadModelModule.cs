@@ -4,8 +4,11 @@ using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Physics3D;
+using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
+using System.Threading.Tasks;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
@@ -17,20 +20,10 @@ namespace Xrv.LoadModel
     /// </summary>
     public class LoadModelModule : Module
     {
-        /// <inheritdoc/>
-        public override string Name => "LoadModel";
-
-        /// <inheritdoc/>
-        public override HandMenuButtonDescription HandMenuButton => this.handMenuDesc;
-
-        /// <inheritdoc/>
-        public override TabItem Help => null;
-
-        /// <inheritdoc/>
-        public override TabItem Settings => null;
 
         private AssetsService assetsService;
-        private HandMenuButtonDescription handMenuDesc;
+        private Scene scene;
+        private MenuButtonDescription handMenuDesc;
         private Entity modelEntity;
 
         /// <summary>
@@ -38,7 +31,7 @@ namespace Xrv.LoadModel
         /// </summary>
         public LoadModelModule()
         {
-            this.handMenuDesc = new HandMenuButtonDescription()
+            this.handMenuDesc = new MenuButtonDescription()
             {
                 IsToggle = false,
                 IconOn = LoadModelResourceIDs.Materials.Icons.addModel,
@@ -47,36 +40,63 @@ namespace Xrv.LoadModel
         }
 
         /// <inheritdoc/>
+        public override string Name => "LoadModel";
+
+        /// <inheritdoc/>
+        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
+
+        /// <inheritdoc/>
+        public override TabItem Help => null;
+
+        /// <inheritdoc/>
+        public override TabItem Settings => null;
+
+        /// <inheritdoc/>
         public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
-
-            // PiggyBot
-            ////var piggyBot = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
-            ////this.modelEntity = piggyBot.InstantiateModelHierarchy(this.assetsService);
-            ////this.modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * 0.04f;
-
-            var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
-
-            this.modelEntity = new Entity()
-                            .AddComponent(new Transform3D())
-                            .AddComponent(new MaterialComponent() { Material = material })
-                            .AddComponent(new TeapotMesh())
-                            .AddComponent(new MeshRenderer());
-
-            // Manipulators
-            this.modelEntity.AddComponent(new BoxCollider3D());
-            this.modelEntity.AddComponent(new StaticBody3D() { IsSensor = true });
-            this.modelEntity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox());
-
-            scene.Managers.EntityManager.Add(this.modelEntity);
-            this.modelEntity.IsEnabled = false;
+            this.scene = scene;
         }
 
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.modelEntity.IsEnabled = turnOn;
+            // Create manipulator prefab
+            var manipulatorPrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.Prefabs.Manipulator_weprefab);
+            var manipulatorEntity = manipulatorPrefab.Instantiate();
+            var loadModelBehavior = new LoadModelBehavior();
+            manipulatorEntity.AddComponent(loadModelBehavior);
+
+            // Create in front of the viewer
+            var cameraTransform = this.scene.Managers.RenderManager.ActiveCamera3D.Transform;
+            var cameraWorldTransform = cameraTransform.WorldTransform;
+            var center = cameraTransform.Position + (cameraWorldTransform.Forward * 0.6f);
+            manipulatorEntity.FindComponent<Transform3D>().Position = center;
+
+            this.scene.Managers.EntityManager.Add(manipulatorEntity);
+
+            // Load GLB model
+            EvergineForegroundTask.Run(async () =>
+            {
+                await Task.Delay(2000);
+
+                // Teapot
+                var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+                var modelEntity = new Entity()
+                                .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
+                                .AddComponent(new MaterialComponent() { Material = material })
+                                .AddComponent(new TeapotMesh())
+                                .AddComponent(new MeshRenderer());
+
+                // PiggyBot
+                ////var model = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
+                ////var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+                ////var transform = modelEntity.FindComponent<Transform3D>();
+                ////transform.LocalScale = Vector3.One * 0.01f;
+                ////var aabb = model.BoundingBox.Value;
+
+                loadModelBehavior.ModelEntity = modelEntity;
+            });
         }
     }
 }

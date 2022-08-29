@@ -13,14 +13,14 @@ namespace Xrv.Ruler
     {       
         public override string Name => "Ruler";
 
-        public override HandMenuButtonDescription HandMenuButton => this.handMenuDesc;
+        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
 
         public override TabItem Help => this.help;
 
         public override TabItem Settings => this.settings;
 
         protected AssetsService assetsService;
-        private HandMenuButtonDescription handMenuDesc;
+        private MenuButtonDescription handMenuDesc;
         private TabItem settings;
         private TabItem help;
 
@@ -31,7 +31,7 @@ namespace Xrv.Ruler
 
         public RulerModule()
         {
-            this.handMenuDesc = new HandMenuButtonDescription()
+            this.handMenuDesc = new MenuButtonDescription()
             {
                 IconOff = RulerResourceIDs.Materials.Icons.Measure,
                 IconOn = RulerResourceIDs.Materials.Icons.Measure,

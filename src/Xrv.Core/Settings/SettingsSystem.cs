@@ -11,7 +11,7 @@ namespace Xrv.Core.Settings
     {
         private readonly EntityManager entityManager;
         private readonly XrvService xrvService;
-        private HandMenuButtonDescription handMenuButtonDescription;
+        private MenuButtonDescription handMenuButtonDescription;
 
         public SettingsSystem(XrvService xrvService, EntityManager entityManager)
         {
@@ -52,7 +52,7 @@ namespace Xrv.Core.Settings
 
         private void SetUpHandMenu()
         {
-            this.handMenuButtonDescription = new HandMenuButtonDescription
+            this.handMenuButtonDescription = new MenuButtonDescription
             {
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Settings,
