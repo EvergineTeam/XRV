@@ -94,11 +94,6 @@ namespace Xrv.AudioNote
             {
                 this.WindowState = AudioNoteWindowState.StopRecording;
             }
-            else if (this.windowState == AudioNoteWindowState.Playing)
-            {
-                this.WindowState = AudioNoteWindowState.Playing;
-                return;
-            }
             else
             {
                 if (!string.IsNullOrEmpty(this.data.Path))
@@ -119,11 +114,6 @@ namespace Xrv.AudioNote
             if (this.windowState == AudioNoteWindowState.Playing)
             {
                 this.WindowState = AudioNoteWindowState.StopPlaying;
-            }
-            else if (this.windowState == AudioNoteWindowState.Recording)
-            {
-                this.WindowState = AudioNoteWindowState.Recording;
-                return;
             }
             else
             {
@@ -165,11 +155,15 @@ namespace Xrv.AudioNote
                 {
                     this.playingEntity.IsEnabled = windowState == AudioNoteWindowState.Playing;
                     this.recordingEntity.IsEnabled = windowState == AudioNoteWindowState.Recording;
+
+                    this.playEntity.IsEnabled = windowState != AudioNoteWindowState.Recording;
+                    this.recordEntity.IsEnabled = windowState != AudioNoteWindowState.Playing;
                     switch (windowState)
                     {
                         case AudioNoteWindowState.Recording:
                             this.playManager.ChangeState(this.playManager.States.ElementAt(1));
                             this.recordManager.ChangeState(this.playManager.States.ElementAt(0));
+                            
                             this.BeginRecordAudionote();
                             break;
                         case AudioNoteWindowState.Playing:
