@@ -75,14 +75,7 @@ namespace Xrv.AudioNote
             var rulerSettingPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Settings);
             this.audioNoteSettings = rulerSettingPrefab.Instantiate();
 
-            // TODO change with showwindow with defered
-            WorkActionFactory.CreateDelayWorkAction(scene, TimeSpan.FromSeconds(1)).ContinueWithAction(() =>
-                {
-                    // Audio Note Window
-                    this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
-                    this.windowAudioNote = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
-                })
-                .Run();
+            this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
 
             this.xrv.PubSub.Subscribe<AudioAnchorSelected>(this.CreateAudioNoteWindow);
             this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
@@ -143,6 +136,12 @@ namespace Xrv.AudioNote
 
         private void CreateAudioNoteWindow(AudioAnchorSelected msg)
         {
+            this.window.Open();
+            if (this.windowAudioNote == null)
+            {
+                this.windowAudioNote = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
+            }
+
             if (this.windowAudioNote.WindowState == AudioNoteWindowState.Recording)
             {
                 this.windowAudioNote.SaveContent();
@@ -163,7 +162,6 @@ namespace Xrv.AudioNote
             this.lastAnchorSelected = msg.Anchor;
 
             this.SetWindowInitialState(msg.Anchor.AudioNote);
-            this.window.Open();
         }
 
         private void SetWindowInitialState(AudioNoteData data)
@@ -223,15 +221,16 @@ namespace Xrv.AudioNote
         private Window ShowAudionoteWindow(Guid prefabId)
         {
             var audioNoteSize = new Vector2(0.18f, 0.04f);
-            var window = this.xrv.WindowSystem.ShowWindow();
+            var window = this.xrv.WindowSystem.CreateWindow((config) =>
+            {
+                config.Title = "Audio Note";
+                config.Size = audioNoteSize;
+                config.FrontPlateSize = audioNoteSize;
+                config.FrontPlateOffsets = Vector2.Zero;
+                config.DisplayLogo = false;
+                config.Content = this.assetsService.Load<Prefab>(prefabId).Instantiate();
+            });
 
-            var config = window.Configurator;
-            config.Title = "Audio Note";
-            config.Size = audioNoteSize;
-            config.FrontPlateSize = audioNoteSize;
-            config.FrontPlateOffsets = Vector2.Zero;
-            config.DisplayLogo = false;
-            config.Content = this.assetsService.Load<Prefab>(prefabId).Instantiate();
             return window;
         }
     }
