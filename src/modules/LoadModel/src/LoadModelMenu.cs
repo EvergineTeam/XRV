@@ -1,7 +1,5 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Common.Input.Keyboard;
-using Evergine.Common.Input;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -11,7 +9,6 @@ using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Xrv.Core;
 using Xrv.Core.Menu;
 
@@ -20,7 +17,7 @@ namespace Xrv.LoadModel
     /// <summary>
     /// Manages the Load Model menu.
     /// </summary>
-    public class LoadModelMenu : Behavior
+    public class LoadModelMenu : Component
     {
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
@@ -105,6 +102,7 @@ namespace Xrv.LoadModel
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -114,6 +112,7 @@ namespace Xrv.LoadModel
             this.ReorderButtons();
         }
 
+        /// <inheritdoc/>
         protected override void OnDeactivated()
         {
             base.OnDeactivated();
@@ -209,27 +208,5 @@ namespace Xrv.LoadModel
                 }));
             this.extendedAnimation.Run();
         }
-
-        //// -- Begin Debug area --
-
-        [BindService]
-        private GraphicsPresenter graphicsPresenter;
-
-        /// <inheritdoc/>
-        protected override void Update(TimeSpan gameTime)
-        {
-            KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
-            {
-                this.ExtendedAnimation(true);
-            }
-            else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
-            {
-                this.ExtendedAnimation(false);
-            }
-        }
-
-        //// -- End Debug area --
     }
 }
