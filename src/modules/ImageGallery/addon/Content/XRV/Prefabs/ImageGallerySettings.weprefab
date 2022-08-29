@@ -1,0 +1,80 @@
+!Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
+Root:
+  Name: ImageGallerySettings
+  Tag: null
+  IsEnabled: true
+  IsStatic: false
+  Components:
+    - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+      Id: 07569474-3917-4b87-84c0-92e33bb900fc
+      IsEnabled: true
+      LocalOrientation:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalPosition:
+        X: -1.25401628
+        Y: -0.858327389
+        Z: -4.45388126
+      LocalScale:
+        X: 1.0
+        Y: 1.0
+        Z: 1.0
+  Children:
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: text1
+      Tag: null
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: f9888ef1-7aec-4bb4-8471-bc9f2ac82806
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 1.25401628
+            Y: 0.858327389
+            Z: 4.46188116
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
+          Id: 988bd44b-3c0e-4ae6-857e-76b960d811f1
+          Color:
+            A: 255
+            B: 255
+            G: 255
+            R: 255
+          Ellipsis: true
+          Font: 1c6e2929-d555-4c02-af49-50b4ecb01ce3
+          HorizontalAlignment: Left
+          IsEnabled: true
+          Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+          LineSpacing: 0.0
+          Origin:
+            X: 0.5
+            Y: 0.5
+          ScaleFactor: 0.00600000005
+          Size:
+            X: 0.230000019
+            Y: 0.170000017
+          Text: WORK IN PROGRESS
+          VerticalAlignment: Top
+          Wrapping: true
+        - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
+          Id: 72345e17-8e9c-427b-8515-2d23d37c5983
+          DebugBoundingbox: true
+          DebugMode: false
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+      Children: []
+      Id: 1329c898-acc9-4d94-9682-6c4583d6c8af
+  Id: 1d79a3f8-a61f-4794-a31b-e62265ded19f
