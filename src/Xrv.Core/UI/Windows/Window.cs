@@ -37,6 +37,9 @@ namespace Xrv.Core.UI.Windows
         [BindComponent(isRequired: false)]
         private SimpleManipulationHandler simpleManipulationHandler = null;
 
+        [BindComponent]
+        private WindowTagAlong windowTagAlong = null;
+
         /// <summary>
         /// Raised when window is opened.
         /// </summary>
@@ -119,6 +122,7 @@ namespace Xrv.Core.UI.Windows
         {
             if (this.IsOpened)
             {
+                this.UpdateFollowBehavior(false);
                 this.Owner.IsEnabled = false;
                 this.Closed?.Invoke(this, EventArgs.Empty);
             }
@@ -133,6 +137,7 @@ namespace Xrv.Core.UI.Windows
                 this.closeButton = this.Owner.FindChildrenByTag("PART_window_close", true).First();
                 this.followButton = this.Owner.FindChildrenByTag("PART_window_follow", true).First();
                 this.SubscribeEvents();
+                this.UpdateFollowBehavior(false);
             }
 
             return attached;
@@ -214,6 +219,8 @@ namespace Xrv.Core.UI.Windows
         private void UpdateFollowBehavior(bool followEnabled)
         {
             this.EnableManipulation = !followEnabled;
+            this.windowTagAlong.IsEnabled = followEnabled;
+            Workarounds.ChangeToggleButtonState(this.followButton, followEnabled);
         }
 
         private void UpdateEnableManipulation()
