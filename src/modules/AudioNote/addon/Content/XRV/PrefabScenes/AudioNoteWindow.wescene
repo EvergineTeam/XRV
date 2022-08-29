@@ -1723,7 +1723,7 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Playing
         Tag: Playing
-        IsEnabled: false
+        IsEnabled: true
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -1793,6 +1793,55 @@ Items:
             Children: []
             Id: 985cf043-5632-473e-ad54-3bb7f90aee4f
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+            Name: playingPlate
+            Tag: PART_Plate
+            IsEnabled: true
+            IsStatic: false
+            Components:
+              - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                Id: 5fefefbc-06b3-4859-8d1f-69db579a2f1e
+                IsEnabled: true
+                LocalOrientation:
+                  W: 1.0
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalPosition:
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalScale:
+                  X: 1.0
+                  Y: 1.0
+                  Z: 1.0
+              - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                Id: 011c5f56-8f06-46dd-b569-6838e555b754
+                AsignedTo: Default
+                IsEnabled: true
+                Material: bd3cfa9a-3fb9-4c47-b837-2f380a20c776
+              - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                Id: 0837d2e4-a943-4917-8699-2af5969fe7d6
+                Height: 0.0320000015
+                InitialU: 0.0
+                InitialV: 0.0
+                IsEnabled: true
+                PlaneNormal: ZPositive
+                TwoSides: false
+                UTile: 1.0
+                UVHorizontalFlip: false
+                UVVerticalFlip: false
+                Width: 0.180000007
+                YTile: 1.0
+              - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                Id: 312325ae-6ce3-4d7c-a788-67d4ee1fca2e
+                DebugBoundingbox: true
+                IsCullingEnabled: true
+                IsEnabled: true
+                OrderBias: 0
+                RenderFlags: CastShadows
+            Children: []
+            Id: e2fb2363-65d7-4b48-8d1d-917d357f9dcb
+          - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: Playing
             Tag: null
             IsEnabled: true
@@ -1809,7 +1858,7 @@ Items:
                 LocalPosition:
                   X: -0.0199999996
                   Y: 0.0
-                  Z: -9.31322575E-10
+                  Z: 0.00499999896
                 LocalScale:
                   X: 1.0
                   Y: 1.0
@@ -1864,7 +1913,7 @@ Items:
                 LocalPosition:
                   X: 0.0520000011
                   Y: 0.00200000033
-                  Z: 1.86264515E-09
+                  Z: 0.00500000175
                 LocalScale:
                   X: 1.0
                   Y: 1.0
@@ -1919,7 +1968,7 @@ Items:
                 LocalPosition:
                   X: 0.0599999987
                   Y: 0.0
-                  Z: 1.07102096E-08
+                  Z: 0.0050000106
                 LocalScale:
                   X: 1.0
                   Y: 1.0
@@ -1960,7 +2009,7 @@ Items:
         Id: ec7b8314-462f-4899-9f96-003dc68e29cb
     Id: d970f4f2-16c6-409f-9bdd-6ef1ec57885b
   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 6c30f75a-285d-47fb-bcb0-e643280eefe2
+    Id: 24d7646c-ce51-490c-abac-e5d8c1827a8e
     Source: 7bbcca2b-4383-4fcb-b577-bd191867a7bd
     entityLinks: {}
     modificationList: []

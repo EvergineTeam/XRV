@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
+using Xrv.AudioNote.Services;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -54,17 +55,21 @@ namespace Xrv.AudioNote
                 TextOn = "Audio Note",
             };
 
-            this.settings = new TabItem()
-            {
-                Name = "Audio Note",
-                Contents = SettingContent,
-            };
+            //this.settings = new TabItem()
+            //{
+            //    Name = "Audio Note",
+            //    Contents = SettingContent,
+            //};
+            this.settings = null;
 
             this.help = new TabItem()
             {
                 Name = "Audio Note",
                 Contents = HelpContent,
             };
+
+            Application.Current.Container.RegisterInstance(new PlaybackService());
+            Application.Current.Container.RegisterInstance(new RecordingService());
         }
 
         public override void Initialize(Scene scene)
@@ -74,8 +79,8 @@ namespace Xrv.AudioNote
             this.scene = scene;
 
             // Settings
-            var rulerSettingPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Settings);
-            this.audioNoteSettings = rulerSettingPrefab.Instantiate();
+            //var audioSettingPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Settings);
+            //this.audioNoteSettings = audioSettingPrefab.Instantiate();
 
             this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
 
@@ -129,8 +134,8 @@ namespace Xrv.AudioNote
         {
             if (this.audioNoteHelp == null)
             {
-                var rulerHelpPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Help);
-                this.audioNoteHelp = rulerHelpPrefab.Instantiate();
+                var audioHelpPrefab = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Help);
+                this.audioNoteHelp = audioHelpPrefab.Instantiate();
             }
 
             return this.audioNoteHelp;
