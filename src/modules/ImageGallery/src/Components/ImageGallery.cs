@@ -39,23 +39,50 @@ namespace Xrv.ImageGallery.Components
         [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_previous")]
         private Entity previousButtonEntity;
 
-        private int imageIndex = 0;
+        private int _imageIndex = 0;
+
+        public int ImageIndex
+        {
+            get
+            {
+                return this._imageIndex;
+            }
+
+            set
+            {
+                if (value >= 0)
+                {
+                    if (this.images != null && value < this.images.Count)
+                    {
+                        this._imageIndex = value;
+                    }
+                }
+            }
+        }
 
         private Texture imageTexture = null;
 
         public uint imagePixelsWidth = 100;
         public uint imagePixelsHeight = 100;
 
+        public List<string> images = null;
+
         protected override bool OnAttached()
         {
+            if (this.images == null)
+            {
+                string[] array = { "XRV/Textures/TestImages/test1.jpg", "XRV/Textures/TestImages/test2.jpg", "XRV/Textures/TestImages/test3.jpg" };
+                this.images = new List<string>(array);
+            }
+
             this.nextButton = this.nextButtonEntity.FindComponentInChildren<PressableButton>();
             this.previousButton = this.previousButtonEntity.FindComponentInChildren<PressableButton>();
+
             if (this.galleryFrameMaterial == null)
             {
                 this.galleryFrameMaterial = this.galleryFrameEntity.FindComponent<MaterialComponent>();
 
                 var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
-                // this.imageTexture = holographicEffect.Texture;
 
                 TextureDescription desc = new TextureDescription()
                 {
@@ -75,8 +102,7 @@ namespace Xrv.ImageGallery.Components
 
                 this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
                 holographicEffect.Texture = this.imageTexture;
-
-
+                this.ReloadImage();
             }
 
             this.nextButton.ButtonPressed += this.onNextButtonPressed;
@@ -93,14 +119,37 @@ namespace Xrv.ImageGallery.Components
 
         public void onNextButtonPressed(object sender, EventArgs e)
         {
-            Debug.WriteLine("NEXT");
-            this.LoadRawJPG("XRV/Textures/TestImages/test1.jpg");
+            this.ImageIndex++;
+            this.ReloadImage();
         }
 
         public void onPreviousButtonPressed(object sender, EventArgs e)
         {
-            Debug.WriteLine("PREVIOUS");
-            this.LoadRawJPG("XRV/Textures/TestImages/test2.jpg");
+            this.ImageIndex--;
+            this.ReloadImage();
+        }
+
+        private void ReloadImage()
+        {
+            this.LoadRawJPG(this.images[this.ImageIndex]);
+
+            if (this.ImageIndex == 0)
+            {
+                this.previousButtonEntity.IsEnabled = false;
+            }
+            else
+            {
+                this.previousButtonEntity.IsEnabled = true;
+            }
+
+            if (this.ImageIndex >= this.images.Count - 1)
+            {
+                this.nextButtonEntity.IsEnabled = false;
+            }
+            else
+            {
+                this.nextButtonEntity.IsEnabled = true;
+            }
         }
 
         private void LoadRawJPG(string filePath)
