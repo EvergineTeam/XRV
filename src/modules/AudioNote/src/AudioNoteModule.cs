@@ -115,8 +115,7 @@ namespace Xrv.AudioNote
         {
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
-            // TODO uses NEAR position instead of 0.6f
-            return cameraTransform.Position + cameraWorldTransform.Forward * 0.6f;
+            return cameraTransform.Position + cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium;
         }
 
         public void SetFrontPosition(Scene scene, Entity entity)
