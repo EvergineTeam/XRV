@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Xrv.Core;
 using Xrv.Core.Menu;
+using Xrv.Core.UI.Dialogs;
 
 namespace Xrv.LoadModel
 {
@@ -62,10 +63,10 @@ namespace Xrv.LoadModel
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_frontplate")]
         private Transform3D frontPlateTransform = null;
 
-        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
-        private Entity menu = null;
-
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_frontplate", isRecursive: true)]
         private Entity frontPlate = null;
+
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_buttonsContainer", isRecursive: true)]
         private Entity buttonsContainer = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
@@ -111,9 +112,6 @@ namespace Xrv.LoadModel
             bool attached = base.OnAttached();
             if (attached)
             {
-                this.frontPlate = this.menu.FindChildrenByTag("PART_manipulator_frontplate").First();
-                this.buttonsContainer = this.menu.FindChildrenByTag("PART_manipulator_buttonsContainer").First();
-
                 // Lock button
                 this.lockButtonDesc = new MenuButtonDescription
                 {
@@ -284,6 +282,22 @@ namespace Xrv.LoadModel
 
         private void DeleteButton_Released(object sender, EventArgs e)
         {
+            var confirmDialog = this.xrvService.WindowSystem.ShowConfirmDialog(this.modelEntity.Name, "Delete this model? /n This action can't be undone.", "No", "Yes");
+            var configuration = confirmDialog.AcceptOption.Configuration;
+            configuration.Plate = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.Buttons.ButtonPrimary);
+            confirmDialog.Closed += this.Dialog_Closed;
+        }
+
+        private void Dialog_Closed(object sender, EventArgs e)
+        {
+            if (sender is Dialog dialog)
+            {
+                dialog.Closed -= this.Dialog_Closed;
+                if (dialog is ConfirmDialog confirm && confirm.Result == confirm.AcceptOption.Key)
+                {
+                    this.Managers.EntityManager.Remove(this.Owner);
+                }
+            }
         }
 
         private void AddManipulatorComponents(Entity entity)

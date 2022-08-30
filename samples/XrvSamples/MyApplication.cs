@@ -23,11 +23,11 @@ namespace XrvSamples
             this.Container.RegisterType<ForegroundTaskSchedulerService>();
             this.Container.RegisterType<WorkActionScheduler>();
 
-            var xrera = new XrvService();
-            xrera.AddModule(new RulerModule());
-            xrera.AddModule(new LoadModelModule());
+            var xrv = new XrvService();
+            xrv.AddModule(new RulerModule());
+            xrv.AddModule(new LoadModelModule());
 
-            this.Container.RegisterInstance(xrera);
+            this.Container.RegisterInstance(xrv);
         }
 
         public override void Initialize()

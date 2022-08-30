@@ -62,6 +62,12 @@ namespace Xrv.LoadModel
                     /// <summary> Asset Path (MRTK/Materials/BoundingBox/BoundingBoxWireframe.wemt) </summary>
                     public static readonly Guid BoundingBoxWireframe = new Guid("d04c6b19-b181-4798-8052-73388883abfe");
                 }
+
+                public sealed class Buttons
+                {
+                    /// <summary> Asset Path (XRV/Materials/Buttons/ButtonPrimary.wemt) </summary>
+                    public static readonly Guid ButtonPrimary = new Guid("ce1f6bc9-39ac-4a0a-a913-07963f7342f5");
+                }
             }
 
             public sealed class Prefabs
