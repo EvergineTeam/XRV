@@ -254,10 +254,10 @@ namespace Xrv.AudioNote
                     }
                     else
                     {
-                        this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot reproduce audio.", "Ok");
+                        this.xrvService.WindowSystem.ShowAlertDialog("Audio note save error", "Cannot save audio.", "Ok");
                         this.WindowState = AudioNoteWindowState.ReadyToPlay;
                         return false;
-                    }                    
+                    }
                 }
 
                 this.StopPlaying();
@@ -296,7 +296,7 @@ namespace Xrv.AudioNote
                 if (save)
                 {
                     ok &= await this.SaveContentAsync(stream);
-                }                
+                }
             }
 
             this.WindowState = AudioNoteWindowState.ReadyToPlay;
@@ -361,9 +361,8 @@ namespace Xrv.AudioNote
         {
             try
             {
-                var assetsDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
-                var contentPath = System.IO.Path.Combine(assetsDirectory.RootPath, this.data.Path);
-                var stream = File.OpenRead(contentPath);
+                // TODO read real file this.data.Path
+                var stream = new MemoryStream();
 
                 await this.playbackService.Load(stream);
                 this.playbackService.Play();
@@ -386,7 +385,7 @@ namespace Xrv.AudioNote
             }
 
             _ = this.StopRecordingServiceAsync();
-            this.Data.Path = "Audio/sample.wav";
+            this.Data.Path = "XRV/Audio/sample.wav";
 
             return Task.FromResult(true);
         }

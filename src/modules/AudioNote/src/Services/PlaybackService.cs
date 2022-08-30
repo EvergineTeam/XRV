@@ -12,6 +12,9 @@ namespace Xrv.AudioNote.Services
         [BindService]
         protected AudioDevice audioDevice;
 
+        [BindService]
+        protected AssetsService assetsService;
+
         protected AudioSource audioSource;
 
         private AudioBuffer buffer;
@@ -32,7 +35,7 @@ namespace Xrv.AudioNote.Services
         public PlaybackService()
         {
             // TODO this is config of sample
-            this.format = new WaveFormat(false, sampleRate: 22050, encoding: WaveFormatEncodings.PCM8);
+            this.format = new WaveFormat(true, sampleRate: 22050, encoding: WaveFormatEncodings.PCM8);
         }
 
         public async Task<bool> Load(Stream stream)
@@ -47,8 +50,10 @@ namespace Xrv.AudioNote.Services
 
                 this.audioSource.Stop();
                 this.audioSource.FlushBuffers();
-                this.buffer = this.audioDevice.CreateAudioBuffer();
-                await this.buffer.FillAsync(stream, (int)stream.Length, this.format);
+                ////this.buffer = this.audioDevice.CreateAudioBuffer();
+                ////await this.buffer.FillAsync(stream, (int)stream.Length, this.format);
+
+                this.buffer = assetsService.Load<AudioBuffer>(AudioNoteResourceIDs.Audio.Sample);
                 this.Duration = this.buffer.Duration;
             }
             catch (Exception ex)

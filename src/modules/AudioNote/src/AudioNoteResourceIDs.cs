@@ -32,5 +32,11 @@ namespace Xrv.AudioNote
             public static readonly Guid Anchor = new Guid("b0bb7495-b379-4af8-8458-018e0edebdb0");
             public static readonly Guid Window = new Guid("7bbcca2b-4383-4fcb-b577-bd191867a7bd");
         }
+
+        public sealed class Audio
+        {
+            public static readonly Guid Sample = new Guid("0537f12d-fd80-4638-84cf-b2aa256e979b");
+            
+        }
     }
 }

@@ -11,7 +11,7 @@ using System.Diagnostics;
 namespace Xrv.AudioNote
 {
     // TODO move to core?
-    public class TapDetector : Component, IMixedRealityPointerHandler
+    public class TapDetector : Component, IMixedRealityPointerHandler, IMixedRealityTouchHandler
     {
         private Vector3 positionInit;
         private Stopwatch currentPressed;
@@ -21,6 +21,21 @@ namespace Xrv.AudioNote
 
         public event EventHandler OnTap;
         public event EventHandler OnLongTap;
+        private Stopwatch touchWatch;
+
+        private TimeSpan tapTime;
+        private TimeSpan mintouchTime;
+
+
+        protected override bool OnAttached()
+        {
+            if (!base.OnAttached()) return false;
+
+            this.tapTime = TimeSpan.FromSeconds(this.Tap);
+            this.mintouchTime = TimeSpan.FromSeconds(0.2f);
+
+            return true;
+        }
 
         public void OnPointerClicked(MixedRealityPointerEventData eventData)
         {
@@ -51,6 +66,25 @@ namespace Xrv.AudioNote
                     this.OnLongTap?.Invoke(this, EventArgs.Empty);
                 }
             }
+        }
+
+        public void OnTouchCompleted(HandTrackingInputEventData eventData)
+        {
+            this.touchWatch.Stop();
+            if (touchWatch.Elapsed > this.mintouchTime // avoid touch by mistake
+                && touchWatch.Elapsed < this.tapTime)
+            {
+                this.OnTap?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public void OnTouchStarted(HandTrackingInputEventData eventData)
+        {
+            this.touchWatch = Stopwatch.StartNew();
+        }
+
+        public void OnTouchUpdated(HandTrackingInputEventData eventData)
+        {
         }
     }
 }

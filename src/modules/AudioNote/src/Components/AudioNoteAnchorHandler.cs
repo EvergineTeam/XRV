@@ -38,9 +38,7 @@ namespace Xrv.AudioNote
 
         protected bool touched;
         private Stopwatch clickWatch;
-        private Stopwatch touchWatch;
         private TimeSpan tapTime = TimeSpan.FromSeconds(0.4f);
-        private TimeSpan touchTime = TimeSpan.FromSeconds(0.8f);
 
 
         protected override bool OnAttached()
@@ -49,7 +47,7 @@ namespace Xrv.AudioNote
             if (Application.Current.IsEditor) return true;
 
 
-            this.tapDetector.OnTap += Handler_OnClick;
+            this.tapDetector.OnTap += this.Handler_OnClick;
             return true;
         }
 
@@ -122,19 +120,12 @@ namespace Xrv.AudioNote
 
         public void OnTouchCompleted(HandTrackingInputEventData eventData)
         {
-            this.touchWatch.Stop();
-            if (touchWatch.Elapsed < touchTime)
-            {
-                this.Handler_OnClick(this, EventArgs.Empty);
-            }
-
             this.anchor.UpdateVisualState(this.anchor.IsSelected? AudioNoteAnchorVisual.Selected : AudioNoteAnchorVisual.Idle);
             this.touched = false;
         }
 
         public void OnTouchStarted(HandTrackingInputEventData eventData)
         {
-            this.touchWatch = Stopwatch.StartNew();
             this.anchor.UpdateVisualState(AudioNoteAnchorVisual.Grabbed);
             this.touched = true;
         }
