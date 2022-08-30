@@ -94,6 +94,7 @@ namespace Xrv.AudioNote
             this.scene = scene;
 
             this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
+            this.window.Closed += this.Window_Closed;
 
             this.xrv.PubSub.Subscribe<AudioAnchorSelectedMessage>(this.CreateAudioNoteWindow);
             this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
@@ -111,6 +112,15 @@ namespace Xrv.AudioNote
             {
                 Anchor = anchor.FindComponent<AudioNoteAnchor>(),
             });
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (this.lastAnchorSelected != null)
+            {
+                this.lastAnchorSelected.UpdateVisualState(AudioNoteAnchorVisual.Idle);
+                this.lastAnchorSelected.IsSelected = false;
+            }
         }
 
         private void AddAudioAnchor(Entity anchor)
@@ -144,13 +154,8 @@ namespace Xrv.AudioNote
 
         private void CreateAudioNoteWindow(AudioAnchorSelectedMessage msg)
         {
+            this.Window_Closed(this, EventArgs.Empty);
             this.window.Open();
-
-            if (this.lastAnchorSelected != null)
-            {
-                this.lastAnchorSelected.UpdateVisualState(AudioNoteAnchorVisual.Idle);
-                this.lastAnchorSelected.IsSelected = false;
-            }
 
             msg.Anchor.UpdateVisualState(AudioNoteAnchorVisual.Selected);
             msg.Anchor.IsSelected = true;
