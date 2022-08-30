@@ -402,6 +402,9 @@ namespace Xrv.AudioNote
 
         private void DeleteButton_ButtonReleased(object sender, EventArgs e)
         {
+            this.StopPlaying();
+            _ = this.StopRecordingAsync(false);
+
             this.xrvService.PubSub.Publish(new AudioNoteDeleteMessage()
             {
                 Data = this.Data,
