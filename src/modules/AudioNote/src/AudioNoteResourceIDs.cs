@@ -77,11 +77,6 @@ namespace Xrv.AudioNote
         public sealed class Prefabs
         {
             /// <summary>
-            /// Asset Path (Prefabs/Settings.wemt).
-            /// </summary>
-            public static readonly Guid Settings = new Guid("78a5a6f4-cf3b-4611-984b-0bd411b1f050");
-
-            /// <summary>
             /// Asset Path (Prefabs/Help.wemt).
             /// </summary>
             public static readonly Guid Help = new Guid("b9be9e62-a68c-4eae-b52a-b12cc26b0a05");

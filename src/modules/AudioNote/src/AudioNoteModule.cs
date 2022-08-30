@@ -138,7 +138,7 @@ namespace Xrv.AudioNote
             var anchorTransform = entity.FindComponent<Transform3D>();
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
-            anchorTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
+            anchorTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Far);
         }
 
         private Entity HelpContent()
@@ -236,6 +236,7 @@ namespace Xrv.AudioNote
                 config.Content = this.assetsService.Load<Prefab>(prefabId).Instantiate();
             });
 
+            window.DistanceKey = Distances.NearKey;
             return window;
         }
     }
