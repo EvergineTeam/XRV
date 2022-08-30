@@ -8,12 +8,12 @@ using Evergine.Framework.Physics3D;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Dialogs;
@@ -72,6 +72,9 @@ namespace Xrv.LoadModel
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
         private ToggleButton optionsButtonToggle = null;
 
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
+        private Entity menu = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelBehavior"/> class.
         /// </summary>
@@ -97,6 +100,11 @@ namespace Xrv.LoadModel
                     this.Owner.AddChild(this.modelEntity);
                     this.Loading.IsEnabled = false;
                     this.LockedIcon.IsEnabled = false;
+
+                    ////var loadModelMenuBehavior = new LoadModelMenuBehavior();
+                    ////////loadModelMenuBehavior.TargetTransform = this.modelEntity.FindComponent<Transform3D>();
+                    ////loadModelMenuBehavior.Target = this.modelEntity;
+                    ////this.menu.AddComponent(loadModelMenuBehavior);
                 }
             }
         }
@@ -307,16 +315,35 @@ namespace Xrv.LoadModel
             entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
             {
                 AutoCalculate = false,
+                ScaleHandleScale = 0.030f,
+                RotationHandleScale = 0.030f,
+                LinkScale = 0.001f,
+                BoxPadding = Vector3.Zero,
                 BoxMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxVisual),
                 BoxGrabbedMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxVisualGrabbed),
                 ShowWireframe = true,
+                ShowScaleHandles = true,
+                ShowXScaleHandle = true,
+                ShowYScaleHandle = true,
+                ShowZScaleHandle = true,
                 ShowXRotationHandle = true,
                 ShowYRotationHandle = true,
                 ShowZRotationHandle = true,
+                WireframeShape = Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.WireframeType.Cubic,
                 WireframeMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxWireframe),
                 HandleMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxHandleBlue),
                 HandleGrabbedMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxHandleBlueGrabbed),
+                ScaleHandlePrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.MRTK.Prefabs.BoundingBox_ScaleHandle_weprefab),
                 RotationHandlePrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.MRTK.Prefabs.BoundingBox_RotateHandle_weprefab),
+                FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.MRTK.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
+            });
+            entity.AddComponent(new SimpleManipulationHandler()
+            {
+                SmoothingActive = true,
+                SmoothingAmount = 0.001f,
+                EnableSinglePointerRotation = true,
+                KeepRigidBodyActiveDuringDrag = false,
+                IncludeChildrenColliders = true,
             });
         }
     }
