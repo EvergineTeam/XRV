@@ -132,9 +132,9 @@ namespace Xrv.AudioNote
             this.recordButton.ButtonReleased -= this.RecordButton_ButtonReleased;
         }
 
-        private void RecordingService_RecordingTimeChanged(object sender, EventArgs e)
+        private void RecordingService_RecordingTimeChanged(object sender, TimeSpan e)
         {
-            this.recordedTimeText.Text = this.recordingService.RecordingTime.ToString("mm\\:ss");
+            this.recordedTimeText.Text = e.ToString("mm\\:ss");
         }
 
         private void PlaybackService_AudioEnd(object sender, EventArgs e)
@@ -160,7 +160,7 @@ namespace Xrv.AudioNote
         {
             if (this.windowState == AudioNoteWindowState.Recording)
             {
-                this.WindowState = AudioNoteWindowState.StopRecording;
+                _ = this.StopRecordingAsync();
             }
             else
             {
@@ -172,7 +172,7 @@ namespace Xrv.AudioNote
                 }
                 else
                 {
-                    this.WindowState = AudioNoteWindowState.Recording;
+                    _ = this.StartRecordingAsync();
                 }
             }
         }
@@ -181,20 +181,20 @@ namespace Xrv.AudioNote
         {
             if (this.windowState == AudioNoteWindowState.Playing)
             {
-                this.WindowState = AudioNoteWindowState.StopPlaying;
+                this.StopPlaying();
             }
             else
             {
-                this.WindowState = AudioNoteWindowState.Playing;
+                _ = this.StartPlayingAsync();
             }
         }
 
         private void Emitter_OnAudioEnd(object sender, Evergine.Common.Audio.AudioBuffer e)
         {
-            this.WindowState = AudioNoteWindowState.StopPlaying;
+            this.StopPlaying();
         }
 
-        private void ConfirmOverride_Closed(object sender, EventArgs e)
+        private async void ConfirmOverride_Closed(object sender, EventArgs e)
         {
             if (sender is Dialog dialog)
             {
@@ -204,7 +204,7 @@ namespace Xrv.AudioNote
 
                 if (isAcceted)
                 {
-                    this.WindowState = AudioNoteWindowState.Recording;
+                    await StartRecordingAsync();
                 }
                 else
                 {
@@ -213,11 +213,108 @@ namespace Xrv.AudioNote
             }
         }
 
+        public async Task<bool> StartRecordingAsync()
+        {
+            var ok = true;
+            try
+            {
+                if (this.windowState == AudioNoteWindowState.Playing)
+                {
+                    this.StopPlaying();
+                }
+
+                this.WindowState = AudioNoteWindowState.Recording;
+                ok = await this.StartRecordingServiceAsync();
+                if (!ok)
+                {
+                    this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot record audio.", "Ok");
+                    this.WindowState = AudioNoteWindowState.ReadyToPlay;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.xrvService.WindowSystem.ShowAlertDialog("Audio note recording error", $"{ex.Message}", "Ok");
+                return false;
+            }
+
+            return ok;
+        }
+
+        public async Task<bool> StartPlayingAsync()
+        {
+            var ok = true;
+            try
+            {
+                if (this.windowState == AudioNoteWindowState.Recording)
+                {
+                    var stream = await this.StopRecordingServiceAsync();
+                    if (stream != null)
+                    {
+                        await this.SaveContentAsync(stream);
+                    }
+                    else
+                    {
+                        this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot reproduce audio.", "Ok");
+                        this.WindowState = AudioNoteWindowState.ReadyToPlay;
+                        return false;
+                    }                    
+                }
+
+                this.StopPlaying();
+                this.WindowState = AudioNoteWindowState.Playing;
+                ok = await this.StartPlayingServiceAsync();
+                if (!ok)
+                {
+                    this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot reproduce audio.", "Ok");
+                    this.WindowState = AudioNoteWindowState.ReadyToPlay;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
+                return false;
+            }
+
+            return ok;
+        }
+
+        public void StopPlaying()
+        {
+            this.WindowState = AudioNoteWindowState.ReadyToPlay;
+            if (this.playbackService.IsPlaying)
+            {
+                this.playbackService.Stop();
+            }
+        }
+
+        public async Task<bool> StopRecordingAsync(bool save = true)
+        {
+            var ok = true;
+            if (this.recordingService.IsRecording)
+            {
+                var stream = await this.recordingService.StopRecordingAsync();
+                if (save)
+                {
+                    ok &= await this.SaveContentAsync(stream);
+                }                
+            }
+
+            this.WindowState = AudioNoteWindowState.ReadyToPlay;
+
+            if (!ok)
+            {
+                this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Audio note not saved.", "Ok");
+            }
+
+            return ok;
+        }
+
         private void DeleteButton_ButtonReleased(object sender, EventArgs e)
         {
             this.xrvService.PubSub.Publish(new AudioNoteDeleteMessage()
             {
-                Data = this.Data
+                Data = this.Data,
+                Window = this
             });
         }
 
@@ -233,111 +330,65 @@ namespace Xrv.AudioNote
                 case AudioNoteWindowState.Recording:
                     this.playManager.ChangeState(this.playManager.States.ElementAt(1));
                     this.recordManager.ChangeState(this.playManager.States.ElementAt(0));
-                    this.BeginRecordAudionote();
                     break;
                 case AudioNoteWindowState.Playing:
                     this.playManager.ChangeState(this.playManager.States.ElementAt(0));
                     this.recordManager.ChangeState(this.playManager.States.ElementAt(1));
-                    this.BeginPlayAudionote();
-                    break;
-                case AudioNoteWindowState.StopPlaying:
-                    this.playManager.ChangeState(this.playManager.States.ElementAt(1));
-                    this.recordManager.ChangeState(this.playManager.States.ElementAt(1));
-                    this.playbackService.Stop();
-                    break;
-                case AudioNoteWindowState.StopRecording:
-                    this.playManager.ChangeState(this.playManager.States.ElementAt(1));
-                    this.recordManager.ChangeState(this.playManager.States.ElementAt(1));
-                    this.SaveContent();
-                    break;
-                case AudioNoteWindowState.ReadyToPlay:
-                    this.playManager.ChangeState(this.playManager.States.ElementAt(1));
-                    this.recordManager.ChangeState(this.playManager.States.ElementAt(1));
-                    this.StopPlaying();
-                    _ = this.StopRecording();
                     break;
                 default:
+                    this.playManager.ChangeState(this.playManager.States.ElementAt(1));
+                    this.recordManager.ChangeState(this.playManager.States.ElementAt(1));
                     break;
             }
         }
 
-        private void BeginPlayAudionote()
+        private async Task<bool> StartRecordingServiceAsync()
         {
-            _ = this.StartPlaying();
+            return await this.recordingService.StartRecordingAsync();
         }
 
-        private async Task StartRecording()
-        {
-            await this.StopRecording();
-            await this.recordingService.StartRecordingAsync();
-        }
-
-        private async Task StopRecording()
+        private async Task<Stream> StopRecordingServiceAsync()
         {
             if (this.recordingService.IsRecording)
             {
-                await this.recordingService.StopRecordingAsync();
+                return await this.recordingService.StopRecordingAsync();
             }
+
+            return null;
         }
 
-        private async Task<bool> StartPlaying()
+        private async Task<bool> StartPlayingServiceAsync()
         {
-            await this.StopRecording();
-            this.StopPlaying();
             try
             {
-                var stream = GetStream();
+                var assetsDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
+                var contentPath = System.IO.Path.Combine(assetsDirectory.RootPath, this.data.Path);
+                var stream = File.OpenRead(contentPath);
+
                 await this.playbackService.Load(stream);
                 this.playbackService.Play();
             }
             catch (Exception ex)
             {
+                this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
                 return false;
             }
 
             return true;
         }
 
-        private FileStream GetStream()
+        private Task<bool> SaveContentAsync(Stream stream)
         {
-            // TODO get real stream
-            var assetsDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
-            var contentPath = System.IO.Path.Combine(assetsDirectory.RootPath, this.data.Path);
-
-            return File.OpenRead(contentPath);
-        }
-
-        private void StopPlaying()
-        {
-            if (this.playbackService.IsPlaying)
-            {
-                this.playbackService.Stop();
-            }
-        }
-
-
-        private void BeginRecordAudionote()
-        {
-            _ = this.StartRecording();
-            // TODO begin record            
-        }
-
-        public void SaveContent()
-        {
-            // TODO stop record
             // TODO do save content here
             if (!string.IsNullOrEmpty(this.Data.Path))
             {
                 // TODO remove previous record
             }
 
-            _ = this.StopRecording();
-            this.Data.Path = "XRV/Samples/sample.wav";
-        }
+            _ = this.StopRecordingServiceAsync();
+            this.Data.Path = "Audio/sample.wav";
 
-        public void PlayAudio(bool play = true)
-        {
-            // TODO stop playing
+            return Task.FromResult(true);
         }
     }
 }

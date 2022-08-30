@@ -32,7 +32,7 @@ namespace Xrv.AudioNote.Services
         public PlaybackService()
         {
             // TODO this is config of sample
-            this.format = new WaveFormat(true, sampleRate: 22050, encoding: WaveFormatEncodings.PCM8);
+            this.format = new WaveFormat(false, sampleRate: 22050, encoding: WaveFormatEncodings.PCM8);
         }
 
         public async Task<bool> Load(Stream stream)

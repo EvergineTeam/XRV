@@ -8,5 +8,6 @@ namespace Xrv.AudioNote.Messages
     public class AudioNoteDeleteMessage
     {
         public AudioNoteData Data { get; set; }
+        public AudioNoteWindow Window { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
 using Xrv.AudioNote.Services;
@@ -41,7 +42,6 @@ namespace Xrv.AudioNote
         private Window window;
         private Scene scene;
         private AudioNoteAnchor lastAnchorSelected;
-        private AudioNoteWindow windowAudioNote;
 
         private Dictionary<string, Entity> anchorsDic = new Dictionary<string, Entity>();
         private AudioNoteDeleteMessage audionoteToRemove;
@@ -144,19 +144,6 @@ namespace Xrv.AudioNote
         private void CreateAudioNoteWindow(AudioAnchorSelected msg)
         {
             this.window.Open();
-            if (this.windowAudioNote == null)
-            {
-                this.windowAudioNote = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
-            }
-
-            if (this.windowAudioNote.WindowState == AudioNoteWindowState.Recording)
-            {
-                this.windowAudioNote.SaveContent();
-            }
-            else if (this.windowAudioNote.WindowState == AudioNoteWindowState.Recording)
-            {
-                this.windowAudioNote.PlayAudio(false);
-            }
 
             if (lastAnchorSelected != null)
             {
@@ -168,22 +155,31 @@ namespace Xrv.AudioNote
             msg.Anchor.IsSelected = true;
             this.lastAnchorSelected = msg.Anchor;
 
-            this.SetWindowInitialState(msg.Anchor.AudioNote);
+            _ = this.SetWindowInitialState(msg.Anchor.AudioNote);
         }
 
-        private void SetWindowInitialState(AudioNoteData data)
+        private async Task<bool> SetWindowInitialState(AudioNoteData data)
         {
+            var ok = true;
             var note = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
+
+            if (note.WindowState == AudioNoteWindowState.Recording)
+            {
+                ok = await note.StopRecordingAsync();
+            }
+
             note.Data = data;
             this.window.Open();
             if (string.IsNullOrEmpty(data.Path))
             {
-                note.WindowState = AudioNoteWindowState.Recording;
+                ok &= await note.StartRecordingAsync();
             }
             else
             {
-                note.WindowState = AudioNoteWindowState.Playing;
+                ok &= await note.StartPlayingAsync();
             }
+
+            return ok;
         }
 
         private void ConfirmDelete(AudioNoteDeleteMessage msg)
@@ -209,6 +205,7 @@ namespace Xrv.AudioNote
                 var guid = audioNote?.Data.Guid;
                 if (string.IsNullOrEmpty(guid)) return;
 
+                _ = audioNote.Window.StopRecordingAsync(false);
                 this.RemoveAnchor(guid);
                 this.window.Close();
             }

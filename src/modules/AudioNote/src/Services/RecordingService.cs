@@ -13,23 +13,30 @@ namespace Xrv.AudioNote.Services
 
         public Stream BufferStream { get; protected set; }
 
-        public event EventHandler IsRecordingChanged;
-
-        public event EventHandler RecordingTimeChanged;
+        public event EventHandler<TimeSpan> RecordingTimeChanged;
 
         public override void Update(TimeSpan gameTime)
         {
-            //throw new NotImplementedException();
+            if (this.IsRecording)
+            {
+                this.RecordingTime += gameTime;
+                this.RecordingTimeChanged?.Invoke(this, this.RecordingTime);
+            }
         }
 
-        public Task<bool> StartRecordingAsync()
+        public async Task<bool> StartRecordingAsync()
         {
-            return Task.FromResult(true);
+            this.IsRecording = true;
+            this.RecordingTime = TimeSpan.Zero;
+            await Task.Delay(1);
+            return true;
         }
 
-        public Task<bool> StopRecordingAsync()
+        public async Task<Stream> StopRecordingAsync()
         {
-            return Task.FromResult(true);
+            this.IsRecording = false;
+            await Task.Delay(1);
+            return new MemoryStream();
         }
     }
 }
