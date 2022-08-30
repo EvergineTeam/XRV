@@ -13,6 +13,9 @@ using Xrv.Core.UI.Dialogs;
 
 namespace Xrv.Core.UI.Windows
 {
+    /// <summary>
+    /// Windows system to manage windows and dialogs.
+    /// </summary>
     public class WindowsSystem
     {
         private readonly EntityManager entityManager;
@@ -21,11 +24,11 @@ namespace Xrv.Core.UI.Windows
         private AlertDialog alertDialog;
         private ConfirmDialog confirmDialog;
 
-        public IEnumerable<Window> AllWindows
-        {
-            get => this.entityManager.FindComponentsOfType<Window>(isExactType: false);
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowsSystem"/> class.
+        /// </summary>
+        /// <param name="entityManager">Entity manager.</param>
+        /// <param name="assetsService">Assets service.</param>
         public WindowsSystem(EntityManager entityManager, AssetsService assetsService)
         {
             this.entityManager = entityManager;
@@ -33,9 +36,118 @@ namespace Xrv.Core.UI.Windows
             this.Distances = new Distances();
         }
 
+        /// <summary>
+        /// Gets all instantiated windows from the scene.
+        /// </summary>
+        public IEnumerable<Window> AllWindows
+        {
+            get => this.entityManager.FindComponentsOfType<Window>(isExactType: false);
+        }
+
+        /// <summary>
+        /// Gets registered distances.
+        /// </summary>
         public Distances Distances { get; private set; }
 
+        /// <summary>
+        /// Gets or sets default icon for windows. If not set, default window icon
+        /// will be used.
+        /// </summary>
         public Material OverrideIconMaterial { get; set; }
+
+        /// <summary>
+        /// Creates a window and adds it to <see cref="EntityManager" />.
+        /// </summary>
+        /// <param name="configure">Callback invoked to configure created window.</param>
+        /// <returns><see cref="Window"/> component.</returns>
+        public Window CreateWindow(Action<WindowConfigurator> configure = null)
+        {
+            var window = new Window();
+            var windowEntity = this.BuildWindow(window, (BaseWindowConfigurator)null);
+            if (configure != null)
+            {
+                var configurator = windowEntity.FindComponent<WindowConfigurator>();
+                configure.Invoke(configurator);
+            }
+
+            this.entityManager.Add(windowEntity);
+            return window;
+        }
+
+        /// <summary>
+        /// Shows an alert dialog.
+        /// </summary>
+        /// <param name="title">Dialog title.</param>
+        /// <param name="text">Dialog text message.</param>
+        /// <param name="acceptText">Accept button text.</param>
+        /// <returns><see cref="AlertDialog"/> component.</returns>
+        public AlertDialog ShowAlertDialog(string title, string text, string acceptText)
+        {
+            bool anyOpened = this.CloseAllDialogs();
+
+            var configurator = this.alertDialog.Configurator as DialogConfigurator;
+            configurator.Title = title;
+            configurator.Text = text;
+            this.alertDialog.AcceptOption.Configuration.Text = acceptText;
+            this.OpenDialogWithDelayIfRequired(this.alertDialog, anyOpened);
+
+            return this.alertDialog;
+        }
+
+        /// <summary>
+        /// Shows a confirmation dialog.
+        /// </summary>
+        /// <param name="title">Dialog title.</param>
+        /// <param name="text">Dialog text message.</param>
+        /// <param name="cancelText">Cancel button text.</param>
+        /// <param name="acceptText">Accept button text.</param>
+        /// <returns><see cref="ConfirmDialog"/> component.</returns>
+        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText)
+        {
+            bool anyOpened = this.CloseAllDialogs();
+
+            var configurator = this.confirmDialog.Configurator as DialogConfigurator;
+            configurator.Title = title;
+            configurator.Text = text;
+            this.confirmDialog.CancelOption.Configuration.Text = cancelText;
+            this.confirmDialog.AcceptOption.Configuration.Text = acceptText;
+            this.OpenDialogWithDelayIfRequired(this.confirmDialog, anyOpened);
+
+            return this.confirmDialog;
+        }
+
+        /// <summary>
+        /// Builds a window but it's not added to the scene.
+        /// </summary>
+        /// <typeparam name="TWindow">Window type.</typeparam>
+        /// <typeparam name="TConfigurator">Window configurator type.</typeparam>
+        /// <param name="instance">Window instance.</param>
+        /// <param name="configInstance">Window configurator instance.</param>
+        /// <returns>Window owner entity.</returns>
+        public Entity BuildWindow<TWindow, TConfigurator>(TWindow instance, TConfigurator configInstance)
+            where TWindow : Window
+            where TConfigurator : BaseWindowConfigurator
+        {
+            var prefab = this.GetWindowPrefab();
+            var windowEntity = prefab.Instantiate();
+            windowEntity.AddComponent(instance);
+
+            if (configInstance != default(TConfigurator))
+            {
+                var configurator = windowEntity.FindComponent<BaseWindowConfigurator>(isExactType: false);
+                windowEntity.RemoveComponent(configurator);
+                windowEntity.AddComponent(configInstance);
+            }
+            else if (this.OverrideIconMaterial != null)
+            {
+                var configurator = windowEntity.FindComponent<WindowConfigurator>(isExactType: false);
+                configurator.LogoMaterial = this.OverrideIconMaterial;
+            }
+
+            windowEntity.IsEnabled = false;
+
+            return windowEntity;
+        }
 
         internal void Load()
         {
@@ -67,72 +179,6 @@ namespace Xrv.Core.UI.Windows
             configurator.Content = contentPrefab.Instantiate();
 
             owner.IsEnabled = false;
-        }
-
-        public Window CreateWindow(Action<WindowConfigurator> configure = null)
-        {
-            var window = new Window();
-            var windowEntity = this.BuildWindow(window, (BaseWindowConfigurator)null);
-            if (configure != null)
-            {
-                var configurator = windowEntity.FindComponent<WindowConfigurator>();
-                configure.Invoke(configurator);
-            }
-
-            this.entityManager.Add(windowEntity);
-            return window;
-        }
-
-        public AlertDialog ShowAlertDialog(string title, string text, string acceptText)
-        {
-            bool anyOpened = this.CloseAllDialogs();
-
-            var configurator = this.alertDialog.Configurator as DialogConfigurator;
-            configurator.Title = title;
-            configurator.Text = text;
-            this.alertDialog.AcceptOption.Configuration.Text = acceptText;
-            this.OpenDialogWithDelayIfRequired(this.alertDialog, anyOpened);
-
-            return this.alertDialog;
-        }
-
-        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText)
-        {
-            bool anyOpened = this.CloseAllDialogs();
-
-            var configurator = this.confirmDialog.Configurator as DialogConfigurator;
-            configurator.Title = title;
-            configurator.Text = text;
-            this.confirmDialog.CancelOption.Configuration.Text = cancelText;
-            this.confirmDialog.AcceptOption.Configuration.Text = acceptText;
-            this.OpenDialogWithDelayIfRequired(this.confirmDialog, anyOpened);
-
-            return this.confirmDialog;
-        }
-
-        public Entity BuildWindow<TWindow, TConfigurator>(TWindow instance, TConfigurator configInstance)
-            where TWindow : Window
-            where TConfigurator : BaseWindowConfigurator
-        {
-            var prefab = this.GetWindowPrefab();
-            var windowEntity = prefab.Instantiate();
-            windowEntity.AddComponent(instance);
-
-            if (configInstance != default(TConfigurator))
-            {
-                var configurator = windowEntity.FindComponent<BaseWindowConfigurator>(isExactType: false);
-                windowEntity.RemoveComponent(configurator);
-                windowEntity.AddComponent(configInstance);
-            }
-            else if (this.OverrideIconMaterial != null)
-            {
-                var configurator = windowEntity.FindComponent<WindowConfigurator>(isExactType: false);
-                configurator.LogoMaterial = this.OverrideIconMaterial;
-            }
-
-            windowEntity.IsEnabled = false;
-
-            return windowEntity;
         }
 
         private Entity CreateDialogAux<TDialog>(TDialog dialog, string title, string text)

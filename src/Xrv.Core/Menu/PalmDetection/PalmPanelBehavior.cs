@@ -11,6 +11,7 @@ using System;
 
 namespace Xrv.Core.Menu
 {
+    /// <inheritdoc />
     public class PalmPanelBehavior : Behavior, IPalmPanelBehavior
     {
         private XRTrackedDevice lastTrackedDevice;
@@ -19,40 +20,52 @@ namespace Xrv.Core.Menu
         private float accumulatedTime;
 
         [BindService]
-        protected XRPlatform xrPlatform;
+        private XRPlatform xrPlatform = null;
 
         [BindComponent]
-        protected Transform3D transform;
+        private Transform3D transform = null;
 
+        /// <inheritdoc/>
+        public event EventHandler<bool> PalmUpChanged;
+
+        /// <inheritdoc/>
+        public event EventHandler<XRHandedness> ActiveHandednessChanged;
+
+        /// <inheritdoc/>
         [RenderProperty(Tooltip = "Distance from the hand to the entity")]
         public float DistanceFromHand { get; set; } = 0.2f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the palm has to be looking to the camera to consider it as up", MinLimit = 0, MaxLimit = 1)]
         public float LookAtCameraUpperThreshold { get; set; } = 0.8f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the palm has to be looking away from the camera to consider it as down", MinLimit = 0, MaxLimit = 1)]
         public float LookAtCameraLowerThreshold { get; set; } = 0.7f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the hand has to be open to consider the palm as up", MinLimit = 0, MaxLimit = 1)]
         public float OpenPalmUpperThreshold { get; set; } = 0.8f;
 
+        /// <inheritdoc/>
         [RenderPropertyAsFInput(Tooltip = "Amount that represents how much the hand has to be closed to consider the palm as down", MinLimit = 0, MaxLimit = 1)]
         public float OpenPalmLowerThreshold { get; set; } = 0.7f;
 
+        /// <inheritdoc/>
         [RenderProperty(Tooltip = "Minimum amount of time in seconds between two consecutive activation changes")]
         public float TimeBetweenActivationChanges { get; set; } = 0.5f;
 
+        /// <inheritdoc/>
         [RenderProperty(Tooltip = "The desired handedness to consider by the component. Set to Undefined to consider both hands.")]
         public XRHandedness Handedness { get; set; } = XRHandedness.Undefined;
 
+        /// <inheritdoc/>
         public XRHandedness ActiveHandedness => this.lastTrackedDevice?.Handedness ?? XRHandedness.Undefined;
 
+        /// <inheritdoc/>
         public bool IsPalmUp => this.isPalmUp;
 
-        public event EventHandler<bool> PalmUpChanged;
-
-        public event EventHandler<XRHandedness> ActiveHandednessChanged;
-
+        /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             this.accumulatedTime += (float)gameTime.TotalSeconds;

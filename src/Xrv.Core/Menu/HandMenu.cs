@@ -20,6 +20,9 @@ using Xrv.Core.Extensions;
 
 namespace Xrv.Core.Menu
 {
+    /// <summary>
+    /// Component that manages hand menu.
+    /// </summary>
     public class HandMenu : Behavior
     {
         private const float ButtonWidth = 0.032f;
@@ -39,8 +42,15 @@ namespace Xrv.Core.Menu
         [BindComponent(isExactType: false, source: BindComponentSource.Scene)]
         private IPalmPanelBehavior palmPanelBehavior = null;
 
+        private IWorkAction appearAnimation;
+        private IWorkAction extendedAnimation;
+        private int numberOfButtons;
+        private int numberOfColumns;
+        private int numberButtonsPerColumns;
+        private bool isExtended = false;
+
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu")]
-        protected Transform3D handMenuTransform = null;
+        private Transform3D handMenuTransform = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_back_plate")]
         private Transform3D backPlateTransform = null;
@@ -49,37 +59,39 @@ namespace Xrv.Core.Menu
         private Transform3D frontPlateTransform = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_detach")]
-        protected Transform3D detachButtonTransform = null;
+        private Transform3D detachButtonTransform = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_detach")]
-        protected ToggleButton detachButtonToggle = null;
+        private ToggleButton detachButtonToggle = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_follow")]
-        protected Transform3D followButtonTransform = null;
+        private Transform3D followButtonTransform = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_text")]
-        protected Transform3D textTransform = null;
+        private Transform3D textTransform = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_text")]
-        protected Text3DMesh text3DMesh = null;
+        private Text3DMesh text3DMesh = null;
 
         [BindEntity(source: BindEntitySource.Scene, tag: "PART_hand_menu_buttons_container")]
-        protected Entity buttonsContainer = null;
+        private Entity buttonsContainer = null;
 
-        private IWorkAction appearAnimation;
-        private IWorkAction extendedAnimation;
-        private int numberOfButtons;
-        private int numberOfColumns;
-        private int numberButtonsPerColumns;
+        [BindService]
+        private GraphicsPresenter graphicsPresenter = null;
 
-        protected bool menuExtended = false;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HandMenu"/> class.
+        /// </summary>
         public HandMenu()
         {
             this.buttonDescriptions = new ObservableCollection<HandMenuButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
         }
 
+        /// <summary>
+        /// Gets or sets number of buttons per column. When a column can't hold more buttons,
+        /// a new column will be added.
+        /// </summary>
         public int ButtonsPerColumn
         {
             get => this.maxButtonsPerColumn;
@@ -94,8 +106,12 @@ namespace Xrv.Core.Menu
             }
         }
 
+        /// <summary>
+        /// Gets button descriptions.
+        /// </summary>
         public IList<HandMenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -108,12 +124,14 @@ namespace Xrv.Core.Menu
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnDetach()
         {
             this.buttonDescriptions.Clear();
             this.buttonDescriptions.CollectionChanged -= this.ButtonDefinitions_CollectionChanged;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -132,6 +150,7 @@ namespace Xrv.Core.Menu
             this.ReorderButtons();
         }
 
+        /// <inheritdoc/>
         protected override void OnDeactivated()
         {
             base.OnDeactivated();
@@ -143,6 +162,35 @@ namespace Xrv.Core.Menu
             }
 
             this.detachButtonToggle.Toggled -= this.DetachButtonToggle_Toggled;
+        }
+
+        /// <inheritdoc/>
+        protected override void Update(TimeSpan gameTime)
+        {
+            KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
+
+            if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
+            {
+                this.ExtendedAnimation(true);
+            }
+            else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
+            {
+                this.ExtendedAnimation(false);
+            }
+
+            if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)
+            {
+                this.AppearAnimation(true);
+            }
+            else if (keyboardDispatcher?.ReadKeyState(Keys.P) == ButtonState.Pressing)
+            {
+                this.AppearAnimation(false);
+            }
+
+            if (keyboardDispatcher?.ReadKeyState(Keys.I) == ButtonState.Pressing)
+            {
+                this.AddButton();
+            }
         }
 
         private void PalmPanelBehavior_ActiveHandednessChanged(object sender, XRHandedness hand)
@@ -260,12 +308,12 @@ namespace Xrv.Core.Menu
 
         private void ExtendedAnimation(bool extended)
         {
-            if (this.menuExtended == extended)
+            if (this.isExtended == extended)
             {
                 return;
             }
 
-            this.menuExtended = extended;
+            this.isExtended = extended;
 
             float start = extended ? 0 : 1;
             float end = extended ? 1 : 0;
@@ -323,37 +371,6 @@ namespace Xrv.Core.Menu
         private void DetachButtonToggle_Toggled(object sender, EventArgs e)
         {
             this.ExtendedAnimation(this.detachButtonToggle.IsOn);
-        }
-
-        [BindService]
-        protected GraphicsPresenter graphicsPresenter;
-
-        protected override void Update(TimeSpan gameTime)
-        {
-            KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
-            {
-                this.ExtendedAnimation(true);
-            }
-            else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
-            {
-                this.ExtendedAnimation(false);
-            }
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)
-            {
-                this.AppearAnimation(true);
-            }
-            else if (keyboardDispatcher?.ReadKeyState(Keys.P) == ButtonState.Pressing)
-            {
-                this.AppearAnimation(false);
-            }
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.I) == ButtonState.Pressing)
-            {
-                this.AddButton();
-            }
         }
 
         private void AddButton()

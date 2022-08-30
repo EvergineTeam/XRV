@@ -5,11 +5,17 @@ using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.UI.Dialogs
 {
+    /// <summary>
+    /// Configuration for dialogs.
+    /// </summary>
     public class DialogConfigurator : BaseWindowConfigurator
     {
         private string text;
-        protected Text3DMesh textMesh;
+        private Text3DMesh textMesh;
 
+        /// <summary>
+        /// Gets or sets dialog text.
+        /// </summary>
         public string Text
         {
             get => this.text;
@@ -23,13 +29,14 @@ namespace Xrv.Core.UI.Dialogs
             }
         }
 
-        private void UpdateText() => this.textMesh.Text = this.text;
-
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
             this.textMesh = this.Owner.FindComponentInChildren<Text3DMesh>(tag: "PART_base_dialog_text");
             this.UpdateText();
         }
+
+        private void UpdateText() => this.textMesh.Text = this.text;
     }
 }

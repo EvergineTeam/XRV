@@ -10,6 +10,9 @@ using Xrv.Core.UI.Cursors;
 
 namespace Xrv.Core.UI.Buttons
 {
+    /// <summary>
+    /// Animation for text buttons, where text is elevated when hovered.
+    /// </summary>
     public class TextButtonCursorAnimation : CursorDetectorBase
     {
         private Vector3 contentDefaultPosition;
@@ -18,8 +21,9 @@ namespace Xrv.Core.UI.Buttons
         private IWorkAction animation;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_text_button_content")]
-        protected Transform3D contentTransform;
+        private Transform3D contentTransform = null;
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -32,6 +36,7 @@ namespace Xrv.Core.UI.Buttons
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnCursorDetected(bool isDetected)
         {
             if (isDetected)

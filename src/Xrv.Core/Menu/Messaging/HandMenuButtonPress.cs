@@ -10,6 +10,7 @@ namespace Xrv.Core.Menu
         [IgnoreEvergine]
         public HandMenuButtonDescription Description { get; set; }
 
+        /// <inheritdoc/>
         protected override HandMenuActionMessage GetPublishData(bool isOn) => new HandMenuActionMessage
         {
             Description = this.Description,
