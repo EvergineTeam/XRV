@@ -11,21 +11,18 @@ namespace Xrv.Painter
         {
             public sealed class Icons
             {
-                /// <summary> Asset Path (Materials/Icons/Measure.wemt) </summary>
-                public static readonly Guid Paint = new Guid("da0dcd75-78ac-4abf-a2af-011c5ebd458e");
+                /// <summary> Asset Path (Materials/Icons/Painter.wemt) </summary>
+                public static readonly Guid Painter = new Guid("b70dcd75-78ac-4abf-a2af-011c5ebd458e");
             }
         }
 
         public sealed class Prefabs
         {
-            /// <summary> Asset Path (Prefabs/Painter.weprefab.weprf) </summary>
-            public static readonly Guid Painter_weprefab = new Guid("b28d413a-da9d-4269-b289-6c98f05e1b6f");
+            /// <summary> Asset Path (Prefabs/Painer.weprefab.weprf) </summary>
+            public static readonly Guid Painter = new Guid("b89b0183-84d0-47f7-b073-15e969207193");
 
-            /// <summary> Asset Path (XRV/Prefabs/PainterHelp.weprefab.weprf) </summary>
-            public static readonly Guid PainterHelp_weprefab = new Guid("ee76d37e-f934-4583-b50a-09f61a1e4e79");
-
-            /// <summary> Asset Path (XRV/Prefabs/PainterSettings.weprefab.weprf) </summary>
-            public static readonly Guid PainterSettings_weprefab = new Guid("86606363-84f4-47c8-955e-7ea8be9dd9bd");
+            /// <summary> Asset Path (XRV/Prefabs/HelpPainer.weprefab.weprf) </summary>
+            public static readonly Guid HelpPainer = new Guid("a0d8c73e-97d4-4f65-99d5-9d04c59da370");
         }
     }
 }

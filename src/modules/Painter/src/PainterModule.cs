@@ -3,9 +3,12 @@
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Mathematics;
+using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
+using Xrv.Core.UI.Windows;
 
 namespace Xrv.Painter
 {
@@ -16,9 +19,10 @@ namespace Xrv.Painter
     {
         private HandMenuButtonDescription handMenuDesc;
         private TabItem help;
-        private Entity painterEntity;
         private Entity painterHelp;
         private AssetsService assetsService;
+        private XrvService xrv;
+        private Window painterWindow;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PainterModule"/> class.
@@ -27,8 +31,8 @@ namespace Xrv.Painter
         {
             this.handMenuDesc = new HandMenuButtonDescription()
             {
-                IconOff = PainterResourceIDs.Materials.Icons.Paint,
-                IconOn = PainterResourceIDs.Materials.Icons.Paint,
+                IconOff = PainterResourceIDs.Materials.Icons.Painter,
+                IconOn = PainterResourceIDs.Materials.Icons.Painter,
                 IsToggle = true,
                 TextOn = "Hide",
                 TextOff = "Show",
@@ -57,25 +61,34 @@ namespace Xrv.Painter
         public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
+            this.xrv = Application.Current.Container.Resolve<XrvService>();
 
             // Painter
-            var painterPrefab = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter_weprefab);
-            this.painterEntity = painterPrefab.Instantiate();
-            this.painterEntity.IsEnabled = false;
-            scene.Managers.EntityManager.Add(this.painterEntity);
+            var painterSize = new Vector2(0.175f, 0.15f);
+            this.painterWindow = this.xrv.WindowSystem.CreateWindow((config) =>
+            {
+                config.Title = "Paint";
+                config.Size = painterSize;
+                config.FrontPlateSize = painterSize;
+                config.FrontPlateOffsets = Vector2.Zero;
+                config.DisplayLogo = false;
+                config.Content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
+            });
+
+            this.painterWindow.DistanceKey = Distances.NearKey;
         }
 
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.painterEntity.IsEnabled = turnOn;
+            this.painterWindow.Open();
         }
 
         private Entity HelpContent()
         {
             if (this.painterHelp == null)
             {
-                var painterHelpPrefab = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PainterHelp_weprefab);
+                var painterHelpPrefab = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.HelpPainer);
                 this.painterHelp = painterHelpPrefab.Instantiate();
             }
 
