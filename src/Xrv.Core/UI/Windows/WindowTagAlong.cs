@@ -9,6 +9,9 @@ using System;
 
 namespace Xrv.Core.UI.Windows
 {
+    /// <summary>
+    /// Tag-along for windows.
+    /// </summary>
     public class WindowTagAlong : Behavior
     {
         private Vector3 desiredPosition;
@@ -16,7 +19,7 @@ namespace Xrv.Core.UI.Windows
         private Quaternion desiredOrientation = Quaternion.Identity;
 
         [BindComponent]
-        protected Transform3D transform = null;
+        private Transform3D transform = null;
 
         /// <summary>
         /// Gets or sets the max horizontal angle of the panel [0-180].
@@ -47,9 +50,9 @@ namespace Xrv.Core.UI.Windows
         public float MaxDistance { get; set; } = 1f;
 
         /// <summary>
-        /// Disables the Vertical lookAt so it only rotates on XZ plane.
+        /// Gets or sets a value indicating whether vertical lookAt is disabled, so it only rotates on XZ plane.
         /// </summary>
-        public bool DisableVerticalLookAt = false;
+        public bool DisableVerticalLookAt { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the maximum vertical distance from camera.
