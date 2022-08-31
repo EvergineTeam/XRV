@@ -10,7 +10,7 @@ namespace Xrv.LoadModel
     /// <summary>
     /// Menu behavior.
     /// </summary>
-    public class LoadModelMenuBehavior : Behavior
+    public class MenuBehavior : Behavior
     {
         [BindComponent]
         private Transform3D transform = null;

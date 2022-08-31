@@ -59,6 +59,9 @@ namespace Xrv.LoadModel
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_lockedIcon")]
         private Entity LockedIcon = null;
 
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_lockedIcon")]
+        private LockIconBehavior LockedIconBehavior = null;
+
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_backplate")]
         private Transform3D backPlateTransform = null;
 
@@ -78,7 +81,7 @@ namespace Xrv.LoadModel
         private ToggleStateManager options = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
-        private LoadModelMenuBehavior menuBehavior = null;
+        private MenuBehavior menuBehavior = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelBehavior"/> class.
@@ -106,9 +109,14 @@ namespace Xrv.LoadModel
                     this.Loading.IsEnabled = false;
                     this.LockedIcon.IsEnabled = false;
 
+                    var modelTransform = this.modelEntity.FindComponent<Transform3D>();
+
                     // Set model to menu behavior.
-                    this.menuBehavior.ModelTransform = this.modelEntity.FindComponent<Transform3D>();
+                    this.menuBehavior.ModelTransform = modelTransform;
                     this.menuBehavior.Owner.IsEnabled = true;
+
+                    // Set model to locked icon behavior.
+                    this.LockedIconBehavior.ModelTransform = modelTransform;
                 }
             }
         }
