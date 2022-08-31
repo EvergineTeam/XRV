@@ -50,7 +50,7 @@ Items:
     Children: []
     Id: 0b4fdb6f-56a9-4f26-a654-c9200fd9de22
   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-    Name: Painer
+    Name: Painter
     Tag: null
     IsEnabled: true
     IsStatic: false
@@ -71,6 +71,19 @@ Items:
           X: 1.0
           Y: 1.0
           Z: 1.0
+      - !Xrv.Painter.Components.PainterManager,Xrv.Painter
+        Id: 2621298d-f90a-40c7-9163-058a5c09092b
+        Color:
+          A: 255
+          B: 255
+          G: 255
+          R: 255
+        IsEnabled: true
+        Mode: Hand
+        Pointer: null
+        SecondsBetweenUpdate: 1.0
+        Thickness: Thin
+        UpdateOrder: 0.5
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Hand

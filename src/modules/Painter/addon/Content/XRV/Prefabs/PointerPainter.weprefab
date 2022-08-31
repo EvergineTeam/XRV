@@ -1,0 +1,62 @@
+!Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
+Root:
+  Name: PointerPainter
+  Tag: null
+  IsEnabled: true
+  IsStatic: false
+  Components:
+    - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+      Id: db6a19c8-2697-4a0e-86a3-c83c6a68a7eb
+      IsEnabled: true
+      LocalOrientation:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalPosition:
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalScale:
+        X: 1.0
+        Y: 1.0
+        Z: 1.0
+    - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+      Id: b19139b9-b2db-4d0d-a1ee-fbd71fcca7a6
+      AsignedTo: Default
+      IsEnabled: true
+      Material: 3658d8aa-5ba9-497d-bf68-a3064b3d7a31
+    - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+      Id: 9df33f08-989e-4582-9006-11ef3d937bdd
+      Height: 0.00999999978
+      InitialU: 0.0
+      InitialV: 0.0
+      IsEnabled: true
+      PlaneNormal: ZPositive
+      TwoSides: false
+      UTile: 1.0
+      UVHorizontalFlip: false
+      UVVerticalFlip: false
+      Width: 0.00999999978
+      YTile: 1.0
+    - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+      Id: 21ca0a35-dfee-45ae-b45e-9d9eb2914e44
+      DebugBoundingbox: true
+      IsCullingEnabled: true
+      IsEnabled: true
+      OrderBias: 0
+      RenderFlags: CastShadows
+    - !Evergine.Components.Toolkit.LookAtBehavior,Evergine.Components
+      Id: e4485517-ca9a-41a1-83b6-b90000658ed8
+      Axis: Z
+      AxisConstraint: false
+      Flip: false
+      IsEnabled: true
+      IsLocalOriented: false
+      KeepUpVector: true
+      LookAtEntity: false
+      OrientationAxis: X
+      TargetEntity: null
+      UpdateOrder: 0.5
+  Children: []
+  Id: eb0eba34-1da2-4767-a01d-e91534ba95c9

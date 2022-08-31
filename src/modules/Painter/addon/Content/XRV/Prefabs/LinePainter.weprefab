@@ -1,0 +1,70 @@
+!Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
+Root:
+  Name: LinePainter
+  Tag: 
+  IsEnabled: true
+  IsStatic: false
+  Components:
+    - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+      Id: f57cfca2-2846-4604-84e3-35e09a2f93c2
+      IsEnabled: true
+      LocalOrientation:
+        W: -4.37113883E-08
+        X: -0.0
+        Y: 1.0
+        Z: 0.0
+      LocalPosition:
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalScale:
+        X: 1.0
+        Y: 1.0
+        Z: 1.0
+    - !Evergine.Components.Primitives.LineMesh,Evergine.Components
+      Id: dc4284ed-e8d9-4d4d-937c-258888f03964
+      DiffuseSampler: null
+      DiffuseTexture: 4b8746e7-6908-41bd-89bb-70653328b653
+      IsCameraAligned: false
+      IsEnabled: true
+      IsLoop: false
+      LinePoints:
+        - Color:
+            A: 255
+            B: 255
+            G: 255
+            R: 255
+          Position:
+            X: 0.0
+            Y: 0.0
+            Z: 0.5
+          Thickness: 0.0120000001
+        - Color:
+            A: 255
+            B: 255
+            G: 255
+            R: 255
+          Position:
+            X: 0.0
+            Y: 0.0
+            Z: -0.5
+          Thickness: 0.0120000001
+      LineType: LineList
+      Model: 00000000-0000-0000-0000-000000000000
+      TexcoordOffset:
+        X: 0.0
+        Y: 0.0
+      TextureTiling:
+        X: 1.0
+        Y: 1.0
+      UseWorldSpace: false
+    - !Evergine.Components.Graphics3D.LineMeshRenderer3D,Evergine.Components
+      Id: 4750bb3d-29b0-4ab0-9405-cca4fcd50f9b
+      DebugBoundingbox: true
+      IsCullingEnabled: true
+      IsEnabled: true
+      Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+      OrderBias: 0
+      RenderFlags: None
+  Children: []
+  Id: f7a918c2-06d4-4f13-b510-ff5c4805a095
