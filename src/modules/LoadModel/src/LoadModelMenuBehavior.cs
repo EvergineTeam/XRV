@@ -37,6 +37,11 @@ namespace Xrv.LoadModel
 
         private void UpdatePosition(Camera3D camera, float rad, TimeSpan gameTime)
         {
+            if (this.ModelTransform == null)
+            {
+                return;
+            }
+
             var from = this.ModelTransform.Position;
             var cameraDir = camera.Position - from;
             var distance = Vector3.Distance(this.ModelTransform.Position, camera.Position);

@@ -14,6 +14,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Dialogs;
@@ -41,6 +42,7 @@ namespace Xrv.LoadModel
         private Entity lockButton;
         private MenuButtonDescription resetButtonDesc;
         private MenuButtonDescription deleteButtonDesc;
+        private bool animating;
 
         [BindService]
         private XrvService xrvService = null;
@@ -72,6 +74,9 @@ namespace Xrv.LoadModel
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
         private ToggleButton optionsButtonToggle = null;
 
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
+        private ToggleStateManager options = null;
+
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
         private LoadModelMenuBehavior menuBehavior = null;
 
@@ -101,7 +106,7 @@ namespace Xrv.LoadModel
                     this.Loading.IsEnabled = false;
                     this.LockedIcon.IsEnabled = false;
 
-                    // Set model to menu
+                    // Set model to menu behavior.
                     this.menuBehavior.ModelTransform = this.modelEntity.FindComponent<Transform3D>();
                     this.menuBehavior.Owner.IsEnabled = true;
                 }
@@ -229,6 +234,7 @@ namespace Xrv.LoadModel
             }
 
             this.menuExtended = extended;
+            this.animating = true;
 
             float start = extended ? 0 : 1;
             float end = extended ? 1 : 0;
@@ -271,29 +277,63 @@ namespace Xrv.LoadModel
                             button.IsEnabled = true;
                         }
                     }
+
+                    this.animating = false;
                 }));
             this.extendedAnimation.Run();
         }
 
         private void LockButton_Toggled(object sender, EventArgs e)
         {
+            if (this.animating)
+            {
+                return;
+            }
+
             if (sender is ToggleButton lockButton)
             {
                 this.LockedIcon.IsEnabled = lockButton.IsOn;
+
+                var boundingBox = this.modelEntity.FindComponent<Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox>();
+                boundingBox.IsEnabled = !lockButton.IsOn;
+
+                var simpleManipulation = this.modelEntity.FindComponent<SimpleManipulationHandler>();
+                simpleManipulation.IsEnabled = !lockButton.IsOn;
             }
+
+            this.options.ChangeState(this.options.States.ElementAt(0));
+            this.ExtendedAnimation(false);
         }
 
         private void ResetButton_Released(object sender, EventArgs e)
         {
-            this.modelEntity.FindComponent<Transform3D>().WorldTransform = this.modelEntityWorld;
+            if (this.animating)
+            {
+                return;
+            }
+
+            var transform = this.modelEntity.FindComponent<Transform3D>();
+            transform.Orientation = this.modelEntityWorld.Orientation;
+            transform.Scale = this.modelEntityWorld.Scale;
+
+            this.options.ChangeState(this.options.States.ElementAt(0));
+            this.ExtendedAnimation(false);
         }
 
         private void DeleteButton_Released(object sender, EventArgs e)
         {
+            if (this.animating)
+            {
+                return;
+            }
+
             var confirmDialog = this.xrvService.WindowSystem.ShowConfirmDialog(this.modelEntity.Name, "Delete this model? /n This action can't be undone.", "No", "Yes");
             var configuration = confirmDialog.AcceptOption.Configuration;
             configuration.Plate = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;
+
+            this.options.ChangeState(this.options.States.ElementAt(0));
+            this.ExtendedAnimation(false);
         }
 
         private void Dialog_Closed(object sender, EventArgs e)

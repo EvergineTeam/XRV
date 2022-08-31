@@ -1,12 +1,14 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Components.Graphics3D;
+using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
+using System;
 using System.Threading.Tasks;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -24,6 +26,8 @@ namespace Xrv.LoadModel
         private Scene scene;
         private MenuButtonDescription handMenuDesc;
         private Entity modelEntity;
+
+        private IWorkAction animation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelModule"/> class.
@@ -74,27 +78,29 @@ namespace Xrv.LoadModel
             this.scene.Managers.EntityManager.Add(manipulatorEntity);
 
             // Load GLB model
-            EvergineForegroundTask.Run(async () =>
-            {
-                await Task.Delay(2000);
+            this.animation = new WaitWorkAction(TimeSpan.FromSeconds(2))
+                .ContinueWith(
+                    new ActionWorkAction(() =>
+                    {
+                        // Teapot
+                        var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+                        var modelEntity = new Entity()
+                                        .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
+                                        .AddComponent(new MaterialComponent() { Material = material })
+                                        .AddComponent(new TeapotMesh())
+                                        .AddComponent(new MeshRenderer());
 
-                // Teapot
-                var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
-                var modelEntity = new Entity()
-                                .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
-                                .AddComponent(new MaterialComponent() { Material = material })
-                                .AddComponent(new TeapotMesh())
-                                .AddComponent(new MeshRenderer());
+                        // PiggyBot
+                        ////var model = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
+                        ////var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+                        ////var transform = modelEntity.FindComponent<Transform3D>();
+                        ////transform.LocalScale = Vector3.One * 0.01f;
+                        ////var aabb = model.BoundingBox.Value;
 
-                // PiggyBot
-                ////var model = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
-                ////var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-                ////var transform = modelEntity.FindComponent<Transform3D>();
-                ////transform.LocalScale = Vector3.One * 0.01f;
-                ////var aabb = model.BoundingBox.Value;
+                        loadModelBehavior.ModelEntity = modelEntity;
+                    }));
 
-                loadModelBehavior.ModelEntity = modelEntity;
-            });
+            this.animation.Run();
         }
     }
 }
