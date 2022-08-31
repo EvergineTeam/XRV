@@ -72,8 +72,8 @@ namespace Xrv.LoadModel
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
         private ToggleButton optionsButtonToggle = null;
 
-        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
-        private Entity menu = null;
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
+        private LoadModelMenuBehavior menuBehavior = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelBehavior"/> class.
@@ -101,10 +101,9 @@ namespace Xrv.LoadModel
                     this.Loading.IsEnabled = false;
                     this.LockedIcon.IsEnabled = false;
 
-                    ////var loadModelMenuBehavior = new LoadModelMenuBehavior();
-                    ////////loadModelMenuBehavior.TargetTransform = this.modelEntity.FindComponent<Transform3D>();
-                    ////loadModelMenuBehavior.Target = this.modelEntity;
-                    ////this.menu.AddComponent(loadModelMenuBehavior);
+                    // Set model to menu
+                    this.menuBehavior.ModelTransform = this.modelEntity.FindComponent<Transform3D>();
+                    this.menuBehavior.Owner.IsEnabled = true;
                 }
             }
         }
@@ -161,6 +160,7 @@ namespace Xrv.LoadModel
             base.OnActivated();
 
             this.LockedIcon.IsEnabled = false;
+            this.menuBehavior.Owner.IsEnabled = false;
             this.optionsButtonToggle.Toggled += this.OptionsButtonToggle_Toggled;
 
             this.ReorderButtons();
