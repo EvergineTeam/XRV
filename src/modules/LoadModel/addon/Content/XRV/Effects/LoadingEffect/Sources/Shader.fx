@@ -1,30 +1,34 @@
 [Begin_ResourceLayout]
 	
-	[Directives:Multiview 		MULTIVIEW_OFF 			MULTIVIEW]
+	[Directives:Multiview MULTIVIEW_OFF MULTIVIEW_RTI MULTIVIEW_VI]
 	[Directives:ColorSpace 		GAMMA_COLORSPACE_OFF 	GAMMA_COLORSPACE]
 	
-	cbuffer Base : register(b0)
+	cbuffer PerDrawCall : register(b0)
 	{
-		float4x4 	World					: packoffset(c0.x);  [World]
-		float4x4	WorldViewProjection		: packoffset(c4.x);  [WorldViewProjection]
-		float  		Time					: packoffset(C8.x); [Time]
+		float4x4 	World					: packoffset(c0.x);  [World]	
 	};
 	
 	cbuffer PerCamera : register(b1)
 	{
 		float3		CameraPosition			: packoffset(c0.x);  [CameraPosition]
 		int			EyeCount				: packoffset(c0.w);  [MultiviewCount]
-		float4x4	ViewProj[6]				: packoffset(c1.x);  [MultiviewViewProjection]
-		float4		StereoCameraPosition[6]	: packoffset(c25.x); [MultiviewPosition]
+		float4x4  	ViewProj					: packoffset(c1.x); [ViewProjection]
+		float4x4	MultiviewViewProj[6]	: packoffset(c5.x);  [MultiviewViewProjection]
+		float4		StereoCameraPosition[6]	: packoffset(c30.x); [MultiviewPosition]
 	};
+	
+	cbuffer PerFrame : register(b2)
+	{
+		float  		Time					: packoffset(C0.x); [Time]
+	}
 
-	cbuffer Parameters : register(b2)
+	cbuffer Parameters : register(b3)
 	{
 		float3 Color			: packoffset(c0.x); [Default(0,0.05,0.1)]
 		float Alpha				: packoffset(c0.w); [Default(1)]
 		
-		float  FresnelPower		: packoffset(c1.x); [Default(0.1)]
-		float3 FresnelColor		: packoffset(c1.y); [Default(1,1,1)]
+		float3 FresnelColor		: packoffset(c1.x); [Default(1,1,1)]
+		float  FresnelPower		: packoffset(c1.w); [Default(0.1)]		
 		
 		float RotationTime		: packoffset(C2.x); [Default(1)]
 		float PhaseAdjust		: packoffset(c2.y); [Default(1)]
@@ -42,7 +46,11 @@
 	{
 		float4 Position : POSITION;
 		float3 Normal	: NORMAL;
-		uint   InstanceID	: SV_InstanceID;
+	#if MULTIVIEW_VI	
+		uint ViewID : SV_ViewID;
+	#elif MULTIVIEW_RTI
+		uint InstId : SV_InstanceID;
+	#endif
 	};
 
 	struct PS_IN
@@ -52,7 +60,9 @@
 		float3 Normal		: NORMAL1;
 		float3 NorWS		: NORMAL2;
 
-		uint ViewId : SV_RenderTargetArrayIndex;
+	#if MULTIVIEW_RTI
+		uint viewId : SV_RenderTargetArrayIndex;
+	#endif
 	};
 
 #if !GAMMA_COLORSPACE
@@ -148,16 +158,27 @@
 		float4 position = float4(rotate(input.Position.xyz, cosAngles, sinAngles), input.Position.w);
 		float3 normal = rotate(input.Normal, cosAngles, sinAngles);
 		
-	#if MULTIVIEW
-		int vid = input.InstanceID % EyeCount;
-
+	#if MULTIVIEW_RTI
+		const int vid = input.InstId % EyeCount;
+		const float4x4 viewProj = MultiviewViewProj[vid];
 		float3 cameraPositionWS = StereoCameraPosition[vid].xyz;
-		float4x4 worldViewProj = mul(World, ViewProj[vid]);
-		output.ViewId = vid;
+	
+		// Note which view this vertex has been sent to. Used for matrix lookup.
+		// Taking the modulo of the instance ID allows geometry instancing to be used
+		// along with stereo instanced drawing; in that case, two copies of each 
+		// instance would be drawn, one for left and one for right.
+	
+		output.viewId = vid;
+	#elif MULTIVIEW_VI
+		const float4x4 viewProj = MultiviewViewProj[input.ViewID];
+		float3 cameraPositionWS = StereoCameraPosition[input.ViewID].xyz;
 	#else
+		float4x4 viewProj = ViewProj;
 		float3 cameraPositionWS = CameraPosition;
-		float4x4 worldViewProj = WorldViewProjection;
 	#endif
+		
+		float4x4 worldViewProj = mul(World, viewProj);
+
 		
 		output.Position = mul(position, worldViewProj);
 		output.CameraVector = cameraPositionWS - mul(position, World).xyz;
