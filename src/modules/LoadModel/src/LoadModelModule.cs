@@ -1,16 +1,13 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Components.Graphics3D;
-using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
-using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
@@ -27,9 +24,6 @@ namespace Xrv.LoadModel
         private Scene scene;
         private Prefab manipulatorPrefab;
         private MenuButtonDescription handMenuDesc;
-        private Entity modelEntity;
-
-        private IWorkAction animation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelModule"/> class.
