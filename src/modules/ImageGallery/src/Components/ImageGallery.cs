@@ -14,6 +14,7 @@ using Evergine.Common.Graphics;
 using Evergine.Framework.Graphics.Materials;
 using Evergine.Components.Graphics3D;
 using Evergine.MRTK.Effects;
+using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 
 namespace Xrv.ImageGallery.Components
 {
@@ -26,6 +27,9 @@ namespace Xrv.ImageGallery.Components
         private PressableButton nextButton;
         // [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_previous")]
         private PressableButton previousButton;
+
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
+        private PinchSlider slider;
 
         ////[BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
         private MaterialComponent galleryFrameMaterial;
@@ -60,10 +64,10 @@ namespace Xrv.ImageGallery.Components
             }
         }
 
-        private Texture imageTexture = null;
+        public uint imagePixelsWidth = 640;
+        public uint imagePixelsHeight = 640;
 
-        public uint imagePixelsWidth = 100;
-        public uint imagePixelsHeight = 100;
+        private Texture imageTexture = null;
 
         public List<string> images = null;
 
@@ -105,25 +109,32 @@ namespace Xrv.ImageGallery.Components
                 this.ReloadImage();
             }
 
-            this.nextButton.ButtonPressed += this.onNextButtonPressed;
-            this.previousButton.ButtonPressed += this.onPreviousButtonPressed;
+            this.nextButton.ButtonPressed += this.NextButtonPressed;
+            this.previousButton.ButtonPressed += this.PreviousButtonPressed;
+            this.slider.ValueUpdated += this.SliderValueUpdated;
             return base.OnAttached();
         }
 
         protected override void OnDetach()
         {
-            this.nextButton.ButtonPressed -= this.onNextButtonPressed;
-            this.previousButton.ButtonPressed -= this.onPreviousButtonPressed;
+            this.nextButton.ButtonPressed -= this.NextButtonPressed;
+            this.previousButton.ButtonPressed -= this.PreviousButtonPressed;
             base.OnDetach();
         }
 
-        public void onNextButtonPressed(object sender, EventArgs e)
+        private void SliderValueUpdated(object sender, SliderEventData e)
+        {
+            Debug.WriteLine(e.NewValue);
+            // throw new NotImplementedException();
+        }
+
+        private void NextButtonPressed(object sender, EventArgs e)
         {
             this.ImageIndex++;
             this.ReloadImage();
         }
 
-        public void onPreviousButtonPressed(object sender, EventArgs e)
+        private void PreviousButtonPressed(object sender, EventArgs e)
         {
             this.ImageIndex--;
             this.ReloadImage();
