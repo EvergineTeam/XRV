@@ -6,8 +6,10 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -63,47 +65,46 @@ namespace Xrv.LoadModel
         }
 
         /// <inheritdoc/>
-        public override void Run(bool turnOn)
+        public override async void Run(bool turnOn)
         {
-            // Instanciate manipulator prefab
-            var manipulatorEntity = this.manipulatorPrefab.Instantiate();
-            var loadModelBehavior = manipulatorEntity.FindComponent<LoadModelBehavior>();
+            Entity manipulatorEntity = null;
+            LoadModelBehavior loadModelBehavior = null;
+            await EvergineBackgroundTask.Run(() =>
+            {
+                // Instanciate manipulator prefab
+                manipulatorEntity = this.manipulatorPrefab.Instantiate();
+                loadModelBehavior = manipulatorEntity.FindComponent<LoadModelBehavior>();
 
-            // Create in front of the viewer
-            var cameraTransform = this.scene.Managers.RenderManager.ActiveCamera3D.Transform;
-            var cameraWorldTransform = cameraTransform.WorldTransform;
-            var center = cameraTransform.Position + (cameraWorldTransform.Forward * 0.6f);
-            manipulatorEntity.FindComponent<Transform3D>().Position = center;
+                // Create in front of the viewer
+                var cameraTransform = this.scene.Managers.RenderManager.ActiveCamera3D.Transform;
+                var cameraWorldTransform = cameraTransform.WorldTransform;
+                var center = cameraTransform.Position + (cameraWorldTransform.Forward * 0.6f);
+                manipulatorEntity.FindComponent<Transform3D>().Position = center;
+            });
 
             this.scene.Managers.EntityManager.Add(manipulatorEntity);
 
-            // Load GLB model
-            this.animation = new WaitWorkAction(TimeSpan.FromSeconds(2))
-                .ContinueWith(
-                    new ActionWorkAction(async () =>
-                    {
-                        await Task.Run(() =>
-                        {
-                            // Teapot
-                            var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
-                            var modelEntity = new Entity()
-                                            .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
-                                            .AddComponent(new MaterialComponent() { Material = material })
-                                            .AddComponent(new TeapotMesh())
-                                            .AddComponent(new MeshRenderer());
+            await EvergineBackgroundTask.Run(() =>
+            {
+                Thread.Sleep(2000);
 
-                            // PiggyBot
-                            ////var model = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
-                            ////var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-                            ////var transform = modelEntity.FindComponent<Transform3D>();
-                            ////transform.LocalScale = Vector3.One * 0.01f;
-                            ////var aabb = model.BoundingBox.Value;
+                // Teapot
+                var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+                var modelEntity = new Entity()
+                                .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
+                                .AddComponent(new MaterialComponent() { Material = material })
+                                .AddComponent(new TeapotMesh())
+                                .AddComponent(new MeshRenderer());
 
-                            loadModelBehavior.ModelEntity = modelEntity;
-                        });
-                    }));
+                // PiggyBot
+                ////var model = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
+                ////var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+                ////var transform = modelEntity.FindComponent<Transform3D>();
+                ////transform.LocalScale = Vector3.One * 0.01f;
+                ////var aabb = model.BoundingBox.Value;
 
-            this.animation.Run();
+                loadModelBehavior.ModelEntity = modelEntity;
+            });
         }
     }
 }

@@ -1,5 +1,6 @@
 using Evergine.Framework;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Platform;
 using Xrv.Core;
 using Xrv.LoadModel;
@@ -22,6 +23,8 @@ namespace XrvSamples
             this.Container.RegisterType<AssetsService>();
             this.Container.RegisterType<ForegroundTaskSchedulerService>();
             this.Container.RegisterType<WorkActionScheduler>();
+            
+            BackgroundTaskScheduler.Background.Configure(this.Container);
 
             var xrv = new XrvService();
             xrv.AddModule(new RulerModule());
