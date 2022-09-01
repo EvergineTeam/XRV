@@ -59,6 +59,7 @@ namespace Xrv.ImageGallery.Components
                     if (this.images != null && value < this.images.Count)
                     {
                         this._imageIndex = value;
+                        this.ReloadImage();
                     }
                 }
             }
@@ -107,12 +108,25 @@ namespace Xrv.ImageGallery.Components
                 this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
                 holographicEffect.Texture = this.imageTexture;
                 this.ReloadImage();
+                this.slider.InitialValue = 0;
+                this.recalculateSliderPosition();
             }
 
             this.nextButton.ButtonPressed += this.NextButtonPressed;
             this.previousButton.ButtonPressed += this.PreviousButtonPressed;
             this.slider.ValueUpdated += this.SliderValueUpdated;
+            this.slider.InteractionEnded += this.SliderInteractionEnded;
             return base.OnAttached();
+        }
+
+        private void SliderInteractionEnded(object sender, EventArgs e)
+        {
+            this.recalculateSliderPosition();
+        }
+
+        private void recalculateSliderPosition()
+        {
+            this.slider.SliderValue = this.ImageIndex / (float)(this.images.Count - 1);
         }
 
         protected override void OnDetach()
@@ -124,20 +138,23 @@ namespace Xrv.ImageGallery.Components
 
         private void SliderValueUpdated(object sender, SliderEventData e)
         {
-            Debug.WriteLine(e.NewValue);
-            // throw new NotImplementedException();
+            var newImageIndex = (int)Math.Round(e.NewValue * (this.images.Count - 1));
+            if (newImageIndex != this.ImageIndex)
+            {
+                this.ImageIndex = newImageIndex;
+            }
         }
 
         private void NextButtonPressed(object sender, EventArgs e)
         {
             this.ImageIndex++;
-            this.ReloadImage();
+            this.recalculateSliderPosition();
         }
 
         private void PreviousButtonPressed(object sender, EventArgs e)
         {
             this.ImageIndex--;
-            this.ReloadImage();
+            this.recalculateSliderPosition();
         }
 
         private void ReloadImage()
