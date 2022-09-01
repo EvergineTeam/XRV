@@ -6,7 +6,6 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using System;
 using System.Threading.Tasks;
@@ -24,6 +23,7 @@ namespace Xrv.LoadModel
 
         private AssetsService assetsService;
         private Scene scene;
+        private Prefab manipulatorPrefab;
         private MenuButtonDescription handMenuDesc;
         private Entity modelEntity;
 
@@ -59,14 +59,14 @@ namespace Xrv.LoadModel
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.scene = scene;
+            this.manipulatorPrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.Prefabs.Manipulator_weprefab);
         }
 
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            // Create manipulator prefab
-            var manipulatorPrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.Prefabs.Manipulator_weprefab);
-            var manipulatorEntity = manipulatorPrefab.Instantiate();
+            // Instanciate manipulator prefab
+            var manipulatorEntity = this.manipulatorPrefab.Instantiate();
             var loadModelBehavior = manipulatorEntity.FindComponent<LoadModelBehavior>();
 
             // Create in front of the viewer
@@ -80,24 +80,27 @@ namespace Xrv.LoadModel
             // Load GLB model
             this.animation = new WaitWorkAction(TimeSpan.FromSeconds(2))
                 .ContinueWith(
-                    new ActionWorkAction(() =>
+                    new ActionWorkAction(async () =>
                     {
-                        // Teapot
-                        var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
-                        var modelEntity = new Entity()
-                                        .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
-                                        .AddComponent(new MaterialComponent() { Material = material })
-                                        .AddComponent(new TeapotMesh())
-                                        .AddComponent(new MeshRenderer());
+                        await Task.Run(() =>
+                        {
+                            // Teapot
+                            var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
+                            var modelEntity = new Entity()
+                                            .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
+                                            .AddComponent(new MaterialComponent() { Material = material })
+                                            .AddComponent(new TeapotMesh())
+                                            .AddComponent(new MeshRenderer());
 
-                        // PiggyBot
-                        ////var model = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
-                        ////var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-                        ////var transform = modelEntity.FindComponent<Transform3D>();
-                        ////transform.LocalScale = Vector3.One * 0.01f;
-                        ////var aabb = model.BoundingBox.Value;
+                            // PiggyBot
+                            ////var model = this.assetsService.Load<Model>(LoadModelResourceIDs.Models.PiggyBot_glb);
+                            ////var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+                            ////var transform = modelEntity.FindComponent<Transform3D>();
+                            ////transform.LocalScale = Vector3.One * 0.01f;
+                            ////var aabb = model.BoundingBox.Value;
 
-                        loadModelBehavior.ModelEntity = modelEntity;
+                            loadModelBehavior.ModelEntity = modelEntity;
+                        });
                     }));
 
             this.animation.Run();
