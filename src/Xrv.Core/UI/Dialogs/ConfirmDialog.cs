@@ -16,6 +16,7 @@ namespace Xrv.Core.UI.Dialogs
         [IgnoreEvergine]
         public DialogOption AcceptOption { get; } = new DialogOption(AcceptKey);
 
+        /// <inheritdoc/>
         protected override void InstantiateOptions()
         {
             var cancelButton = this.CreateButtonInstance(this.CancelOption);

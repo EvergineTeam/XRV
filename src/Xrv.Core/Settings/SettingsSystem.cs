@@ -7,29 +7,48 @@ using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.Settings
 {
+    /// <summary>
+    /// Settings system, to add settings sections.
+    /// </summary>
     public class SettingsSystem
     {
         private readonly EntityManager entityManager;
         private readonly XrvService xrvService;
         private MenuButtonDescription handMenuButtonDescription;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SettingsSystem"/> class.
+        /// </summary>
+        /// <param name="xrvService">XRV service.</param>
+        /// <param name="entityManager">Entity manager.</param>
         public SettingsSystem(XrvService xrvService, EntityManager entityManager)
         {
             this.xrvService = xrvService;
             this.entityManager = entityManager;
         }
 
+        /// <summary>
+        /// Gets settings window.
+        /// </summary>
         public TabbedWindow Window { get; private set; }
+
+        /// <summary>
+        /// Adds a new item to the settings tab.
+        /// </summary>
+        /// <param name="item">Tab item.</param>
+        public void AddTabItem(TabItem item) => this.Window.Tabs.Add(item);
+
+        /// <summary>
+        /// Removes an item from the settings tab.
+        /// </summary>
+        /// <param name="item">Tab item.</param>
+        public void RemoveTabItem(TabItem item) => this.Window.Tabs.Remove(item);
 
         internal void Load()
         {
             this.Window = this.CreateSettingsWindow();
             this.SetUpHandMenu();
         }
-
-        public void AddTabItem(TabItem item) => this.Window.Tabs.Add(item);
-
-        public void RemoveTabItem(TabItem item) => this.Window.Tabs.Remove(item);
 
         private TabbedWindow CreateSettingsWindow()
         {

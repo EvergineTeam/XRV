@@ -12,12 +12,14 @@ using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Settings;
-using Xrv.Core.Themes;
 using Xrv.Core.UI.Tabs;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
 namespace Xrv.Core
 {
+    /// <summary>
+    /// XRV framework service.
+    /// </summary>
     public class XrvService : Service
     {
         private readonly Dictionary<Type, Module> modules;
@@ -25,18 +27,9 @@ namespace Xrv.Core
         [BindService]
         private AssetsService assetsService = null;
 
-        public HandMenu HandMenu { get; private set; }
-
-        public HelpSystem Help { get; private set; }
-
-        public PubSub PubSub { get; private set; }
-
-        public SettingsSystem Settings { get; private set; }
-
-        public WindowsSystem WindowSystem { get; private set; }
-
-        public Theme CurrentTheme { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XrvService"/> class.
+        /// </summary>
         public XrvService()
         {
             this.modules = new Dictionary<Type, Module>();
@@ -47,6 +40,37 @@ namespace Xrv.Core
             });
         }
 
+        /// <summary>
+        /// Gets access to hand menu.
+        /// </summary>
+        public HandMenu HandMenu { get; private set; }
+
+        /// <summary>
+        /// Gets access to help system.
+        /// </summary>
+        public HelpSystem Help { get; private set; }
+
+        /// <summary>
+        /// Gets basic publisher-subscriber implementation.
+        /// </summary>
+        public PubSub PubSub { get; private set; }
+
+        /// <summary>
+        /// Gets access to settings system.
+        /// </summary>
+        public SettingsSystem Settings { get; private set; }
+
+        /// <summary>
+        /// Gets window system access.
+        /// </summary>
+        public WindowsSystem WindowSystem { get; private set; }
+
+        /// <summary>
+        /// Adds a module to module system. Module will be initalized on scene initialization.
+        /// </summary>
+        /// <param name="module">Module instance.</param>
+        /// <exception cref="ArgumentNullException">Thrown when supplied module is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when trying to register a module twice.</exception>
         public void AddModule(Module module)
         {
             if (module == null)
@@ -63,25 +87,26 @@ namespace Xrv.Core
             this.modules.Add(type, module);
         }
 
+        /// <summary>
+        /// Retrieves a registered module instance from modules system.
+        /// </summary>
+        /// <typeparam name="T">Type of target module.</typeparam>
+        /// <returns>Instace of module, if found; null otherwise.</returns>
         public T FindModule<T>()
             where T : Module => (T)this.FindModule(typeof(T));
 
+        /// <summary>
+        /// Retrieves a registered module instance from modules system.
+        /// </summary>
+        /// <param name="type">Type of target module.</param>
+        /// <returns>Instace of module, if found; null otherwise.</returns>
         public Module FindModule(Type type) =>
             this.modules.TryGetValue(type, out var module) ? module : null;
 
-        internal Module GetModuleForHandButton(MenuButtonDescription definition)
-        {
-            foreach (var kvp in this.modules)
-            {
-                if (kvp.Value.HandMenuButton == definition)
-                {
-                    return kvp.Value;
-                }
-            }
-
-            return null;
-        }
-
+        /// <summary>
+        /// Initializes scene with XRV stuff.
+        /// </summary>
+        /// <param name="scene">Scene instance.</param>
         public void Initialize(Scene scene)
         {
             // Clear camera background
@@ -126,6 +151,19 @@ namespace Xrv.Core
                 // Modules initialization
                 module.Initialize(scene);
             }
+        }
+
+        internal Module GetModuleForHandButton(MenuButtonDescription definition)
+        {
+            foreach (var kvp in this.modules)
+            {
+                if (kvp.Value.HandMenuButton == definition)
+                {
+                    return kvp.Value;
+                }
+            }
+
+            return null;
         }
     }
 }

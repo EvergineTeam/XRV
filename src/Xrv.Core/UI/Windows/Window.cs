@@ -17,13 +17,16 @@ namespace Xrv.Core.UI.Windows
     /// </summary>
     public class Window : Component
     {
+        /// <summary>
+        /// XRV service instance.
+        /// </summary>
+        [BindService]
+        protected XrvService xrvService = null;
+
         private Entity closeButton = null;
         private Entity followButton = null;
         private bool allowPin = true;
         private bool enableManipulation = true;
-
-        [BindService]
-        protected XrvService xrvService = null;
 
         [BindComponent(source: BindComponentSource.Owner, isExactType: false)]
         private BaseWindowConfigurator configurator = null;
@@ -34,11 +37,33 @@ namespace Xrv.Core.UI.Windows
         [BindComponent(isRequired: false)]
         private SimpleManipulationHandler simpleManipulationHandler = null;
 
+        [BindComponent]
+        private WindowTagAlong windowTagAlong = null;
+
+        /// <summary>
+        /// Raised when window is opened.
+        /// </summary>
+        public event EventHandler Opened;
+
+        /// <summary>
+        /// Raised when window is closed.
+        /// </summary>
+        public event EventHandler Closed;
+
+        /// <summary>
+        /// Gets window configurator.
+        /// </summary>
         [IgnoreEvergine]
         public BaseWindowConfigurator Configurator { get => this.configurator; }
 
+        /// <summary>
+        /// Gets a value indicating whether window is opened.
+        /// </summary>
         public bool IsOpened { get => this.Owner.IsEnabled; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether window pin is enabled or not.
+        /// </summary>
         public bool AllowPin
         {
             get => this.allowPin;
@@ -53,6 +78,9 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether window manipulation is enabled or not.
+        /// </summary>
         public bool EnableManipulation
         {
             get => this.enableManipulation;
@@ -67,13 +95,16 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets distance key to be used from <see cref="Distances"/> to get distance
+        /// where window should be displayed to the user when is opened.
+        /// </summary>
         [IgnoreEvergine]
         public string DistanceKey { get; set; }
 
-        public event EventHandler Opened;
-
-        public event EventHandler Closed;
-
+        /// <summary>
+        /// Opens the window, if it's not already opened.
+        /// </summary>
         public void Open()
         {
             if (!this.IsOpened)
@@ -84,15 +115,20 @@ namespace Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Closes the window, if it's not already closed.
+        /// </summary>
         public void Close()
         {
             if (this.IsOpened)
             {
+                this.UpdateFollowBehavior(false);
                 this.Owner.IsEnabled = false;
                 this.Closed?.Invoke(this, EventArgs.Empty);
             }
         }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -101,11 +137,13 @@ namespace Xrv.Core.UI.Windows
                 this.closeButton = this.Owner.FindChildrenByTag("PART_window_close", true).First();
                 this.followButton = this.Owner.FindChildrenByTag("PART_window_follow", true).First();
                 this.SubscribeEvents();
+                this.UpdateFollowBehavior(false);
             }
 
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -113,12 +151,17 @@ namespace Xrv.Core.UI.Windows
             this.UpdateEnableManipulation();
         }
 
+        /// <inheritdoc/>
         protected override void OnDetach()
         {
             base.OnDetach();
             this.UnsubscribeEvents();
         }
 
+        /// <summary>
+        /// Gets distance where window will be displayed when opened.
+        /// </summary>
+        /// <returns>Distance.</returns>
         protected virtual float GetOpenDistance()
         {
             var distances = this.xrvService.WindowSystem.Distances;
@@ -176,6 +219,8 @@ namespace Xrv.Core.UI.Windows
         private void UpdateFollowBehavior(bool followEnabled)
         {
             this.EnableManipulation = !followEnabled;
+            this.windowTagAlong.IsEnabled = followEnabled;
+            Workarounds.ChangeToggleButtonState(this.followButton, followEnabled);
         }
 
         private void UpdateEnableManipulation()

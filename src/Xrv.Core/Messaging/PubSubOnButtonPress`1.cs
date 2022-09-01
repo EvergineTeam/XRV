@@ -18,12 +18,14 @@ namespace Xrv.Core.Messaging
         [BindComponent(source: BindComponentSource.Children, isExactType: false, isRequired: false)]
         private ToggleButton toggleButton = null;
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
             this.button.ButtonReleased += this.Button_ButtonReleased;
         }
 
+        /// <inheritdoc/>
         protected override void OnDeactivated()
         {
             base.OnDeactivated();

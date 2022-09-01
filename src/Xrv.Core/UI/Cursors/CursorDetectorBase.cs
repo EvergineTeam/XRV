@@ -20,6 +20,7 @@ namespace Xrv.Core.UI.Cursors
 
         public bool IsDetected => this.detectedCursorIndex >= 0;
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             if (!base.OnAttached())
@@ -46,6 +47,7 @@ namespace Xrv.Core.UI.Cursors
             return true;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -60,6 +62,7 @@ namespace Xrv.Core.UI.Cursors
             this.OnCursorDetected(false);
         }
 
+        /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             this.CacheCursorsIfNonePreviouslyDetected();
