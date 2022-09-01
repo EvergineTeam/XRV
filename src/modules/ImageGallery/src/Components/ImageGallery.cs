@@ -3,15 +3,12 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.Platform;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using System.Buffers;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp.Advanced;
 using Evergine.Common.Graphics;
-using Evergine.Framework.Graphics.Materials;
 using Evergine.Components.Graphics3D;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
@@ -23,19 +20,16 @@ namespace Xrv.ImageGallery.Components
         [BindService]
         protected GraphicsContext graphicsContext;
 
-        // [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_next")]
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_next_pressable_button")]
         private PressableButton nextButton;
-        // [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_previous")]
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_previous_pressable_button")]
         private PressableButton previousButton;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
         private PinchSlider slider;
 
-        ////[BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
         private MaterialComponent galleryFrameMaterial;
-
-        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_picture")]
-        private Entity galleryFrameEntity;
 
         [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_next")]
         private Entity nextButtonEntity;
@@ -80,37 +74,36 @@ namespace Xrv.ImageGallery.Components
                 this.images = new List<string>(array);
             }
 
-            this.nextButton = this.nextButtonEntity.FindComponentInChildren<PressableButton>();
-            this.previousButton = this.previousButtonEntity.FindComponentInChildren<PressableButton>();
+            ////this.nextButton = this.nextButtonEntity.FindComponentInChildren<PressableButton>();
+            ////this.previousButton = this.previousButtonEntity.FindComponentInChildren<PressableButton>();
 
-            if (this.galleryFrameMaterial == null)
+
+            ////this.galleryFrameMaterial = this.galleryFrameEntity.FindComponent<MaterialComponent>();
+
+            var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
+
+            TextureDescription desc = new TextureDescription()
             {
-                this.galleryFrameMaterial = this.galleryFrameEntity.FindComponent<MaterialComponent>();
+                Type = TextureType.Texture2D,
+                Width = this.imagePixelsWidth,
+                Height = this.imagePixelsHeight,
+                Depth = 1,
+                ArraySize = 1,
+                Faces = 1,
+                Usage = ResourceUsage.Default,
+                CpuAccess = ResourceCpuAccess.None,
+                Flags = TextureFlags.ShaderResource,
+                Format = PixelFormat.R8G8B8A8_UNorm,
+                MipLevels = 1,
+                SampleCount = TextureSampleCount.None,
+            };
 
-                var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
+            this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
+            holographicEffect.Texture = this.imageTexture;
+            this.ReloadImage();
+            this.slider.InitialValue = 0;
+            this.recalculateSliderPosition();
 
-                TextureDescription desc = new TextureDescription()
-                {
-                    Type = TextureType.Texture2D,
-                    Width = this.imagePixelsWidth,
-                    Height = this.imagePixelsHeight,
-                    Depth = 1,
-                    ArraySize = 1,
-                    Faces = 1,
-                    Usage = ResourceUsage.Default,
-                    CpuAccess = ResourceCpuAccess.None,
-                    Flags = TextureFlags.ShaderResource,
-                    Format = PixelFormat.R8G8B8A8_UNorm,
-                    MipLevels = 1,
-                    SampleCount = TextureSampleCount.None,
-                };
-
-                this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
-                holographicEffect.Texture = this.imageTexture;
-                this.ReloadImage();
-                this.slider.InitialValue = 0;
-                this.recalculateSliderPosition();
-            }
 
             this.nextButton.ButtonPressed += this.NextButtonPressed;
             this.previousButton.ButtonPressed += this.PreviousButtonPressed;
