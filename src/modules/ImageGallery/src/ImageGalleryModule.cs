@@ -4,6 +4,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using SharpYaml.Tokens;
 using System;
 using System.Collections.Generic;
 using Xrv.AudioNote.Messages;
@@ -37,6 +38,8 @@ namespace Xrv.ImageGallery
         private Scene scene;
 
         private Dictionary<string, Entity> anchorsDic = new Dictionary<string, Entity>();
+        private Window window = null;
+        private bool isWindowConfigured = false;
 
         public ImageGalleryModule()
         {
@@ -49,13 +52,13 @@ namespace Xrv.ImageGallery
 
             this.settings = new TabItem()
             {
-                Name = "Audio Note",
+                Name = "Image Gallery",
                 Contents = this.SettingContent,
             };
 
             this.help = new TabItem()
             {
-                Name = "Audio Note",
+                Name = "Image Gallery",
                 Contents = this.HelpContent,
             };
         }
@@ -66,30 +69,27 @@ namespace Xrv.ImageGallery
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
 
+            this.window = this.xrv.WindowSystem.ShowWindow();
         }
 
         public override void Run(bool turnOn)
         {
-            var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
-            var window = this.xrv.WindowSystem.ShowWindow();
-            var config = window.Configurator;
-            var audioNoteSize = new Vector2(0.30f, 0.30f);
-            config.Title = "Gallery";
-            config.Size = audioNoteSize;
-            config.FrontPlateSize = audioNoteSize;
-            config.FrontPlateOffsets = Vector2.Zero;
-            config.DisplayLogo = false;
-            config.Content = gallery;
-            ////this.SetFrontPosition(this.scene, window);
-            window.Open();
+            if (!isWindowConfigured)
+            {
+                var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
+                var config = this.window.Configurator;
+                var size = new Vector2(0.30f, 0.30f);
+                config.Title = "Gallery";
+                config.Size = size;
+                config.FrontPlateSize = size;
+                config.FrontPlateOffsets = Vector2.Zero;
+                config.DisplayLogo = false;
+                config.Content = gallery;
+            }
 
-            ////var anchor = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Anchor).Instantiate();
-
-            ////this.SetFrontPosition(this.scene, anchor);
-            ////this.AddAudioAnchor(anchor);
-            ////this.window.Open();
+            this.SetFrontPosition(this.scene, this.window.Owner);
+            this.window.Open();
         }
-
 
         public Vector3 GetFrontPosition(Scene scene)
         {
@@ -126,6 +126,5 @@ namespace Xrv.ImageGallery
 
             return this.imageGalleryHelp;
         }
-
     }
 }
