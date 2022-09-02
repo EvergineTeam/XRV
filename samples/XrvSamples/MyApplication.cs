@@ -1,6 +1,7 @@
 using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Platform;
+using Xrv.AudioNote;
 using Xrv.ImageGallery;
 using Xrv.Core;
 using Xrv.Ruler;
@@ -25,6 +26,7 @@ namespace XrvSamples
 
             var xrera = new XrvService();
             xrera.AddModule(new RulerModule());
+            xrera.AddModule(new AudioNoteModule());
             xrera.AddModule(new ImageGalleryModule());
 
             this.Container.RegisterInstance(xrera);
@@ -40,6 +42,7 @@ namespace XrvSamples
 
             // Navigate to scene
             //var scene = assetsService.Load<Scenes.HandMenuScene>(EvergineContent.Scenes.HandMenu_wescene);
+            //var scene = assetsService.Load<Scenes.StorageScene>(EvergineContent.Scenes.Empty_wescene);
             var scene = assetsService.Load<Scenes.EmptyScene>(EvergineContent.Scenes.Empty_wescene);
             //var scene = assetsService.Load<Scenes.WindowScene>(EvergineContent.Scenes.Windows_wescene);
 

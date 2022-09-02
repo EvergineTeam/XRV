@@ -27,7 +27,6 @@ namespace Xrv.Core.UI.Dialogs
 
         public Dialog()
         {
-            this.DestroyOnClose = true;
             this.options = new Dictionary<PressableButton, string>();
         }
 
@@ -40,20 +39,20 @@ namespace Xrv.Core.UI.Dialogs
             button.ButtonReleased += this.Button_ButtonReleased;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
 
+            this.Configurator.UpdateContent();
             this.cancelHolder = this.Owner.FindChildrenByTag("PART_base_dialog_cancel_holder", true).First();
             this.acceptHolder = this.Owner.FindChildrenByTag("PART_base_dialog_accept_holder", true).First();
             this.singleButtonHolder = this.Owner.FindChildrenByTag("PART_base_dialog_single_holder", true).First();
-            this.InstantiateOptions();
-        }
 
-        protected override void OnDeactivated()
-        {
-            this.Clear();
-            base.OnDeactivated();
+            if (!this.options.Any())
+            {
+                this.InstantiateOptions();
+            }
         }
 
         protected abstract void InstantiateOptions();
@@ -78,6 +77,7 @@ namespace Xrv.Core.UI.Dialogs
             return buttonInstance;
         }
 
+        /// <inheritdoc/>
         protected override float GetOpenDistance()
         {
             var distances = this.xrvService.WindowSystem.Distances;

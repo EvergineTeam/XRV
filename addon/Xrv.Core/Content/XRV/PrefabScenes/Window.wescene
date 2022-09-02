@@ -10,14 +10,14 @@ Items:
         Id: 8299e62d-51a5-4065-a798-2a774c599e63
         IsEnabled: true
         LocalOrientation:
-          W: 1.0
-          X: 0.0
-          Y: 0.0
-          Z: 0.0
+          W: 0.0262673683
+          X: -0.00123805401
+          Y: 0.998545766
+          Z: 0.0470642447
         LocalPosition:
-          X: 0.0
-          Y: 0.0
-          Z: 0.0
+          X: -0.0116693191
+          Y: 0.029710032
+          Z: -0.0455083847
         LocalScale:
           X: 1.0
           Y: 1.0
@@ -45,7 +45,7 @@ Items:
         Margin: 0.0399999991
         Offset:
           X: 0.0
-          Y: 0.0
+          Y: 0.0160000008
           Z: -0.00700000115
         OrientationOffset:
           W: 1.0
@@ -54,7 +54,7 @@ Items:
           Z: 0.0
         Size:
           X: 0.300000012
-          Y: 0.200000003
+          Y: 0.232000008
           Z: 0.020000007
       - !Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation.SimpleManipulationHandler,Evergine.MRTK
         Id: 83ae99a1-1d7a-4403-9808-c7f677b45a79
@@ -65,6 +65,20 @@ Items:
         KeepRigidBodyActiveDuringDrag: false
         SmoothingActive: true
         SmoothingAmount: 0.00100000005
+        UpdateOrder: 0.5
+      - !Xrv.Core.UI.Windows.WindowTagAlong,Xrv.Core
+        Id: 29e7f26a-466d-4d83-95c4-4b144affca68
+        DisableVerticalLookAt: false
+        IsEnabled: true
+        MaxDistance: 0.600000024
+        MaxHAngle: 0.261799395
+        MaxLookAtAngle: 0.261799395
+        MaxVAngle: 0.785398185
+        MaxVerticalDistance: 0.100000001
+        MinDistance: 0.400000006
+        SmoothDistanceFactor: 0.5
+        SmoothOrientationFactor: 0.0500000007
+        SmoothPositionFactor: 0.0599999987
         UpdateOrder: 0.5
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

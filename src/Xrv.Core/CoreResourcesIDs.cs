@@ -37,7 +37,7 @@ namespace Xrv.Core
 
             public static Guid TextButton = new Guid("69925256-16a0-4938-81fb-2810f6afa4eb");
 
-            public static Guid Window = new Guid("6519824e-198f-4969-aed1-e501b925e300");
+            public static Guid Window = new Guid("6083dd5c-6f8b-4b07-b501-933c59401982");
 
             public static Guid GeneralHelp_weprefab = new Guid("4ab4d356-6777-4d70-b55a-c374647d8e1d");
 

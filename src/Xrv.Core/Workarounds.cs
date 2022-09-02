@@ -4,6 +4,8 @@ using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
+using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System.Linq;
 
 namespace Xrv.Core
@@ -23,6 +25,16 @@ namespace Xrv.Core
             var rotation = buttonTransform.LocalRotation;
             rotation.Y = MathHelper.Pi;
             buttonTransform.LocalRotation = rotation;
+        }
+
+        public static void ChangeToggleButtonState(Entity button, bool setOn)
+        {
+            var toggle = button.FindComponentInChildren<ToggleButton>();
+            if (toggle.IsOn != setOn)
+            {
+                var pressableButton = button.FindComponentInChildren<PressableButton>();
+                pressableButton.SimulatePress();
+            }
         }
     }
 }

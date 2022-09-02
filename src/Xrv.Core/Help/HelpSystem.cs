@@ -10,6 +10,9 @@ using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.Help
 {
+    /// <summary>
+    /// Help system, to add new entries to help panel.
+    /// </summary>
     public class HelpSystem
     {
         private readonly EntityManager entityManager;
@@ -19,6 +22,11 @@ namespace Xrv.Core.Help
         private Entity generalHelp;
         private Entity about;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HelpSystem"/> class.
+        /// </summary>
+        /// <param name="xrvService"></param>
+        /// <param name="entityManager"></param>
         public HelpSystem(XrvService xrvService, EntityManager entityManager)
         {
             this.xrvService = xrvService;
@@ -27,15 +35,15 @@ namespace Xrv.Core.Help
 
         public TabbedWindow Window { get; private set; }
 
+        public void AddTabItem(TabItem item) => this.Window.Tabs.Add(item);
+
+        public void RemoveTabItem(TabItem item) => this.Window.Tabs.Remove(item);
+
         internal void Load()
         {
             this.Window = this.CreateHelpWindow();
             this.SetUpHandMenu();
         }
-
-        public void AddTabItem(TabItem item) => this.Window.Tabs.Add(item);
-
-        public void RemoveTabItem(TabItem item) => this.Window.Tabs.Remove(item);
 
         private TabbedWindow CreateHelpWindow()
         {

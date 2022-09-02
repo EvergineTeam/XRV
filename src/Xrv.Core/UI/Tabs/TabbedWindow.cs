@@ -44,6 +44,7 @@ namespace Xrv.Core.UI.Tabs
             return owner;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();

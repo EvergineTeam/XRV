@@ -41,19 +41,22 @@ namespace Xrv.Core.UI.Tabs
         private AssetsService assetsService = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_tab_control_front_plate")]
-        protected PlaneMesh frontPlate;
+        private PlaneMesh frontPlate = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_tab_control_current_item_plate")]
-        protected PlaneMesh currentItemPlate;
+        private PlaneMesh currentItemPlate = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_tab_control_current_item_plate")]
-        protected Transform3D currentItemPlateTransform;
+        private Transform3D currentItemPlateTransform = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_tab_control_buttons_container")]
-        protected Transform3D buttonsContainerTransform;
+        private Transform3D buttonsContainerTransform = null;
 
-        protected Entity buttonsContainer;
+        private Entity buttonsContainer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TabControl"/> class.
+        /// </summary>
         public TabControl()
         {
             this.items = new ObservableCollection<TabItem>();
@@ -61,6 +64,14 @@ namespace Xrv.Core.UI.Tabs
             this.size = new Vector2(0.3f, 0.2f);
         }
 
+        /// <summary>
+        /// Raised when selected item changes.
+        /// </summary>
+        public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
+
+        /// <summary>
+        /// Gets or sets tab control size.
+        /// </summary>
         public Vector2 Size
         {
             get => this.size;
@@ -75,6 +86,9 @@ namespace Xrv.Core.UI.Tabs
             }
         }
 
+        /// <summary>
+        /// Gets or sets selected item.
+        /// </summary>
         [IgnoreEvergine]
         public TabItem SelectedItem
         {
@@ -89,6 +103,9 @@ namespace Xrv.Core.UI.Tabs
             }
         }
 
+        /// <summary>
+        /// Gets or sets inactive item text color.
+        /// </summary>
         public Color InactiveItemTextColor
         {
             get => this.inactiveItemTextColor;
@@ -103,6 +120,9 @@ namespace Xrv.Core.UI.Tabs
             }
         }
 
+        /// <summary>
+        /// Gets or sets active item text color.
+        /// </summary>
         public Color ActiveItemTextColor
         {
             get => this.activeItemTextColor;
@@ -117,14 +137,23 @@ namespace Xrv.Core.UI.Tabs
             }
         }
 
-        public bool DestroyContentOnTabChange { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether content entity should be destroyed
+        /// when changing tab. False by default.
+        /// </summary>
+        public bool DestroyContentOnTabChange { get; set; } = false;
 
+        /// <summary>
+        /// Gets list of items.
+        /// </summary>
         public IList<TabItem> Items { get => this.items; }
 
+        /// <summary>
+        /// Gets builder instance for tab control.
+        /// </summary>
         public static TabControlBuilder Builder { get; internal set; }
 
-        public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
-
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -139,6 +168,7 @@ namespace Xrv.Core.UI.Tabs
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -149,6 +179,7 @@ namespace Xrv.Core.UI.Tabs
             this.UpdateSelectedItem();
         }
 
+        /// <inheritdoc/>
         protected override void OnDetach()
         {
             base.OnDetach();

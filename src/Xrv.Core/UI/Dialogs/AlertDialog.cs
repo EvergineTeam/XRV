@@ -12,10 +12,9 @@ namespace Xrv.Core.UI.Dialogs
         [IgnoreEvergine]
         public DialogOption AcceptOption { get; } = new DialogOption(AcceptKey);
 
+        /// <inheritdoc/>
         protected override void InstantiateOptions()
         {
-            this.Clear();
-
             var acceptButton = this.CreateButtonInstance(this.AcceptOption);
             this.AddOption(acceptButton.FindComponent<PressableButton>(), this.AcceptOption);
             this.singleButtonHolder?.AddChild(acceptButton);
