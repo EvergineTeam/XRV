@@ -1,49 +1,68 @@
-﻿using Evergine.Framework;
-using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
-using Evergine.Platform;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp;
-using System.Buffers;
-using System.Runtime.InteropServices;
-using SixLabors.ImageSharp.Advanced;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
+using Evergine.Framework;
 using Evergine.MRTK.Effects;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
+using Evergine.Platform;
+using SixLabors.ImageSharp.PixelFormats;
+using Xrv.ImageGallery.Helpers;
 
 namespace Xrv.ImageGallery.Components
 {
+    /// <summary>
+    /// This component shows a gallery of images. Has a slider and a pair of buttons in order to change between an image and another.
+    /// </summary>
     public class ImageGallery : Component
     {
-        [BindService]
-        protected GraphicsContext graphicsContext;
+        /// <summary>
+        /// Width of the images shown.
+        /// </summary>
+        public uint imagePixelsWidth = 640;
 
+        /// <summary>
+        /// Height of the images shown.
+        /// </summary>
+        public uint imagePixelsHeight = 640;
+
+        /// <summary>
+        /// List of paths to the images to show in the Gallery.
+        /// </summary>
+        public List<string> images = null;
+
+        private Texture imageTexture = null;
+
+        [BindService]
+        private GraphicsContext graphicsContext = null;
         [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_next_pressable_button")]
-        private PressableButton nextButton;
+        private PressableButton nextButton = null;
         [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_previous_pressable_button")]
-        private PressableButton previousButton;
+        private PressableButton previousButton = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
-        private PinchSlider slider;
+        private PinchSlider slider = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
-        private MaterialComponent galleryFrameMaterial;
+        private MaterialComponent galleryFrameMaterial = null;
 
         [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_next")]
-        private Entity nextButtonEntity;
+        private Entity nextButtonEntity = null;
 
         [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_previous")]
-        private Entity previousButtonEntity;
+        private Entity previousButtonEntity = null;
 
-        private int _imageIndex = 0;
+        private int imageIndex = 0;
 
+        /// <summary>
+        /// Gets or sets the index of the image that is showing the gallery at the moment.
+        /// </summary>
         public int ImageIndex
         {
             get
             {
-                return this._imageIndex;
+                return this.imageIndex;
             }
 
             set
@@ -52,20 +71,14 @@ namespace Xrv.ImageGallery.Components
                 {
                     if (this.images != null && value < this.images.Count)
                     {
-                        this._imageIndex = value;
+                        this.imageIndex = value;
                         this.ReloadImage();
                     }
                 }
             }
         }
 
-        public uint imagePixelsWidth = 640;
-        public uint imagePixelsHeight = 640;
-
-        private Texture imageTexture = null;
-
-        public List<string> images = null;
-
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             if (this.images == null)
@@ -73,12 +86,6 @@ namespace Xrv.ImageGallery.Components
                 string[] array = { "XRV/Textures/TestImages/test1.jpg", "XRV/Textures/TestImages/test2.jpg", "XRV/Textures/TestImages/test3.jpg" };
                 this.images = new List<string>(array);
             }
-
-            ////this.nextButton = this.nextButtonEntity.FindComponentInChildren<PressableButton>();
-            ////this.previousButton = this.previousButtonEntity.FindComponentInChildren<PressableButton>();
-
-
-            ////this.galleryFrameMaterial = this.galleryFrameEntity.FindComponent<MaterialComponent>();
 
             var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
@@ -101,15 +108,21 @@ namespace Xrv.ImageGallery.Components
             this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
             holographicEffect.Texture = this.imageTexture;
             this.ReloadImage();
-            this.slider.InitialValue = 0;
             this.recalculateSliderPosition();
-
 
             this.nextButton.ButtonPressed += this.NextButtonPressed;
             this.previousButton.ButtonPressed += this.PreviousButtonPressed;
             this.slider.ValueUpdated += this.SliderValueUpdated;
             this.slider.InteractionEnded += this.SliderInteractionEnded;
             return base.OnAttached();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDetach()
+        {
+            this.nextButton.ButtonPressed -= this.NextButtonPressed;
+            this.previousButton.ButtonPressed -= this.PreviousButtonPressed;
+            base.OnDetach();
         }
 
         private void SliderInteractionEnded(object sender, EventArgs e)
@@ -120,13 +133,6 @@ namespace Xrv.ImageGallery.Components
         private void recalculateSliderPosition()
         {
             this.slider.SliderValue = this.ImageIndex / (float)(this.images.Count - 1);
-        }
-
-        protected override void OnDetach()
-        {
-            this.nextButton.ButtonPressed -= this.NextButtonPressed;
-            this.previousButton.ButtonPressed -= this.PreviousButtonPressed;
-            base.OnDetach();
         }
 
         private void SliderValueUpdated(object sender, SliderEventData e)
@@ -181,65 +187,10 @@ namespace Xrv.ImageGallery.Components
             {
                 using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
                 {
-                    this.CopyImageToArrayPool(image, false, out _, out data);
+                    RawImageLoader.CopyImageToArrayPool(image, false, out _, out data);
                 }
 
                 this.graphicsContext.UpdateTextureData(this.imageTexture, data);
-            }
-        }
-
-        private void CopyImageToArrayPool(Image<Rgba32> image, bool premultiplyAlpha, out int dataLength, out byte[] data)
-        {
-            var bytesPerPixel = image.PixelType.BitsPerPixel / 8;
-            dataLength = image.Width * image.Height * bytesPerPixel;
-            data = ArrayPool<byte>.Shared.Rent(dataLength);
-            var dataPixels = MemoryMarshal.Cast<byte, Rgba32>(data);
-            if (image.DangerousTryGetSinglePixelMemory(out var pixels))
-            {
-                if (premultiplyAlpha)
-                {
-                    this.CopyToPremultiplied(pixels.Span, dataPixels);
-                }
-                else
-                {
-                    pixels.Span.CopyTo(dataPixels);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < image.Height; i++)
-                {
-                    var row = image.DangerousGetPixelRowMemory(i);
-                    if (premultiplyAlpha)
-                    {
-                        this.CopyToPremultiplied(row.Span, dataPixels.Slice(i * image.Width, image.Width));
-                    }
-                    else
-                    {
-                        row.Span.CopyTo(dataPixels.Slice(i * image.Width, image.Width));
-                    }
-                }
-            }
-        }
-
-        private void CopyToPremultiplied(Span<Rgba32> pixels, Span<Rgba32> destination)
-        {
-            for (int i = 0; i < pixels.Length; i++)
-            {
-                ref Rgba32 pixel = ref pixels[i];
-                ref Rgba32 destinationPixel = ref destination[i];
-                ref var a = ref pixel.A;
-                if (a == 0)
-                {
-                    destinationPixel.PackedValue = 0;
-                }
-                else
-                {
-                    destinationPixel.R = (byte)((pixel.R * a) >> 8);
-                    destinationPixel.G = (byte)((pixel.G * a) >> 8);
-                    destinationPixel.B = (byte)((pixel.B * a) >> 8);
-                    destinationPixel.A = pixel.A;
-                }
             }
         }
     }
