@@ -4,9 +4,9 @@ using System;
 
 namespace Xrv.Core.Menu
 {
-    public class HandMenuButtonDescription
+    public class MenuButtonDescription
     {
-        public HandMenuButtonDescription()
+        public MenuButtonDescription()
         {
             this.Id = Guid.NewGuid();
         }

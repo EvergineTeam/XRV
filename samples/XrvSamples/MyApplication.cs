@@ -1,9 +1,11 @@
 using Evergine.Framework;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Platform;
 using Xrv.AudioNote;
 using Xrv.ImageGallery;
 using Xrv.Core;
+using Xrv.LoadModel;
 using Xrv.Ruler;
 using Evergine.Framework.Threading;
 
@@ -24,15 +26,16 @@ namespace XrvSamples
             this.Container.RegisterType<AssetsService>();
             this.Container.RegisterType<ForegroundTaskSchedulerService>();
             this.Container.RegisterType<WorkActionScheduler>();
-
-            var xrera = new XrvService();
-            xrera.AddModule(new RulerModule());
-            xrera.AddModule(new AudioNoteModule());
-            xrera.AddModule(new ImageGalleryModule());
-
+            
             BackgroundTaskScheduler.Background.Configure(this.Container);
 
-            this.Container.RegisterInstance(xrera);
+            var xrv = new XrvService();
+            xrv.AddModule(new RulerModule());
+            xrv.AddModule(new LoadModelModule());
+            xrv.AddModule(new AudioNoteModule());
+            xrv.AddModule(new ImageGalleryModule());
+
+            this.Container.RegisterInstance(xrv);
         }
 
         public override void Initialize()

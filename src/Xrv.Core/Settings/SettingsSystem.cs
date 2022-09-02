@@ -14,7 +14,7 @@ namespace Xrv.Core.Settings
     {
         private readonly EntityManager entityManager;
         private readonly XrvService xrvService;
-        private HandMenuButtonDescription handMenuButtonDescription;
+        private MenuButtonDescription handMenuButtonDescription;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsSystem"/> class.
@@ -71,7 +71,7 @@ namespace Xrv.Core.Settings
 
         private void SetUpHandMenu()
         {
-            this.handMenuButtonDescription = new HandMenuButtonDescription
+            this.handMenuButtonDescription = new MenuButtonDescription
             {
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Settings,

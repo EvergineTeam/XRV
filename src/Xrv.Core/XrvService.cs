@@ -153,7 +153,7 @@ namespace Xrv.Core
             }
         }
 
-        internal Module GetModuleForHandButton(HandMenuButtonDescription definition)
+        internal Module GetModuleForHandButton(MenuButtonDescription definition)
         {
             foreach (var kvp in this.modules)
             {

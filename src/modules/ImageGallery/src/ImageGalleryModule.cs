@@ -18,7 +18,7 @@ namespace Xrv.ImageGallery
     {
         private AssetsService assetsService;
         private XrvService xrv;
-        private HandMenuButtonDescription handMenuDescription;
+        private MenuButtonDescription handMenuDescription;
         private TabItem settings;
         private TabItem help;
         private Entity imageGalleryHelp;
@@ -32,7 +32,7 @@ namespace Xrv.ImageGallery
         /// </summary>
         public ImageGalleryModule()
         {
-            this.handMenuDescription = new HandMenuButtonDescription()
+            this.handMenuDescription = new MenuButtonDescription()
             {
                 IconOn = ImageGalleryResourceIDs.Materials.Icons.ImageGallery,
                 IsToggle = false,
@@ -56,7 +56,7 @@ namespace Xrv.ImageGallery
         public override string Name => "Image Gallery";
 
         /// <inheritdoc/>
-        public override HandMenuButtonDescription HandMenuButton => this.handMenuDescription;
+        public override MenuButtonDescription HandMenuButton => this.handMenuDescription;
 
         /// <inheritdoc/>
         public override TabItem Help => this.help;

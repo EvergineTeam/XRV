@@ -27,7 +27,7 @@ namespace Xrv.AudioNote
     {
         private AssetsService assetsService;
         private XrvService xrv;
-        private HandMenuButtonDescription handMenuDesc;
+        private MenuButtonDescription handMenuDesc;
         private TabItem help;
         private Entity audioNoteHelp;
         private Window window;
@@ -42,7 +42,7 @@ namespace Xrv.AudioNote
         /// </summary>
         public AudioNoteModule()
         {
-            this.handMenuDesc = new HandMenuButtonDescription()
+            this.handMenuDesc = new MenuButtonDescription()
             {
                 IconOn = AudioNoteResourceIDs.Materials.Icons.AudioNote,
                 IsToggle = false,
@@ -63,7 +63,7 @@ namespace Xrv.AudioNote
         public override string Name => "AudioNote";
 
         /// <inheritdoc/>
-        public override HandMenuButtonDescription HandMenuButton => this.handMenuDesc;
+        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
 
         /// <inheritdoc/>
         public override TabItem Help => this.help;
