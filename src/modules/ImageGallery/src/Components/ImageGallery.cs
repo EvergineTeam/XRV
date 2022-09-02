@@ -116,8 +116,8 @@ namespace Xrv.ImageGallery.Components
             this.ReloadImage();
             this.recalculateSliderPosition();
 
-            this.nextButton.ButtonPressed += this.NextButtonPressed;
-            this.previousButton.ButtonPressed += this.PreviousButtonPressed;
+            this.nextButton.ButtonReleased += this.NextButtonReleased;
+            this.previousButton.ButtonReleased += this.PreviousButtonReleased;
             this.slider.ValueUpdated += this.SliderValueUpdated;
             this.slider.InteractionEnded += this.SliderInteractionEnded;
             return base.OnAttached();
@@ -126,8 +126,8 @@ namespace Xrv.ImageGallery.Components
         /// <inheritdoc/>
         protected override void OnDetach()
         {
-            this.nextButton.ButtonPressed -= this.NextButtonPressed;
-            this.previousButton.ButtonPressed -= this.PreviousButtonPressed;
+            this.nextButton.ButtonReleased -= this.NextButtonReleased;
+            this.previousButton.ButtonReleased -= this.PreviousButtonReleased;
             base.OnDetach();
         }
 
@@ -150,13 +150,13 @@ namespace Xrv.ImageGallery.Components
             }
         }
 
-        private void NextButtonPressed(object sender, EventArgs e)
+        private void NextButtonReleased(object sender, EventArgs e)
         {
             this.ImageIndex++;
             this.recalculateSliderPosition();
         }
 
-        private void PreviousButtonPressed(object sender, EventArgs e)
+        private void PreviousButtonReleased(object sender, EventArgs e)
         {
             this.ImageIndex--;
             this.recalculateSliderPosition();
