@@ -10,7 +10,7 @@ namespace Xrv.Core.Modules
     {
         public abstract string Name { get; }
 
-        public abstract HandMenuButtonDescription HandMenuButton { get; }
+        public abstract MenuButtonDescription HandMenuButton { get; }
 
         public abstract TabItem Help { get; }
 
