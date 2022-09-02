@@ -101,8 +101,10 @@ namespace Xrv.Core.Menu
             }
         }
 
+        /// <summary>
+        /// Gets button descriptions.
+        /// </summary>
         public IList<MenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
-
 
         /// <inheritdoc/>
         protected override bool OnAttached()

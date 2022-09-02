@@ -19,7 +19,6 @@ namespace Xrv.LoadModel
     /// </summary>
     public class LoadModelModule : Module
     {
-
         private AssetsService assetsService;
         private Scene scene;
         private Prefab manipulatorPrefab;
