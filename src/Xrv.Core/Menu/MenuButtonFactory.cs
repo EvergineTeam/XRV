@@ -38,6 +38,7 @@ namespace Xrv.Core.Menu
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
+            button.Flags = HideFlags.DontSave | HideFlags.DontShow;
             button.AddComponent(new StandardButtonConfigurator
             {
                 Text = description.TextOn,
@@ -55,6 +56,7 @@ namespace Xrv.Core.Menu
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
+            button.Flags = HideFlags.DontSave | HideFlags.DontShow;
             button.AddComponent(new ToggleButton());
             button.AddComponent(new ToggleButtonConfigurator
             {

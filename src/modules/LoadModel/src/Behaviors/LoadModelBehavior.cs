@@ -102,12 +102,12 @@ namespace Xrv.LoadModel
             {
                 if (value != null)
                 {
+                    this.Loading.IsEnabled = false;
+                    this.LockedIcon.IsEnabled = false;
                     this.modelEntity = value;
                     this.modelEntityWorld = this.modelEntity.FindComponent<Transform3D>().WorldTransform;
                     this.AddManipulatorComponents(this.modelEntity);
                     this.Owner.AddChild(this.modelEntity);
-                    this.Loading.IsEnabled = false;
-                    this.LockedIcon.IsEnabled = false;
 
                     var modelTransform = this.modelEntity.FindComponent<Transform3D>();
 
