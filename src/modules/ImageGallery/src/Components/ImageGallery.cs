@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using System;
 using System.Collections.Generic;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
