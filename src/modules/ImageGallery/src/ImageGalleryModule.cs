@@ -1,24 +1,25 @@
-﻿using Evergine.Components.WorkActions;
-using Evergine.Framework;
+﻿using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
-using SharpYaml.Tokens;
-using System;
 using System.Collections.Generic;
-using Xrv.AudioNote.Messages;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
-using Xrv.Core.UI.Dialogs;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
 
 namespace Xrv.ImageGallery
 {
+    /// <summary>
+    /// Module that shows a image gallery and lets you navigate between the different images.
+    /// </summary>
     public class ImageGalleryModule : Module
     {
+        /// <summary>
+        /// Name of the module.
+        /// </summary>
         public override string Name => "Image Gallery";
 
         public override HandMenuButtonDescription HandMenuButton => this.handMenuDescription;
