@@ -3,7 +3,6 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
-using System.Collections.Generic;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -17,31 +16,20 @@ namespace Xrv.ImageGallery
     /// </summary>
     public class ImageGalleryModule : Module
     {
-        /// <summary>
-        /// Name of the module.
-        /// </summary>
-        public override string Name => "Image Gallery";
-
-        public override HandMenuButtonDescription HandMenuButton => this.handMenuDescription;
-
-        public override TabItem Help => this.help;
-
-        public override TabItem Settings => this.settings;
-
-        protected AssetsService assetsService;
+        private AssetsService assetsService;
         private XrvService xrv;
         private HandMenuButtonDescription handMenuDescription;
         private TabItem settings;
         private TabItem help;
-
         private Entity imageGalleryHelp;
         private Entity imageGallerySettings;
         private Scene scene;
-
-        private Dictionary<string, Entity> anchorsDic = new Dictionary<string, Entity>();
         private Window window = null;
-        private bool isWindowConfigured = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageGalleryModule"/> class.
+        /// Image Gallery module for navigating between different images.
+        /// </summary>
         public ImageGalleryModule()
         {
             this.handMenuDescription = new HandMenuButtonDescription()
@@ -64,46 +52,53 @@ namespace Xrv.ImageGallery
             };
         }
 
+        /// <inheritdoc/>
+        public override string Name => "Image Gallery";
+
+        /// <inheritdoc/>
+        public override HandMenuButtonDescription HandMenuButton => this.handMenuDescription;
+
+        /// <inheritdoc/>
+        public override TabItem Help => this.help;
+
+        /// <inheritdoc/>
+        public override TabItem Settings => this.settings;
+
+        /// <inheritdoc/>
         public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
 
-            this.window = this.xrv.WindowSystem.ShowWindow();
-        }
+            var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
 
-        public override void Run(bool turnOn)
-        {
-            if (!isWindowConfigured)
+            var size = new Vector2(0.30f, 0.30f);
+
+            this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
-                var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
-                var config = this.window.Configurator;
-                var size = new Vector2(0.30f, 0.30f);
                 config.Title = "Gallery";
                 config.Size = size;
                 config.FrontPlateSize = size;
                 config.FrontPlateOffsets = Vector2.Zero;
                 config.DisplayLogo = false;
                 config.Content = gallery;
-            }
+            });
+        }
 
+        /// <inheritdoc/>
+        public override void Run(bool turnOn)
+        {
             this.SetFrontPosition(this.scene, this.window.Owner);
             this.window.Open();
         }
 
-        public Vector3 GetFrontPosition(Scene scene)
+        private void SetFrontPosition(Scene scene, Entity entity)
         {
+            var entityTransform = entity.FindComponent<Transform3D>();
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
-            //// TODO uses NEAR position instead of 0.6f
-            return cameraTransform.Position + (cameraWorldTransform.Forward * 0.6f);
-        }
-
-        public void SetFrontPosition(Scene scene, Entity entity)
-        {
-            var windowTransform = entity.FindComponent<Transform3D>();
-            windowTransform.Position = this.GetFrontPosition(scene);
+            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Near);
         }
 
         private Entity SettingContent()
