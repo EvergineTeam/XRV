@@ -25,7 +25,8 @@ namespace Xrv.ImageGallery.Helpers
         {
             var bytesPerPixel = image.PixelType.BitsPerPixel / 8;
             dataLength = image.Width * image.Height * bytesPerPixel;
-            data = ArrayPool<byte>.Shared.Rent(dataLength);
+            var shared = ArrayPool<byte>.Shared;
+            data = shared.Rent(dataLength);
             var dataPixels = MemoryMarshal.Cast<byte, Rgba32>(data);
             if (image.DangerousTryGetSinglePixelMemory(out var pixels))
             {
@@ -53,6 +54,8 @@ namespace Xrv.ImageGallery.Helpers
                     }
                 }
             }
+
+            shared.Return(data);
         }
 
         private static void CopyToPremultiplied(Span<Rgba32> pixels, Span<Rgba32> destination)

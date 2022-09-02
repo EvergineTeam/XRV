@@ -5,6 +5,7 @@ using Xrv.AudioNote;
 using Xrv.ImageGallery;
 using Xrv.Core;
 using Xrv.Ruler;
+using Evergine.Framework.Threading;
 
 namespace XrvSamples
 {
@@ -28,6 +29,8 @@ namespace XrvSamples
             xrera.AddModule(new RulerModule());
             xrera.AddModule(new AudioNoteModule());
             xrera.AddModule(new ImageGalleryModule());
+
+            BackgroundTaskScheduler.Background.Configure(this.Container);
 
             this.Container.RegisterInstance(xrera);
         }

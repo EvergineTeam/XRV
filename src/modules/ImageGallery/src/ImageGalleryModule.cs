@@ -39,17 +39,17 @@ namespace Xrv.ImageGallery
                 TextOn = "Image Gallery",
             };
 
-            this.settings = new TabItem()
-            {
-                Name = "Image Gallery",
-                Contents = this.SettingContent,
-            };
+            ////this.settings = new TabItem()
+            ////{
+            ////    Name = "Image Gallery",
+            ////    Contents = this.SettingContent,
+            ////};
 
-            this.help = new TabItem()
-            {
-                Name = "Image Gallery",
-                Contents = this.HelpContent,
-            };
+            ////this.help = new TabItem()
+            ////{
+            ////    Name = "Image Gallery",
+            ////    Contents = this.HelpContent,
+            ////};
         }
 
         /// <inheritdoc/>

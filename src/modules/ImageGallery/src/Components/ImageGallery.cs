@@ -2,9 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
+using Evergine.Framework.Threading;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
@@ -56,6 +59,7 @@ namespace Xrv.ImageGallery.Components
         private Entity previousButtonEntity = null;
 
         private int imageIndex = 0;
+        private CancellationTokenSource cancellationSource;
 
         /// <summary>
         /// Gets or sets the index of the image that is showing the gallery at the moment.
@@ -183,17 +187,24 @@ namespace Xrv.ImageGallery.Components
 
         private void LoadRawJPG(string filePath)
         {
-            AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
-            byte[] data;
-            using (var fileStream = assetDirectory.Open(filePath))
-            {
-                using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
-                {
-                    RawImageLoader.CopyImageToArrayPool(image, false, out _, out data);
-                }
+            this.cancellationSource?.Cancel();
+            this.cancellationSource = new CancellationTokenSource();
 
-                this.graphicsContext.UpdateTextureData(this.imageTexture, data);
-            }
+            EvergineBackgroundTask.Run(
+            () =>
+            {
+                AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
+                byte[] data;
+                using (var fileStream = assetDirectory.Open(filePath))
+                {
+                    using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
+                    {
+                        RawImageLoader.CopyImageToArrayPool(image, false, out _, out data);
+                    }
+
+                    this.graphicsContext.UpdateTextureData(this.imageTexture, data);
+                }
+            }, this.cancellationSource.Token);
         }
     }
 }
