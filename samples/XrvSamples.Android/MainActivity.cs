@@ -16,7 +16,7 @@ namespace XrvSamples.Android
         ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.Orientation,
         ScreenOrientation = ScreenOrientation.SensorLandscape,
         LaunchMode = LaunchMode.SingleTask)]
-    public class MainActivity : Activity
+    public class MainActivity : global::Android.App.Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {

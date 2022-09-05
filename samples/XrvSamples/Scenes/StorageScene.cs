@@ -1,117 +1,191 @@
 ﻿using Evergine.Components.Fonts;
-using Evergine.Framework;
 using Evergine.Framework.Threading;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
-using Evergine.Platform;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xrv.Core.Storage;
 
 namespace XrvSamples.Scenes
 {
     internal class StorageScene : BaseScene
     {
-        private PressableButton localApplicationDataButton;
-        private Text3DMesh localApplicationDataText;
-        private bool localApplicationInProgress;
+        private const int StagesDelaySeconds = 2;
+        private FileAccessConfiguration localApplicationDataConfig;
+        private FileAccessConfiguration azureFileShareConfig;
+        private FileAccessConfiguration azureBlobsConfig;
 
         public override void Initialize()
         {
             base.Initialize();
 
             var entityManager = this.Managers.EntityManager;
-            this.localApplicationDataButton = entityManager.FindAllByTag("localAppData").First().FindComponentInChildren<PressableButton>();
-            this.localApplicationDataText = entityManager.FindAllByTag("localAppData").First().FindComponentInChildren<Text3DMesh>();
-            this.localApplicationDataButton.ButtonReleased += this.LocalApplicationDataButton_ButtonReleased;
 
-            // Uncomment to test this in Android (not Quest)
-            // EvergineForegroundTask.Run(() => this.LocalApplicationDataButton_ButtonReleased(null, EventArgs.Empty));
+            /*
+             * Local application data
+             */
+            this.localApplicationDataConfig = new FileAccessConfiguration();
+            this.localApplicationDataConfig.ProgressText = entityManager.FindAllByTag("localAppData").First().FindComponentInChildren<Text3DMesh>();
+            this.localApplicationDataConfig.FileAccess = new ApplicationDataFileAccess();
+            var button = entityManager.FindAllByTag("localAppData").First().FindComponentInChildren<PressableButton>();
+            button.ButtonReleased += this.LocalApplicationDataButton_ButtonReleased;
+
+            /*
+             * Azure file share
+             */
+            this.azureFileShareConfig = new FileAccessConfiguration();
+            this.azureFileShareConfig.ProgressText = entityManager.FindAllByTag("azureFileShare").First().FindComponentInChildren<Text3DMesh>();
+            Xrv.Core.Storage.FileAccess fileAccess = default;
+
+            // Uncomment to check one of the auth modes
+            //fileAccess = AzureFileShareFileAccess.CreateFromConnectionString("<REPLACE BY CONNECTION STRING>", "<REPLACE BY SHARE NAME>");
+            //fileAccess = AzureFileShareFileAccess.CreateFromSignature(new Uri("<REPLACE BY SHARE URI>"), "<REPLACE BY SAS TOKEN>");
+            //fileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("<REPLACE BY SHARE URI WITH SAS>"));
+
+            this.azureFileShareConfig.FileAccess = fileAccess;
+            button = entityManager.FindAllByTag("azureFileShare").First().FindComponentInChildren<PressableButton>();
+            button.ButtonReleased += this.AzureFileShareButton_ButtonReleased;
+
+            /*
+             * Azure blobs
+             */
+
+            this.azureBlobsConfig = new FileAccessConfiguration();
+            this.azureBlobsConfig.ProgressText = entityManager.FindAllByTag("azureBlobs").First().FindComponentInChildren<Text3DMesh>();
+            fileAccess = default;
+
+            // Uncomment to check one of the auth modes
+            //fileAccess = AzureBlobFileAccess.CreateFromConnectionString("<REPLACE BY CONNECTION STRING>", "<REPLACE BY CONTAINER NAME>");
+            //fileAccess = AzureBlobFileAccess.CreateFromSignature(new Uri("<REPLACE BY CONTAINER URI>"), "<REPLACE BY SAS TOKEN>");
+            //fileAccess = AzureBlobFileAccess.CreateFromUri(new Uri("<REPLACE BY SHARE URI>"));
+
+            this.azureBlobsConfig.FileAccess = fileAccess;
+            button = entityManager.FindAllByTag("azureBlobs").First().FindComponentInChildren<PressableButton>();
+            button.ButtonReleased += this.AzureBlobsButton_ButtonReleased;
+
+            // Uncomment to test this in Android (not Quest) or force execution
+            // EvergineForegroundTask.Run(async () => await this.ExecuteCaseAsync(this.localApplicationDataConfig));
+            EvergineForegroundTask.Run(async () => await this.ExecuteCaseAsync(this.azureFileShareConfig));
+            EvergineForegroundTask.Run(async () => await this.ExecuteCaseAsync(this.azureBlobsConfig));
         }
 
         private async void LocalApplicationDataButton_ButtonReleased(object sender, EventArgs e)
         {
-            if (this.localApplicationInProgress)
+            await this.ExecuteCaseAsync(this.localApplicationDataConfig);
+        }
+
+        private async void AzureFileShareButton_ButtonReleased(object sender, EventArgs e)
+        {
+            await this.ExecuteCaseAsync(this.azureFileShareConfig);
+        }
+
+        private async void AzureBlobsButton_ButtonReleased(object sender, EventArgs e)
+        {
+            await this.ExecuteCaseAsync(this.azureBlobsConfig);
+        }
+
+        private async Task ExecuteCaseAsync(FileAccessConfiguration test)
+        {
+            if (test.InProgress)
             {
                 return;
             }
 
-            this.localApplicationInProgress = true;
-
-            var fileAccess = new Xrv.Core.Storage.ApplicationDataFileAccess();
-
-            this.localApplicationDataText.Text = $"Starting local data access test...";
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            Debug.WriteLine("=========== Enumerating directories ===========");
-            var directories = await fileAccess.EnumerateDirectoriesAsync();
-            foreach (var directory in directories)
+            try
             {
-                Debug.WriteLine(directory);
+                test.InProgress = true;
+                test.ProgressText.Text = $"Starting {test.FileAccess.GetType().Name}...";
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                Debug.WriteLine("=========== Enumerating directories ===========");
+                var directories = await test.FileAccess.EnumerateDirectoriesAsync();
+                foreach (var directory in directories)
+                {
+                    Debug.WriteLine(directory);
+                }
+
+                test.ProgressText.Text = $"There are {directories.Count()} directories in root folder...";
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                Debug.WriteLine("=========== Enumerating files ===========");
+                var files = await test.FileAccess.EnumerateFilesAsync();
+                foreach (var file in files)
+                {
+                    Debug.WriteLine(file);
+                }
+
+                test.ProgressText.Text = $"There are {files.Count()} files in root folder...";
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                Debug.WriteLine("=========== Creating directory and file ===========");
+                const string fileName = "myfile.bin";
+                var rootFolder = "test";
+                var folderPath = Path.Combine(rootFolder, "myfolder");
+                var filePath = Path.Combine(folderPath, fileName);
+                await test.FileAccess.CreateDirectoryAsync(folderPath);
+
+                test.ProgressText.Text = $"Created folder {folderPath}...";
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                var secretMessage = "This is a secret message!";
+                byte[] messageData = UTF8Encoding.UTF8.GetBytes(secretMessage);
+                using (var stream = new MemoryStream(messageData))
+                {
+                    await test.FileAccess.WriteFileAsync(filePath, stream);
+                }
+
+                test.ProgressText.Text = $"Saved file {filePath}...";
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                Debug.WriteLine("=========== Reading file ===========");
+                using (var stream = await test.FileAccess.GetFileAsync(filePath))
+                using (var memoryStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(memoryStream);
+                    var storedMessage = UTF8Encoding.UTF8.GetString(memoryStream.ToArray());
+                    Debug.WriteLine($"Message: {storedMessage}");
+                    test.ProgressText.Text = $"Readed file {filePath}...";
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                Debug.WriteLine("=========== Existence check ===========");
+                Debug.WriteLine($"Directory exists: {await test.FileAccess.ExistsDirectoryAsync(folderPath)}");
+                Debug.WriteLine($"File exists: {await test.FileAccess.ExistsFileAsync(filePath)}");
+
+                test.ProgressText.Text = "Checked file and folder existance...";
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                Debug.WriteLine("=========== Delete folder and files ===========");
+                await test.FileAccess.DeleteFileAsync(filePath);
+                await test.FileAccess.DeleteDirectoryAsync(rootFolder);
+
+                test.ProgressText.Text = "Deleted test file and folder...";
+                await Task.Delay(TimeSpan.FromSeconds(StagesDelaySeconds));
+
+                test.ProgressText.Text = "Finished";
             }
-
-            this.localApplicationDataText.Text = $"There are {directories.Count()} directories in root folder...";
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            Debug.WriteLine("=========== Enumerating files ===========");
-            var files = await fileAccess.EnumerateFilesAsync();
-            foreach (var file in files)
+            catch (Exception ex)
             {
-                Debug.WriteLine(file);
+                Debug.WriteLine($"ERROR: {ex}");
+                test.ProgressText.Text = "#Error";
             }
-
-            this.localApplicationDataText.Text = $"There are {files.Count()} files in root folder...";
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            Debug.WriteLine("=========== Creating directory and file ===========");
-            const string fileName = "myfile.bin";
-            var folderPath = Path.Combine("test", "myfolder");
-            var filePath = Path.Combine(folderPath, fileName);
-            await fileAccess.CreateDirectoryAsync(folderPath);
-
-            this.localApplicationDataText.Text = $"Created folder {folderPath}...";
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            var secretMessage = "This is a secret message!";
-            byte[] messageData = UTF8Encoding.UTF8.GetBytes(secretMessage);
-            using (var stream = new MemoryStream(messageData))
+            finally
             {
-                await fileAccess.WriteFileAsync(filePath, stream);
+                test.InProgress = false;
             }
+        }
 
-            this.localApplicationDataText.Text = $"Saved file {filePath}...";
-            await Task.Delay(TimeSpan.FromSeconds(3));
+        private class FileAccessConfiguration
+        {
+            public bool InProgress { get; set; }
 
-            Debug.WriteLine("=========== Reading file ===========");
-            using (var stream = await fileAccess.GetFileAsync(filePath))
-            using (var memoryStream = new MemoryStream())
-            {
-                await stream.CopyToAsync(memoryStream);
-                var storedMessage = UTF8Encoding.UTF8.GetString(memoryStream.ToArray());
-                Debug.WriteLine($"Message: {storedMessage}");
-                this.localApplicationDataText.Text = $"Readed file {filePath}...";
-            }
+            public Xrv.Core.Storage.FileAccess FileAccess { get; set; }
 
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            Debug.WriteLine("=========== Existence check ===========");
-            Debug.WriteLine($"Directory exists: {await fileAccess.ExistsDirectoryAsync(folderPath)}");
-            Debug.WriteLine($"File exists: {await fileAccess.ExistsFileAsync(filePath)}");
-
-            this.localApplicationDataText.Text = "Checked file and folder existance...";
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            Debug.WriteLine("=========== Delete folder and files ===========");
-            await fileAccess.DeleteFileAsync(filePath);
-            await fileAccess.DeleteDirectoryAsync(Path.Combine(folderPath, ".."));
-
-            this.localApplicationDataText.Text = "Deleted test file and folder...";
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            this.localApplicationDataText.Text = "Finished";
-            this.localApplicationInProgress = false;
+            public Text3DMesh ProgressText { get; set; }
         }
     }
 }
