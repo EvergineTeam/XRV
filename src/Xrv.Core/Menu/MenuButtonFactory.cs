@@ -12,24 +12,33 @@ using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.Menu
 {
-    internal class HandMenuButtonFactory
+    /// <summary>
+    /// Create menu button factory.
+    /// </summary>
+    public class MenuButtonFactory
     {
         private readonly XrvService xrvService;
         private readonly AssetsService assetsService;
 
-        public HandMenuButtonFactory(XrvService xrvService, AssetsService assetsService)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MenuButtonFactory"/> class.
+        /// </summary>
+        /// <param name="xrvService">XRV service.</param>
+        /// <param name="assetsService">Assets Service.</param>
+        public MenuButtonFactory(XrvService xrvService, AssetsService assetsService)
         {
             this.xrvService = xrvService;
             this.assetsService = assetsService;
         }
 
-        public Entity CreateInstance(HandMenuButtonDescription description) =>
+        public Entity CreateInstance(MenuButtonDescription description) =>
             description.IsToggle ? this.CreateToggleButton(description) : this.CreateStandardButton(description);
 
-        private Entity CreateStandardButton(HandMenuButtonDescription description)
+        private Entity CreateStandardButton(MenuButtonDescription description)
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
+            button.Flags = HideFlags.DontSave | HideFlags.DontShow;
             button.AddComponent(new StandardButtonConfigurator
             {
                 Text = description.TextOn,
@@ -43,10 +52,11 @@ namespace Xrv.Core.Menu
             return button;
         }
 
-        private Entity CreateToggleButton(HandMenuButtonDescription description)
+        private Entity CreateToggleButton(MenuButtonDescription description)
         {
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
+            button.Flags = HideFlags.DontSave | HideFlags.DontShow;
             button.AddComponent(new ToggleButton());
             button.AddComponent(new ToggleButtonConfigurator
             {
@@ -69,7 +79,7 @@ namespace Xrv.Core.Menu
             return button;
         }
 
-        private void AssociateActivationPublishers(HandMenuButtonDescription description, Entity button)
+        private void AssociateActivationPublishers(MenuButtonDescription description, Entity button)
         {
             var associatedModule = this.xrvService.GetModuleForHandButton(description);
             if (associatedModule != null)

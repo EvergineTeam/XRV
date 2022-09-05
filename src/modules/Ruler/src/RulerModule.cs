@@ -9,18 +9,13 @@ using Xrv.Core.UI.Tabs;
 
 namespace Xrv.Ruler
 {
+    /// <summary>
+    /// Ruler module implementation.
+    /// </summary>
     public class RulerModule : Module
-    {       
-        public override string Name => "Ruler";
-
-        public override HandMenuButtonDescription HandMenuButton => this.handMenuDesc;
-
-        public override TabItem Help => this.help;
-
-        public override TabItem Settings => this.settings;
-
-        protected AssetsService assetsService;
-        private HandMenuButtonDescription handMenuDesc;
+    {
+        private AssetsService assetsService;
+        private MenuButtonDescription handMenuDesc;
         private TabItem settings;
         private TabItem help;
 
@@ -29,9 +24,12 @@ namespace Xrv.Ruler
         private Entity rulerHelp;
         private Entity rulerSettings;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RulerModule"/> class.
+        /// </summary>
         public RulerModule()
         {
-            this.handMenuDesc = new HandMenuButtonDescription()
+            this.handMenuDesc = new MenuButtonDescription()
             {
                 IconOff = RulerResourceIDs.Materials.Icons.Measure,
                 IconOn = RulerResourceIDs.Materials.Icons.Measure,
@@ -53,6 +51,27 @@ namespace Xrv.Ruler
             };
         }
 
+        /// <summary>
+        /// Gets the Module name.
+        /// </summary>
+        public override string Name => "Ruler";
+
+        /// <summary>
+        /// Gets the button description (HandMenu).
+        /// </summary>
+        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
+
+        /// <summary>
+        /// Gets the help section.
+        /// </summary>
+        public override TabItem Help => this.help;
+
+        /// <summary>
+        /// Gets the settings section.
+        /// </summary>
+        public override TabItem Settings => this.settings;
+
+        /// <inheritdoc/>
         public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
@@ -72,6 +91,7 @@ namespace Xrv.Ruler
             this.rulerBehavior.Settings = this.rulerSettings;
         }
 
+        /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
             if (turnOn)
@@ -83,7 +103,7 @@ namespace Xrv.Ruler
         }
 
         private Entity SettingContent()
-        {    
+        {
             return this.rulerSettings;
         }
 

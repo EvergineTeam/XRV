@@ -6,8 +6,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Evergine.Common.Graphics;
-using Evergine.Common.Input;
-using Evergine.Common.Input.Keyboard;
 using Evergine.Components.Fonts;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
@@ -21,14 +19,14 @@ using Xrv.Core.Extensions;
 namespace Xrv.Core.Menu
 {
     /// <summary>
-    /// Component that manages hand menu.
+    /// Manage the Hand menu behavior.
     /// </summary>
-    public class HandMenu : Behavior
+    public class HandMenu : Component
     {
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
 
-        private readonly ObservableCollection<HandMenuButtonDescription> buttonDescriptions;
+        private readonly ObservableCollection<MenuButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
 
         private int maxButtonsPerColumn = 4;
@@ -76,15 +74,12 @@ namespace Xrv.Core.Menu
         [BindEntity(source: BindEntitySource.Scene, tag: "PART_hand_menu_buttons_container")]
         private Entity buttonsContainer = null;
 
-        [BindService]
-        private GraphicsPresenter graphicsPresenter = null;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="HandMenu"/> class.
         /// </summary>
         public HandMenu()
         {
-            this.buttonDescriptions = new ObservableCollection<HandMenuButtonDescription>();
+            this.buttonDescriptions = new ObservableCollection<MenuButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
         }
 
@@ -109,7 +104,7 @@ namespace Xrv.Core.Menu
         /// <summary>
         /// Gets button descriptions.
         /// </summary>
-        public IList<HandMenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
+        public IList<MenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -164,35 +159,6 @@ namespace Xrv.Core.Menu
             this.detachButtonToggle.Toggled -= this.DetachButtonToggle_Toggled;
         }
 
-        /// <inheritdoc/>
-        protected override void Update(TimeSpan gameTime)
-        {
-            KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
-            {
-                this.ExtendedAnimation(true);
-            }
-            else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
-            {
-                this.ExtendedAnimation(false);
-            }
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)
-            {
-                this.AppearAnimation(true);
-            }
-            else if (keyboardDispatcher?.ReadKeyState(Keys.P) == ButtonState.Pressing)
-            {
-                this.AppearAnimation(false);
-            }
-
-            if (keyboardDispatcher?.ReadKeyState(Keys.I) == ButtonState.Pressing)
-            {
-                this.AddButton();
-            }
-        }
-
         private void PalmPanelBehavior_ActiveHandednessChanged(object sender, XRHandedness hand)
         {
         }
@@ -207,10 +173,10 @@ namespace Xrv.Core.Menu
             switch (args.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    this.InternalAddButtons(args.NewItems.OfType<HandMenuButtonDescription>());
+                    this.InternalAddButtons(args.NewItems.OfType<MenuButtonDescription>());
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    this.InternalRemoveButtons(args.OldItems.OfType<HandMenuButtonDescription>());
+                    this.InternalRemoveButtons(args.OldItems.OfType<MenuButtonDescription>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     this.InternalClearButtons();
@@ -220,9 +186,9 @@ namespace Xrv.Core.Menu
             this.ReorderButtons();
         }
 
-        private void InternalAddButtons(IEnumerable<HandMenuButtonDescription> buttons)
+        private void InternalAddButtons(IEnumerable<MenuButtonDescription> buttons)
         {
-            var buttonsFactory = new HandMenuButtonFactory(this.xrvService, this.assetsService);
+            var buttonsFactory = new MenuButtonFactory(this.xrvService, this.assetsService);
 
             foreach (var definition in buttons)
             {
@@ -233,7 +199,7 @@ namespace Xrv.Core.Menu
             }
         }
 
-        private void InternalRemoveButtons(IEnumerable<HandMenuButtonDescription> buttons)
+        private void InternalRemoveButtons(IEnumerable<MenuButtonDescription> buttons)
         {
             var entityManager = this.Managers.EntityManager;
 
@@ -373,16 +339,49 @@ namespace Xrv.Core.Menu
             this.ExtendedAnimation(this.detachButtonToggle.IsOn);
         }
 
-        private void AddButton()
-        {
-            this.ButtonDescriptions.Add(new HandMenuButtonDescription
-            {
-                IsToggle = false,
-                TextOn = this.buttonDescriptions.Count.ToString(),
-                IconOn = CoreResourcesIDs.Materials.Icons.Help,
-            });
-        }
+        //// -- Begin Debug area --
 
-        // -- End Debug area --
+        ////[BindService]
+        ////protected GraphicsPresenter graphicsPresenter;
+
+        ////protected override void Update(TimeSpan gameTime)
+        ////{
+        ////    KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
+
+        ////    if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
+        ////    {
+        ////        this.ExtendedAnimation(true);
+        ////    }
+        ////    else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
+        ////    {
+        ////        this.ExtendedAnimation(false);
+        ////    }
+
+        ////    if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)
+        ////    {
+        ////        this.AppearAnimation(true);
+        ////    }
+        ////    else if (keyboardDispatcher?.ReadKeyState(Keys.P) == ButtonState.Pressing)
+        ////    {
+        ////        this.AppearAnimation(false);
+        ////    }
+
+        ////    if (keyboardDispatcher?.ReadKeyState(Keys.I) == ButtonState.Pressing)
+        ////    {
+        ////        this.AddButton();
+        ////    }
+        ////}
+
+        ////private void AddButton()
+        ////{
+        ////    this.ButtonDescriptions.Add(new MenuButtonDescription
+        ////    {
+        ////        IsToggle = false,
+        ////        TextOn = this.buttonDescriptions.Count.ToString(),
+        ////        IconOn = CoreResourcesIDs.Materials.Icons.Help,
+        ////    });
+        ////}
+
+        //// -- End Debug area --
     }
 }

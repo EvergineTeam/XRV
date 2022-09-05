@@ -11,42 +11,36 @@ using Evergine.MRTK.Emulation;
 
 namespace Xrv.Ruler
 {
+    /// <summary>
+    /// Manage the ruler handlers.
+    /// </summary>
     public class RulerHandlerBehavior : Component, IMixedRealityPointerHandler, IMixedRealityTouchHandler
     {
+        private Cursor currentCursor;
+        private Vector3 initialOffset;
+        private Vector3 lastCursorPosition;
+
+        private Material idle;
+        private Material grabbed;
+        private Material selected;
+
+        private bool touched;
+
         [BindService]
-        protected AssetsService assetsService = null;
+        private AssetsService assetsService = null;
 
         [BindComponent]
-        protected Transform3D transform = null;
+        private Transform3D transform = null;
 
         [BindComponent]
-        protected MaterialComponent materialComponent = null;
+        private MaterialComponent materialComponent = null;
 
-        protected Cursor currentCursor;
-        protected Vector3 initialOffset;
-        protected Vector3 lastCursorPosition;
-
-        protected Material idle;
-        protected Material grabbed;
-        protected Material selected;
-
-        protected bool touched;
-
-        protected override bool OnAttached()
-        {
-            var result = base.OnAttached();
-
-            this.idle = this.assetsService.Load<Material>(RulerResourceIDs.Materials.HandleIdle);
-            this.selected = this.assetsService.Load<Material>(RulerResourceIDs.Materials.HandleSelected);
-            this.grabbed = this.assetsService.Load<Material>(RulerResourceIDs.Materials.HandleGrabbed);
-
-            return result;
-        }
-
+        /// <inheritdoc/>
         public void OnPointerClicked(MixedRealityPointerEventData eventData)
-        {            
+        {
         }
 
+        /// <inheritdoc/>
         public void OnPointerDown(MixedRealityPointerEventData eventData)
         {
             if (eventData.EventHandled)
@@ -70,6 +64,7 @@ namespace Xrv.Ruler
             }
         }
 
+        /// <inheritdoc/>
         public void OnPointerDragged(MixedRealityPointerEventData eventData)
         {
             if (eventData.EventHandled)
@@ -88,6 +83,7 @@ namespace Xrv.Ruler
             }
         }
 
+        /// <inheritdoc/>
         public void OnPointerUp(MixedRealityPointerEventData eventData)
         {
             if (eventData.EventHandled)
@@ -103,20 +99,35 @@ namespace Xrv.Ruler
             }
         }
 
+        /// <inheritdoc/>
         public void OnTouchCompleted(HandTrackingInputEventData eventData)
         {
             this.materialComponent.Material = this.idle;
             this.touched = false;
         }
 
+        /// <inheritdoc/>
         public void OnTouchStarted(HandTrackingInputEventData eventData)
         {
             this.materialComponent.Material = this.selected;
             this.touched = true;
         }
 
+        /// <inheritdoc/>
         public void OnTouchUpdated(HandTrackingInputEventData eventData)
         {
+        }
+
+        /// <inheritdoc/>
+        protected override bool OnAttached()
+        {
+            var result = base.OnAttached();
+
+            this.idle = this.assetsService.Load<Material>(RulerResourceIDs.Materials.HandleIdle);
+            this.selected = this.assetsService.Load<Material>(RulerResourceIDs.Materials.HandleSelected);
+            this.grabbed = this.assetsService.Load<Material>(RulerResourceIDs.Materials.HandleGrabbed);
+
+            return result;
         }
     }
 }

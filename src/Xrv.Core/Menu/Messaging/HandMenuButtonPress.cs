@@ -8,7 +8,7 @@ namespace Xrv.Core.Menu
     public class HandMenuButtonPress : PubSubOnButtonPress<HandMenuActionMessage>
     {
         [IgnoreEvergine]
-        public HandMenuButtonDescription Description { get; set; }
+        public MenuButtonDescription Description { get; set; }
 
         /// <inheritdoc/>
         protected override HandMenuActionMessage GetPublishData(bool isOn) => new HandMenuActionMessage
