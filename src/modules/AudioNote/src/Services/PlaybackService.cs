@@ -80,28 +80,20 @@ namespace Xrv.AudioNote.Services
         /// <returns>A <see cref="Task{TResult}"/> true if audio is loaded.</returns>
         public async Task<bool> Load(Stream stream)
         {
-            try
+            if (this.audioDevice != null && this.audioSource == null)
             {
-                if (this.audioDevice != null && this.audioSource == null)
-                {
-                    this.audioSource = this.audioDevice.CreateAudioSource(this.format);
-                    this.audioSource.Volume = this.Volume;
-                }
-
-                this.audioSource.Stop();
-                this.audioSource.FlushBuffers();
-                await Task.Delay(1); // TODO do real load from audio
-                ////this.buffer = this.audioDevice.CreateAudioBuffer();
-                ////await this.buffer.FillAsync(stream, (int)stream.Length, this.format);
-
-                this.buffer = this.assetsService.Load<AudioBuffer>(AudioNoteResourceIDs.Audio.Sample);
-                this.Duration = this.buffer.Duration;
+                this.audioSource = this.audioDevice.CreateAudioSource(this.format);
+                this.audioSource.Volume = this.Volume;
             }
-            catch (Exception)
-            {
-                // TODO log exception
-                return false;
-            }
+
+            this.audioSource.Stop();
+            this.audioSource.FlushBuffers();
+            await Task.Delay(1); // TODO do real load from audio
+                                 ////this.buffer = this.audioDevice.CreateAudioBuffer();
+                                 ////await this.buffer.FillAsync(stream, (int)stream.Length, this.format);
+
+            this.buffer = this.assetsService.Load<AudioBuffer>(AudioNoteResourceIDs.Audio.Sample);
+            this.Duration = this.buffer.Duration;
 
             return true;
         }

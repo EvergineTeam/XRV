@@ -10,6 +10,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
@@ -140,6 +141,7 @@ namespace Xrv.AudioNote
         private ToggleStateManager recordManager;
         private ToggleStateManager playManager;
         private HoloGraphic playingMaterial;
+        private AudioNoteModule module;
 
         /// <summary>
         /// Gets or sets data.
@@ -307,6 +309,8 @@ namespace Xrv.AudioNote
             this.recordingService.OnRecordingTime += this.RecordingService_RecordingTimeChanged;
             this.playingMaterial = new HoloGraphic(this.playingPlate.Material);
 
+            this.module = this.xrvService.FindModule<AudioNoteModule>();
+
             return true;
         }
 
@@ -451,15 +455,21 @@ namespace Xrv.AudioNote
             return null;
         }
 
-        private async Task<bool> StartPlayingServiceAsync()
+        private async Task<bool> StartPlayingServiceAsync(CancellationToken cancellation = default)
         {
             try
             {
-                // TODO read real file this.data.Path
-                var stream = new MemoryStream();
-
-                await this.playbackService.Load(stream);
-                this.playbackService.Play();
+                var path = this.data.Path;
+                var stream = await this.module.GetFileAsync(path, cancellation);
+                if (stream == null)
+                {
+                    this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"missing file: {path}", "Ok");
+                }
+                else
+                {
+                    await this.playbackService.Load(stream);
+                    this.playbackService.Play();
+                }
             }
             catch (Exception ex)
             {
@@ -470,19 +480,9 @@ namespace Xrv.AudioNote
             return true;
         }
 
-        private async Task<bool> SaveContentAsync(Stream stream)
+        private async Task<bool> SaveContentAsync(Stream stream, CancellationToken cancellation = default)
         {
-            // TODO do save content here
-            await Task.Delay(1);
-
-            if (!string.IsNullOrEmpty(this.Data.Path))
-            {
-                // TODO remove previous record
-            }
-
-            this.Data.Path = "XRV/Audio/sample.wav";
-
-            return true;
+            return await this.module.SaveAudioFileAsync(stream, this.data, cancellation);
         }
     }
 }

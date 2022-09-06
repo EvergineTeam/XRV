@@ -1,6 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common;
 using Evergine.Framework.Services;
+using Evergine.Platform;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -12,6 +14,8 @@ namespace Xrv.AudioNote.Services
     /// </summary>
     public class RecordingService : UpdatableService
     {
+        private Stream audioStream;
+
         /// <summary>
         /// On recording time changed
         /// </summary>
@@ -46,7 +50,24 @@ namespace Xrv.AudioNote.Services
             this.IsRecording = true;
             this.RecordingTime = TimeSpan.Zero;
             await Task.Delay(1);
-            return true;
+
+            var platform = DeviceInfo.PlatformType;
+            if (platform == PlatformType.Windows || platform == PlatformType.UWP)
+            {
+                // user xaudio
+                this.audioStream = new MemoryStream();
+            }
+            else if (platform == PlatformType.Android)
+            {
+                // use open al
+                this.audioStream = new MemoryStream();
+            }
+            else
+            {
+                throw new NotSupportedException($"platform {platform} is not supported by audionote module");
+            }
+
+            return this.audioStream != null;
         }
 
         /// <summary>
@@ -57,7 +78,7 @@ namespace Xrv.AudioNote.Services
         {
             this.IsRecording = false;
             await Task.Delay(1);
-            return new MemoryStream();
+            return this.audioStream;
         }
     }
 }

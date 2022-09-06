@@ -127,6 +127,7 @@ namespace Xrv.AudioNote
 
                 this.anchor.UpdateVisualState(this.touched ? AudioNoteAnchorVisual.Grabbed : AudioNoteAnchorVisual.Idle);
                 eventData.SetHandled();
+                this.anchor.AudioNote.SetPosition(this.transform.Position);
             }
         }
 
@@ -147,6 +148,13 @@ namespace Xrv.AudioNote
         /// <inheritdoc/>
         public void OnTouchUpdated(HandTrackingInputEventData eventData)
         {
+        }
+
+        /// <inheritdoc/>
+        protected override void OnActivated()
+        {
+            base.OnActivated();
+            this.anchor.AudioNote.SetPosition(this.transform.Position);
         }
 
         /// <inheritdoc/>
