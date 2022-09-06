@@ -26,14 +26,14 @@ namespace XrvSamples
             this.Container.RegisterType<AssetsService>();
             this.Container.RegisterType<ForegroundTaskSchedulerService>();
             this.Container.RegisterType<WorkActionScheduler>();
-            
+
             BackgroundTaskScheduler.Background.Configure(this.Container);
 
             var xrv = new XrvService();
             xrv.AddModule(new RulerModule());
             xrv.AddModule(new LoadModelModule());
             xrv.AddModule(new AudioNoteModule());
-            xrv.AddModule(new ImageGalleryModule());
+            xrv.AddModule(new ImageGalleryModule() { ImagePixelsHeight = 640, ImagePixelsWidth = 640 });
 
             this.Container.RegisterInstance(xrv);
         }

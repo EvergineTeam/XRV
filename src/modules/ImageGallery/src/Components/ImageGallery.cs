@@ -21,21 +21,6 @@ namespace Xrv.ImageGallery.Components
     /// </summary>
     public class ImageGallery : Component
     {
-        /// <summary>
-        /// Width of the images shown.
-        /// </summary>
-        public uint ImagePixelsWidth = 640;
-
-        /// <summary>
-        /// Height of the images shown.
-        /// </summary>
-        public uint ImagePixelsHeight = 640;
-
-        /// <summary>
-        /// List of paths to the images to show in the Gallery.
-        /// </summary>
-        public List<string> Images = null;
-
         [BindService]
         private readonly GraphicsContext graphicsContext = null;
 
@@ -141,6 +126,21 @@ namespace Xrv.ImageGallery.Components
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the width of the images shown.
+        /// </summary>
+        public uint ImagePixelsWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the height of the images shown.
+        /// </summary>
+        public uint ImagePixelsHeight { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of paths to the images to show in the Gallery.
+        /// </summary>
+        public List<string> Images { get; set; }
 
         /// <inheritdoc/>
         protected override bool OnAttached()

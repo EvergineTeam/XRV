@@ -54,6 +54,16 @@ namespace Xrv.ImageGallery
             };
         }
 
+        /// <summary>
+        /// Gets or sets the width of the images listed in the gallery.
+        /// </summary>
+        public uint ImagePixelsWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the height of the images listed in the gallery.
+        /// </summary>
+        public uint ImagePixelsHeight { get; set; }
+
         /// <inheritdoc/>
         public override string Name => "Image Gallery";
 
@@ -74,6 +84,9 @@ namespace Xrv.ImageGallery
             this.scene = scene;
 
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
+            var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
+            imageGallery.ImagePixelsHeight = this.ImagePixelsHeight;
+            imageGallery.ImagePixelsWidth = this.ImagePixelsWidth;
 
             var size = new Vector2(0.30f, 0.30f);
 
