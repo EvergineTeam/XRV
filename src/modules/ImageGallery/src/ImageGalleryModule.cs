@@ -86,6 +86,7 @@ namespace Xrv.ImageGallery
 
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
             var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
+            imageGallery.ImageUpdated += this.ImageGalleryImageUpdated;
             var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
             var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
             imageGallery.ImagePixelsHeight = this.ImagePixelsHeight;
@@ -97,7 +98,7 @@ namespace Xrv.ImageGallery
 
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
-                config.Title = "Gallery";
+                config.Title = this.Name;
                 config.Size = size;
                 config.FrontPlateSize = size;
                 config.FrontPlateOffsets = Vector2.Zero;
@@ -111,6 +112,11 @@ namespace Xrv.ImageGallery
         {
             this.SetFrontPosition(this.scene, this.window.Owner);
             this.window.Open();
+        }
+
+        private void ImageGalleryImageUpdated(object sender, string e)
+        {
+            this.window.Configurator.Title = this.Name + " " + e;
         }
 
         private void SetFrontPosition(Scene scene, Entity entity)

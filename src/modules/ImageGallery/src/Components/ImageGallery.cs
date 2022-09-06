@@ -59,6 +59,11 @@ namespace Xrv.ImageGallery.Components
         private bool showNavigationSlider = true;
 
         /// <summary>
+        /// Event fired when the image has changed.
+        /// </summary>
+        public event EventHandler<string> ImageUpdated;
+
+        /// <summary>
         /// Gets or sets a value indicating whether if the navigation slider is shown below the gallery.
         /// </summary>
         public bool ShowNavigationSlider
@@ -237,6 +242,7 @@ namespace Xrv.ImageGallery.Components
         private void ReloadImage()
         {
             this.LoadRawJPG(this.Images[this.ImageIndex]);
+            this.ImageUpdated.Invoke(this, this.ImageIndex + 1 + " of " + this.Images.Count);
             if (this.ShowNavigationButtons)
             {
                 if (this.ImageIndex == 0)
