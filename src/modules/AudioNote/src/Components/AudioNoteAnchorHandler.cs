@@ -131,6 +131,7 @@ namespace Xrv.AudioNote
                 this.anchor.AudioNote.SetPosition(this.transform.Position);
                 if (distance > 0.01f)
                 {
+                    // Avoid save anchors when open audio note
                     this.xrvService.PubSub.Publish(new SaveAnchorPositions() { });
                 }
             }

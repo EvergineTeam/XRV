@@ -9,8 +9,6 @@ using System.Diagnostics;
 
 namespace Xrv.AudioNote
 {
-    // TODO move to core?
-
     /// <summary>
     /// Tap / Click detector component.
     /// </summary>

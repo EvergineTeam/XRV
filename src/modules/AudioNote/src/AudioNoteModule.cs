@@ -103,7 +103,6 @@ namespace Xrv.AudioNote
         {
             this.lastAnchorSelected = null;
 
-            // TODO when anchor is serialized, remove from there also
             if (this.anchorsDic.TryGetValue(guid, out var anchor))
             {
                 this.scene.Managers.EntityManager.Remove(anchor);
