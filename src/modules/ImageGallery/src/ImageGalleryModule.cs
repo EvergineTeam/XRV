@@ -98,7 +98,7 @@ namespace Xrv.ImageGallery
             var entityTransform = entity.FindComponent<Transform3D>();
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
-            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Near);
+            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
         }
 
         private Entity SettingContent()

@@ -25,41 +25,97 @@ namespace Xrv.ImageGallery.Components
         /// <summary>
         /// Width of the images shown.
         /// </summary>
-        public uint imagePixelsWidth = 640;
+        public uint ImagePixelsWidth = 640;
 
         /// <summary>
         /// Height of the images shown.
         /// </summary>
-        public uint imagePixelsHeight = 640;
+        public uint ImagePixelsHeight = 640;
 
         /// <summary>
         /// List of paths to the images to show in the Gallery.
         /// </summary>
-        public List<string> images = null;
+        public List<string> Images = null;
+
+        [BindService]
+        private readonly GraphicsContext graphicsContext = null;
+
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_next_pressable_button")]
+        private readonly PressableButton nextButton = null;
+
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_previous_pressable_button")]
+        private readonly PressableButton previousButton = null;
+
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
+        private readonly PinchSlider slider = null;
+
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
+        private readonly MaterialComponent galleryFrameMaterial = null;
+
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_next")]
+        private readonly Entity nextButtonEntity = null;
+
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_previous")]
+        private readonly Entity previousButtonEntity = null;
+
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_slider")]
+        private readonly Entity sliderEntity = null;
 
         private Texture imageTexture = null;
 
-        [BindService]
-        private GraphicsContext graphicsContext = null;
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_next_pressable_button")]
-        private PressableButton nextButton = null;
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_previous_pressable_button")]
-        private PressableButton previousButton = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
-        private PinchSlider slider = null;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
-        private MaterialComponent galleryFrameMaterial = null;
-
-        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_next")]
-        private Entity nextButtonEntity = null;
-
-        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_previous")]
-        private Entity previousButtonEntity = null;
-
         private int imageIndex = 0;
         private CancellationTokenSource cancellationSource;
+
+        private bool showNavigationButtons = true;
+
+        private bool showNavigationSlider = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether if the navigation slider is shown below the gallery.
+        /// </summary>
+        public bool ShowNavigationSlider
+        {
+            get
+            {
+                return this.showNavigationSlider;
+            }
+
+            set
+            {
+                if (this.sliderEntity != null)
+                {
+                    this.sliderEntity.IsEnabled = value;
+                    if (value)
+                    {
+                        this.RecalculateSliderPosition();
+                    }
+                }
+
+                this.showNavigationSlider = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether if the navigation buttons are shown below the gallery.
+        /// </summary>
+        public bool ShowNavigationButtons
+        {
+            get
+            {
+                return this.showNavigationButtons;
+            }
+
+            set
+            {
+                if (this.nextButtonEntity != null && this.previousButtonEntity != null)
+                {
+                    this.nextButtonEntity.IsEnabled = value;
+                    this.previousButtonEntity.IsEnabled = value;
+                }
+
+                this.showNavigationButtons = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the index of the image that is showing the gallery at the moment.
@@ -75,7 +131,7 @@ namespace Xrv.ImageGallery.Components
             {
                 if (value >= 0)
                 {
-                    if (this.images != null && value < this.images.Count)
+                    if (this.Images != null && value < this.Images.Count)
                     {
                         this.imageIndex = value;
                         this.ReloadImage();
@@ -87,10 +143,12 @@ namespace Xrv.ImageGallery.Components
         /// <inheritdoc/>
         protected override bool OnAttached()
         {
-            if (this.images == null)
+            ////this.ShowNavigationButtons = false;
+            ////this.ShowNavigationSlider = false;
+            if (this.Images == null)
             {
                 string[] array = { "XRV/Textures/TestImages/test1.jpg", "XRV/Textures/TestImages/test2.jpg", "XRV/Textures/TestImages/test3.jpg" };
-                this.images = new List<string>(array);
+                this.Images = new List<string>(array);
             }
 
             var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
@@ -98,8 +156,8 @@ namespace Xrv.ImageGallery.Components
             TextureDescription desc = new TextureDescription()
             {
                 Type = TextureType.Texture2D,
-                Width = this.imagePixelsWidth,
-                Height = this.imagePixelsHeight,
+                Width = this.ImagePixelsWidth,
+                Height = this.ImagePixelsHeight,
                 Depth = 1,
                 ArraySize = 1,
                 Faces = 1,
@@ -113,13 +171,19 @@ namespace Xrv.ImageGallery.Components
 
             this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
             holographicEffect.Texture = this.imageTexture;
-            this.ReloadImage();
-            this.recalculateSliderPosition();
 
             this.nextButton.ButtonReleased += this.NextButtonReleased;
             this.previousButton.ButtonReleased += this.PreviousButtonReleased;
             this.slider.ValueUpdated += this.SliderValueUpdated;
             this.slider.InteractionEnded += this.SliderInteractionEnded;
+
+            this.nextButtonEntity.IsEnabled = this.ShowNavigationButtons;
+            this.previousButtonEntity.IsEnabled = this.ShowNavigationButtons;
+            this.sliderEntity.IsEnabled = this.ShowNavigationSlider;
+
+            this.ReloadImage();
+            this.RecalculateSliderPosition();
+
             return base.OnAttached();
         }
 
@@ -133,17 +197,20 @@ namespace Xrv.ImageGallery.Components
 
         private void SliderInteractionEnded(object sender, EventArgs e)
         {
-            this.recalculateSliderPosition();
+            this.RecalculateSliderPosition();
         }
 
-        private void recalculateSliderPosition()
+        private void RecalculateSliderPosition()
         {
-            this.slider.SliderValue = this.ImageIndex / (float)(this.images.Count - 1);
+            if (this.ShowNavigationSlider)
+            {
+                this.slider.SliderValue = this.ImageIndex / (float)(this.Images.Count - 1);
+            }
         }
 
         private void SliderValueUpdated(object sender, SliderEventData e)
         {
-            var newImageIndex = (int)Math.Round(e.NewValue * (this.images.Count - 1));
+            var newImageIndex = (int)Math.Round(e.NewValue * (this.Images.Count - 1));
             if (newImageIndex != this.ImageIndex)
             {
                 this.ImageIndex = newImageIndex;
@@ -153,35 +220,37 @@ namespace Xrv.ImageGallery.Components
         private void NextButtonReleased(object sender, EventArgs e)
         {
             this.ImageIndex++;
-            this.recalculateSliderPosition();
+            this.RecalculateSliderPosition();
         }
 
         private void PreviousButtonReleased(object sender, EventArgs e)
         {
             this.ImageIndex--;
-            this.recalculateSliderPosition();
+            this.RecalculateSliderPosition();
         }
 
         private void ReloadImage()
         {
-            this.LoadRawJPG(this.images[this.ImageIndex]);
+            this.LoadRawJPG(this.Images[this.ImageIndex]);
+            if (this.ShowNavigationButtons)
+            {
+                if (this.ImageIndex == 0)
+                {
+                    this.previousButtonEntity.IsEnabled = false;
+                }
+                else
+                {
+                    this.previousButtonEntity.IsEnabled = true;
+                }
 
-            if (this.ImageIndex == 0)
-            {
-                this.previousButtonEntity.IsEnabled = false;
-            }
-            else
-            {
-                this.previousButtonEntity.IsEnabled = true;
-            }
-
-            if (this.ImageIndex >= this.images.Count - 1)
-            {
-                this.nextButtonEntity.IsEnabled = false;
-            }
-            else
-            {
-                this.nextButtonEntity.IsEnabled = true;
+                if (this.ImageIndex >= this.Images.Count - 1)
+                {
+                    this.nextButtonEntity.IsEnabled = false;
+                }
+                else
+                {
+                    this.nextButtonEntity.IsEnabled = true;
+                }
             }
         }
 
