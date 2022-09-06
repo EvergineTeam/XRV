@@ -11,7 +11,7 @@ namespace Xrv.Core.UI.Cursors
 {
     public abstract class CursorDetectorBase : Behavior
     {
-        [BindComponent(isExactType: false)]
+        [BindComponent(isExactType: false, source: BindComponentSource.Children)]
         protected Collider3D collider3D;
 
         private int detectedCursorIndex;
