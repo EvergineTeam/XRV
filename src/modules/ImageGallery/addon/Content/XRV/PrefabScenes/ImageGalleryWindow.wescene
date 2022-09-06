@@ -25,13 +25,15 @@ Items:
       - !Xrv.ImageGallery.Components.ImageGallery,Xrv.ImageGallery
         Id: 8da728bf-14b7-4c32-9157-0c0f14eea2ef
         ImageIndex: 0
-        IsEnabled: true
-        imagePixelsHeight: 640
-        imagePixelsWidth: 640
-        images:
+        ImagePixelsHeight: 640
+        ImagePixelsWidth: 640
+        Images:
           - XRV/Textures/TestImages/test1.jpg
           - XRV/Textures/TestImages/test2.jpg
           - XRV/Textures/TestImages/test3.jpg
+        IsEnabled: true
+        ShowNavigationButtons: true
+        ShowNavigationSlider: true
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: ImageFrame
@@ -427,7 +429,7 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: PreviousButton
         Tag: PART_image_gallery_previous
-        IsEnabled: false
+        IsEnabled: true
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -1324,8 +1326,12 @@ Items:
     Source: 2a3c11f6-fc32-4e5a-ac2a-34c3d911eb85
     entityLinks: {}
     modificationList:
-      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[System.Collections.Generic.List%25601[[System.String,System.Private.CoreLib]],System.Private.CoreLib]],Evergine.Framework
-        Name: images
+      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[System.Boolean,System.Private.CoreLib]],Evergine.Framework
+        Name: IsEnabled
+        Target: 0cf95979-0820-4f2d-95ac-a4f4ea394d51
+        TypedValue: false
+      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.Collections.Generic.List%601[[System.String,System.Private.CoreLib]],System.Private.CoreLib]],Evergine.Framework
+        Name: Images
         Target: 4c3c2c75-7cfc-4d50-b8d2-eda3c715b59e
         TypedValue:
           - XRV/Textures/TestImages/test1.jpg

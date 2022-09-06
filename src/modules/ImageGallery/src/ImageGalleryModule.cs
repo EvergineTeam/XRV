@@ -1,4 +1,6 @@
-﻿using Evergine.Framework;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
@@ -19,8 +21,8 @@ namespace Xrv.ImageGallery
         private AssetsService assetsService;
         private XrvService xrv;
         private MenuButtonDescription handMenuDescription;
-        private TabItem settings;
-        private TabItem help;
+        private TabItem settings = null;
+        private TabItem help = null;
         private Entity imageGalleryHelp;
         private Entity imageGallerySettings;
         private Scene scene;
@@ -45,11 +47,11 @@ namespace Xrv.ImageGallery
             ////    Contents = this.SettingContent,
             ////};
 
-            ////this.help = new TabItem()
-            ////{
-            ////    Name = "Image Gallery",
-            ////    Contents = this.HelpContent,
-            ////};
+            this.help = new TabItem()
+            {
+                Name = "Image Gallery",
+                Contents = this.HelpContent,
+            };
         }
 
         /// <inheritdoc/>
