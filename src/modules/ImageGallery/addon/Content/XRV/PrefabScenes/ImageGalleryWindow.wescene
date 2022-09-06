@@ -85,6 +85,63 @@ Items:
         Children: []
         Id: d0346ba6-b715-4ace-8b42-ad4fb0f785dd
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: Spinner
+        Tag: PART_image_gallery_spinner
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 87298b79-a2dd-4c16-b8c2-0b5b58bd1cf2
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.0
+              Y: 0.0
+              Z: 0.00499999989
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+            Id: 6f035984-eaf0-4bd9-9adc-c455aab268e8
+            AsignedTo: Default
+            IsEnabled: true
+            Material: e5c23a15-06c6-48df-8d7f-b0724d158615
+          - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+            Id: d2085a51-3cf9-4225-9191-c2e65bdc6053
+            Height: 0.100000001
+            InitialU: 0.0
+            InitialV: 0.0
+            IsEnabled: true
+            PlaneNormal: ZPositive
+            TwoSides: false
+            UTile: 1.0
+            UVHorizontalFlip: false
+            UVVerticalFlip: false
+            Width: 0.100000001
+            YTile: 1.0
+          - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+            Id: 5971ce93-a6fa-408d-a702-b60f3a67f1b1
+            DebugBoundingbox: true
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+          - !Evergine.Components.Graphics3D.Spinner,Evergine.Components
+            Id: c04a755f-95a7-4bac-b8a1-ddf17a2dbb8d
+            AxisIncrease:
+              X: 0.0
+              Y: 0.0
+              Z: -5.0
+            IsEnabled: true
+            UpdateOrder: 0.5
+        Children: []
+        Id: d40c86dc-4d9c-4426-891c-8fdf60d97f01
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: PinchSlider
         Tag: PART_image_gallery_slider
         IsEnabled: true
@@ -429,7 +486,7 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: PreviousButton
         Tag: PART_image_gallery_previous
-        IsEnabled: true
+        IsEnabled: false
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -1322,17 +1379,13 @@ Items:
         Id: 55b2fd86-045b-4a2c-8bf0-f01cb5b9a365
     Id: b6f5fe77-582e-47e4-9beb-f0ad22e93a02
   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 0cf95979-0820-4f2d-95ac-a4f4ea394d51
+    Id: b1566bfd-0cfe-49d4-8c92-b84b11ec651d
     Source: 2a3c11f6-fc32-4e5a-ac2a-34c3d911eb85
     entityLinks: {}
     modificationList:
-      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[System.Boolean,System.Private.CoreLib]],Evergine.Framework
-        Name: IsEnabled
-        Target: 0cf95979-0820-4f2d-95ac-a4f4ea394d51
-        TypedValue: false
       - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.Collections.Generic.List%601[[System.String,System.Private.CoreLib]],System.Private.CoreLib]],Evergine.Framework
         Name: Images
-        Target: 4c3c2c75-7cfc-4d50-b8d2-eda3c715b59e
+        Target: 2a1ee535-20d1-4357-a032-3619a6cc765e
         TypedValue:
           - XRV/Textures/TestImages/test1.jpg
           - XRV/Textures/TestImages/test2.jpg

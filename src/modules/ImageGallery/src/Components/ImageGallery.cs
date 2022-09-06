@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
@@ -60,6 +59,9 @@ namespace Xrv.ImageGallery.Components
 
         [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_slider")]
         private readonly Entity sliderEntity = null;
+
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_spinner")]
+        private readonly Entity spinnerEntity = null;
 
         private Texture imageTexture = null;
 
@@ -258,6 +260,7 @@ namespace Xrv.ImageGallery.Components
         {
             this.cancellationSource?.Cancel();
             this.cancellationSource = new CancellationTokenSource();
+            this.spinnerEntity.IsEnabled = true;
 
             EvergineBackgroundTask.Run(
             () =>
@@ -273,6 +276,8 @@ namespace Xrv.ImageGallery.Components
 
                     this.graphicsContext.UpdateTextureData(this.imageTexture, data);
                 }
+
+                this.spinnerEntity.IsEnabled = false;
             }, this.cancellationSource.Token);
         }
     }
