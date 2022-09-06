@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
@@ -85,10 +86,14 @@ namespace Xrv.ImageGallery
 
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
             var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
+            var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
+            var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
             imageGallery.ImagePixelsHeight = this.ImagePixelsHeight;
             imageGallery.ImagePixelsWidth = this.ImagePixelsWidth;
-
-            var size = new Vector2(0.30f, 0.30f);
+            var size = new Vector2(this.ImagePixelsWidth / 2000f, this.ImagePixelsHeight / 2000f);
+            galleryImageFrame.Width = size.X;
+            galleryImageFrame.Height = size.Y;
+            controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
 
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {

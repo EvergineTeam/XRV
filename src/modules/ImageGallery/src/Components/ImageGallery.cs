@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
@@ -24,10 +25,10 @@ namespace Xrv.ImageGallery.Components
         [BindService]
         private readonly GraphicsContext graphicsContext = null;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_next_pressable_button")]
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_next_pressable_button")]
         private readonly PressableButton nextButton = null;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_previous_pressable_button")]
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_previous_pressable_button")]
         private readonly PressableButton previousButton = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
@@ -36,16 +37,16 @@ namespace Xrv.ImageGallery.Components
         [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
         private readonly MaterialComponent galleryFrameMaterial = null;
 
-        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_next")]
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_next", isRecursive: true)]
         private readonly Entity nextButtonEntity = null;
 
-        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_previous")]
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_previous", isRecursive: true)]
         private readonly Entity previousButtonEntity = null;
 
-        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_slider")]
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_slider", isRecursive: true)]
         private readonly Entity sliderEntity = null;
 
-        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_spinner")]
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_spinner", isRecursive: true)]
         private readonly Entity spinnerEntity = null;
 
         private Texture imageTexture = null;
@@ -140,6 +141,7 @@ namespace Xrv.ImageGallery.Components
         /// <summary>
         /// Gets or sets the list of paths to the images to show in the Gallery.
         /// </summary>
+        [IgnoreEvergine]
         public List<string> Images { get; set; }
 
         /// <inheritdoc/>
@@ -149,6 +151,7 @@ namespace Xrv.ImageGallery.Components
             ////this.ShowNavigationSlider = false;
             if (this.Images == null)
             {
+                // TODO Load from a source
                 string[] array = { "XRV/Textures/TestImages/test1.jpg", "XRV/Textures/TestImages/test2.jpg", "XRV/Textures/TestImages/test3.jpg" };
                 this.Images = new List<string>(array);
             }

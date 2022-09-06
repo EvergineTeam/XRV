@@ -33,7 +33,7 @@ namespace XrvSamples
             xrv.AddModule(new RulerModule());
             xrv.AddModule(new LoadModelModule());
             xrv.AddModule(new AudioNoteModule());
-            xrv.AddModule(new ImageGalleryModule() { ImagePixelsHeight = 640, ImagePixelsWidth = 640 });
+            xrv.AddModule(new ImageGalleryModule() { ImagePixelsWidth = 640, ImagePixelsHeight = 640 });
 
             this.Container.RegisterInstance(xrv);
         }
