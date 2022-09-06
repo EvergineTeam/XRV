@@ -29,7 +29,7 @@ namespace Xrv.LoadModel
             }
 
             var camera = this.Managers.RenderManager.ActiveCamera3D;
-            
+
             this.transform.Position = this.ModelTransform.Position;
 
             var cameraPosition = camera.Position - this.transform.Position;

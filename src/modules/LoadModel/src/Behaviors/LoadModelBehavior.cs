@@ -1,6 +1,5 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Components.Fonts;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -52,9 +51,6 @@ namespace Xrv.LoadModel
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_loading")]
         private Entity Loading = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_loadingText")]
-        private Text3DMesh LoadingText = null;
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_lockedIcon")]
         private Entity LockedIcon = null;

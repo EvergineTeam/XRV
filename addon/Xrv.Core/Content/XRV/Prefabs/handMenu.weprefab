@@ -21,6 +21,47 @@ Root:
         X: 1.0
         Y: 1.0
         Z: 1.0
+    - !Xrv.Core.UI.Windows.WindowTagAlong,Xrv.Core
+      Id: a23b404c-ed98-4f2f-ae63-b412880a0978
+      DisableVerticalLookAt: false
+      IsEnabled: true
+      MaxDistance: 0.600000024
+      MaxHAngle: 0.261799395
+      MaxLookAtAngle: 0.261799395
+      MaxVAngle: 0.785398185
+      MaxVerticalDistance: 0.100000001
+      MinDistance: 0.400000006
+      SmoothDistanceFactor: 1.2
+      SmoothOrientationFactor: 0.0500000007
+      SmoothPositionFactor: 0.01
+      UpdateOrder: 0.5
+    - !Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation.SimpleManipulationHandler,Evergine.MRTK
+      Id: 282ccf4e-7e9e-4bf8-a4a0-b4078a0b3f8c
+      Constraints: ConstraintScaleAll
+      EnableSinglePointerRotation: true
+      IncludeChildrenColliders: false
+      IsEnabled: true
+      KeepRigidBodyActiveDuringDrag: false
+      SmoothingActive: true
+      SmoothingAmount: 0.00100000005
+      UpdateOrder: 0.5
+    - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
+      Id: 8e2def54-3a88-47bd-880c-605a0fffe3b4
+      IsEnabled: true
+      Margin: 0.0399999991
+      Offset:
+        X: 0.0160000008
+        Y: 0.0
+        Z: -0.00700000022
+      OrientationOffset:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      Size:
+        X: 0.0320000015
+        Y: 0.064000003
+        Z: 0.0320000015
   Children:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: backPlate
@@ -170,13 +211,13 @@ Root:
                 G: 255
                 R: 255
               TargetState: Off
-              Text: 
+              Text: Follow
             - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
               Id: efa66ee8-c742-47f1-8643-584a5cea0c1e
               CreatesNewBackPlateMaterialInstance: false
               CreatesNewIconMaterialInstance: false
               Font: null
-              Icon: fc03c81e-dc30-460b-be14-bf92963b12c3
+              Icon: 6a3f5a9e-4c70-4a29-9e2b-a2ff3171b257
               IsEnabled: false
               Plate: null
               PrimaryColor:
@@ -185,7 +226,12 @@ Root:
                 G: 255
                 R: 255
               TargetState: On
-              Text: null
+              Text: Pin
+            - !Xrv.Core.UI.Buttons.XrvPressableButtonLookAndFeel,Xrv.Core
+              Id: aeb7e1df-e37f-4e10-9b5f-f12bb3917478
+              IsEnabled: true
+              TextPositionOffset: 0.0
+              UpdateOrder: 0.5
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -427,11 +473,11 @@ Root:
                           Origin:
                             X: 0.5
                             Y: 0.5
-                          ScaleFactor: 0.00600000005
+                          ScaleFactor: 0.00400000019
                           Size:
                             X: 0.0320000015
                             Y: 0.00800000038
-                          Text: 
+                          Text: Follow
                           VerticalAlignment: Center
                           Wrapping: true
                         - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -618,7 +664,7 @@ Root:
                 G: 255
                 R: 255
               TargetState: Off
-              Text: 
+              Text: Detach
             - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
               Id: c9c777ba-8e9e-472d-b47d-58a27322b6f1
               CreatesNewBackPlateMaterialInstance: false
@@ -633,7 +679,12 @@ Root:
                 G: 255
                 R: 255
               TargetState: On
-              Text: null
+              Text: Close
+            - !Xrv.Core.UI.Buttons.XrvPressableButtonLookAndFeel,Xrv.Core
+              Id: 9fee5eea-8431-4dda-b42c-3fad2809d822
+              IsEnabled: true
+              TextPositionOffset: 0.0
+              UpdateOrder: 0.5
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -875,11 +926,11 @@ Root:
                           Origin:
                             X: 0.5
                             Y: 0.5
-                          ScaleFactor: 0.00600000005
+                          ScaleFactor: 0.00400000019
                           Size:
                             X: 0.0320000015
                             Y: 0.00800000038
-                          Text: 
+                          Text: Detach
                           VerticalAlignment: Center
                           Wrapping: true
                         - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
