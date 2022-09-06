@@ -178,6 +178,7 @@ namespace Xrv.AudioNote
 
             this.xrv.PubSub.Subscribe<AudioAnchorSelectedMessage>(this.CreateAudioNoteWindow);
             this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
+            this.xrv.PubSub.Subscribe<SaveAnchorPositions>(this.SaveAnchorPositions);
 
             this.fileAccess = new ApplicationDataFileAccess();
 
@@ -313,6 +314,11 @@ namespace Xrv.AudioNote
             {
                 await note.StartPlayingAsync();
             }
+        }
+
+        private async void SaveAnchorPositions(SaveAnchorPositions msg)
+        {
+            await this.SerializeAudioNotesAsync();
         }
 
         private void ConfirmDelete(AudioNoteDeleteMessage msg)

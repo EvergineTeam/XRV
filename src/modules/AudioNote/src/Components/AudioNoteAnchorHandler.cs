@@ -127,7 +127,12 @@ namespace Xrv.AudioNote
 
                 this.anchor.UpdateVisualState(this.touched ? AudioNoteAnchorVisual.Grabbed : AudioNoteAnchorVisual.Idle);
                 eventData.SetHandled();
+                var distance = Vector3.Distance(this.anchor.AudioNote.GetPosition(), this.transform.Position);
                 this.anchor.AudioNote.SetPosition(this.transform.Position);
+                if (distance > 0.01f)
+                {
+                    this.xrvService.PubSub.Publish(new SaveAnchorPositions() { });
+                }
             }
         }
 
