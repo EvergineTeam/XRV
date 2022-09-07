@@ -322,7 +322,7 @@ namespace Xrv.AudioNote
 
         private void ConfirmDelete(AudioNoteDeleteMessage msg)
         {
-            var confirmDelete = this.xrv.WindowSystem.ShowConfirmDialog("Delete this note?", "This action can’t be undone.", "No", "Yes");
+            var confirmDelete = this.xrv.WindowSystem.ShowConfirmDialog("Delete this note?", "This action can't be undone.", "No", "Yes");
 
             confirmDelete.Open();
             this.audionoteToRemove = msg;
