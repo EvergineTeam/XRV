@@ -1,4 +1,6 @@
-﻿using Evergine.Common.Graphics;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Components.Primitives;
 using Evergine.Framework;
@@ -6,9 +8,6 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
-using Evergine.MRTK.Base.EventDatum.Input;
-using Evergine.MRTK.Base.Interfaces.InputSystem.Handlers;
-using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Collections.Generic;
@@ -67,7 +66,7 @@ namespace Xrv.Painter.Components
     /// <summary>
     /// Painter Manager add lines, and remove lines.
     /// </summary>
-    public class PainterManager : Behavior, IMixedRealityPointerHandler
+    public class PainterManager : Component
     {
         /// <summary>
         /// Assets service.
@@ -96,24 +95,18 @@ namespace Xrv.Painter.Components
         private List<Entity> lines = new List<Entity>();
         private List<PainterAction> actions = new List<PainterAction>();
 
-        private bool isPointerDown;
-        private Vector3 lastPosition;
-        private bool firstTime;
-        private Vector3 currentPosition;
-        private TimeSpan current = TimeSpan.Zero;
-        private TimeSpan betweenUpdate = TimeSpan.Zero;
-        private float secondsBetweenUpdate = 1f;
-
         private LineMesh lineMesh;
         private List<LinePointInfo> linePoint;
-        private Entity pointerEntity;
-        private HoloGraphic pointerMaterial;
-        private Transform3D pointerTransform;
         private IEnumerable<PressableButton> modeButtons;
         private IEnumerable<PressableButton> thicknessButtons;
         private IEnumerable<PressableButton> commandsButtons;
         private PainterThickness thickness;
         private PainterModes mode;
+
+        /// <summary>
+        /// On mode changed.
+        /// </summary>
+        public event EventHandler<PainterModes> OnModeChanged;
 
         /// <summary>
         /// Gets or sets mode.
@@ -126,6 +119,7 @@ namespace Xrv.Painter.Components
                 this.mode = value;
                 if (this.IsAttached)
                 {
+                    this.OnModeChanged?.Invoke(this, value);
                     this.SetVisualMode(value);
                 }
             }
@@ -148,11 +142,6 @@ namespace Xrv.Painter.Components
         }
 
         /// <summary>
-        /// Gets or sets pointer.
-        /// </summary>
-        public Entity Pointer { get; set; }
-
-        /// <summary>
         /// Gets or sets color.
         /// </summary>
         public Color Color { get; set; }
@@ -161,19 +150,6 @@ namespace Xrv.Painter.Components
         /// Gets or sets selected material.
         /// </summary>
         public Material SelectedMaterial { get; set; }
-
-        /// <summary>
-        /// Gets or sets tiks.
-        /// </summary>
-        public float SecondsBetweenUpdate
-        {
-            get => this.secondsBetweenUpdate;
-            set
-            {
-                this.secondsBetweenUpdate = value;
-                this.betweenUpdate = TimeSpan.FromSeconds(this.secondsBetweenUpdate);
-            }
-        }
 
         /// <summary>
         /// Undo last action remove/add line.
@@ -197,153 +173,35 @@ namespace Xrv.Painter.Components
             this.lines.Clear();
         }
 
-        /// <inheritdoc/>
-        public void OnPointerDown(MixedRealityPointerEventData eventData)
+        /// <summary>
+        /// Do remove.
+        /// </summary>
+        /// <param name="position">Cursor position.</param>
+        public void DoErase(Vector3 position)
         {
-            this.current = TimeSpan.Zero;
-            this.isPointerDown = true;
-            this.currentPosition = eventData.Position;
-            this.lastPosition = eventData.Position;
-            this.firstTime = true;
-
-            this.pointerEntity.IsEnabled = this.Mode != PainterModes.Hand;
-            if (this.pointerEntity.IsEnabled)
+            var collision = this.FindCollision(position, 0.1f);
+            if (collision != null)
             {
-                this.pointerMaterial.Albedo = this.Mode == PainterModes.Painter ? Color.White : Color.Red;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void OnPointerDragged(MixedRealityPointerEventData eventData)
-        {
-            this.currentPosition = eventData.Position;
-            this.pointerTransform.Position = this.currentPosition;
-        }
-
-        /// <inheritdoc/>
-        public void OnPointerUp(MixedRealityPointerEventData eventData)
-        {
-            this.isPointerDown = false;
-            this.pointerEntity.IsEnabled = this.isPointerDown;
-        }
-
-        /// <inheritdoc/>
-        public void OnPointerClicked(MixedRealityPointerEventData eventData)
-        {
-        }
-
-        /// <inheritdoc/>
-        protected override bool OnAttached()
-        {
-            if (!base.OnAttached())
-            {
-                return false;
-            }
-
-            this.modeButtons = this.modeEntity.FindComponentsInChildren<PressableButton>();
-            foreach (var button in this.modeButtons)
-            {
-                button.ButtonReleased += this.ModeButton_ButtonReleased;
-            }
-
-            this.thicknessButtons = this.thicknessEntity.FindComponentsInChildren<PressableButton>();
-            foreach (var button in this.thicknessButtons)
-            {
-                button.ButtonReleased += this.ThicknessButtonsButton_ButtonReleased;
-            }
-
-            this.commandsButtons = this.commandsEntity.FindComponentsInChildren<PressableButton>();
-            foreach (var button in this.commandsButtons)
-            {
-                button.ButtonReleased += this.CommandsButtonsButtonsButton_ButtonReleased;
-            }
-
-            if (Application.Current.IsEditor)
-            {
-                return true;
-            }
-
-            this.pointerEntity = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
-            this.pointerMaterial = new HoloGraphic(this.pointerEntity.FindComponent<MaterialComponent>().Material);
-            this.pointerTransform = this.pointerEntity.FindComponent<Transform3D>();
-            this.Owner.EntityManager.Add(this.pointerEntity);
-
-            return true;
-        }
-
-        /// <inheritdoc/>
-        protected override void Update(TimeSpan gameTime)
-        {
-            if (this.Mode == PainterModes.Eraser)
-            {
-                this.DoRemove(gameTime);
-            }
-            else if (this.Mode == PainterModes.Painter)
-            {
-                this.DoPaint(gameTime);
-            }
-            else
-            {
-                return;
-            }
-        }
-
-        private void DoRemove(TimeSpan gameTime)
-        {
-            if (!this.isPointerDown)
-            {
-                return;
-            }
-
-            this.current += gameTime;
-            if (this.firstTime || this.current > this.betweenUpdate)
-            {
-                this.firstTime = false;
-                var collision = this.FindCollision(0.1f);
-                if (collision != null)
+                this.actions.Add(new PainterAction()
                 {
-                    this.actions.Add(new PainterAction()
-                    {
-                        Mode = this.Mode,
-                        Line = collision.FindComponent<LineMesh>().LinePoints,
-                    });
+                    Mode = this.Mode,
+                    Line = collision.FindComponent<LineMesh>().LinePoints,
+                });
 
-                    this.lines.Remove(collision);
-                    this.Owner.EntityManager.Remove(collision);
-                }
+                this.lines.Remove(collision);
+                this.Owner.EntityManager.Remove(collision);
             }
         }
 
-        private Entity FindCollision(float distance)
+        /// <summary>
+        /// Do paint.
+        /// </summary>
+        /// <param name="position">Cursor position.</param>
+        public void DoPaint(Vector3 position)
         {
-            foreach (var line in this.lines)
-            {
-                var mesh = line.FindComponent<LineMesh>();
-                foreach (var point in mesh.LinePoints)
-                {
-                    if (Vector3.Distance(this.currentPosition, point.Position) < distance)
-                    {
-                        return line;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private void DoPaint(TimeSpan gameTime)
-        {
-            if (!this.isPointerDown)
-            {
-                return;
-            }
-
-            this.current += gameTime;
-            if (this.firstTime)
+            if (this.lineMesh == null)
             {
                 // Creates first point
-                this.firstTime = false;
-                this.current = TimeSpan.Zero;
                 var line = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.LinePainter).Instantiate();
                 this.lines.Add(line);
                 this.Owner.Scene.Managers.EntityManager.Add(line);
@@ -354,7 +212,7 @@ namespace Xrv.Painter.Components
                         new LinePointInfo()
                         {
                             Color = this.Color,
-                            Position = this.currentPosition,
+                            Position = position,
                             Thickness = this.GetThickNess(this.Thickness),
                         },
                     };
@@ -368,22 +226,100 @@ namespace Xrv.Painter.Components
             }
             else
             {
-                if (this.current > this.betweenUpdate)
+                this.linePoint.Add(new LinePointInfo()
                 {
-                    this.current = TimeSpan.Zero;
-                    if (Vector3.Distance(this.currentPosition, this.lastPosition) > 0.01f)
+                    Color = this.Color,
+                    Position = position,
+                    Thickness = this.GetThickNess(this.Thickness),
+                });
+                this.lineMesh.LinePoints = this.linePoint;
+            }
+        }
+
+        /// <summary>
+        /// End painting.
+        /// </summary>
+        public void EndPaint()
+        {
+            this.lineMesh = null;
+        }
+
+        /// <inheritdoc/>
+        protected override bool OnAttached()
+        {
+            if (!base.OnAttached())
+            {
+                return false;
+            }
+
+            this.modeButtons = this.modeEntity.FindComponentsInChildren<PressableButton>();
+            this.thicknessButtons = this.thicknessEntity.FindComponentsInChildren<PressableButton>();
+            this.commandsButtons = this.commandsEntity.FindComponentsInChildren<PressableButton>();
+
+            if (Application.Current.IsEditor)
+            {
+                return true;
+            }
+
+            foreach (var button in this.modeButtons)
+            {
+                button.ButtonReleased += this.ModeButton_ButtonReleased;
+            }
+
+            foreach (var button in this.thicknessButtons)
+            {
+                button.ButtonReleased += this.ThicknessButtonsButton_ButtonReleased;
+            }
+
+            foreach (var button in this.commandsButtons)
+            {
+                button.ButtonReleased += this.CommandsButtonsButtonsButton_ButtonReleased;
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDetach()
+        {
+            base.OnDetach();
+
+            if (Application.Current.IsEditor)
+            {
+                return;
+            }
+
+            foreach (var button in this.modeButtons)
+            {
+                button.ButtonReleased -= this.ModeButton_ButtonReleased;
+            }
+
+            foreach (var button in this.thicknessButtons)
+            {
+                button.ButtonReleased -= this.ThicknessButtonsButton_ButtonReleased;
+            }
+
+            foreach (var button in this.commandsButtons)
+            {
+                button.ButtonReleased -= this.CommandsButtonsButtonsButton_ButtonReleased;
+            }
+        }
+
+        private Entity FindCollision(Vector3 position, float distance)
+        {
+            foreach (var line in this.lines)
+            {
+                var mesh = line.FindComponent<LineMesh>();
+                foreach (var point in mesh.LinePoints)
+                {
+                    if (Vector3.Distance(position, point.Position) < distance)
                     {
-                        this.lastPosition = this.currentPosition;
-                        this.linePoint.Add(new LinePointInfo()
-                        {
-                            Color = this.Color,
-                            Position = this.currentPosition,
-                            Thickness = this.GetThickNess(this.Thickness),
-                        });
-                        this.lineMesh.LinePoints = this.linePoint;
+                        return line;
                     }
                 }
             }
+
+            return null;
         }
 
         private float GetThickNess(PainterThickness thickness)

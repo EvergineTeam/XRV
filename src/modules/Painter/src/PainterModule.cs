@@ -3,12 +3,14 @@
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
+using Xrv.Painter.Components;
 
 namespace Xrv.Painter
 {
@@ -65,14 +67,25 @@ namespace Xrv.Painter
 
             // Painter
             var painterSize = new Vector2(0.175f, 0.15f);
-            this.painterWindow = this.xrv.WindowSystem.CreateWindow((config) =>
+            this.painterWindow = this.xrv.WindowSystem.CreateWindow(async (config) =>
             {
                 config.Title = "Paint";
                 config.Size = painterSize;
                 config.FrontPlateSize = painterSize;
                 config.FrontPlateOffsets = Vector2.Zero;
                 config.DisplayLogo = false;
-                config.Content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
+
+                await EvergineBackgroundTask.Run(async () =>
+                {
+                    var content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
+                    var cursor = content.FindComponent<PainterCursor>();
+                    cursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
+                    config.Content = content;
+                    await EvergineForegroundTask.Run(() =>
+                    {
+                        scene.Managers.EntityManager.Add(cursor.Pointer);
+                    });
+                });
             });
 
             this.painterWindow.DistanceKey = Distances.NearKey;

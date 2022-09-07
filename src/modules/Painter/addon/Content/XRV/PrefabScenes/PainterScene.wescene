@@ -80,11 +80,12 @@ Items:
           R: 255
         IsEnabled: true
         Mode: Painter
-        Pointer: null
-        SecondsBetweenUpdate: 1.0
         SelectedMaterial: 7433ac3b-5505-46dc-a6f2-e33bb013b519
         Thickness: Medium
-        UpdateOrder: 0.5
+      - !Xrv.Painter.Components.PainterCursor,Xrv.Painter
+        Id: b5ad3519-a9fc-4023-a996-fa368c10f3b0
+        IsEnabled: true
+        SecondsBetweenUpdate: 1.0
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: WheelContainer
