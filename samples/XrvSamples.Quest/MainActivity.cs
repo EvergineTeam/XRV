@@ -20,7 +20,7 @@ namespace XrvSamples.Quest
         Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen")]
     [IntentFilter(new[] { Android.Content.Intent.ActionView },
         Categories = new[] { Android.Content.Intent.CategoryLauncher, "com.oculus.intent.category.VR" })]
-    public class MainActivity : Activity
+    public class MainActivity : global::Android.App.Activity
     {
         private static OpenXRPlatform openXRPlatform;
 

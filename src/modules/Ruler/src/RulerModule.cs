@@ -51,24 +51,16 @@ namespace Xrv.Ruler
             };
         }
 
-        /// <summary>
-        /// Gets the Module name.
-        /// </summary>
+        /// <inheritdoc/>
         public override string Name => "Ruler";
 
-        /// <summary>
-        /// Gets the button description (HandMenu).
-        /// </summary>
+        /// <inheritdoc/>
         public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
 
-        /// <summary>
-        /// Gets the help section.
-        /// </summary>
+        /// <inheritdoc/>
         public override TabItem Help => this.help;
 
-        /// <summary>
-        /// Gets the settings section.
-        /// </summary>
+        /// <inheritdoc/>
         public override TabItem Settings => this.settings;
 
         /// <inheritdoc/>

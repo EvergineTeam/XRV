@@ -2,7 +2,7 @@
 
 namespace Xrv.Core.Modules
 {
-    public class ActivateModuleMessage
+    internal class ActivateModuleMessage
     {
         public Module Module { get; set; }
 

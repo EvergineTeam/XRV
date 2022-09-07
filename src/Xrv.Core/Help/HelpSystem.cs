@@ -25,18 +25,29 @@ namespace Xrv.Core.Help
         /// <summary>
         /// Initializes a new instance of the <see cref="HelpSystem"/> class.
         /// </summary>
-        /// <param name="xrvService"></param>
-        /// <param name="entityManager"></param>
+        /// <param name="xrvService">XRV service instance.</param>
+        /// <param name="entityManager">Entity manager.</param>
         public HelpSystem(XrvService xrvService, EntityManager entityManager)
         {
             this.xrvService = xrvService;
             this.entityManager = entityManager;
         }
 
+        /// <summary>
+        /// Gets help window reference.
+        /// </summary>
         public TabbedWindow Window { get; private set; }
 
+        /// <summary>
+        /// Adds a new item to the help.
+        /// </summary>
+        /// <param name="item">Tab item about to be added.</param>
         public void AddTabItem(TabItem item) => this.Window.Tabs.Add(item);
 
+        /// <summary>
+        /// Removes an item from the help.
+        /// </summary>
+        /// <param name="item">Tab item about to be removed.</param>
         public void RemoveTabItem(TabItem item) => this.Window.Tabs.Remove(item);
 
         internal void Load()

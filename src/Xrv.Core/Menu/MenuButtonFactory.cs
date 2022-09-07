@@ -31,6 +31,11 @@ namespace Xrv.Core.Menu
             this.assetsService = assetsService;
         }
 
+        /// <summary>
+        /// Creates an instance of a button from its description.
+        /// </summary>
+        /// <param name="description">Button description.</param>
+        /// <returns>Button entity.</returns>
         public Entity CreateInstance(MenuButtonDescription description) =>
             description.IsToggle ? this.CreateToggleButton(description) : this.CreateStandardButton(description);
 
