@@ -22,6 +22,27 @@ Items:
           X: 1.0
           Y: 1.0
           Z: 1.0
+      - !Evergine.Framework.Physics3D.StaticBody3D,Evergine.Framework
+        Id: a045bdaa-178a-429a-9b72-be21dff971a5
+        CcdMotionThreshold: 0.0
+        CcdSweptSphereRadius: 0.200000003
+        CollisionCategories: Cat1
+        Friction: 0.5
+        IsEnabled: true
+        IsSensor: true
+        MaskBits: All
+        Restitution: 0.0
+        RollingFriction: 0.0
+        UpdateOrder: 0.5
+      - !Evergine.Framework.Physics3D.SphereCollider3D,Evergine.Framework
+        Id: 0db078dc-8c3e-428d-a6fe-f28d09cbea66
+        IsEnabled: true
+        Margin: 0.0
+        Offset:
+          X: 0.0
+          Y: 0.0
+          Z: 0.0
+        Radius: 0.0199999996
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: sphere
@@ -319,6 +340,12 @@ Items:
         Children: []
         Id: cefe5494-1f5d-4e79-8fe3-ff91692984b3
     Id: 872e828b-1418-4b00-8802-8a47311d8e72
+  - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
+    Id: b62126d5-0ae4-4103-b2f6-2278f6ec2bdd
+    Source: 7dc1377a-f1cc-4f55-8807-137e07e0e81d
+    entityLinks: {}
+    modificationList: []
+    removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: ead827fe-ee90-479b-ada4-b87448baada8
