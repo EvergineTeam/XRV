@@ -12,39 +12,91 @@ using System.Collections.Generic;
 
 namespace Xrv.Ruler
 {
+    /// <summary>
+    /// Behavior to control ruler handles and update measures.
+    /// </summary>
     public class RulerBehavior : Behavior
     {
+        /// <summary>
+        /// Transform for first handle.
+        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle1")]
         protected Transform3D handle1Transform;
 
+        /// <summary>
+        /// Transform for second handle.
+        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle2")]
         protected Transform3D handle2Transform;
 
+        /// <summary>
+        /// Line mesh.
+        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_Line")]
         protected LineMesh line;
 
+        /// <summary>
+        /// Label transform.
+        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_Label")]
         protected Transform3D labelTransform;
 
+        /// <summary>
+        /// Label text.
+        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_labelNumber")]
         protected Text3DMesh labelNumber;
 
+        /// <summary>
+        /// Units text.
+        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_labelUnits")]
         protected Text3DMesh labelUnits;
 
+        /// <summary>
+        /// Line transform.
+        /// </summary>
+        protected Transform3D lineTransform;
+
+        /// <summary>
+        /// Settings entity.
+        /// </summary>
+        protected Entity settings;
+
+        /// <summary>
+        /// Toggle for metters.
+        /// </summary>
+        protected ToggleButton mettersToggle;
+
+        /// <summary>
+        /// Toggle for feet.
+        /// </summary>
+        protected ToggleButton feetToggle;
+
+        /// <summary>
+        /// Measure units.
+        /// </summary>
         public enum MeasureUnits
         {
+            /// <summary>
+            /// Meters.
+            /// </summary>
             Meters,
-            Feets,
+
+            /// <summary>
+            /// Feet.
+            /// </summary>
+            Feet,
         }
 
-        protected Transform3D lineTransform;
-        protected Entity settings;
-        protected ToggleButton mettersToggle;
-        protected ToggleButton feetsToggle;
-
+        /// <summary>
+        /// Gets or sets measure units.
+        /// </summary>
         public MeasureUnits Units { get; set; }
 
+        /// <summary>
+        /// Gets or sets settings entity.
+        /// </summary>
         public Entity Settings
         {
             get => this.settings;
@@ -52,25 +104,26 @@ namespace Xrv.Ruler
             {
                 this.settings = value;
                 this.mettersToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Meters", skipOwner: true);
-                this.feetsToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Feets", skipOwner: true);
+                this.feetToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Feets", skipOwner: true);
 
                 this.mettersToggle.Toggled += this.UnitChanged;
-                this.feetsToggle.Toggled += this.UnitChanged;
+                this.feetToggle.Toggled += this.UnitChanged;
             }
         }
 
-        private void UnitChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Resets ruler.
+        /// </summary>
+        public void Reset()
         {
-            if (this.mettersToggle.IsOn)
-            {
-                this.Units = MeasureUnits.Meters;
-            }
-            else if (this.feetsToggle.IsOn)
-            {
-                this.Units = MeasureUnits.Feets;
-            }
+            var cameraTransform = this.Managers.RenderManager.ActiveCamera3D.Transform;
+            var cameraWorldTransform = cameraTransform.WorldTransform;
+            var center = cameraTransform.Position + (cameraWorldTransform.Forward * 0.6f);
+            this.handle1Transform.Position = center + (cameraWorldTransform.Left * 0.5f);
+            this.handle2Transform.Position = center + (cameraWorldTransform.Right * 0.5f);
         }
-      
+
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -88,6 +141,7 @@ namespace Xrv.Ruler
             }
         }
 
+        /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             // Calculate distance and middlepoint
@@ -110,24 +164,26 @@ namespace Xrv.Ruler
             this.UpdateMeasureString(distance);
         }
 
-        public void Reset()
+        private void UnitChanged(object sender, EventArgs e)
         {
-            var cameraTransform = this.Managers.RenderManager.ActiveCamera3D.Transform;
-            var cameraWorldTransform = cameraTransform.WorldTransform;
-            var center = cameraTransform.Position + cameraWorldTransform.Forward * 0.6f;
-            this.handle1Transform.Position = center + cameraWorldTransform.Left * 0.5f;
-            this.handle2Transform.Position = center + cameraWorldTransform.Right * 0.5f;
+            if (this.mettersToggle.IsOn)
+            {
+                this.Units = MeasureUnits.Meters;
+            }
+            else if (this.feetToggle.IsOn)
+            {
+                this.Units = MeasureUnits.Feet;
+            }
         }
 
         private void UpdateMeasureString(float distance)
         {
-
             string measurement;
             string unit;
 
             switch (this.Units)
             {
-                case MeasureUnits.Feets:
+                case MeasureUnits.Feet:
 
                     measurement = $"{Math.Round(distance * 3.280839895, 2):##.00}";
                     unit = "ft";

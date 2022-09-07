@@ -17,7 +17,7 @@ namespace Xrv.Painter
     /// </summary>
     public class PainterModule : Module
     {
-        private HandMenuButtonDescription handMenuDesc;
+        private MenuButtonDescription handMenuDesc;
         private TabItem help;
         private Entity painterHelp;
         private AssetsService assetsService;
@@ -29,7 +29,7 @@ namespace Xrv.Painter
         /// </summary>
         public PainterModule()
         {
-            this.handMenuDesc = new HandMenuButtonDescription()
+            this.handMenuDesc = new MenuButtonDescription()
             {
                 IconOff = PainterResourceIDs.Materials.Icons.Painter,
                 IconOn = PainterResourceIDs.Materials.Icons.Painter,
@@ -49,7 +49,7 @@ namespace Xrv.Painter
         public override string Name => "Painter";
 
         /// <inheritdoc/>
-        public override HandMenuButtonDescription HandMenuButton => this.handMenuDesc;
+        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
 
         /// <inheritdoc/>
         public override TabItem Help => this.help;

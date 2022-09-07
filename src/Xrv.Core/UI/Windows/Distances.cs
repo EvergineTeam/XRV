@@ -5,10 +5,24 @@ using System.Collections.Generic;
 
 namespace Xrv.Core.UI.Windows
 {
+    /// <summary>
+    /// Predefined instances to place 3D objects.
+    /// </summary>
     public class Distances
     {
+        /// <summary>
+        /// Near distance key.
+        /// </summary>
         public const string NearKey = nameof(NearKey);
+
+        /// <summary>
+        /// Medium distance key.
+        /// </summary>
         public const string MediumKey = nameof(MediumKey);
+
+        /// <summary>
+        /// Far distance key.
+        /// </summary>
         public const string FarKey = nameof(FarKey);
 
         private const float DefaultNear = 0.4f;
@@ -22,57 +36,88 @@ namespace Xrv.Core.UI.Windows
             { FarKey, DefaultFar },
         };
 
+        /// <summary>
+        /// Gets or sets near distance.
+        /// </summary>
         public float Near
         {
-            get => distances[NearKey];
-            set => distances[NearKey] = value;
+            get => this.distances[NearKey];
+            set => this.distances[NearKey] = value;
         }
 
+        /// <summary>
+        /// Gets or sets medium distance.
+        /// </summary>
         public float Medium
         {
-            get => distances[MediumKey];
-            set => distances[MediumKey] = value;
+            get => this.distances[MediumKey];
+            set => this.distances[MediumKey] = value;
         }
 
+        /// <summary>
+        /// Gets or sets far distance.
+        /// </summary>
         public float Far
         {
-            get => distances[FarKey];
-            set => distances[FarKey] = value;
+            get => this.distances[FarKey];
+            set => this.distances[FarKey] = value;
         }
 
+        /// <summary>
+        /// Adds or updates a predefined distance.
+        /// </summary>
+        /// <param name="key">Distance key.</param>
+        /// <param name="distance">Distance value.</param>
         public void SetDistance(string key, float distance)
         {
-            if (distances.ContainsKey(key))
+            if (this.distances.ContainsKey(key))
             {
-                distances.Add(key, distance);
+                this.distances.Add(key, distance);
             }
             else
             {
-                distances[key] = distance;
+                this.distances[key] = distance;
             }
         }
 
+        /// <summary>
+        /// Gets a distance by its key.
+        /// </summary>
+        /// <param name="key">Distance key.</param>
+        /// <returns>Distance value, if key is found; null otherwise.</returns>
         public float? GetDistance(string key) =>
-            distances.ContainsKey(key) ? distances[key] : (float?)null;
+            this.distances.ContainsKey(key) ? this.distances[key] : (float?)null;
 
+        /// <summary>
+        /// Gets a distance by its key. If distance key is not registered, tries with an
+        /// alternative key.
+        /// </summary>
+        /// <param name="key">Distance key.</param>
+        /// <param name="alternativeKey">Alternative distance key.</param>
+        /// <returns>Distance value.</returns>
         public float GetDistanceOrAlternative(string key, string alternativeKey)
         {
-            if (!string.IsNullOrEmpty(key) && GetDistance(key) is float distance)
+            if (!string.IsNullOrEmpty(key) && this.GetDistance(key) is float distance)
             {
                 return distance;
             }
 
-            return GetDistance(alternativeKey) ?? 0;
+            return this.GetDistance(alternativeKey) ?? 0;
         }
 
-        public void RemoveDistance(string key)
+        /// <summary>
+        /// Deletes a predefined distance. Default distances can't be deleted.
+        /// </summary>
+        /// <param name="key">Distance key.</param>
+        /// <exception cref="InvalidOperationException">Raised when trying to delete a predefined distance.</exception>
+        public void DeleteDistance(string key)
         {
             if (key == NearKey || key == MediumKey || key == FarKey)
             {
                 throw new InvalidOperationException($"Distance with key {key} can't be removed, as it is a default distance");
             }
 
-            distances.Remove(key);
+            this.distances.Remove(key);
         }
     }
 }
