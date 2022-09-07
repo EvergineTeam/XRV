@@ -12,6 +12,7 @@ using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xrv.Painter.Models;
 
 namespace Xrv.Painter.Components
@@ -43,6 +44,11 @@ namespace Xrv.Painter.Components
     public enum PainterModes
     {
         /// <summary>
+        /// Initial state, no state,
+        /// </summary>
+        None,
+
+        /// <summary>
         /// Hand state.
         /// </summary>
         Hand,
@@ -50,12 +56,12 @@ namespace Xrv.Painter.Components
         /// <summary>
         /// Paint state.
         /// </summary>
-        Paint,
+        Painter,
 
         /// <summary>
         /// Remove state.
         /// </summary>
-        Remove,
+        Eraser,
     }
 
     /// <summary>
@@ -69,9 +75,26 @@ namespace Xrv.Painter.Components
         [BindService]
         protected AssetsService assetsService;
 
+        /// <summary>
+        /// Mode entity.
+        /// </summary>
+        [BindEntity(source: BindEntitySource.Children, tag: "Mode")]
+        protected Entity modeEntity;
+
+        /// <summary>
+        /// Thickness entity.
+        /// </summary>
+        [BindEntity(source: BindEntitySource.Children, tag: "Thickness")]
+        protected Entity thicknessEntity;
+
+        /// <summary>
+        /// Commands entity.
+        /// </summary>
+        [BindEntity(source: BindEntitySource.Children, tag: "Commands")]
+        protected Entity commandsEntity;
+
         private List<Entity> lines = new List<Entity>();
         private List<PainterAction> actions = new List<PainterAction>();
-        private List<PressableButton> buttons = new List<PressableButton>();
 
         private bool isPointerDown;
         private Vector3 lastPosition;
@@ -86,16 +109,43 @@ namespace Xrv.Painter.Components
         private Entity pointerEntity;
         private HoloGraphic pointerMaterial;
         private Transform3D pointerTransform;
+        private IEnumerable<PressableButton> modeButtons;
+        private IEnumerable<PressableButton> thicknessButtons;
+        private IEnumerable<PressableButton> commandsButtons;
+        private PainterThickness thickness;
+        private PainterModes mode;
 
         /// <summary>
         /// Gets or sets mode.
         /// </summary>
-        public PainterModes Mode { get; set; }
+        public PainterModes Mode
+        {
+            get => this.mode;
+            set
+            {
+                this.mode = value;
+                if (this.IsAttached)
+                {
+                    this.SetVisualMode(value);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets thickness.
         /// </summary>
-        public PainterThickness Thickness { get; set; }
+        public PainterThickness Thickness
+        {
+            get => this.thickness;
+            set
+            {
+                this.thickness = value;
+                if (this.IsAttached)
+                {
+                    this.SetVisualThickness(value);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets pointer.
@@ -106,6 +156,11 @@ namespace Xrv.Painter.Components
         /// Gets or sets color.
         /// </summary>
         public Color Color { get; set; }
+
+        /// <summary>
+        /// Gets or sets selected material.
+        /// </summary>
+        public Material SelectedMaterial { get; set; }
 
         /// <summary>
         /// Gets or sets tiks.
@@ -154,7 +209,7 @@ namespace Xrv.Painter.Components
             this.pointerEntity.IsEnabled = this.Mode != PainterModes.Hand;
             if (this.pointerEntity.IsEnabled)
             {
-                this.pointerMaterial.Albedo = this.Mode == PainterModes.Paint ? Color.White : Color.Red;
+                this.pointerMaterial.Albedo = this.Mode == PainterModes.Painter ? Color.White : Color.Red;
             }
         }
 
@@ -185,6 +240,24 @@ namespace Xrv.Painter.Components
                 return false;
             }
 
+            this.modeButtons = this.modeEntity.FindComponentsInChildren<PressableButton>();
+            foreach (var button in this.modeButtons)
+            {
+                button.ButtonReleased += this.ModeButton_ButtonReleased;
+            }
+
+            this.thicknessButtons = this.thicknessEntity.FindComponentsInChildren<PressableButton>();
+            foreach (var button in this.thicknessButtons)
+            {
+                button.ButtonReleased += this.ThicknessButtonsButton_ButtonReleased;
+            }
+
+            this.commandsButtons = this.commandsEntity.FindComponentsInChildren<PressableButton>();
+            foreach (var button in this.commandsButtons)
+            {
+                button.ButtonReleased += this.CommandsButtonsButtonsButton_ButtonReleased;
+            }
+
             if (Application.Current.IsEditor)
             {
                 return true;
@@ -195,23 +268,17 @@ namespace Xrv.Painter.Components
             this.pointerTransform = this.pointerEntity.FindComponent<Transform3D>();
             this.Owner.EntityManager.Add(this.pointerEntity);
 
-            this.buttons.AddRange(this.Owner.FindComponentsInChildren<PressableButton>());
-            foreach (var button in this.buttons)
-            {
-                button.ButtonReleased += this.Button_ButtonReleased;
-            }
-
             return true;
         }
 
         /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
-            if (this.Mode == PainterModes.Remove)
+            if (this.Mode == PainterModes.Eraser)
             {
                 this.DoRemove(gameTime);
             }
-            else if (this.Mode == PainterModes.Paint)
+            else if (this.Mode == PainterModes.Painter)
             {
                 this.DoPaint(gameTime);
             }
@@ -332,44 +399,87 @@ namespace Xrv.Painter.Components
             }
         }
 
-        private void Button_ButtonReleased(object sender, EventArgs e)
+        private void ModeButton_ButtonReleased(object sender, EventArgs e)
+        {
+            if (sender is PressableButton pressable
+                && pressable.Owner.Parent is Entity button)
+            {
+                if (Enum.TryParse<PainterModes>(button.Name, out var mode))
+                {
+                    this.Mode = mode;
+                }
+                else
+                {
+                    throw new InvalidCastException($"{button.Name} not a valid PainterModes");
+                }
+            }
+        }
+
+        private void ThicknessButtonsButton_ButtonReleased(object sender, EventArgs e)
+        {
+            if (sender is PressableButton pressable
+                && pressable.Owner.Parent is Entity button)
+            {
+                if (Enum.TryParse<PainterThickness>(button.Name, out var thickness))
+                {
+                    this.Thickness = thickness;
+                }
+                else
+                {
+                    throw new InvalidCastException($"{button.Name} not a valid PainterThickness");
+                }
+            }
+        }
+
+        private void CommandsButtonsButtonsButton_ButtonReleased(object sender, EventArgs e)
         {
             if (sender is PressableButton pressable
                 && pressable.Owner.Parent is Entity button)
             {
                 var name = button.Name;
-
-                if (name == "Hand")
-                {
-                    this.Mode = PainterModes.Hand;
-                }
-                else if (name == "Painter")
-                {
-                    this.Mode = PainterModes.Paint;
-                }
-                else if (name == "Eraser")
-                {
-                    this.Mode = PainterModes.Remove;
-                }
-                else if (name == "Thin")
-                {
-                    this.Thickness = PainterThickness.Thin;
-                }
-                else if (name == "Medium")
-                {
-                    this.Thickness = PainterThickness.Medium;
-                }
-                else if (name == "Thick")
-                {
-                    this.Thickness = PainterThickness.Thick;
-                }
-                else if (name == "Undo")
+                if (name == "Undo")
                 {
                     this.Undo();
                 }
                 else if (name == "Clear")
                 {
                     this.ClearAll();
+                }
+            }
+        }
+
+        private void SetVisualMode(PainterModes value)
+        {
+            foreach (var item in this.modeButtons)
+            {
+                var backPlate = item.Owner.FindChildrenByTag("PART_Plate", skipOwner: true).FirstOrDefault().FindComponent<MaterialComponent>();
+                var name = item.Owner.Parent.Name;
+
+                if (name == value.ToString())
+                {
+                    backPlate.Material = this.SelectedMaterial;
+                }
+                else
+                {
+                    backPlate.Material = null;
+                }
+            }
+        }
+
+        private void SetVisualThickness(PainterThickness value)
+        {
+            foreach (var item in this.thicknessButtons)
+            {
+                var backPlate = item.Owner.FindChildrenByTag("PART_Plate", skipOwner: true).FirstOrDefault().FindComponent<MaterialComponent>();
+                var name = item.Owner.Parent.Name;
+
+                if (name == value.ToString())
+                {
+                    backPlate.Material = this.SelectedMaterial;
+                }
+                else
+                {
+                    backPlate.Material = null;
                 }
             }
         }
