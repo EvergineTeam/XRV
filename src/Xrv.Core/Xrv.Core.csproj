@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;uap10.0.16299</TargetFrameworks>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.13.1" />
@@ -15,5 +15,13 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
 	</ItemGroup>
-	
+    <Choose>
+	  <When Condition="$(TargetFramework.StartsWith('uap'))">
+		  <PropertyGroup>
+			  <DefineConstants>UWP</DefineConstants>
+			  <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
+			  <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
+		  </PropertyGroup>
+	  </When>
+    </Choose>
 </Project>

@@ -6,6 +6,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using System.Collections.Generic;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -76,6 +77,9 @@ namespace Xrv.ImageGallery
 
         /// <inheritdoc/>
         public override TabItem Settings => this.settings;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> VoiceCommands => null;
 
         /// <inheritdoc/>
         public override void Initialize(Scene scene)

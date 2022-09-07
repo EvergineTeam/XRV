@@ -50,5 +50,17 @@ namespace Xrv.Core.Menu
         /// toggle buttons. Has no effect in standard buttons.
         /// </summary>
         public string TextOff { get; set; }
+
+        /// <summary>
+        /// Gets or sets voice command for standard button; or for On state in
+        /// toggle buttons.
+        /// </summary>
+        public string VoiceCommandOn { get; set; }
+
+        /// <summary>
+        /// Gets or sets voice command for icon for Off state in
+        /// toggle buttons. Has no effect in standard buttons.
+        /// </summary>
+        public string VoiceCommandOff { get; set; }
     }
 }

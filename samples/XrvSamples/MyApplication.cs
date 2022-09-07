@@ -7,7 +7,6 @@ using Xrv.ImageGallery;
 using Xrv.Core;
 using Xrv.LoadModel;
 using Xrv.Ruler;
-using Evergine.Framework.Threading;
 
 namespace XrvSamples
 {

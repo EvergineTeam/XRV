@@ -88,6 +88,7 @@ namespace Xrv.Core.Help
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Help,
                 TextOn = "Help",
+                VoiceCommandOn = VoiceCommands.ShowHelp,
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
             this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
@@ -123,6 +124,11 @@ namespace Xrv.Core.Help
             }
 
             return this.about;
+        }
+
+        internal static class VoiceCommands
+        {
+            public static string ShowHelp = "Show help";
         }
     }
 }
