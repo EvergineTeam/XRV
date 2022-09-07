@@ -79,6 +79,7 @@ namespace Xrv.Core.UI.Windows
         private Entity contentEntity;
         private Entity content;
 
+        private bool displayBackPlate = true;
         private bool displayFrontPlate = true;
         private bool displayLogo = true;
 
@@ -180,6 +181,23 @@ namespace Xrv.Core.UI.Windows
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether back plate should be displayed or not.
+        /// </summary>
+        public bool DisplayBackPlate
+        {
+            get => this.displayFrontPlate;
+
+            set
+            {
+                if (this.displayBackPlate != value)
+                {
+                    this.displayBackPlate = value;
+                    this.UpdateDisplayBackPlate();
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether bottom left icon should be displayed or not.
         /// </summary>
         public bool DisplayLogo
@@ -247,6 +265,7 @@ namespace Xrv.Core.UI.Windows
             this.UpdateContent();
             this.UpdateTitle();
             this.UpdateDisplayLogo();
+            this.UpdateDisplayBackPlate();
             this.UpdateDisplayFrontPlate();
         }
 
@@ -337,6 +356,14 @@ namespace Xrv.Core.UI.Windows
             if (this.IsAttached)
             {
                 this.frontPlate.Owner.IsEnabled = this.displayFrontPlate;
+            }
+        }
+
+        private void UpdateDisplayBackPlate()
+        {
+            if (this.IsAttached)
+            {
+                this.backPlate.Owner.IsEnabled = this.displayFrontPlate;
             }
         }
     }
