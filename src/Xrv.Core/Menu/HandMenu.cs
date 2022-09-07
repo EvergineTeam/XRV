@@ -384,11 +384,6 @@ namespace Xrv.Core.Menu
             Workarounds.ChangeToggleButtonState(this.followButtonToggle.Owner, followEnabled);
         }
 
-        internal static class VoiceCommands
-        {
-            public static string DetachMenu = "Detach menu";
-        }
-
         //// -- Begin Debug area --
 
         ////[BindService]

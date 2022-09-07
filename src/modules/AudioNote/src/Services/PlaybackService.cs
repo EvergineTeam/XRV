@@ -76,7 +76,7 @@ namespace Xrv.AudioNote.Services
         /// <summary>
         /// Loads an audio stream.
         /// </summary>
-        /// <param name="stream">Audio stream.</param>
+        /// <param name="stream">Audio strram</param>
         /// <returns>A <see cref="Task{TResult}"/> true if audio is loaded.</returns>
         public async Task<bool> Load(Stream stream)
         {

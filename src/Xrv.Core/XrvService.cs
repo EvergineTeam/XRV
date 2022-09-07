@@ -13,7 +13,6 @@ using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Settings;
 using Xrv.Core.UI.Tabs;
-using Xrv.Core.VoiceCommands;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
 namespace Xrv.Core
@@ -24,7 +23,6 @@ namespace Xrv.Core
     public class XrvService : Service
     {
         private readonly Dictionary<Type, Module> modules;
-        private readonly VoiceCommandsSystem voiceSystem = null;
 
         [BindService]
         private AssetsService assetsService = null;
@@ -40,8 +38,6 @@ namespace Xrv.Core
             {
                 message.Module.Run(message.IsOn);
             });
-            this.voiceSystem = new VoiceCommandsSystem();
-            this.voiceSystem.RegisterService();
         }
 
         /// <summary>
@@ -132,9 +128,6 @@ namespace Xrv.Core
             this.Settings = new SettingsSystem(this, scene.Managers.EntityManager);
             this.Settings.Load();
 
-            // Voice commands
-            this.voiceSystem.Load();
-
             foreach (var module in this.modules.Values)
             {
                 // Adding hand menu button for module, if any
@@ -155,19 +148,9 @@ namespace Xrv.Core
                     this.Settings.AddTabItem(module.Settings);
                 }
 
-                // Voice commands
-                var voiceCommands = module.VoiceCommands;
-                if (voiceCommands?.Any() == true)
-                {
-                    this.voiceSystem.RegisterCommands(voiceCommands);
-                }
-
                 // Modules initialization
                 module.Initialize(scene);
             }
-
-            // Initialize voice commands (after collecting key words)
-            this.voiceSystem.Initialize();
         }
 
         internal Module GetModuleForHandButton(MenuButtonDescription definition)

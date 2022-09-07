@@ -71,9 +71,6 @@ namespace Xrv.AudioNote
         /// <inheritdoc/>
         public override TabItem Settings => null;
 
-        /// <inheritdoc/>
-        public override IEnumerable<string> VoiceCommands => null;
-
         /// <summary>
         /// Removes anchor from scene.
         /// </summary>
