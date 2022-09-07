@@ -3,9 +3,11 @@ using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Platform;
 using Xrv.AudioNote;
+using Xrv.ImageGallery;
 using Xrv.Core;
 using Xrv.LoadModel;
 using Xrv.Ruler;
+using Evergine.Framework.Threading;
 
 namespace XrvSamples
 {
@@ -24,13 +26,14 @@ namespace XrvSamples
             this.Container.RegisterType<AssetsService>();
             this.Container.RegisterType<ForegroundTaskSchedulerService>();
             this.Container.RegisterType<WorkActionScheduler>();
-            
+
             BackgroundTaskScheduler.Background.Configure(this.Container);
 
             var xrv = new XrvService();
             xrv.AddModule(new RulerModule());
             xrv.AddModule(new LoadModelModule());
             xrv.AddModule(new AudioNoteModule());
+            xrv.AddModule(new ImageGalleryModule() { ImagePixelsWidth = 640, ImagePixelsHeight = 640 });
 
             this.Container.RegisterInstance(xrv);
         }
