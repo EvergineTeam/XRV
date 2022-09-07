@@ -88,10 +88,11 @@ namespace Xrv.AudioNote.Services
 
             this.audioSource.Stop();
             this.audioSource.FlushBuffers();
-            await Task.Delay(1); // TODO do real load from audio
-                                 ////this.buffer = this.audioDevice.CreateAudioBuffer();
-                                 ////await this.buffer.FillAsync(stream, (int)stream.Length, this.format);
+            await Task.Delay(1);
 
+            // TODO fake audio, do real load from audio, maybe
+            ////this.buffer = this.audioDevice.CreateAudioBuffer();
+            ////await this.buffer.FillAsync(stream, (int)stream.Length, this.format);
             this.buffer = this.assetsService.Load<AudioBuffer>(AudioNoteResourceIDs.Audio.Sample);
             this.Duration = this.buffer.Duration;
 

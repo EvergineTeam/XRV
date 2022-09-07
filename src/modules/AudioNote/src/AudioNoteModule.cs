@@ -150,9 +150,6 @@ namespace Xrv.AudioNote
                     await this.fileAccess.DeleteFileAsync(audionotePath, cancellation);
                 }
 
-                // TODO store real audio
-                stream = await this.fileAccess.GetFileAsync("audionotes\\smallSample.wav");
-
                 await this.fileAccess.WriteFileAsync(audionotePath, stream, cancellation);
                 await this.SerializeAudioNotesAsync();
             }
