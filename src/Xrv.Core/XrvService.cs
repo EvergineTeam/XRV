@@ -129,7 +129,7 @@ namespace Xrv.Core
             TabControl.Builder = new TabControlBuilder(this.assetsService);
             this.Help = new HelpSystem(this, scene.Managers.EntityManager);
             this.Help.Load();
-            this.Settings = new SettingsSystem(this, scene.Managers.EntityManager);
+            this.Settings = new SettingsSystem(this, this.assetsService, scene.Managers.EntityManager);
             this.Settings.Load();
 
             // Voice commands
