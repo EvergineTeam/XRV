@@ -4,6 +4,7 @@ using Evergine.Framework.Managers;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
+using static Xrv.Core.Help.HelpSystem;
 
 namespace Xrv.Core.Settings
 {
@@ -76,6 +77,7 @@ namespace Xrv.Core.Settings
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Settings,
                 TextOn = "Settings",
+                VoiceCommandOn = VoiceCommands.ShowSettings,
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
             this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
@@ -87,6 +89,11 @@ namespace Xrv.Core.Settings
             {
                 this.Window.Open();
             }
+        }
+
+        internal static class VoiceCommands
+        {
+            public static string ShowSettings = "Show settings";
         }
     }
 }
