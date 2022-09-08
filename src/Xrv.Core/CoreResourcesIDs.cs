@@ -16,6 +16,11 @@ namespace Xrv.Core
                 public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
             }
 
+            public static class Buttons
+            {
+                public static Guid ButtonPrimary = new Guid("ce1f6bc9-39ac-4a0a-a913-07963f7342f5");
+            }
+
             public static Guid logoMaterial = new Guid("db59d1e4-43a8-4e6b-94c8-bf5bf44a7d7b");
         }
 

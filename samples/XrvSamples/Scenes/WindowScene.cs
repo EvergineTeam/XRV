@@ -99,8 +99,6 @@ namespace XrvSamples.Scenes
         private void CreateConfirm_ButtonReleased(object sender, EventArgs e)
         {
             var confirmDialog = this.windowsSystem.ShowConfirmDialog("test!", "this is a message", "no", "yes");
-            var configuration = confirmDialog.AcceptOption.Configuration;
-            configuration.Plate = this.assetsService.Load<Material>(EvergineContent.XRV.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;
         }
 
