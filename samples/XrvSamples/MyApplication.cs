@@ -8,7 +8,6 @@ using Xrv.Core;
 using Xrv.LoadModel;
 using Xrv.Painter;
 using Xrv.Ruler;
-using Evergine.Framework.Threading;
 
 namespace XrvSamples
 {

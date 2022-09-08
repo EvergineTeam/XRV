@@ -84,6 +84,7 @@ namespace Xrv.Painter
                     await EvergineForegroundTask.Run(() =>
                     {
                         scene.Managers.EntityManager.Add(cursor.Pointer);
+                        cursor.Pointer.IsEnabled = false;
                     });
                 });
             });

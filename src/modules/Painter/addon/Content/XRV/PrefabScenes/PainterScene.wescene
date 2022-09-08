@@ -84,8 +84,11 @@ Items:
         Thickness: Medium
       - !Xrv.Painter.Components.PainterCursor,Xrv.Painter
         Id: b5ad3519-a9fc-4023-a996-fa368c10f3b0
+        Hand: RightHand
         IsEnabled: true
-        SecondsBetweenUpdate: 1.0
+        MinAlpha: 0.200000003
+        UpdateOrder: 0.5
+        UpdateTime: 0.300000012
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: WheelContainer

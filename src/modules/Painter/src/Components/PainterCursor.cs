@@ -5,47 +5,42 @@ using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.XR;
 using Evergine.Mathematics;
-using Evergine.MRTK.Base.EventDatum.Input;
-using Evergine.MRTK.Base.Interfaces.InputSystem.Handlers;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.Emulation;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 
 namespace Xrv.Painter.Components
 {
     /// <summary>
     /// Moves and update position for painter cursor.
     /// </summary>
-    public class PainterCursor : Component, IMixedRealityPointerHandler
+    public class PainterCursor : Behavior
     {
-        /// <summary>
-        /// Painter manager.
-        /// </summary>
         [BindComponent]
-        protected PainterManager manager;
+        private PainterManager manager = null;
 
-        private IEnumerable<Cursor> cursors;
+        private Cursor cursor;
         private Vector3 lastPosition;
-        private Stopwatch current;
+        private TimeSpan current;
         private TimeSpan betweenUpdate = TimeSpan.Zero;
-        private float secondsBetweenUpdate = 1f;
+        private float updateTime = 1f;
         private HoloGraphic pointerMaterial;
         private Transform3D pointerTransform;
-
+        private XRHandedness hand;
 
         /// <summary>
-        /// Gets or sets tiks.
+        /// Gets or sets update time.
         /// </summary>
-        public float SecondsBetweenUpdate
+        public float UpdateTime
         {
-            get => this.secondsBetweenUpdate;
+            get => this.updateTime;
             set
             {
-                this.secondsBetweenUpdate = value;
-                this.betweenUpdate = TimeSpan.FromSeconds(this.secondsBetweenUpdate);
+                this.updateTime = value;
+                this.betweenUpdate = TimeSpan.FromSeconds(this.updateTime);
             }
         }
 
@@ -56,47 +51,25 @@ namespace Xrv.Painter.Components
         public Entity Pointer { get; set; }
 
         /// <summary>
-        /// Gets or sets min Alpha.
+        /// Gets or sets hand.
         /// </summary>
-        public float MinAlpha { get; set; } = 0.5f;
-
-        /// <inheritdoc/>
-        public void OnPointerDown(MixedRealityPointerEventData eventData)
+        public XRHandedness Hand
         {
-            this.current = Stopwatch.StartNew();
-            this.DoAction(eventData);
-            this.pointerMaterial.Parameters_Alpha = 1f;
-        }
-
-        /// <inheritdoc/>
-        public void OnPointerDragged(MixedRealityPointerEventData eventData)
-        {
-            if (this.current.Elapsed > this.betweenUpdate)
+            get => this.hand;
+            set
             {
-                this.current.Restart();
-                if (Vector3.Distance(this.lastPosition, eventData.Position) > 0.01f)
+                this.hand = value;
+                if (this.IsAttached)
                 {
-                    this.DoAction(eventData);
+                    this.UpdateHandTracking(value, true);
                 }
             }
         }
 
-        /// <inheritdoc/>
-        public void OnPointerUp(MixedRealityPointerEventData eventData)
-        {
-            if (this.manager.Mode == PainterModes.Painter)
-            {
-                this.manager.EndPaint();
-            }
-
-            this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
-            this.current.Stop();
-        }
-
-        /// <inheritdoc/>
-        public void OnPointerClicked(MixedRealityPointerEventData eventData)
-        {
-        }
+        /// <summary>
+        /// Gets or sets min Alpha.
+        /// </summary>
+        public float MinAlpha { get; set; } = 0.5f;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -110,8 +83,6 @@ namespace Xrv.Painter.Components
             {
                 return true;
             }
-
-            this.cursors = this.Owner.EntityManager.FindComponentsOfType<CursorTouch>(isExactType: false);
 
             this.Pointer.IsEnabled = false;
             this.pointerMaterial = new HoloGraphic(this.Pointer.FindComponentInChildren<MaterialComponent>().Material);
@@ -133,12 +104,9 @@ namespace Xrv.Painter.Components
             this.Pointer.IsEnabled = mode == PainterModes.Hand ? false : true;
             this.pointerMaterial.Albedo = mode == PainterModes.Painter ? Color.White : Color.Red;
             this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
-            foreach (var item in this.cursors)
-            {
-                item.Owner.FindComponent<Transform3D>().PositionChanged += this.PainterCursor_PositionChanged;
-            }
 
             this.manager.OnModeChanged += this.Manager_OnModeChanged;
+            this.UpdateHandTracking(this.hand, true);
         }
 
         /// <inheritdoc/>
@@ -151,19 +119,55 @@ namespace Xrv.Painter.Components
             }
 
             this.Pointer.IsEnabled = false;
-            foreach (var item in this.cursors)
-            {
-                item.Owner.FindComponent<Transform3D>().PositionChanged -= this.PainterCursor_PositionChanged;
-            }
 
             this.manager.OnModeChanged -= this.Manager_OnModeChanged;
+            this.UpdateHandTracking(this.hand, false);
         }
 
-        private void PainterCursor_PositionChanged(object sender, EventArgs e)
+        /// <inheritdoc/>
+        protected override void Update(TimeSpan gameTime)
         {
-            if (sender is Transform3D transform)
+            if (this.cursor != null && this.cursor.Owner.IsEnabled)
             {
-                this.pointerTransform.Position = transform.Position;
+                this.current += gameTime;
+                var position = this.pointerTransform.Position;
+                if (this.cursor.Pinch && !this.cursor.PreviousPinch)
+                {
+                    // Begin down
+                    this.DoAction(position);
+                    this.pointerMaterial.Parameters_Alpha = 1f;
+                    this.current = TimeSpan.Zero;
+                }
+                else if (this.cursor.Pinch && this.cursor.PreviousPinch)
+                {
+                    // Pinch dragg
+                    if (this.current > this.betweenUpdate)
+                    {
+                        if (Vector3.Distance(this.lastPosition, position) > 0.01f)
+                        {
+                            this.DoAction(position);
+                        }
+
+                        this.current = TimeSpan.Zero;
+                    }
+                }
+                else if (!this.cursor.Pinch && this.cursor.PreviousPinch)
+                {
+                    // Pinch up
+                    if (this.manager.Mode == PainterModes.Painter)
+                    {
+                        this.manager.EndPaint();
+                    }
+
+                    this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
+                }
+            }
+            else
+            {
+                if (this.Pointer.IsEnabled)
+                {
+                    this.Pointer.IsEnabled = false;
+                }
             }
         }
 
@@ -172,19 +176,48 @@ namespace Xrv.Painter.Components
             this.pointerMaterial.Albedo = e == PainterModes.Painter ? Color.White : Color.Red;
         }
 
-        private void DoAction(MixedRealityPointerEventData eventData)
+        private void DoAction(Vector3 position)
         {
             var mode = this.manager.Mode;
             if (mode == PainterModes.Painter)
             {
-                this.manager.DoPaint(eventData.Position);
+                this.manager.DoPaint(position);
             }
             else if (mode == PainterModes.Eraser)
             {
-                this.manager.DoErase(eventData.Position);
+                this.manager.DoErase(position);
             }
 
-            this.lastPosition = eventData.Position;
+            this.lastPosition = position;
+        }
+
+        private void UpdateHandTracking(XRHandedness value, bool subscribe)
+        {
+            if (Application.Current.IsEditor)
+            {
+                return;
+            }
+
+            if (this.cursor != null)
+            {
+                this.cursor.Owner.FindComponent<Transform3D>().PositionChanged -= this.PainterCursor_PositionChanged;
+            }
+
+            if (!subscribe)
+            {
+                return;
+            }
+
+            this.cursor = this.Owner.EntityManager.FindComponentsOfType<CursorTouch>(isExactType: false).FirstOrDefault(c => c.Owner.Name.Contains(value.ToString()));
+            this.cursor.Owner.FindComponent<Transform3D>().PositionChanged += this.PainterCursor_PositionChanged;
+        }
+
+        private void PainterCursor_PositionChanged(object sender, EventArgs e)
+        {
+            if (sender is Transform3D transform)
+            {
+                this.pointerTransform.Position = transform.Position;
+            }
         }
     }
 }

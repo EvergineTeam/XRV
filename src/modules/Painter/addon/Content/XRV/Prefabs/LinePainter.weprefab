@@ -6,7 +6,7 @@ Root:
   IsStatic: false
   Components:
     - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-      Id: f57cfca2-2846-4604-84e3-35e09a2f93c2
+      Id: fd01073d-e8ac-4e98-b01e-80d7fd93dc36
       IsEnabled: true
       LocalOrientation:
         W: -4.37113883E-08
@@ -22,10 +22,10 @@ Root:
         Y: 1.0
         Z: 1.0
     - !Evergine.Components.Primitives.LineMesh,Evergine.Components
-      Id: dc4284ed-e8d9-4d4d-937c-258888f03964
+      Id: 0aa5aca9-11db-4f10-bc2b-f5664967a7f7
       DiffuseSampler: null
       DiffuseTexture: 4b8746e7-6908-41bd-89bb-70653328b653
-      IsCameraAligned: false
+      IsCameraAligned: true
       IsEnabled: true
       IsLoop: false
       LinePoints:
@@ -49,7 +49,7 @@ Root:
             Y: 0.0
             Z: -0.5
           Thickness: 0.0120000001
-      LineType: LineList
+      LineType: LineStrip
       Model: 00000000-0000-0000-0000-000000000000
       TexcoordOffset:
         X: 0.0
@@ -57,9 +57,9 @@ Root:
       TextureTiling:
         X: 1.0
         Y: 1.0
-      UseWorldSpace: false
+      UseWorldSpace: true
     - !Evergine.Components.Graphics3D.LineMeshRenderer3D,Evergine.Components
-      Id: 4750bb3d-29b0-4ab0-9405-cca4fcd50f9b
+      Id: 0137125e-4deb-4d82-be8b-453fe4af0fab
       DebugBoundingbox: true
       IsCullingEnabled: true
       IsEnabled: true
@@ -67,4 +67,4 @@ Root:
       OrderBias: 0
       RenderFlags: None
   Children: []
-  Id: f7a918c2-06d4-4f13-b510-ff5c4805a095
+  Id: b1141e91-585f-49a5-9828-02c66e683afa

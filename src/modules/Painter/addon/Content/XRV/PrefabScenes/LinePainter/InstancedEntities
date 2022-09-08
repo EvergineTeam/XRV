@@ -26,7 +26,7 @@ Items:
         Id: de9c0ddc-7ab5-486b-90a9-2e9f5baeaae2
         DiffuseSampler: null
         DiffuseTexture: 4b8746e7-6908-41bd-89bb-70653328b653
-        IsCameraAligned: false
+        IsCameraAligned: true
         IsEnabled: true
         IsLoop: false
         LinePoints:
@@ -50,7 +50,7 @@ Items:
               Y: 0.0
               Z: -0.5
             Thickness: 0.0120000001
-        LineType: LineList
+        LineType: LineStrip
         Model: 00000000-0000-0000-0000-000000000000
         TexcoordOffset:
           X: 0.0
@@ -58,7 +58,7 @@ Items:
         TextureTiling:
           X: 1.0
           Y: 1.0
-        UseWorldSpace: false
+        UseWorldSpace: true
       - !Evergine.Components.Graphics3D.LineMeshRenderer3D,Evergine.Components
         Id: f73dae7d-1f14-488f-84e5-e2dc92a3c5a6
         DebugBoundingbox: true
@@ -95,7 +95,7 @@ Managers:
     IBLReflectionProbe: e783e532-512d-44e7-a7b5-7e7e90ffb70d
     IntensityMultiplier: 1.0
     IsEnabled: true
-    Strategy: Automatically
+    Strategy: OnDemand
   - !Evergine.Framework.Managers.ShadowMapManager,Evergine.Framework
     Id: 32ca7ad9-a42f-4add-a8f9-b0ee24c15e0f
     AutoDepthBounds: false
