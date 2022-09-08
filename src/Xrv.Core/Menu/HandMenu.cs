@@ -162,6 +162,7 @@ namespace Xrv.Core.Menu
 
             this.followButtonTransform.Owner.IsEnabled = false;
             this.text3DMesh.Owner.IsEnabled = false;
+            this.handMenuTransform.Owner.IsEnabled = false;
             this.UpdateFollowBehavior(false);
 
             this.ReorderButtons();
