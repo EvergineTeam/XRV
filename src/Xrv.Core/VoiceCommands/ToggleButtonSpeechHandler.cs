@@ -8,22 +8,35 @@ using System.Linq;
 
 namespace Xrv.Core.VoiceCommands
 {
+    /// <summary>
+    /// Speech handler for toggle buttons.
+    /// </summary>
     public class ToggleButtonSpeechHandler : SpeechHandler
     {
         [BindComponent(source: BindComponentSource.Children)]
         private ToggleButton button = null;
 
+        /// <summary>
+        ///  Gets the words that will make this speech handler to trigger.
+        /// </summary>
         [IgnoreEvergine]
         public new string[] SpeechKeywords
         {
             get => base.SpeechKeywords;
-            protected set => base.SpeechKeywords = value;
+            private set => base.SpeechKeywords = value;
         }
 
+        /// <summary>
+        ///  Gets or sets the words that will make this speech handler to trigger for Off state.
+        /// </summary>
         public string[] OffKeywords { get; set; }
 
+        /// <summary>
+        ///  Gets or sets the words that will make this speech handler to trigger for On state.
+        /// </summary>
         public string[] OnKeywords { get; set; }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -37,6 +50,7 @@ namespace Xrv.Core.VoiceCommands
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void InternalOnSpeechKeywordRecognized(string keyword)
         {
             base.InternalOnSpeechKeywordRecognized(keyword);

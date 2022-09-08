@@ -4,7 +4,6 @@ using Evergine.Framework.Managers;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
-using static Xrv.Core.Help.HelpSystem;
 
 namespace Xrv.Core.Settings
 {
