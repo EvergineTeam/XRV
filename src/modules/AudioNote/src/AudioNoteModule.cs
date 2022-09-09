@@ -32,20 +32,9 @@ namespace Xrv.AudioNote
     /// </summary>
     public class AudioNoteModule : Module
     {
-        /// <summary>
-        /// Audio Notes folder name.
-        /// </summary>
-        public const string FOLDERNAME = "audionotes";
-
-        /// <summary>
-        /// JSON file name.
-        /// </summary>
-        public const string FILENAME = "audionotes.json";
-
-        /// <summary>
-        /// JSON file name.
-        /// </summary>
-        public const string ANCHORTAG = "anchor tag";
+        private const string FOLDERNAME = "audionotes";
+        private const string FILENAME = "audionotes.json";
+        private const string ANCHORTAG = "anchor tag";
 
         private AssetsService assetsService;
         private XrvService xrv;
@@ -139,11 +128,6 @@ namespace Xrv.AudioNote
         {
             try
             {
-                if (!await this.fileAccess.ExistsDirectoryAsync(FOLDERNAME, cancellation))
-                {
-                    await this.fileAccess.CreateDirectoryAsync(FOLDERNAME, cancellation);
-                }
-
                 var audionotePath = Path.Combine(FOLDERNAME, note.Guid);
                 audionotePath += ".wav";
                 note.Path = audionotePath;
@@ -187,9 +171,18 @@ namespace Xrv.AudioNote
                 this.audioNoteFilePath = Path.Combine(FOLDERNAME, FILENAME);
                 var list = new List<AudioNoteData>();
 
+                if (!await this.fileAccess.ExistsDirectoryAsync(FOLDERNAME))
+                {
+                    await this.fileAccess.CreateDirectoryAsync(FOLDERNAME);
+                }
+
                 if (await this.fileAccess.ExistsFileAsync(this.audioNoteFilePath))
                 {
                     list = await JsonSerializer.DeserializeAsync<List<AudioNoteData>>(await this.fileAccess.GetFileAsync(this.audioNoteFilePath));
+                }
+                else
+                {
+                    await this.SerializeAudioNotesAsync();
                 }
 
                 foreach (var note in list)

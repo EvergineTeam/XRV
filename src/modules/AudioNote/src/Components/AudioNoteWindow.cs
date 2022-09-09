@@ -206,16 +206,10 @@ namespace Xrv.AudioNote
             {
                 if (this.windowState == AudioNoteWindowState.Recording)
                 {
-                    var stream = await this.StopRecordingServiceAsync();
-                    if (stream != null)
+                    ok = await this.StopRecordingAndSaveAsync();
+                    if (!ok)
                     {
-                        await this.SaveContentAsync(stream);
-                    }
-                    else
-                    {
-                        this.xrvService.WindowSystem.ShowAlertDialog("Audio note save error", "Cannot save audio.", "Ok");
-                        this.WindowState = AudioNoteWindowState.ReadyToPlay;
-                        return false;
+                        return ok;
                     }
                 }
 
@@ -226,12 +220,13 @@ namespace Xrv.AudioNote
                 {
                     this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot reproduce audio.", "Ok");
                     this.WindowState = AudioNoteWindowState.ReadyToPlay;
+                    ok = false;
                 }
             }
             catch (Exception ex)
             {
                 this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
-                return false;
+                ok = false;
             }
 
             return ok;
@@ -326,6 +321,35 @@ namespace Xrv.AudioNote
             this.deleteButton.ButtonReleased -= this.DeleteButton_ButtonReleased;
             this.playButton.ButtonReleased -= this.PlayButton_ButtonReleased;
             this.recordButton.ButtonReleased -= this.RecordButton_ButtonReleased;
+        }
+
+        /// <inheritdoc/>
+        protected override async void OnDeactivated()
+        {
+            base.OnDeactivated();
+
+            if (this.recordingService.IsRecording)
+            {
+                this.xrvService.PubSub.Publish(new SaveAnchorPositions());
+                await this.StopRecordingAndSaveAsync();
+            }
+        }
+
+        private async Task<bool> StopRecordingAndSaveAsync(CancellationToken cancellation = default)
+        {
+            var stream = await this.StopRecordingServiceAsync();
+            if (stream != null)
+            {
+                await this.SaveContentAsync(stream, cancellation);
+            }
+            else
+            {
+                this.xrvService.WindowSystem.ShowAlertDialog("Audio note save error", "Cannot save audio.", "Ok");
+                this.WindowState = AudioNoteWindowState.ReadyToPlay;
+                return false;
+            }
+
+            return true;
         }
 
         private void RecordingService_RecordingTimeChanged(object sender, TimeSpan e)
