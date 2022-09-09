@@ -21,5 +21,10 @@ namespace Xrv.Painter.Models
         /// Gets or sets entity result.
         /// </summary>
         public List<LinePointInfo> Line { get; set; }
+
+        /// <summary>
+        /// Gets or sets entity related.
+        /// </summary>
+        public Entity Entity { get; set; }
     }
 }

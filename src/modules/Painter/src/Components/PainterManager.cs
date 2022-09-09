@@ -5,7 +5,6 @@ using Evergine.Components.Graphics3D;
 using Evergine.Components.Primitives;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -68,6 +67,8 @@ namespace Xrv.Painter.Components
     /// </summary>
     public class PainterManager : Component
     {
+        private const string LINETAG = "linetag";
+
         /// <summary>
         /// Assets service.
         /// </summary>
@@ -92,7 +93,6 @@ namespace Xrv.Painter.Components
         [BindEntity(source: BindEntitySource.Children, tag: "Commands")]
         protected Entity commandsEntity;
 
-        private List<Entity> lines = new List<Entity>();
         private List<PainterAction> actions = new List<PainterAction>();
 
         private PencilMesh pencilMesh;
@@ -155,7 +155,25 @@ namespace Xrv.Painter.Components
         /// </summary>
         public void Undo()
         {
+            if (this.actions.Any())
+            {
+                var index = this.actions.Count - 1;
+                var last = this.actions[index];
 
+                if (last.Mode == PainterModes.Painter)
+                {
+                    this.Owner.EntityManager.Remove(last.Entity);
+                }
+                else if (last.Mode == PainterModes.Eraser)
+                {
+                    var line = this.CreateEntity();
+                    this.Owner.EntityManager.Add(line.entity);
+                    line.mesh.LinePoints = last.Line;
+                    line.mesh.RefreshMeshes();
+                }
+
+                this.actions.RemoveAt(index);
+            }
         }
 
         /// <summary>
@@ -164,12 +182,11 @@ namespace Xrv.Painter.Components
         public void ClearAll()
         {
             this.actions.Clear();
-            foreach (var item in this.lines)
+            var lines = this.Owner.EntityManager.FindAllByTag(LINETAG).ToList();
+            foreach (var item in lines)
             {
-                this.Owner.Scene.Managers.EntityManager.Remove(item);
+                this.Owner.EntityManager.Remove(item);
             }
-
-            this.lines.Clear();
         }
 
         /// <summary>
@@ -188,7 +205,6 @@ namespace Xrv.Painter.Components
                     Line = collision.FindComponent<PencilMesh>().LinePoints,
                 });
 
-                this.lines.Remove(collision);
                 this.Owner.EntityManager.Remove(collision);
             }
         }
@@ -202,22 +218,11 @@ namespace Xrv.Painter.Components
             if (this.pencilMesh == null)
             {
                 // Creates first point
-                this.pencilMesh = new PencilMesh()
-                {
-                    IsDebugMode = true,
-                };
+                var pencil = this.CreateEntity();
+                this.pencilMesh = pencil.mesh;
+                var line = pencil.entity;
 
-                var line = new Entity($"line_{Guid.NewGuid()}")
-                    .AddComponent(new Transform3D())
-                    .AddComponent(this.pencilMesh)
-                    .AddComponent(new MaterialComponent()
-                    {
-                        Material = this.SelectedMaterial,
-                    })
-                    .AddComponent(new MeshRenderer());
-
-                this.lines.Add(line);
-                this.Owner.Scene.Managers.EntityManager.Add(line);
+                this.Owner.EntityManager.Add(line);
 
                 this.pencilMesh.LinePoints.Add(new LinePointInfo()
                 {
@@ -232,6 +237,7 @@ namespace Xrv.Painter.Components
                 {
                     Mode = this.Mode,
                     Line = this.pencilMesh.LinePoints,
+                    Entity = line,
                 });
             }
             else
@@ -317,7 +323,7 @@ namespace Xrv.Painter.Components
 
         private Entity FindCollision(BoundingSphere bounding)
         {
-            foreach (var line in this.lines)
+            foreach (var line in this.Owner.EntityManager.FindAllByTag(LINETAG).ToList())
             {
                 var mesh = line.FindComponent<PencilMesh>();
                 if (mesh.CheckLineCollision(bounding))
@@ -425,6 +431,28 @@ namespace Xrv.Painter.Components
                     backPlate.Material = null;
                 }
             }
+        }
+
+        private (Entity entity, PencilMesh mesh) CreateEntity()
+        {
+            var mesh = new PencilMesh()
+            {
+                IsDebugMode = true,
+            };
+
+            var entity = new Entity($"line_{Guid.NewGuid()}")
+                {
+                    Tag = LINETAG,
+                }
+                .AddComponent(new Transform3D())
+                .AddComponent(mesh)
+                .AddComponent(new MaterialComponent()
+                {
+                    Material = this.SelectedMaterial,
+                })
+                .AddComponent(new MeshRenderer());
+
+            return (entity, mesh);
         }
     }
 }

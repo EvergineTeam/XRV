@@ -5,6 +5,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
+using System.Collections.Generic;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -25,6 +26,7 @@ namespace Xrv.Painter
         private AssetsService assetsService;
         private XrvService xrv;
         private Window painterWindow;
+        private IEnumerable<string> voiceCommands;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PainterModule"/> class.
@@ -45,6 +47,8 @@ namespace Xrv.Painter
                 Name = "Painter",
                 Contents = this.HelpContent,
             };
+
+            this.voiceCommands = new List<string>() { "paint", "hand", "erase", "thin", "thick", "medium" };
         }
 
         /// <inheritdoc/>
@@ -58,6 +62,9 @@ namespace Xrv.Painter
 
         /// <inheritdoc/>
         public override TabItem Settings => null;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> VoiceCommands => this.voiceCommands;
 
         /// <inheritdoc/>
         public override void Initialize(Scene scene)
