@@ -7,15 +7,28 @@ using System.Linq;
 
 namespace Xrv.Core.Messaging
 {
+    /// <summary>
+    /// Simple publisher-subscriber implementation. It allows messaging
+    /// using classes, so delivered information could be as complex as required.
+    /// </summary>
     public class PubSub
     {
         private Dictionary<Type, IList> subscriptions;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PubSub"/> class.
+        /// </summary>
         public PubSub()
         {
             this.subscriptions = new Dictionary<Type, IList>();
         }
 
+        /// <summary>
+        /// Subscribes to a given message type.
+        /// </summary>
+        /// <typeparam name="TMessage">Message type.</typeparam>
+        /// <param name="action">Action to be executed when a message of this type is notified.</param>
+        /// <returns>Subscription token.</returns>
         public Guid Subscribe<TMessage>(Action<TMessage> action)
         {
             var type = typeof(TMessage);
@@ -35,6 +48,10 @@ namespace Xrv.Core.Messaging
             return newSub.Token;
         }
 
+        /// <summary>
+        /// Unsubscribes from messaging bus.
+        /// </summary>
+        /// <param name="token">Subscription token.</param>
         public void Unsubscribe(Guid token)
         {
             foreach (var typeSubs in this.subscriptions.Values)
@@ -50,6 +67,11 @@ namespace Xrv.Core.Messaging
             }
         }
 
+        /// <summary>
+        /// Notifies about a message.
+        /// </summary>
+        /// <typeparam name="TMessage">Message type.</typeparam>
+        /// <param name="message">Message instance.</param>
         public void Publish<TMessage>(TMessage message)
         {
             var type = typeof(TMessage);

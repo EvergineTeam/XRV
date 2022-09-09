@@ -3,6 +3,7 @@
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using System.Collections.Generic;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
@@ -36,6 +37,8 @@ namespace Xrv.Ruler
                 IsToggle = true,
                 TextOn = "Hide",
                 TextOff = "Show",
+                VoiceCommandOff = VoiceCommandsEntries.ShowRuler,
+                VoiceCommandOn = VoiceCommandsEntries.HideRuler,
             };
 
             this.settings = new TabItem()
@@ -51,25 +54,24 @@ namespace Xrv.Ruler
             };
         }
 
-        /// <summary>
-        /// Gets the Module name.
-        /// </summary>
+        /// <inheritdoc/>
         public override string Name => "Ruler";
 
-        /// <summary>
-        /// Gets the button description (HandMenu).
-        /// </summary>
+        /// <inheritdoc/>
         public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
 
-        /// <summary>
-        /// Gets the help section.
-        /// </summary>
+        /// <inheritdoc/>
         public override TabItem Help => this.help;
 
-        /// <summary>
-        /// Gets the settings section.
-        /// </summary>
+        /// <inheritdoc/>
         public override TabItem Settings => this.settings;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> VoiceCommands => new[]
+        {
+            VoiceCommandsEntries.ShowRuler,
+            VoiceCommandsEntries.HideRuler,
+        };
 
         /// <inheritdoc/>
         public override void Initialize(Scene scene)
@@ -116,6 +118,13 @@ namespace Xrv.Ruler
             }
 
             return this.rulerHelp;
+        }
+
+        private static class VoiceCommandsEntries
+        {
+            public const string ShowRuler = "Show ruler";
+
+            public const string HideRuler = "Hide ruler";
         }
     }
 }

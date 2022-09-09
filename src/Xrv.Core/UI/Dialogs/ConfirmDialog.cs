@@ -5,14 +5,30 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 
 namespace Xrv.Core.UI.Dialogs
 {
+    /// <summary>
+    /// Confirmation dialog.
+    /// </summary>
     public class ConfirmDialog : Dialog
     {
+        /// <summary>
+        /// Key for cancel button.
+        /// </summary>
         public const string CancelKey = nameof(CancelKey);
+
+        /// <summary>
+        /// Key for accept button.
+        /// </summary>
         public const string AcceptKey = nameof(AcceptKey);
 
+        /// <summary>
+        /// Gets cancel option.
+        /// </summary>
         [IgnoreEvergine]
         public DialogOption CancelOption { get; } = new DialogOption(CancelKey);
 
+        /// <summary>
+        /// Gets accept option.
+        /// </summary>
         [IgnoreEvergine]
         public DialogOption AcceptOption { get; } = new DialogOption(AcceptKey);
 

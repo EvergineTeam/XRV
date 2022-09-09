@@ -13,26 +13,58 @@ using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.UI.Dialogs
 {
+    /// <summary>
+    /// Base class for dialogs.
+    /// </summary>
     public abstract class Dialog : Window
     {
+        /// <summary>
+        /// Assets service.
+        /// </summary>
         [BindService]
         protected AssetsService assetsService;
 
+        /// <summary>
+        /// Buttons holder entity.
+        /// </summary>
         protected Entity buttonsHolder;
+
+        /// <summary>
+        /// Cancel button holder.
+        /// </summary>
         protected Entity cancelHolder;
+
+        /// <summary>
+        /// Accept button holder.
+        /// </summary>
         protected Entity acceptHolder;
+
+        /// <summary>
+        /// Single option button holder.
+        /// </summary>
         protected Entity singleButtonHolder;
 
         private Dictionary<PressableButton, string> options;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Dialog"/> class.
+        /// </summary>
         public Dialog()
         {
             this.options = new Dictionary<PressableButton, string>();
         }
 
+        /// <summary>
+        /// Gets or sets dialog result.
+        /// </summary>
         [IgnoreEvergine]
         public string Result { get; protected set; }
 
+        /// <summary>
+        /// Adds an option to the dialog.
+        /// </summary>
+        /// <param name="button">Button instance.</param>
+        /// <param name="option">Option instance.</param>
         public void AddOption(PressableButton button, DialogOption option)
         {
             this.options.Add(button, option.Key);
@@ -55,8 +87,14 @@ namespace Xrv.Core.UI.Dialogs
             }
         }
 
+        /// <summary>
+        /// Instantiates buttons.
+        /// </summary>
         protected abstract void InstantiateOptions();
 
+        /// <summary>
+        /// Clears dialog options.
+        /// </summary>
         protected virtual void Clear()
         {
             this.cancelHolder?.RemoveAllChildren();
@@ -67,6 +105,11 @@ namespace Xrv.Core.UI.Dialogs
             this.options.Clear();
         }
 
+        /// <summary>
+        /// Creates a button instance from option.
+        /// </summary>
+        /// <param name="option">Option model.</param>
+        /// <returns>Button entity.</returns>
         protected virtual Entity CreateButtonInstance(DialogOption option)
         {
             var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);

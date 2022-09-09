@@ -12,6 +12,11 @@ using Xrv.Core.UI.Cursors;
 
 namespace Xrv.Core.UI.Buttons
 {
+    /// <summary>
+    /// Modifies buttons to meet XRV look and feel:
+    /// - Text is not displayed when button is idle.
+    /// - Text is shown when user hovers the button.
+    /// </summary>
     public class XrvPressableButtonLookAndFeel : CursorDetectorBase
     {
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Text", isRequired: false)]
@@ -29,8 +34,16 @@ namespace Xrv.Core.UI.Buttons
         private Vector3 iconDefaultPosition;
         private Vector3 iconHoverPosition;
 
+        /// <summary>
+        /// Gets or sets offset for the text.
+        /// </summary>
         public float TextPositionOffset { get; set; } = 0f;
 
+        /// <summary>
+        /// Applies look and feel to a button.
+        /// </summary>
+        /// <param name="button">Button entity.</param>
+        /// <returns>Look and feel component.</returns>
         public static XrvPressableButtonLookAndFeel ApplyTo(Entity button)
         {
             if (button.FindComponent<Collider3D>(isExactType: false) == null)

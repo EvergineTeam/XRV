@@ -7,6 +7,10 @@ using System;
 
 namespace Xrv.Core.Messaging
 {
+    /// <summary>
+    /// Publishes a message once button is pressed.
+    /// </summary>
+    /// <typeparam name="TMessage">Message type.</typeparam>
     public abstract class PubSubOnButtonPress<TMessage> : Component
     {
         [BindService]
@@ -32,6 +36,12 @@ namespace Xrv.Core.Messaging
             this.button.ButtonReleased -= this.Button_ButtonReleased;
         }
 
+        /// <summary>
+        /// Retrieves message instance, depending on button state.
+        /// </summary>
+        /// <param name="isOn">For toggle buttons, it indicates toggle state.
+        /// Always true for standard buttons.</param>
+        /// <returns>Message instance.</returns>
         protected abstract TMessage GetPublishData(bool isOn);
 
         private void Button_ButtonReleased(object sender, EventArgs e)

@@ -13,6 +13,7 @@ using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Settings;
 using Xrv.Core.UI.Tabs;
+using Xrv.Core.VoiceCommands;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
 namespace Xrv.Core
@@ -23,6 +24,7 @@ namespace Xrv.Core
     public class XrvService : Service
     {
         private readonly Dictionary<Type, Module> modules;
+        private readonly VoiceCommandsSystem voiceSystem = null;
 
         [BindService]
         private AssetsService assetsService = null;
@@ -38,6 +40,8 @@ namespace Xrv.Core
             {
                 message.Module.Run(message.IsOn);
             });
+            this.voiceSystem = new VoiceCommandsSystem();
+            this.voiceSystem.RegisterService();
         }
 
         /// <summary>
@@ -125,8 +129,11 @@ namespace Xrv.Core
             TabControl.Builder = new TabControlBuilder(this.assetsService);
             this.Help = new HelpSystem(this, scene.Managers.EntityManager);
             this.Help.Load();
-            this.Settings = new SettingsSystem(this, scene.Managers.EntityManager);
+            this.Settings = new SettingsSystem(this, this.assetsService, scene.Managers.EntityManager);
             this.Settings.Load();
+
+            // Voice commands
+            this.voiceSystem.Load();
 
             foreach (var module in this.modules.Values)
             {
@@ -148,9 +155,19 @@ namespace Xrv.Core
                     this.Settings.AddTabItem(module.Settings);
                 }
 
+                // Voice commands
+                var voiceCommands = module.VoiceCommands;
+                if (voiceCommands?.Any() == true)
+                {
+                    this.voiceSystem.RegisterCommands(voiceCommands);
+                }
+
                 // Modules initialization
                 module.Initialize(scene);
             }
+
+            // Initialize voice commands (after collecting keywords)
+            this.voiceSystem.Initialize();
         }
 
         internal Module GetModuleForHandButton(MenuButtonDescription definition)

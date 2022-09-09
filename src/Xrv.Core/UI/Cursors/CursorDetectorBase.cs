@@ -9,8 +9,14 @@ using System.Linq;
 
 namespace Xrv.Core.UI.Cursors
 {
+    /// <summary>
+    /// Detects cursor hover and element.
+    /// </summary>
     public abstract class CursorDetectorBase : Behavior
     {
+        /// <summary>
+        /// Detection collider.
+        /// </summary>
         [BindComponent(isExactType: false, source: BindComponentSource.Children)]
         protected Collider3D collider3D;
 
@@ -18,6 +24,9 @@ namespace Xrv.Core.UI.Cursors
 
         private (Cursor cursor, Transform3D transform)[] cursors;
 
+        /// <summary>
+        /// Gets a value indicating whether hover is detected.
+        /// </summary>
         public bool IsDetected => this.detectedCursorIndex >= 0;
 
         /// <inheritdoc/>
@@ -102,6 +111,10 @@ namespace Xrv.Core.UI.Cursors
             }
         }
 
+        /// <summary>
+        /// Invoked when cursor hover starts/stops being detected.
+        /// </summary>
+        /// <param name="isDetected">True if detected; false if not.</param>
         protected abstract void OnCursorDetected(bool isDetected);
 
         private bool CheckCursorIsDetected(Cursor cursor, Transform3D cursorTransform)

@@ -7,6 +7,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
+using System.Collections.Generic;
 using System.Threading;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -48,6 +49,9 @@ namespace Xrv.LoadModel
 
         /// <inheritdoc/>
         public override TabItem Settings => null;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> VoiceCommands => null;
 
         /// <inheritdoc/>
         public override void Initialize(Scene scene)

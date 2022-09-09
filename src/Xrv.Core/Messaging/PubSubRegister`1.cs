@@ -5,6 +5,10 @@ using System;
 
 namespace Xrv.Core.Messaging
 {
+    /// <summary>
+    /// Registers to publisher-subscriber specific message type.
+    /// </summary>
+    /// <typeparam name="TMessage">Message type.</typeparam>
     public abstract class PubSubRegister<TMessage> : Component
     {
         [BindService]
@@ -33,6 +37,10 @@ namespace Xrv.Core.Messaging
             this.pubSub.Unsubscribe(this.subToken);
         }
 
+        /// <summary>
+        /// Invoked when a message of registered type is received.
+        /// </summary>
+        /// <param name="message">Message instance.</param>
         protected abstract void OnReceived(TMessage message);
     }
 }
