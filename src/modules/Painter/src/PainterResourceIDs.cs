@@ -33,11 +33,6 @@ namespace Xrv.Painter
             /// <summary>
             /// Asset Path (XRV/Prefabs/LinePainter.weprefab.weprf)
             /// </summary>
-            public static readonly Guid LinePainter = new Guid("364d146a-de34-4976-ac7e-9bbbf4433f10");
-
-            /// <summary>
-            /// Asset Path (XRV/Prefabs/LinePainter.weprefab.weprf)
-            /// </summary>
             public static readonly Guid PointerPainter = new Guid("7dc1377a-f1cc-4f55-8807-137e07e0e81d");
         }
     }

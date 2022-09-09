@@ -95,8 +95,7 @@ namespace Xrv.Painter.Components
         private List<Entity> lines = new List<Entity>();
         private List<PainterAction> actions = new List<PainterAction>();
 
-        private LineMesh lineMesh;
-        private List<LinePointInfo> linePoint;
+        private PencilMesh pencilMesh;
         private IEnumerable<PressableButton> modeButtons;
         private IEnumerable<PressableButton> thicknessButtons;
         private IEnumerable<PressableButton> commandsButtons;
@@ -179,13 +178,14 @@ namespace Xrv.Painter.Components
         /// <param name="position">Cursor position.</param>
         public void DoErase(Vector3 position)
         {
-            var collision = this.FindCollision(position, 0.1f);
+            var sphere = new BoundingSphere(position, 0.1f);
+            var collision = this.FindCollision(sphere);
             if (collision != null)
             {
                 this.actions.Add(new PainterAction()
                 {
                     Mode = this.Mode,
-                    Line = collision.FindComponent<LineMesh>().LinePoints,
+                    Line = collision.FindComponent<PencilMesh>().LinePoints,
                 });
 
                 this.lines.Remove(collision);
@@ -199,40 +199,50 @@ namespace Xrv.Painter.Components
         /// <param name="position">Cursor position.</param>
         public void DoPaint(Vector3 position)
         {
-            if (this.lineMesh == null)
+            if (this.pencilMesh == null)
             {
                 // Creates first point
-                var line = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.LinePainter).Instantiate();
+                this.pencilMesh = new PencilMesh()
+                {
+                    IsDebugMode = true,
+                };
+
+                var line = new Entity($"line_{Guid.NewGuid()}")
+                    .AddComponent(new Transform3D())
+                    .AddComponent(this.pencilMesh)
+                    .AddComponent(new MaterialComponent()
+                    {
+                        Material = this.SelectedMaterial,
+                    })
+                    .AddComponent(new MeshRenderer());
+
                 this.lines.Add(line);
                 this.Owner.Scene.Managers.EntityManager.Add(line);
 
-                this.lineMesh = line.FindComponent<LineMesh>();
-                this.linePoint = new List<LinePointInfo>()
-                    {
-                        new LinePointInfo()
-                        {
-                            Color = this.Color,
-                            Position = position,
-                            Thickness = this.GetThickNess(this.Thickness),
-                        },
-                    };
-
-                this.lineMesh.LinePoints = this.linePoint;
-                this.actions.Add(new PainterAction()
-                {
-                    Mode = this.Mode,
-                    Line = this.linePoint,
-                });
-            }
-            else
-            {
-                this.linePoint.Add(new LinePointInfo()
+                this.pencilMesh.LinePoints.Add(new LinePointInfo()
                 {
                     Color = this.Color,
                     Position = position,
                     Thickness = this.GetThickNess(this.Thickness),
                 });
-                this.lineMesh.LinePoints = this.linePoint;
+
+                this.pencilMesh.RefreshMeshes();
+
+                this.actions.Add(new PainterAction()
+                {
+                    Mode = this.Mode,
+                    Line = this.pencilMesh.LinePoints,
+                });
+            }
+            else
+            {
+                this.pencilMesh.LinePoints.Add(new LinePointInfo()
+                {
+                    Color = this.Color,
+                    Position = position,
+                    Thickness = this.GetThickNess(this.Thickness),
+                });
+                this.pencilMesh.RefreshMeshes();
             }
         }
 
@@ -241,7 +251,7 @@ namespace Xrv.Painter.Components
         /// </summary>
         public void EndPaint()
         {
-            this.lineMesh = null;
+            this.pencilMesh = null;
         }
 
         /// <inheritdoc/>
@@ -305,17 +315,14 @@ namespace Xrv.Painter.Components
             }
         }
 
-        private Entity FindCollision(Vector3 position, float distance)
+        private Entity FindCollision(BoundingSphere bounding)
         {
             foreach (var line in this.lines)
             {
-                var mesh = line.FindComponent<LineMesh>();
-                foreach (var point in mesh.LinePoints)
+                var mesh = line.FindComponent<PencilMesh>();
+                if (mesh.CheckLineCollision(bounding))
                 {
-                    if (Vector3.Distance(position, point.Position) < distance)
-                    {
-                        return line;
-                    }
+                    return line;
                 }
             }
 
@@ -327,11 +334,11 @@ namespace Xrv.Painter.Components
             switch (thickness)
             {
                 case PainterThickness.Thin:
-                    return 0.01f;
+                    return 0.001f;
                 case PainterThickness.Medium:
-                    return 0.04f;
+                    return 0.005f;
                 default:
-                    return 0.08f;
+                    return 0.01f;
             }
         }
 
