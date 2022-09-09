@@ -170,6 +170,14 @@ namespace Xrv.Painter.Components
                     this.Owner.EntityManager.Add(line.entity);
                     line.mesh.LinePoints = last.Line;
                     line.mesh.RefreshMeshes();
+
+                    // Add line so it can be removed again with undo.
+                    this.actions.Add(new PainterAction()
+                    {
+                        Mode = PainterModes.Painter,
+                        Line = last.Line,
+                        Entity = line.entity,
+                    });
                 }
 
                 this.actions.RemoveAt(index);
@@ -441,9 +449,9 @@ namespace Xrv.Painter.Components
             };
 
             var entity = new Entity($"line_{Guid.NewGuid()}")
-                {
-                    Tag = LINETAG,
-                }
+            {
+                Tag = LINETAG,
+            }
                 .AddComponent(new Transform3D())
                 .AddComponent(mesh)
                 .AddComponent(new MaterialComponent()
