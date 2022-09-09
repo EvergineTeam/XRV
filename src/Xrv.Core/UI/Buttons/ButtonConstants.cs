@@ -2,8 +2,14 @@
 
 namespace Xrv.Core.UI.Buttons
 {
+    /// <summary>
+    /// Constants for buttons.
+    /// </summary>
     public static class ButtonConstants
     {
+        /// <summary>
+        /// Button size, in meters.
+        /// </summary>
         public static float SquareButtonSize = 0.032f;
     }
 }

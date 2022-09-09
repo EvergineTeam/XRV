@@ -16,6 +16,11 @@ namespace Xrv.Core
                 public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
             }
 
+            public static class Buttons
+            {
+                public static Guid ButtonPrimary = new Guid("ce1f6bc9-39ac-4a0a-a913-07963f7342f5");
+            }
+
             public static Guid logoMaterial = new Guid("db59d1e4-43a8-4e6b-94c8-bf5bf44a7d7b");
         }
 
@@ -29,7 +34,13 @@ namespace Xrv.Core
 
         public static class Prefabs
         {
+            public static Guid About_weprefab = new Guid("adf890cb-87ff-4ddf-be94-98472df4ebb0");
+
             public static Guid BaseDialogContents = new Guid("f544117b-51ca-46af-894e-49a48094651f");
+
+            public static Guid GeneralHelp_weprefab = new Guid("4ab4d356-6777-4d70-b55a-c374647d8e1d");
+
+            public static Guid GeneralSettings_weprefab = new Guid("372c3942-5cf9-4ef0-a88e-d162a4b4abe1");
 
             public static Guid HandMenu = new Guid("bf71482f-e2ca-41ea-bc66-a8422663e178");
 
@@ -38,10 +49,6 @@ namespace Xrv.Core
             public static Guid TextButton = new Guid("69925256-16a0-4938-81fb-2810f6afa4eb");
 
             public static Guid Window = new Guid("6083dd5c-6f8b-4b07-b501-933c59401982");
-
-            public static Guid GeneralHelp_weprefab = new Guid("4ab4d356-6777-4d70-b55a-c374647d8e1d");
-
-            public static Guid About_weprefab = new Guid("adf890cb-87ff-4ddf-be94-98472df4ebb0");
         }
     }
 }

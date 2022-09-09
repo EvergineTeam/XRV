@@ -4,11 +4,14 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.MRTK.SDK.Features.Input.Handlers;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Xrv.Core.Extensions;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Buttons;
+using Xrv.Core.VoiceCommands;
 
 namespace Xrv.Core.Menu
 {
@@ -31,6 +34,11 @@ namespace Xrv.Core.Menu
             this.assetsService = assetsService;
         }
 
+        /// <summary>
+        /// Creates an instance of a button from its description.
+        /// </summary>
+        /// <param name="description">Button description.</param>
+        /// <returns>Button entity.</returns>
         public Entity CreateInstance(MenuButtonDescription description) =>
             description.IsToggle ? this.CreateToggleButton(description) : this.CreateStandardButton(description);
 
@@ -44,6 +52,16 @@ namespace Xrv.Core.Menu
                 Text = description.TextOn,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
             });
+
+            if (!string.IsNullOrEmpty(description.VoiceCommandOn))
+            {
+                button.AddComponent(new PressableButtonSpeechHandler
+                {
+                    SpeechHandlerFireCondition = SpeechHandlerFireCondition.Global,
+                    SpeechKeywords = new[] { description.VoiceCommandOn },
+                });
+            }
+
             this.AssociateActivationPublishers(description, button);
             Workarounds.MrtkForceButtonNullPlate(button);
             var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
@@ -64,6 +82,18 @@ namespace Xrv.Core.Menu
                 Text = description.TextOff,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff),
             });
+
+            if (!string.IsNullOrEmpty(description.VoiceCommandOn)
+                || !string.IsNullOrEmpty(description.VoiceCommandOff))
+            {
+                button.AddComponent(new ToggleButtonSpeechHandler
+                {
+                    SpeechHandlerFireCondition = SpeechHandlerFireCondition.Global,
+                    OnKeywords = string.IsNullOrEmpty(description.VoiceCommandOn) ? null : new[] { description.VoiceCommandOn },
+                    OffKeywords = string.IsNullOrEmpty(description.VoiceCommandOff) ? null : new[] { description.VoiceCommandOff },
+                });
+            }
+
             button.AddComponent(new ToggleButtonConfigurator
             {
                 TargetState = ToggleState.On,

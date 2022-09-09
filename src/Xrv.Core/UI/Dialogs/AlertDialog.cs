@@ -5,10 +5,19 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 
 namespace Xrv.Core.UI.Dialogs
 {
+    /// <summary>
+    /// Alert dialog.
+    /// </summary>
     public class AlertDialog : Dialog
     {
+        /// <summary>
+        /// Key for accept button.
+        /// </summary>
         public const string AcceptKey = nameof(AcceptKey);
 
+        /// <summary>
+        /// Gets accept option.
+        /// </summary>
         [IgnoreEvergine]
         public DialogOption AcceptOption { get; } = new DialogOption(AcceptKey);
 

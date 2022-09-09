@@ -1,6 +1,10 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Framework;
 using Evergine.Framework.Managers;
+using Evergine.Framework.Prefabs;
+using Evergine.Framework.Services;
+using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
@@ -12,18 +16,22 @@ namespace Xrv.Core.Settings
     /// </summary>
     public class SettingsSystem
     {
-        private readonly EntityManager entityManager;
         private readonly XrvService xrvService;
+        private readonly AssetsService assetsService;
+        private readonly EntityManager entityManager;
+
         private MenuButtonDescription handMenuButtonDescription;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsSystem"/> class.
         /// </summary>
         /// <param name="xrvService">XRV service.</param>
+        /// <param name="assetsService">Assets service.</param>
         /// <param name="entityManager">Entity manager.</param>
-        public SettingsSystem(XrvService xrvService, EntityManager entityManager)
+        public SettingsSystem(XrvService xrvService, AssetsService assetsService, EntityManager entityManager)
         {
             this.xrvService = xrvService;
+            this.assetsService = assetsService;
             this.entityManager = entityManager;
         }
 
@@ -63,7 +71,7 @@ namespace Xrv.Core.Settings
             window.Tabs.Add(new TabItem
             {
                 Name = "General",
-                Contents = () => null,
+                Contents = () => this.GetGeneralSettingsEntity(),
             });
 
             return window;
@@ -76,6 +84,7 @@ namespace Xrv.Core.Settings
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Settings,
                 TextOn = "Settings",
+                VoiceCommandOn = VoiceCommands.ShowSettings,
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
             this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
@@ -87,6 +96,17 @@ namespace Xrv.Core.Settings
             {
                 this.Window.Open();
             }
+        }
+
+        private Entity GetGeneralSettingsEntity()
+        {
+            var rulerSettingPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.GeneralSettings_weprefab);
+            return rulerSettingPrefab.Instantiate();
+        }
+
+        internal static class VoiceCommands
+        {
+            public static string ShowSettings = "Show settings";
         }
     }
 }

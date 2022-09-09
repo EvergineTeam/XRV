@@ -8,18 +8,32 @@ using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.UI.Tabs
 {
+    /// <summary>
+    /// Tabbed window component.
+    /// </summary>
     public class TabbedWindow : Window
     {
         private TabControl tabControl;
         private List<TabItem> tabsToBeLoadedWhenAvailable;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TabbedWindow"/> class.
+        /// </summary>
         public TabbedWindow()
         {
             this.tabsToBeLoadedWhenAvailable = new List<TabItem>();
         }
 
+        /// <summary>
+        /// Gets tab items collection.
+        /// </summary>
         public IList<TabItem> Tabs { get => this.tabControl?.Items ?? this.tabsToBeLoadedWhenAvailable; }
 
+        /// <summary>
+        /// Creates a tabbed window instance.
+        /// </summary>
+        /// <param name="xrvService">XRV service instance.</param>
+        /// <returns>Tabbed window.</returns>
         public static Entity Create(XrvService xrvService)
         {
             var owner = xrvService.WindowSystem.BuildWindow(new TabbedWindow(), (BaseWindowConfigurator)null);

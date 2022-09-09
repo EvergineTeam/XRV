@@ -162,6 +162,7 @@ namespace Xrv.Core.Menu
 
             this.followButtonTransform.Owner.IsEnabled = false;
             this.text3DMesh.Owner.IsEnabled = false;
+            this.handMenuTransform.Owner.IsEnabled = false;
             this.UpdateFollowBehavior(false);
 
             this.ReorderButtons();
@@ -382,6 +383,11 @@ namespace Xrv.Core.Menu
             this.tagAlong.IsEnabled = followEnabled;
             this.manipulationHandler.IsEnabled = !followEnabled;
             Workarounds.ChangeToggleButtonState(this.followButtonToggle.Owner, followEnabled);
+        }
+
+        internal static class VoiceCommands
+        {
+            public static string DetachMenu = "Detach menu";
         }
 
         //// -- Begin Debug area --

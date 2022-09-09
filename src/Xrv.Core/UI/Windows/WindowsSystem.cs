@@ -178,6 +178,9 @@ namespace Xrv.Core.UI.Windows
             var configurator = owner.FindComponent<DialogConfigurator>();
             configurator.Content = contentPrefab.Instantiate();
 
+            var configuration = this.confirmDialog.AcceptOption.Configuration;
+            configuration.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.Buttons.ButtonPrimary);
+
             owner.IsEnabled = false;
         }
 
