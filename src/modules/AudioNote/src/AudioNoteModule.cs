@@ -150,7 +150,7 @@ namespace Xrv.AudioNote
         }
 
         /// <inheritdoc/>
-        public override async void Initialize(Scene scene)
+        public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
@@ -166,7 +166,7 @@ namespace Xrv.AudioNote
             this.fileAccess = new ApplicationDataFileAccess();
 
             // Load previous audionotes
-            await EvergineBackgroundTask.Run(async () =>
+            EvergineBackgroundTask.Run(async () =>
             {
                 this.audioNoteFilePath = Path.Combine(FOLDERNAME, FILENAME);
                 var list = new List<AudioNoteData>();
