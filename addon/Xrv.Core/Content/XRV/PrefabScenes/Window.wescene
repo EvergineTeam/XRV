@@ -25,6 +25,7 @@ Items:
       - !Xrv.Core.UI.Windows.WindowConfigurator,Xrv.Core
         Id: 447e11ce-6204-4245-be59-2b9d3b967e84
         Content: null
+        DisplayBackPlate: true
         DisplayFrontPlate: true
         DisplayLogo: true
         FrontPlateOffsets:
@@ -76,10 +77,13 @@ Items:
         MaxVAngle: 0.785398185
         MaxVerticalDistance: 0.100000001
         MinDistance: 0.400000006
-        SmoothDistanceFactor: 1.2
+        SmoothDistanceFactor: 1.20000005
         SmoothOrientationFactor: 0.0500000007
-        SmoothPositionFactor: 0.01
+        SmoothPositionFactor: 0.00999999978
         UpdateOrder: 0.5
+      - !Xrv.Core.Themes.ApplyTheme,Xrv.Core
+        Id: 621b5880-5535-46f9-8741-f51d3f7abc5a
+        IsEnabled: true
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: back

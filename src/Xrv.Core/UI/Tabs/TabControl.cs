@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Xrv.Core.Extensions;
+using Xrv.Core.Themes;
 using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Tabs
@@ -174,9 +175,9 @@ namespace Xrv.Core.UI.Tabs
             base.OnActivated();
             this.UpdateFrontPlateSize();
             this.ReorderItems();
-            this.UpdateItemsTextColor();
             this.selectedItem = this.items.FirstOrDefault();
             this.UpdateSelectedItem();
+            this.UpdateItemsTextColor();
         }
 
         /// <inheritdoc/>
@@ -370,6 +371,11 @@ namespace Xrv.Core.UI.Tabs
             if (!this.contentsContainer.ChildEntities.Contains(content))
             {
                 this.contentsContainer.AddChild(content);
+            }
+
+            if (content.FindComponent<ApplyTheme>() == null)
+            {
+                content.AddComponent(new ApplyTheme());
             }
 
             content.IsEnabled = true;

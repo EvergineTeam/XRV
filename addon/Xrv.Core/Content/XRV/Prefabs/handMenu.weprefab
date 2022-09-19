@@ -31,9 +31,9 @@ Root:
       MaxVAngle: 0.785398185
       MaxVerticalDistance: 0.100000001
       MinDistance: 0.400000006
-      SmoothDistanceFactor: 1.2
+      SmoothDistanceFactor: 1.20000005
       SmoothOrientationFactor: 0.0500000007
-      SmoothPositionFactor: 0.01
+      SmoothPositionFactor: 0.00999999978
       UpdateOrder: 0.5
     - !Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation.SimpleManipulationHandler,Evergine.MRTK
       Id: 282ccf4e-7e9e-4bf8-a4a0-b4078a0b3f8c
@@ -62,6 +62,9 @@ Root:
         X: 0.0320000015
         Y: 0.064000003
         Z: 0.0320000015
+    - !Xrv.Core.Themes.ApplyTheme,Xrv.Core
+      Id: a29a9e93-6918-49f5-91bc-a581003eb2ad
+      IsEnabled: true
   Children:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: backPlate

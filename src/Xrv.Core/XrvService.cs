@@ -12,6 +12,7 @@ using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Settings;
+using Xrv.Core.Themes;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.VoiceCommands;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
@@ -28,6 +29,9 @@ namespace Xrv.Core
 
         [BindService]
         private AssetsService assetsService = null;
+
+        [BindService]
+        private GraphicsContext graphicsContext = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XrvService"/> class.
@@ -68,6 +72,11 @@ namespace Xrv.Core
         /// Gets window system access.
         /// </summary>
         public WindowsSystem WindowSystem { get; private set; }
+
+        /// <summary>
+        /// Gets access to themes system.
+        /// </summary>
+        public ThemesSystem ThemesSystem { get; private set; }
 
         /// <summary>
         /// Adds a module to module system. Module will be initalized on scene initialization.
@@ -113,6 +122,10 @@ namespace Xrv.Core
         /// <param name="scene">Scene instance.</param>
         public void Initialize(Scene scene)
         {
+            // Themes
+            this.ThemesSystem = new ThemesSystem(this.assetsService, this.graphicsContext);
+            this.ThemesSystem.Load();
+
             // Clear camera background
             var camera = scene.Managers.EntityManager.FindComponentsOfType<Camera3D>().First();
             camera.BackgroundColor = Color.Transparent;
@@ -126,7 +139,7 @@ namespace Xrv.Core
             this.HandMenu = handMenuManager.Initialize();
 
             // Add controls and systems
-            TabControl.Builder = new TabControlBuilder(this.assetsService);
+            TabControl.Builder = new TabControlBuilder(this, this.assetsService);
             this.Help = new HelpSystem(this, scene.Managers.EntityManager);
             this.Help.Load();
             this.Settings = new SettingsSystem(this, this.assetsService, scene.Managers.EntityManager);

@@ -1,9 +1,6 @@
-using Evergine.Components.Graphics3D;
+using Evergine.Common.Graphics;
 using Evergine.Framework;
-using Evergine.Framework.Graphics;
-using Evergine.Framework.Services;
 using Xrv.Core;
-using Xrv.Core.Menu;
 
 namespace XrvSamples.Scenes
 {

@@ -6,6 +6,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using System.Collections.Generic;
+using Xrv.Core.Themes;
 
 namespace Xrv.Core.UI.Tabs
 {
@@ -14,6 +15,7 @@ namespace Xrv.Core.UI.Tabs
     /// </summary>
     public class TabControlBuilder
     {
+        private readonly XrvService xrvService;
         private readonly AssetsService assetsService;
         private Entity entity;
         private TabControl control;
@@ -21,9 +23,11 @@ namespace Xrv.Core.UI.Tabs
         /// <summary>
         /// Initializes a new instance of the <see cref="TabControlBuilder"/> class.
         /// </summary>
+        /// <param name="xrvService">XRV service.</param>
         /// <param name="assetsService">Assets service.</param>
-        public TabControlBuilder(AssetsService assetsService)
+        public TabControlBuilder(XrvService xrvService, AssetsService assetsService)
         {
+            this.xrvService = xrvService;
             this.assetsService = assetsService;
         }
 
@@ -33,11 +37,12 @@ namespace Xrv.Core.UI.Tabs
         /// <returns>Builder instance.</returns>
         public TabControlBuilder Create()
         {
+            var theme = this.xrvService.ThemesSystem.CurrentTheme;
             var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TabControl);
             this.entity = prefab.Instantiate();
             this.control = this.entity.FindComponentInChildren<TabControl>();
-            this.control.ActiveItemTextColor = Color.White; // TODO
-            this.control.InactiveItemTextColor = Color.FromHex("#70F2F8");
+            this.control.ActiveItemTextColor = theme[ThemeColor.PrimaryColor3];
+            this.control.InactiveItemTextColor = theme[ThemeColor.SecondaryColor1];
 
             return this;
         }

@@ -1,30 +1,51 @@
 !Evergine.Assets.Exporters.MaterialMetaFile,Evergine.Assets
-Id: dd2f33ce-66ab-406e-b133-4d43e4e25113
+Id: 88713f2f-e87d-4515-8a87-bbe4bc162bf5
 DefaultProfile:
   ExcludeAsset: false
   Name: null
   Platform: Undefined
 ExportAsRaw: false
 MaterialInfo:
-  Id: 236b8a30-1a12-46cb-a782-4cb9d4719ee6
+  Id: f0b72d97-26ec-401f-8394-617b522f0486
   ActiveDirectives:
-    - ALPHABLEND
+    - PROXIMITY_LIGHT
     - PROXIMITY_LIGHT_TWO_SIDED
     - ROUND_CORNERS
   AllowInstancing: false
   EffectID: 4f7e4c24-e83c-4350-9cd4-511fb2199cf4
-  Layer: 978c9ed6-c781-435a-9e7c-e17e049608d3
+  Layer: 0db59561-b3f5-444f-b5de-e62e3a5b42bf
   OrderBias: 0
   Parameters:
     - Name: WorldViewProj
       Type: Evergine.Mathematics.Matrix4x4,Evergine.Mathematics
-      ValueByteArray: uTeJQOijSz0/Wo0/oVaNP1gDkDOYe5pA9cQYvQzBGL3VxDVAerqZvSNq1b+sZNW/v+SlLnMC6TQe7ItAvBuPQA==
+      ValueByteArray: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
     - Name: World
       Type: Evergine.Mathematics.Matrix4x4,Evergine.Mathematics
-      ValueByteArray: AAAAQAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAACAPw==
+      ValueByteArray: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+    - Name: EyePosition
+      Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
+      ValueByteArray: AAAAAAAAAAAAAAAA
+    - Name: EyeCount
+      Type: System.Int32
+      ValueByteArray: AAAAAA==
+    - Name: MultiviewViewProj
+      Type: Evergine.Mathematics.Matrix4x4,Evergine.Mathematics
+      ValueByteArray: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+    - Name: SunDirection
+      Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
+      ValueByteArray: AAAAAAAAAAAAAAAA
+    - Name: SunColor
+      Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
+      ValueByteArray: AAAAAAAAAAAAAAAA
+    - Name: HoverLightData
+      Type: Evergine.Mathematics.Vector4,Evergine.Mathematics
+      ValueByteArray: AAAAAAAAAAAAAAAAAAAAAA==
+    - Name: ProximityLightData
+      Type: Evergine.Mathematics.Vector4,Evergine.Mathematics
+      ValueByteArray: AAAAAAAAAAAAAAAAAAAAAA==
     - Name: Color
       Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
-      ValueByteArray: gYCAPOHg4D2xsDA+
+      ValueByteArray: AAAAALa1NT/y8XE/
     - Name: Alpha
       Type: System.Single
       ValueByteArray: AACAPw==
@@ -39,7 +60,7 @@ MaterialInfo:
       ValueByteArray: AACAQA==
     - Name: BorderWidth
       Type: System.Single
-      ValueByteArray: zcxMPQ==
+      ValueByteArray: zczMPQ==
     - Name: BorderMinValue
       Type: System.Single
       ValueByteArray: zczMPQ==
@@ -48,19 +69,19 @@ MaterialInfo:
       ValueByteArray: AACAPw==
     - Name: RoundCornerRadious
       Type: System.Single
-      ValueByteArray: 5cxMPQ==
+      ValueByteArray: CtejPA==
     - Name: RoundCornerMargin
       Type: System.Single
       ValueByteArray: AAAAAA==
     - Name: Cutoff
       Type: System.Single
       ValueByteArray: AAAAPw==
-    - Name: RoundCornersRadious
-      Type: Evergine.Mathematics.Vector4,Evergine.Mathematics
-      ValueByteArray: AAAAPwAAAD8AAAA/AAAAPw==
     - Name: EdgeSmoothingValue
       Type: System.Single
       ValueByteArray: bxIDOw==
+    - Name: RoundCornersRadious
+      Type: Evergine.Mathematics.Vector4,Evergine.Mathematics
+      ValueByteArray: AAAAPwAAAD8AAAA/AAAAPw==
     - Name: FadeBeginDistance
       Type: System.Single
       ValueByteArray: CtcjPA==
@@ -96,39 +117,18 @@ MaterialInfo:
       ValueByteArray: AAAAAAAAAAA=
     - Name: IridescenceIntensity
       Type: System.Single
-      ValueByteArray: AACAPw==
+      ValueByteArray: AAAAPw==
     - Name: IridescenceThreshold
       Type: System.Single
-      ValueByteArray: ZmZmPw==
+      ValueByteArray: zcxMPQ==
     - Name: IridescenceAngle
       Type: System.Single
       ValueByteArray: FK5Hvw==
-    - Name: EyePosition
-      Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
-      ValueByteArray: aAUewKDIqj21lG5A
-    - Name: EyeCount
-      Type: System.Int32
-      ValueByteArray: AQAAAA==
-    - Name: MultiviewViewProj
-      Type: Evergine.Mathematics.Matrix4x4,Evergine.Mathematics
-      ValueByteArray: uTcJQOijyzw/Wg0/oVYNP1gDEDOYexpA9cSYvAzBmLzVxLU/eroZvSNqVb+sZFW/v+SlLnMC6TQe7ItAvBuPQA==
-    - Name: SunDirection
-      Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
-      ValueByteArray: AAAAAAAAAAAAAIA/
-    - Name: SunColor
-      Type: Evergine.Mathematics.Vector3,Evergine.Mathematics
-      ValueByteArray: AACAPwAAgD8AAIA/
-    - Name: HoverLightData
-      Type: Evergine.Mathematics.Vector4,Evergine.Mathematics
-      ValueByteArray: AAAAAAAAAAAAAAAAAAAAAA==
-    - Name: ProximityLightData
-      Type: Evergine.Mathematics.Vector4,Evergine.Mathematics
-      ValueByteArray: AAAAAAAAAAAAAAAAAAAAAA==
   Samplers:
     - ID: 00000000-0000-0000-0000-000000000000
       Name: null
-    - ID: 7d1e2792-2031-42bb-a67c-0dbd282be12a
-      Name: IridescentSpectrumMapSampler
+    - ID: 00000000-0000-0000-0000-000000000000
+      Name: null
   Textures:
     - ID: 00000000-0000-0000-0000-000000000000
       Name: null
