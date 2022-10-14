@@ -17,8 +17,9 @@ namespace XrvSamples.Quest
         ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.ScreenLayout | ConfigChanges.UiMode | ConfigChanges.Navigation | ConfigChanges.Keyboard,
         ScreenOrientation = ScreenOrientation.Landscape,
         LaunchMode = LaunchMode.SingleTask,
+        MainLauncher = true,
         Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen")]
-    [IntentFilter(new[] { Android.Content.Intent.ActionView },
+    [IntentFilter(new[] { Android.Content.Intent.ActionMain },
         Categories = new[] { Android.Content.Intent.CategoryLauncher, "com.oculus.intent.category.VR" })]
     public class MainActivity : global::Android.App.Activity
     {
