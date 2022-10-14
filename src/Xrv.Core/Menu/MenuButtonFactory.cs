@@ -4,6 +4,7 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.Input.Handlers;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -129,6 +130,6 @@ namespace Xrv.Core.Menu
         }
 
         private Prefab GetButtonPrefab() =>
-            this.assetsService.Load<Prefab>(CoreResourcesIDs.Mrtk.Prefabs.PressableButtonPlated);
+            this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.PressableButtonPlated);
     }
 }

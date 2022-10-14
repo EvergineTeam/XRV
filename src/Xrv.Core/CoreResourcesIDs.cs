@@ -37,19 +37,6 @@ namespace Xrv.Core
             public static Guid FrontPlateMaterial = new Guid("1a7070d5-cccf-4b60-93c8-eddafd9b51d5");
         }
 
-        public static class Mrtk
-        {
-            public static class Materials
-            {
-                public static Guid HolographicButtonContentCageProximity = new Guid("876d9b5c-5016-4796-8473-92a19a5d244c");
-            }
-
-            public static class Prefabs
-            {
-                public static Guid PressableButtonPlated = new Guid("dabe9073-b1d1-42c5-99b9-ebc0cb4a7430");
-            }
-        }
-
         public static class Prefabs
         {
             public static Guid About_weprefab = new Guid("adf890cb-87ff-4ddf-be94-98472df4ebb0");

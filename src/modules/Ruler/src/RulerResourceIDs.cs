@@ -23,6 +23,8 @@ namespace Xrv.Ruler
 
             /// <summary> Asset Path (XRV/Materials/HandleSelected.wemt) </summary>
             public static readonly Guid HandleSelected = new Guid("5552c50c-36c4-424c-9355-3e5c7ad8af04");
+
+            public static Guid HolographicButtonContentCageProximity = new Guid("876d9b5c-5016-4796-8473-92a19a5d244c");
         }
 
         public sealed class Prefabs
@@ -35,6 +37,8 @@ namespace Xrv.Ruler
 
             /// <summary> Asset Path (XRV/Prefabs/RulerSettings.weprefab.weprf) </summary>
             public static readonly Guid RulerSettings_weprefab = new Guid("86606363-84f4-47c8-955e-7ea8be9dd9bd");
+
+            public static Guid PressableButtonPlated = new Guid("dabe9073-b1d1-42c5-99b9-ebc0cb4a7430");
         }
     }
 }

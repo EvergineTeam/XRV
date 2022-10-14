@@ -3,6 +3,7 @@ using Evergine.Common.Graphics;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK;
 using Evergine.MRTK.Effects;
 using System;
 
@@ -246,7 +247,7 @@ namespace Xrv.Core.Themes
             }
 
             this.UpdateProximityLight(
-                CoreResourcesIDs.Mrtk.Materials.HolographicButtonContentCageProximity,
+                MRTKResourceIDs.Materials.HolographicButtonContentCageProximity,
                 color,
                 this.buttonContentCageProximityLight);
         }
