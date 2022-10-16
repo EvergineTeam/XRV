@@ -50,7 +50,7 @@ namespace XrvSamples
             //var scene = assetsService.Load<Scenes.StorageScene>(EvergineContent.Scenes.StorageScene_wescene);
             //var scene = assetsService.Load<Scenes.EmptyScene>(EvergineContent.Scenes.Empty_wescene);
             //var scene = assetsService.Load<Scenes.WindowScene>(EvergineContent.Scenes.Windows_wescene);
-            var scene = assetsService.Load<Scenes.ScrollsScene>(EvergineContent.Scenes.Empty_wescene);
+            var scene = assetsService.Load<Scenes.ScrollsScene>(EvergineContent.Scenes.Scrolls_wescene);
 
             ScreenContext screenContext = new ScreenContext(scene);
             screenContextManager.To(screenContext);

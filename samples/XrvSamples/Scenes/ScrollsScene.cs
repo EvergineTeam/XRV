@@ -4,6 +4,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.UX.Components.Scrolls;
+using System.Linq;
 using Xrv.Core;
 
 namespace XrvSamples.Scenes
@@ -16,10 +17,11 @@ namespace XrvSamples.Scenes
             var xrv = Application.Current.Container.Resolve<XrvService>();
             xrv.Initialize(this);
 
-
             var assetsService = Application.Current.Container.Resolve<AssetsService>();
-            var scrollViewer = assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.ListView_weprefab);
-            var scrollViewerEntity = scrollViewer.Instantiate();            
+
+            // ListView               
+            var listView = this.Managers.EntityManager.FindAllByTag("ListView").First();
+
 
             var data = new ListViewData(3);
             for (int i = 0; i < 40; i++)
@@ -27,7 +29,7 @@ namespace XrvSamples.Scenes
                 data.Add($"Column {i}.0", $"Column {i}.1", $"Column {i}.2");
             }
 
-            scrollViewerEntity.AddComponent(new ListView()
+            listView.AddComponent(new ListView()
             {
                 DataSource = data,
                 Render = new ListViewRender()
@@ -39,7 +41,15 @@ namespace XrvSamples.Scenes
 
             ////TextCellRenderer.Instance.Debug = true;
 
-            this.Managers.EntityManager.Add(scrollViewerEntity);
+
+            // ScrollView
+            var scrollView = this.Managers.EntityManager.FindAllByTag("ScrollView").First();
+
+            scrollView.AddComponent(new ScrollView()
+            {
+                Debug = true,
+            });
+            
         }
     }
 }
