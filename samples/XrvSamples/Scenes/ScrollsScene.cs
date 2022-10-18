@@ -17,8 +17,6 @@ namespace XrvSamples.Scenes
             var xrv = Application.Current.Container.Resolve<XrvService>();
             xrv.Initialize(this);
 
-            var assetsService = Application.Current.Container.Resolve<AssetsService>();
-
             // ListView               
             var listView = this.Managers.EntityManager.FindAllByTag("ListView").First();
 
@@ -29,26 +27,19 @@ namespace XrvSamples.Scenes
                 data.Add($"Column {i}.0", $"Column {i}.1", $"Column {i}.2");
             }
 
-            listView.AddComponent(new ListView()
+            var listViewComponent = listView.FindComponent<ListView>();
+
+            if (listViewComponent != null)
             {
-                DataSource = data,
-                Render = new ListViewRender()
+                listViewComponent.DataSource = data;
+                listViewComponent.Render = new ListViewRender()
                                 .AddColumn("Title1", 0.3f, TextCellRenderer.Instance)
                                 .AddColumn("Title2", 0.3f, TextCellRenderer.Instance)
-                                .AddColumn("Title2", 0.3f, TextCellRenderer.Instance),
-                HeaderEnabled = true,
-            });
-
-            ////TextCellRenderer.Instance.Debug = true;
-
+                                .AddColumn("Title2", 0.3f, TextCellRenderer.Instance);                
+            }
 
             // ScrollView
             var scrollView = this.Managers.EntityManager.FindAllByTag("ScrollView").First();
-
-            scrollView.AddComponent(new ScrollView()
-            {
-                Debug = true,
-            });
             
         }
     }
