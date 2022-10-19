@@ -43,7 +43,7 @@ namespace Xrv.Core
 
             public static Guid BaseDialogContents = new Guid("f544117b-51ca-46af-894e-49a48094651f");
 
-            public static Guid GeneralHelp_weprefab = new Guid("4ab4d356-6777-4d70-b55a-c374647d8e1d");
+            public static Guid GeneralHelp_weprefab = new Guid("d16caec5-e260-47ce-a812-15f98c31d0ad");
 
             public static Guid GeneralSettings_weprefab = new Guid("372c3942-5cf9-4ef0-a88e-d162a4b4abe1");
 
