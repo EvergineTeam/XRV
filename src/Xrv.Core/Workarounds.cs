@@ -23,6 +23,11 @@ namespace Xrv.Core
         /// <param name="tag">Tag to take material component from.</param>
         public static void MrtkForceButtonNullPlate(Entity button, string tag = "PART_Plate")
         {
+            // TODO: this has been fixed in the MRTK (commit 714737b)
+            // When the MRTK package has been updated to a version that includes this change, replace every call
+            // to Workarounds.MrtkForceButtonNullPlate to setting AllowBackPlateNullMaterial to true in
+            // the corresponding ButtonConfigurator
+
             // Workaround MTRK ignores null material on StandardButtonConfigurator
             button.FindChildrenByTag(tag, true).First().FindComponent<MaterialComponent>().Material = null;
         }
