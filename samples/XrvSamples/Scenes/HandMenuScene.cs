@@ -14,6 +14,7 @@ namespace XrvSamples.Scenes
         private HandMenu handMenu;
         private Text3DMesh columnSize;
         private Text3DMesh numberOfButtons;
+        private Text3DMesh detachStatus;
         private int counter;
 
         protected override void OnPostCreateXRScene()
@@ -60,6 +61,13 @@ namespace XrvSamples.Scenes
             {
                 this.AddButton();
             }
+
+            this.detachStatus = this.Managers.EntityManager
+                .FindAllByTag("detachStatus")
+                .First()
+                .FindComponentInChildren<Text3DMesh>();
+            this.UpdateStatusInfo();
+            this.handMenu.MenuStateChanged += this.HandMenu_MenuStateChanged;
         }
 
         private void IncreseColumnSize_ButtonReleased(object sender, EventArgs e)
@@ -112,5 +120,9 @@ namespace XrvSamples.Scenes
             this.columnSize.Text = this.handMenu.ButtonsPerColumn.ToString();
             this.numberOfButtons.Text = this.handMenu.ButtonDescriptions.Count.ToString();
         }
+
+        private void HandMenu_MenuStateChanged(object sender, EventArgs e) => this.UpdateStatusInfo();
+
+        private void UpdateStatusInfo() => this.detachStatus.Text = this.handMenu.IsDetached ? "Detached" : "Attached";
     }
 }
