@@ -27,6 +27,7 @@ namespace Xrv.Core.Menu
     {
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
+        internal const int MinimumNumberOfButtonsPerColumn = 4;
 
         private readonly ObservableCollection<MenuButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
@@ -102,7 +103,8 @@ namespace Xrv.Core.Menu
 
         /// <summary>
         /// Gets or sets number of buttons per column. When a column can't hold more buttons,
-        /// a new column will be added.
+        /// a new column will be added. Minimum number of buttons per column is 4, as this is
+        /// the minimal number to have a proper layout when menu is detached.
         /// </summary>
         public int ButtonsPerColumn
         {
@@ -110,6 +112,11 @@ namespace Xrv.Core.Menu
 
             set
             {
+                if (value < 4)
+                {
+                    throw new InvalidOperationException($"Minimum number of buttons is {MinimumNumberOfButtonsPerColumn}");
+                }
+
                 if (this.maxButtonsPerColumn != value && value > 0)
                 {
                     this.maxButtonsPerColumn = value;

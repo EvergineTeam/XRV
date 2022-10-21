@@ -2,6 +2,7 @@
 using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Xrv.Core;
 using Xrv.Core.Menu;
@@ -69,8 +70,15 @@ namespace XrvSamples.Scenes
 
         private void DecreaseColumnSize_ButtonReleased(object sender, EventArgs e)
         {
-            this.handMenu.ButtonsPerColumn--;
-            this.UpdateCounts();
+            try
+            {
+                this.handMenu.ButtonsPerColumn--;
+                this.UpdateCounts();
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
         }
 
         private void IncreaseNumberOfButtons_ButtonReleased(object sender, EventArgs e) =>
