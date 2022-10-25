@@ -1,0 +1,55 @@
+name: CI
+on:
+  push:
+    branches:
+    - develop
+  pull_request:
+    branches:
+    - develop
+  workflow_dispatch:
+env:
+  coreProjectFilePath: src/Xrv.Core/Xrv.Core.csproj
+  mrtkProjectFilePath: submodules/MRTK/Source/Evergine.MRTK/Evergine.MRTK.csproj
+  windowsSdkVersion: 18362
+  buildConfiguration: Release
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: MSBuild setup
+        uses: microsoft/setup-msbuild@v1.1.3
+      - name: NuGet setup
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: "6.x"
+      - name: Install Windows SDK
+        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.8
+        with:
+          sdk-version: ${{  env.windowsSdkVersion }}
+      - name: Build MRTK
+        shell: pwsh
+        run: |
+          nuget restore ${{  env.mrtkProjectFilePath  }}
+          msbuild ${{  env.mrtkProjectFilePath  }} /p:Configuration=${{  env.buildConfiguration  }}
+      - name: Build Xrv.Core
+        shell: pwsh
+        run: |
+          nuget restore ${{  env.coreProjectFilePath  }}
+          msbuild ${{  env.coreProjectFilePath  }} /p:Configuration=${{  env.buildConfiguration  }}
+      - name: Build modules
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path src/modules -Recurse -Filter '*.csproj' | 
+          Where-Object { $_.Directory.Name -like "src" } | 
+          Foreach-Object { 
+            Write-Host "Restore and build $($_.Name)" 
+            nuget restore $_.FullName
+            msbuild $_.FullName /p:Configuration=${{  env.buildConfiguration  }}
+          }
+        
+      
+      
