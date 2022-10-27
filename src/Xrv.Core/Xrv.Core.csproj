@@ -3,6 +3,11 @@
     <TargetFrameworks>netstandard2.0;uap10.0.16299</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+	  <_Parameter1>Xrv.Core.Tests</_Parameter1>
+	</AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.1" />
     <PackageReference Include="Azure.Storage.Files.Shares" Version="12.11.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />

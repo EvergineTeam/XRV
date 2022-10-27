@@ -12,6 +12,32 @@ namespace Xrv.Core.Storage
     /// </summary>
     public abstract class FileAccess
     {
+        private string baseDirectory;
+
+        /// <summary>
+        /// Gets or sets base directory.
+        /// </summary>
+        public string BaseDirectory
+        {
+            get => this.baseDirectory;
+
+            set
+            {
+                if (this.baseDirectory != value)
+                {
+                    this.baseDirectory = value;
+                    this.OnBaseDirectoryUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ensures that <see cref="BaseDirectory" /> exist, creating it if not.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task.</returns>
+        public abstract Task CreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Enumerates directory from root directory.
         /// </summary>
@@ -101,5 +127,12 @@ namespace Xrv.Core.Storage
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task.</returns>
         public abstract Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Invoked when base directory path is updated.
+        /// </summary>
+        protected virtual void OnBaseDirectoryUpdate()
+        {
+        }
     }
 }

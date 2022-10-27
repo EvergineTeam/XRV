@@ -18,7 +18,8 @@ namespace Xrv.Core.Storage
     public class ApplicationDataFileAccess : FileAccess
     {
         private const int FileBufferSize = 4096;
-        private readonly string rootPath;
+        private string rootPath;
+        private string basePath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationDataFileAccess"/> class.
@@ -35,6 +36,19 @@ namespace Xrv.Core.Storage
             {
                 this.rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             }
+
+            this.basePath = this.rootPath;
+        }
+
+        /// <inheritdoc/>
+        public override Task CreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
+        {
+            if (!Directory.Exists(this.basePath))
+            {
+                Directory.CreateDirectory(this.basePath);
+            }
+
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
@@ -130,6 +144,13 @@ namespace Xrv.Core.Storage
             }
         }
 
-        private string GetFullPath(string relativePath) => Path.Combine(this.rootPath, relativePath);
+        /// <inheritdoc/>
+        protected override void OnBaseDirectoryUpdate()
+        {
+            base.OnBaseDirectoryUpdate();
+            this.basePath = string.IsNullOrEmpty(this.BaseDirectory) ? this.rootPath : Path.Combine(this.rootPath, this.BaseDirectory);
+        }
+
+        private string GetFullPath(string relativePath) => Path.Combine(this.basePath, relativePath);
     }
 }

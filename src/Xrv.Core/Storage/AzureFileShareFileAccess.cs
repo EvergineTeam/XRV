@@ -5,6 +5,7 @@ using Azure.Storage.Files.Shares;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace Xrv.Core.Storage
     /// </summary>
     public class AzureFileShareFileAccess : FileAccess
     {
+        private const string DirectoryDelimiter = @"\";
         private readonly ShareClient client;
 
         /// <summary>
@@ -24,6 +26,13 @@ namespace Xrv.Core.Storage
         public AzureFileShareFileAccess(ShareClient client)
         {
             this.client = client;
+        }
+
+        /// <inheritdoc/>
+        public override Task CreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
+        {
+            ShareDirectoryClient directory = this.client.GetDirectoryClient(this.BaseDirectory);
+            return directory.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -74,7 +83,9 @@ namespace Xrv.Core.Storage
         public override async Task CreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var directories = relativePath.Split(Path.DirectorySeparatorChar);
-            var directory = this.client.GetRootDirectoryClient();
+            ShareDirectoryClient directory = string.IsNullOrEmpty(this.BaseDirectory)
+                ? this.client.GetRootDirectoryClient()
+                : this.client.GetDirectoryClient(this.BaseDirectory);
 
             for (int i = 0; i < directories.Length; i++)
             {
@@ -88,24 +99,36 @@ namespace Xrv.Core.Storage
         public override async Task DeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
+            bool exists = await directory.ExistsAsync().ConfigureAwait(false);
+            if (!exists)
+            {
+                return;
+            }
 
             // Recursively delete directories, as SDK does not support it
-            foreach (var subDirectoryName in await this.EnumerateDirectoriesAsync(directory.Path).ConfigureAwait(false))
+            var directoryPath = directory.Path;
+            if (!string.IsNullOrEmpty(this.BaseDirectory))
+            {
+                var parts = directory.Path
+                    .Split(new[] { DirectoryDelimiter }, StringSplitOptions.RemoveEmptyEntries)
+                    .Skip(1)
+                    .ToArray();
+                directoryPath = string.Join(DirectoryDelimiter, parts);
+            }
+
+            foreach (var subDirectoryName in await this.EnumerateDirectoriesAsync(directoryPath).ConfigureAwait(false))
             {
                 await this.DeleteDirectoryAsync(Path.Combine(relativePath, subDirectoryName)).ConfigureAwait(false);
             }
 
             // Delete directory files
-            foreach (var fileName in await this.EnumerateFilesAsync(directory.Path).ConfigureAwait(false))
+            foreach (var fileName in await this.EnumerateFilesAsync(directoryPath).ConfigureAwait(false))
             {
                 var file = directory.GetFileClient(fileName);
                 await file.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            if (!string.IsNullOrEmpty(directory.Path))
-            {
-                await directory.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
+            await directory.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -129,8 +152,17 @@ namespace Xrv.Core.Storage
         /// <inheritdoc/>
         public override async Task<bool> ExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
-            bool exists = await directory.ExistsAsync(cancellationToken: cancellationToken);
+            bool exists = false;
+
+            try
+            {
+                ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
+                exists = await directory.ExistsAsync(cancellationToken: cancellationToken);
+            }
+            catch
+            {
+            }
+
             return exists;
         }
 
@@ -172,6 +204,12 @@ namespace Xrv.Core.Storage
 
         private async Task<IEnumerable<string>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
         {
+            bool exists = await this.ExistsDirectoryAsync(relativePath, cancellationToken).ConfigureAwait(false);
+            if (!exists)
+            {
+                return Enumerable.Empty<string>();
+            }
+
             ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
             var enumerable = directory.GetFilesAndDirectoriesAsync(cancellationToken: cancellationToken);
             var enumerator = enumerable.GetAsyncEnumerator(cancellationToken);
@@ -191,11 +229,22 @@ namespace Xrv.Core.Storage
 
         private ShareDirectoryClient CreateDirectoryClient(string relativePath)
         {
+            relativePath = this.GetFullPath(relativePath);
             ShareDirectoryClient directoryClient = string.IsNullOrEmpty(relativePath)
                 ? this.client.GetRootDirectoryClient()
                 : this.client.GetDirectoryClient(relativePath);
 
             return directoryClient;
+        }
+
+        private string GetFullPath(string relativePath)
+        {
+            if (!string.IsNullOrEmpty(this.BaseDirectory))
+            {
+                relativePath = Path.Combine(this.BaseDirectory, relativePath);
+            }
+
+            return relativePath;
         }
     }
 }

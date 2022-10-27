@@ -16,6 +16,10 @@ namespace Xrv.Core.Storage
     /// </summary>
     public class AzureBlobFileAccess : FileAccess
     {
+        /*
+         * Note: Please, remember that in Azure Storage Blobs, there is no concept for directories.
+         */
+
         private const string PathDelimiter = @"/";
         private readonly BlobContainerClient container;
         private readonly string[] prefixSplit = new string[] { PathDelimiter };
@@ -28,6 +32,10 @@ namespace Xrv.Core.Storage
         {
             this.container = container;
         }
+
+        /// <inheritdoc/>
+        public override Task CreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
 
         /// <summary>
         /// Creates a blob access instance from connection string and container name.
@@ -83,7 +91,7 @@ namespace Xrv.Core.Storage
         public override async Task DeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             bool isRoot = string.IsNullOrEmpty(relativePath);
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
             if (!isRoot && !relativePath.EndsWith(PathDelimiter))
             {
                 relativePath += PathDelimiter;
@@ -110,7 +118,7 @@ namespace Xrv.Core.Storage
         /// <inheritdoc/>
         public override Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var file = this.container.GetBlobClient(relativePath);
             return file.DeleteIfExistsAsync(cancellationToken: cancellationToken);
@@ -132,7 +140,7 @@ namespace Xrv.Core.Storage
                 return true;
             }
 
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var pathParts = relativePath.Split(this.prefixSplit, StringSplitOptions.RemoveEmptyEntries).ToArray();
             var parent = pathParts.Length > 1 ? string.Join(PathDelimiter, pathParts.Take(pathParts.Length - 1)) : pathParts[0];
@@ -161,7 +169,7 @@ namespace Xrv.Core.Storage
         /// <inheritdoc/>
         public override async Task<bool> ExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var file = this.container.GetBlobClient(relativePath);
             bool exists = await file.ExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -171,7 +179,7 @@ namespace Xrv.Core.Storage
         /// <inheritdoc/>
         public override async Task<Stream> GetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var file = this.container.GetBlobClient(relativePath);
             var contents = await file.DownloadContentAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -181,7 +189,7 @@ namespace Xrv.Core.Storage
         /// <inheritdoc/>
         public override Task WriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var blob = this.container.GetBlobClient(relativePath);
             return blob.UploadAsync(stream, true, cancellationToken);
@@ -189,7 +197,7 @@ namespace Xrv.Core.Storage
 
         private async Task<IEnumerable<string>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var items = new List<string>();
             if (!string.IsNullOrEmpty(relativePath))
@@ -217,6 +225,14 @@ namespace Xrv.Core.Storage
             return items;
         }
 
-        private string FixPath(string relativePath) => relativePath.Replace(@"\", PathDelimiter);
+        private string GetFullPath(string relativePath)
+        {
+            if (!string.IsNullOrEmpty(this.BaseDirectory))
+            {
+                relativePath = Path.Combine(this.BaseDirectory, relativePath);
+            }
+
+            return relativePath.Replace(@"\", PathDelimiter);
+        }
     }
 }
