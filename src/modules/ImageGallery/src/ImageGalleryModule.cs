@@ -114,21 +114,12 @@ namespace Xrv.ImageGallery
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.SetFrontPosition(this.scene, this.window.Owner);
             this.window.Open();
         }
 
         private void ImageGalleryImageUpdated(object sender, string e)
         {
             this.window.Configurator.Title = this.Name + " " + e;
-        }
-
-        private void SetFrontPosition(Scene scene, Entity entity)
-        {
-            var entityTransform = entity.FindComponent<Transform3D>();
-            var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
-            var cameraWorldTransform = cameraTransform.WorldTransform;
-            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
         }
 
         private Entity SettingContent()

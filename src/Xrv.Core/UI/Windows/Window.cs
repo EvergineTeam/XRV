@@ -109,10 +109,11 @@ namespace Xrv.Core.UI.Windows
         {
             if (!this.IsOpened)
             {
-                this.PlaceInFrontOfUser();
                 this.Owner.IsEnabled = true;
                 this.Opened?.Invoke(this, EventArgs.Empty);
             }
+
+            this.PlaceInFrontOfUser();
         }
 
         /// <summary>
