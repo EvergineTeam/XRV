@@ -52,29 +52,29 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<string>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<DirectoryItem>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             var directories = Directory.Exists(fullPath)
                 ? Directory
                     .EnumerateDirectories(fullPath)
-                    .Select(file => Path.GetFileName(file))
-                : Enumerable.Empty<string>();
+                    .Select(file => new DirectoryInfo(file))
+                : Enumerable.Empty<DirectoryInfo>();
 
-            return Task.FromResult(directories);
+            return Task.FromResult(directories.Select(ConvertToDirectoryItem));
         }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<string>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<FileItem>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             var files = Directory.Exists(fullPath)
                 ? Directory
                     .EnumerateFiles(fullPath)
-                    .Select(file => Path.GetFileName(file))
-                : Enumerable.Empty<string>();
+                    .Select(file => new FileInfo(file))
+                : Enumerable.Empty<FileInfo>();
 
-            return Task.FromResult(files);
+            return Task.FromResult(files.Select(ConvertToFileItem));
         }
 
         /// <inheritdoc/>
@@ -152,5 +152,19 @@ namespace Xrv.Core.Storage
         }
 
         private string GetFullPath(string relativePath) => Path.Combine(this.basePath, relativePath);
+
+        private static DirectoryItem ConvertToDirectoryItem(DirectoryInfo directory) =>
+            new DirectoryItem(directory.Name)
+            {
+                CreationTime = directory.CreationTime,
+                ModificationTime = directory.LastWriteTime,
+            };
+
+        private static FileItem ConvertToFileItem(FileInfo file) =>
+            new FileItem(file.Name)
+            {
+                CreationTime = file.CreationTime,
+                ModificationTime = file.LastWriteTime,
+            };
     }
 }

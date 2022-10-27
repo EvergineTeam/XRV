@@ -17,13 +17,13 @@ namespace Xrv.Core.Tests.Storage
             var directories = await fileAccess.EnumerateDirectoriesAsync();
             foreach (var directory in directories)
             {
-                await fileAccess.DeleteDirectoryAsync(directory);
+                await fileAccess.DeleteDirectoryAsync(directory.Name);
             }
 
             var files = await fileAccess.EnumerateFilesAsync();
             foreach (var file in files)
             {
-                await fileAccess.DeleteFileAsync(file);
+                await fileAccess.DeleteFileAsync(file.Name);
             }
         }
 
@@ -81,7 +81,7 @@ namespace Xrv.Core.Tests.Storage
 
             foreach (var directory in rootFolderDirectories)
             {
-                var directoryFiles = await fileAccess.EnumerateFilesAsync(directory);
+                var directoryFiles = await fileAccess.EnumerateFilesAsync(directory.Name);
                 Assert.Equal(numberOfFilesPerDirectory, directoryFiles.Count());
             }
         }
@@ -112,6 +112,34 @@ namespace Xrv.Core.Tests.Storage
 
             bool exists = await fileAccess.ExistsDirectoryAsync(directoryName);
             Assert.False(exists);
+        }
+
+        [Theory]
+        [InlineData(AuthenticationType.ConnectionString)]
+        [InlineData(AuthenticationType.Uri)]
+        [InlineData(AuthenticationType.Signature)]
+        public async Task RetrieveDirectoryDates(AuthenticationType type)
+        {
+            const string directoryName = "dates";
+            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            await fileAccess.CreateDirectoryAsync(directoryName);
+
+            var directories = await fileAccess.EnumerateDirectoriesAsync();
+            Assert.True(directories.All(directory => directory.CreationTime != null));
+            Assert.True(directories.All(directory => directory.ModificationTime != null));
+        }
+
+        [Theory]
+        [InlineData(AuthenticationType.ConnectionString)]
+        [InlineData(AuthenticationType.Uri)]
+        [InlineData(AuthenticationType.Signature)]
+        public async Task RetrieveFileDates(AuthenticationType type)
+        {
+            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");
+            var files = await fileAccess.EnumerateFilesAsync();
+            Assert.True(files.All(file => file.CreationTime != null));
+            Assert.True(files.All(file => file.ModificationTime != null));
         }
 
         private AzureFileShareFileAccess CreateFileAccessFromAuthentitactionType(AuthenticationType type)

@@ -43,7 +43,7 @@ namespace Xrv.Core.Storage
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of directories under root directory, first level only.</returns>
-        public Task<IEnumerable<string>> EnumerateDirectoriesAsync(CancellationToken cancellationToken = default) =>
+        public Task<IEnumerable<DirectoryItem>> EnumerateDirectoriesAsync(CancellationToken cancellationToken = default) =>
             this.EnumerateDirectoriesAsync(string.Empty, cancellationToken);
 
         /// <summary>
@@ -52,14 +52,14 @@ namespace Xrv.Core.Storage
         /// <param name="relativePath">Directory path.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of children directories, first level only.</returns>
-        public abstract Task<IEnumerable<string>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default);
+        public abstract Task<IEnumerable<DirectoryItem>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Enumerates files from root directory.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of files under root directory, first level only.</returns>
-        public Task<IEnumerable<string>> EnumerateFilesAsync(CancellationToken cancellationToken = default) =>
+        public Task<IEnumerable<FileItem>> EnumerateFilesAsync(CancellationToken cancellationToken = default) =>
             this.EnumerateFilesAsync(string.Empty, cancellationToken);
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Xrv.Core.Storage
         /// <param name="relativePath">Directory path.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of children files, first level only.</returns>
-        public abstract Task<IEnumerable<string>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default);
+        public abstract Task<IEnumerable<FileItem>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Checks that a directory exists.

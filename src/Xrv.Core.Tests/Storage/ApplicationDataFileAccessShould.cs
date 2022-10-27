@@ -69,7 +69,7 @@ namespace Xrv.Core.Tests.Storage
 
             foreach (var directory in rootFolderDirectories)
             {
-                var directoryFiles = await this.fileAccess.EnumerateFilesAsync(directory);
+                var directoryFiles = await this.fileAccess.EnumerateFilesAsync(directory.Name);
                 Assert.Equal(numberOfFilesPerDirectory, directoryFiles.Count());
             }
         }
@@ -92,6 +92,26 @@ namespace Xrv.Core.Tests.Storage
 
             bool exists = await fileAccess.ExistsDirectoryAsync(directoryName);
             Assert.False(exists);
+        }
+
+        [Fact]
+        public async Task RetrieveDirectoryDates()
+        {
+            const string directoryName = "dates";
+            await this.fileAccess.CreateDirectoryAsync(directoryName);
+
+            var directories = await this.fileAccess.EnumerateDirectoriesAsync();
+            Assert.True(directories.All(directory => directory.CreationTime != null));
+            Assert.True(directories.All(directory => directory.ModificationTime != null));
+        }
+
+        [Fact]
+        public async Task RetrieveFileDates()
+        {
+            string filePath = await TestHelpers.CreateTestFileAsync(this.fileAccess, "file.txt");
+            var files = await this.fileAccess.EnumerateFilesAsync();
+            Assert.True(files.All(file => file.CreationTime != null));
+            Assert.True(files.All(file => file.ModificationTime != null));
         }
 
         private void CleanTestFolder()

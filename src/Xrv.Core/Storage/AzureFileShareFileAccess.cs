@@ -2,6 +2,7 @@
 
 using Azure;
 using Azure.Storage.Files.Shares;
+using Azure.Storage.Files.Shares.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -116,15 +117,15 @@ namespace Xrv.Core.Storage
                 directoryPath = string.Join(DirectoryDelimiter, parts);
             }
 
-            foreach (var subDirectoryName in await this.EnumerateDirectoriesAsync(directoryPath).ConfigureAwait(false))
+            foreach (var subDirectoryItem in await this.EnumerateDirectoriesAsync(directoryPath).ConfigureAwait(false))
             {
-                await this.DeleteDirectoryAsync(Path.Combine(relativePath, subDirectoryName)).ConfigureAwait(false);
+                await this.DeleteDirectoryAsync(Path.Combine(relativePath, subDirectoryItem.Name)).ConfigureAwait(false);
             }
 
             // Delete directory files
-            foreach (var fileName in await this.EnumerateFilesAsync(directoryPath).ConfigureAwait(false))
+            foreach (var fileItem in await this.EnumerateFilesAsync(directoryPath).ConfigureAwait(false))
             {
-                var file = directory.GetFileClient(fileName);
+                var file = directory.GetFileClient(fileItem.Name);
                 await file.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
@@ -142,12 +143,18 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<string>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
-            => this.EnumerateItemsAuxAsync(relativePath, true, cancellationToken);
+        public override async Task<IEnumerable<DirectoryItem>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            var items = await this.EnumerateItemsAuxAsync(relativePath, true, cancellationToken);
+            return items.Select(ConvertToDirectoryItem);
+        }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<string>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
-            => this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken);
+        public override async Task<IEnumerable<FileItem>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            var items = await this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken);
+            return items.Select(ConvertToFileItem);
+        }
 
         /// <inheritdoc/>
         public override async Task<bool> ExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
@@ -202,25 +209,30 @@ namespace Xrv.Core.Storage
             await file.UploadAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<IEnumerable<string>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
+        private async Task<IEnumerable<ShareFileItem>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
         {
             bool exists = await this.ExistsDirectoryAsync(relativePath, cancellationToken).ConfigureAwait(false);
             if (!exists)
             {
-                return Enumerable.Empty<string>();
+                return Enumerable.Empty<ShareFileItem>();
             }
 
             ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
-            var enumerable = directory.GetFilesAndDirectoriesAsync(cancellationToken: cancellationToken);
+            var options = new ShareDirectoryGetFilesAndDirectoriesOptions
+            {
+                Traits = ShareFileTraits.Timestamps,
+            };
+
+            var enumerable = directory.GetFilesAndDirectoriesAsync(options, cancellationToken: cancellationToken);
             var enumerator = enumerable.GetAsyncEnumerator(cancellationToken);
-            var items = new List<string>();
+            var items = new List<ShareFileItem>();
 
             while (!cancellationToken.IsCancellationRequested && await enumerator.MoveNextAsync())
             {
                 var current = enumerator.Current;
                 if (current.IsDirectory == directoriesOnly)
                 {
-                    items.Add(current.Name);
+                    items.Add(current);
                 }
             }
 
@@ -246,5 +258,19 @@ namespace Xrv.Core.Storage
 
             return relativePath;
         }
+
+        private static DirectoryItem ConvertToDirectoryItem(ShareFileItem item) =>
+            new DirectoryItem(item.Name)
+            {
+                CreationTime = item.Properties.CreatedOn?.UtcDateTime,
+                ModificationTime = item.Properties.LastModified?.UtcDateTime,
+            };
+
+        private static FileItem ConvertToFileItem(ShareFileItem item) =>
+            new FileItem(item.Name)
+            {
+                CreationTime = item.Properties.CreatedOn?.UtcDateTime,
+                ModificationTime = item.Properties.LastModified?.UtcDateTime,
+            };
     }
 }
