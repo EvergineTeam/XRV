@@ -363,7 +363,7 @@ namespace Xrv.LoadModel
                 ScaleHandleScale = 0.030f,
                 RotationHandleScale = 0.030f,
                 LinkScale = 0.001f,
-                BoxPadding = Vector3.Zero,
+                BoxPadding = Vector3.One * 0.1f,
                 BoxMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisual),
                 BoxGrabbedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisualGrabbed),
                 ShowWireframe = true,
@@ -381,6 +381,7 @@ namespace Xrv.LoadModel
                 ScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_ScaleHandle_weprefab),
                 RotationHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_RotateHandle_weprefab),
                 FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
+                HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
             });
             entity.AddComponent(new SimpleManipulationHandler()
             {

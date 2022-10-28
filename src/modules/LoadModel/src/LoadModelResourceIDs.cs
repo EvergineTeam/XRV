@@ -38,6 +38,9 @@ namespace Xrv.LoadModel
         {
             /// <summary> Asset Path (XRV/Prefabs/Manipulator.weprefab.weprf) </summary>
             public static readonly Guid Manipulator_weprefab = new Guid("d15e6e57-0f7d-4160-8935-b80d0cb14f12");
+
+            /// <summary> Asset Path (XRV/Prefabs/RepositoriesWindow.weprefab.weprf) </summary>
+            public static readonly Guid RepositoriesWindow_weprefab = new Guid("321824ba-471c-4dea-a81a-74ad1402780c");
         }      
     }
 }
