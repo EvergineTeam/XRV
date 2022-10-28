@@ -206,9 +206,9 @@ namespace Xrv.LoadModel
             var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
             var models = await repo.FileAccess.EnumerateFilesAsync();
 
-            foreach (var model in models)
+            foreach (var modelFile in models)
             {
-                modelsDataSource.Add(model, "17-12-1983");
+                modelsDataSource.Add(modelFile.Name, modelFile.ModificationTime.Value.ToString("dd-MM-yyyy"));
             }
 
             this.modelsListView.Refresh();
