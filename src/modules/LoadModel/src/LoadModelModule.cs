@@ -38,6 +38,8 @@ namespace Xrv.LoadModel
 
         private ListView repositoriesListView;
         private ListView modelsListView;
+        private Entity repositoriesLoading;
+        private Entity modelsLoading;
 
         private Window window = null;
 
@@ -95,6 +97,7 @@ namespace Xrv.LoadModel
                                 .AddColumn("Models", 0.3f, TextCellRenderer.Instance);
 
             this.repositoriesListView.SelectedChanged += (s, e) => { this.RefreshModelList(); };
+            this.repositoriesLoading = repositoryWindowEntity.FindChildrenByTag("PART_repositories_loading", true, true).First();
 
             // Models list view
             this.modelsListView = repositoryWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_models", true, true);
@@ -102,7 +105,7 @@ namespace Xrv.LoadModel
             this.modelsListView.Render = new ListViewRender()
                                 .AddColumn("Name", 0.7f, TextCellRenderer.Instance)
                                 .AddColumn("Last update", 0.3f, TextCellRenderer.Instance);
-
+            this.modelsLoading = repositoryWindowEntity.FindChildrenByTag("PART_models_loading", true, true).First();
 
             // Buttons
             var loadButton = this.CreateButton("Load", this.LoadModel);
@@ -185,6 +188,7 @@ namespace Xrv.LoadModel
         {
             var repositoriesDataSource = this.repositoriesListView.DataSource;
             repositoriesDataSource.ClearData();
+            this.repositoriesLoading.IsEnabled = true;
             foreach (var repo in this.Repositories)
             {
                 var name = repo.Name;
@@ -195,12 +199,15 @@ namespace Xrv.LoadModel
             this.repositoriesListView.Refresh();
 
             this.RefreshModelList();
+            this.repositoriesLoading.IsEnabled = false;
         }
 
         private async void RefreshModelList()
         {
             var modelsDataSource = this.modelsListView.DataSource;
             modelsDataSource.ClearData();
+
+            this.modelsLoading.IsEnabled = true;
 
             var repoName = this.repositoriesListView.Selected[0];
             var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
@@ -212,6 +219,8 @@ namespace Xrv.LoadModel
             }
 
             this.modelsListView.Refresh();
+
+            this.modelsLoading.IsEnabled = false;
         }
     }
 }

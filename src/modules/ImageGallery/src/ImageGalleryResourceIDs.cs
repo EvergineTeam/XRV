@@ -49,7 +49,7 @@ namespace Xrv.ImageGallery
             /// <summary>
             /// Asset Path (Prefabs/ImageGalleryWindow.wemt).
             /// </summary>
-            public static readonly Guid Gallery = new Guid("2a3c11f6-fc32-4e5a-ac2a-34c3d911eb85");
+            public static readonly Guid Gallery = new Guid("6ba95274-252e-407c-a69a-048508f642f5");
 
             /// <summary>
             /// Asset Path (Prefabs/ImageGallerySetting.wemt).
