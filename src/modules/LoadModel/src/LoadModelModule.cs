@@ -76,8 +76,6 @@ namespace Xrv.LoadModel
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
 
-
-
         /// <inheritdoc/>
         public override void Initialize(Scene scene)
         {
