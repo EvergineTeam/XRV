@@ -214,10 +214,5 @@ namespace Xrv.Core.Tests.Storage.Cache
             Assert.True(await this.diskCache.ExistsFileAsync("file3.dat"));
             Assert.True(this.diskCache.CacheEntries.ContainsKey("file3.dat"));
         }
-
-        /*
-         * - initialize: check file size has changed
-         * - test de sistema de directorios más complejo
-         */
     }
 }

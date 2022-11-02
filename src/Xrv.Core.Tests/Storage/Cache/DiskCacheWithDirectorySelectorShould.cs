@@ -76,11 +76,5 @@ namespace Xrv.Core.Tests.Storage.Cache
             Assert.Equal(2, this.diskCache.CacheEntries.Count);
             Assert.Equal(CacheSizeLimit * 3 / 4, this.diskCache.CurrentCacheSize);
         }
-
-        /*
-         * - time limit exceeded
-         * - initial folder structure load data
-         * - test de sistema de directorios más complejo
-         */
     }
 }

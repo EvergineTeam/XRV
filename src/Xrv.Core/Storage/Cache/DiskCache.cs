@@ -372,6 +372,8 @@ namespace Xrv.Core.Storage.Cache
                 using (var stream = new MemoryStream())
                 {
                     await JsonSerializer.SerializeAsync(stream, this.cacheEntries, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     stream.Seek(0, SeekOrigin.Begin);
                     await this.WriteFileAsync(CacheStatusFileName, stream, cancellationToken).ConfigureAwait(false);
                 }

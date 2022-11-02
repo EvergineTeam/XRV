@@ -108,7 +108,7 @@ namespace Xrv.Core.Storage
         protected override async Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
-            using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate, IOFileAccess.Write, FileShare.Write, FileBufferSize, true))
+            using (var fileStream = new FileStream(fullPath, FileMode.Create, IOFileAccess.Write, FileShare.Read, FileBufferSize, true))
             {
                 await stream.CopyToAsync(fileStream, FileBufferSize, cancellationToken).ConfigureAwait(false);
             }
