@@ -10,10 +10,16 @@ namespace Xrv.Core.Storage
         /// <summary>
         /// Initializes a new instance of the <see cref="FileItem"/> class.
         /// </summary>
-        /// <param name="name">File name.</param>
-        public FileItem(string name)
-            : base(name)
+        /// <param name="itemPath">File path.</param>
+        public FileItem(string itemPath)
+            : base(itemPath)
         {
+            this.Name = itemPath.GetFileName();
         }
+
+        /// <summary>
+        /// Gets or sets file size, in bytes.
+        /// </summary>
+        public long? Size { get; set; }
     }
 }

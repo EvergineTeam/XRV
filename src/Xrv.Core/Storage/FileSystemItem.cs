@@ -15,19 +15,27 @@ namespace Xrv.Core.Storage
         /// <summary>
         /// Initializes a new instance of the <see cref="FileSystemItem"/> class.
         /// </summary>
-        /// <param name="name">File or directory name.</param>
-        protected FileSystemItem(string name)
+        /// <param name="itemPath">File or directory path.</param>
+        protected FileSystemItem(string itemPath)
         {
-            this.Name = name;
+            // we want same path separator in any implementation
+            // of FileAccess, this is why we use FixSlashes extension method
+            this.Path = itemPath.FixSlashes();
         }
 
         /// <summary>
-        /// Gets item name.
+        /// Gets or sets item name.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; protected set; }
 
         /// <summary>
-        /// Gets or sets item creation time.
+        /// Gets item path.
+        /// </summary>
+        public string Path { get; private set; }
+
+        /// <summary>
+        /// Gets or sets item creation time. It is saved in UTC and
+        /// returned as local datetime.
         /// </summary>
         public DateTime? CreationTime
         {
@@ -37,7 +45,8 @@ namespace Xrv.Core.Storage
         }
 
         /// <summary>
-        /// Gets or sets item modification time.
+        /// Gets or sets item modification time. It is saved in UTC and
+        /// returned as local datetime.
         /// </summary>
         public DateTime? ModificationTime
         {

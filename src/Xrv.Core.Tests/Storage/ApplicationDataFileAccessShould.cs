@@ -59,7 +59,7 @@ namespace Xrv.Core.Tests.Storage
             const int numberOfDirectories = 5;
             const int numberOfFilesPerDirectory = 3;
 
-            await TestHelpers.PrepareTestFileSystem(this.fileAccess, numberOfDirectories, numberOfFilesPerDirectory);
+            await TestHelpers.PrepareTestFileSystemAsync(this.fileAccess, numberOfDirectories, numberOfFilesPerDirectory);
 
             var rootFolderFiles = await this.fileAccess.EnumerateFilesAsync();
             Assert.Single(rootFolderFiles);
@@ -112,6 +112,17 @@ namespace Xrv.Core.Tests.Storage
             var files = await this.fileAccess.EnumerateFilesAsync();
             Assert.True(files.All(file => file.CreationTime != null));
             Assert.True(files.All(file => file.ModificationTime != null));
+        }
+
+        [Fact]
+        public async Task RetrieveFileItem()
+        {
+            string filePath = await TestHelpers.CreateTestFileAsync(this.fileAccess, "file.txt");
+            var file = await this.fileAccess.GetFileItemAsync(filePath);
+            Assert.NotNull(file);
+            Assert.True(file.CreationTime != null);
+            Assert.True(file.ModificationTime != null);
+            Assert.NotNull(file.Size);
         }
 
         private void CleanTestFolder()
