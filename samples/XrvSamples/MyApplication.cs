@@ -49,7 +49,8 @@ namespace XrvSamples
             xrv.AddModule(new ImageGalleryModule()
             {
                 ImagePixelsWidth = 640,
-                ImagePixelsHeight = 640
+                ImagePixelsHeight = 640,
+                FileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvgallerystorage.file.core.windows.net/galleryimages/?sv=2021-06-08&ss=f&srt=sco&sp=rwdlc&se=2024-11-03T21:21:33Z&st=2020-11-03T13:21:33Z&spr=https&sig=Xh73u%2FIVcw00vCm%2BN3z5EbyaxaIuISfCUUk0mdCiDnI%3D")),
             });
 
             this.Container.RegisterInstance(xrv);

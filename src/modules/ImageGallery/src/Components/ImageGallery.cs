@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
+using BulletSharp;
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
@@ -13,6 +15,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 using Evergine.Platform;
 using SixLabors.ImageSharp.PixelFormats;
+using Xrv.Core.Storage;
 using Xrv.ImageGallery.Helpers;
 
 namespace Xrv.ImageGallery.Components
@@ -57,6 +60,8 @@ namespace Xrv.ImageGallery.Components
         private bool showNavigationButtons = true;
 
         private bool showNavigationSlider = true;
+
+        private ApplicationDataFileAccess cache = null;
 
         /// <summary>
         /// Event fired when the image has changed.
@@ -147,7 +152,7 @@ namespace Xrv.ImageGallery.Components
         /// Gets or sets the list of paths to the images to show in the Gallery.
         /// </summary>
         [IgnoreEvergine]
-        public List<string> Images { get; set; }
+        public List<FileItem> Images { get; set; }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -156,11 +161,10 @@ namespace Xrv.ImageGallery.Components
             ////this.ShowNavigationSlider = false;
             if (this.Images == null)
             {
-                // TODO Load from a source
-                string[] array = { "XRV/Textures/TestImages/test1.jpg", "XRV/Textures/TestImages/test2.jpg", "XRV/Textures/TestImages/test3.jpg" };
-                this.Images = new List<string>(array);
-            }
-
+                Debug.WriteLine("Images list is null");
+                this.Images = new List<FileItem>();
+            } 
+            this.cache = new ApplicationDataFileAccess();
             var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
             TextureDescription desc = new TextureDescription()
@@ -241,7 +245,7 @@ namespace Xrv.ImageGallery.Components
 
         private void ReloadImage()
         {
-            this.LoadRawJPG(this.Images[this.ImageIndex]);
+            this.LoadRawJPG(this.Images[this.ImageIndex].Name);
             if (!Application.Current.IsEditor)
             {
                 this.ImageUpdated.Invoke(this, this.ImageIndex + 1 + " of " + this.Images.Count);
@@ -275,12 +279,12 @@ namespace Xrv.ImageGallery.Components
             this.cancellationSource = new CancellationTokenSource();
             this.spinnerEntity.IsEnabled = true;
 
-            EvergineBackgroundTask.Run(
-            () =>
+            EvergineBackgroundTask.Run( 
+                async () =>
             {
                 AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
                 byte[] data;
-                using (var fileStream = assetDirectory.Open(filePath))
+                using (var fileStream = await this.cache.GetFileAsync(filePath))
                 {
                     using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
                     {

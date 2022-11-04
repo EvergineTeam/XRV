@@ -7,11 +7,16 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
+using Xrv.Core.Storage;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
+using Application = Evergine.Framework.Application;
 
 namespace Xrv.ImageGallery
 {
@@ -29,6 +34,7 @@ namespace Xrv.ImageGallery
         private Entity imageGallerySettings;
         private Scene scene;
         private Window window = null;
+        private ApplicationDataFileAccess cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageGalleryModule"/> class.
@@ -66,6 +72,11 @@ namespace Xrv.ImageGallery
         /// </summary>
         public uint ImagePixelsHeight { get; set; }
 
+        /// <summary>
+        /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
+        /// </summary>
+        public Core.Storage.FileAccess FileAccess { get; set; }
+
         /// <inheritdoc/>
         public override string Name => "Image Gallery";
 
@@ -82,11 +93,15 @@ namespace Xrv.ImageGallery
         public override IEnumerable<string> VoiceCommands => null;
 
         /// <inheritdoc/>
-        public override void Initialize(Scene scene)
+        public async override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
+
+            // Connecting to azure
+            this.cache = new ApplicationDataFileAccess();
+            var fileList = await this.DownloadFiles();
 
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
             var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
@@ -99,6 +114,7 @@ namespace Xrv.ImageGallery
             galleryImageFrame.Width = size.X;
             galleryImageFrame.Height = size.Y;
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
+            imageGallery.Images = new List<FileItem>(fileList);
 
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
@@ -115,6 +131,40 @@ namespace Xrv.ImageGallery
         public override void Run(bool turnOn)
         {
             this.window.Open();
+        }
+
+        private async Task<IEnumerable<FileItem>> DownloadFiles(CancellationToken cancellationToken = default)
+        {
+            var files = await this.FileAccess.EnumerateFilesAsync(cancellationToken);
+            foreach (var file in files)
+            {
+                if (!await this.cache.ExistsFileAsync(file.Name, cancellationToken))
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return new List<FileItem>();
+                    }
+                    else
+                    {
+                        await this.SaveToCache(file, cancellationToken);
+                    }
+                }
+            }
+
+            return files;
+        }
+
+        private async Task<Stream> SaveToCache(FileItem file, CancellationToken cancellationToken)
+        {
+           var fileStream = await this.FileAccess.GetFileAsync(file.Name, cancellationToken);
+           var directory = System.IO.Path.GetDirectoryName(file.Name);
+           if (!await this.cache.ExistsDirectoryAsync(directory))
+           {
+               await this.cache.CreateDirectoryAsync(directory, cancellationToken);
+           }
+
+           await this.cache.WriteFileAsync(file.Name, fileStream, cancellationToken);
+           return fileStream;
         }
 
         private void ImageGalleryImageUpdated(object sender, string e)
