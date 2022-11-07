@@ -14,6 +14,7 @@ using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.Storage;
+using Xrv.Core.Storage.Cache;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
 using Application = Evergine.Framework.Application;
@@ -34,7 +35,7 @@ namespace Xrv.ImageGallery
         private Entity imageGallerySettings;
         private Scene scene;
         private Window window = null;
-        private ApplicationDataFileAccess cache;
+        private DiskCache cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageGalleryModule"/> class.
@@ -100,11 +101,13 @@ namespace Xrv.ImageGallery
             this.scene = scene;
 
             // Connecting to azure
-            this.cache = new ApplicationDataFileAccess();
-            var fileList = await this.DownloadFiles();
+            this.FileAccess.Cache = new DiskCache("Image Gallery Cache");
+
+            var fileList = await this.FileAccess.EnumerateFilesAsync();
 
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
             var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
+            imageGallery.FileAccess = this.FileAccess;
             imageGallery.ImageUpdated += this.ImageGalleryImageUpdated;
             var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
             var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
@@ -131,40 +134,6 @@ namespace Xrv.ImageGallery
         public override void Run(bool turnOn)
         {
             this.window.Open();
-        }
-
-        private async Task<IEnumerable<FileItem>> DownloadFiles(CancellationToken cancellationToken = default)
-        {
-            var files = await this.FileAccess.EnumerateFilesAsync(cancellationToken);
-            foreach (var file in files)
-            {
-                if (!await this.cache.ExistsFileAsync(file.Name, cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return new List<FileItem>();
-                    }
-                    else
-                    {
-                        await this.SaveToCache(file, cancellationToken);
-                    }
-                }
-            }
-
-            return files;
-        }
-
-        private async Task<Stream> SaveToCache(FileItem file, CancellationToken cancellationToken)
-        {
-           var fileStream = await this.FileAccess.GetFileAsync(file.Name, cancellationToken);
-           var directory = System.IO.Path.GetDirectoryName(file.Name);
-           if (!await this.cache.ExistsDirectoryAsync(directory))
-           {
-               await this.cache.CreateDirectoryAsync(directory, cancellationToken);
-           }
-
-           await this.cache.WriteFileAsync(file.Name, fileStream, cancellationToken);
-           return fileStream;
         }
 
         private void ImageGalleryImageUpdated(object sender, string e)

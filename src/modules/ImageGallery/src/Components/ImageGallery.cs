@@ -16,6 +16,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 using Evergine.Platform;
 using SixLabors.ImageSharp.PixelFormats;
 using Xrv.Core.Storage;
+using Xrv.Core.Storage.Cache;
 using Xrv.ImageGallery.Helpers;
 
 namespace Xrv.ImageGallery.Components
@@ -61,12 +62,15 @@ namespace Xrv.ImageGallery.Components
 
         private bool showNavigationSlider = true;
 
-        private ApplicationDataFileAccess cache = null;
-
         /// <summary>
         /// Event fired when the image has changed.
         /// </summary>
         public event EventHandler<string> ImageUpdated;
+
+        /// <summary>
+        /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
+        /// </summary>
+        public Core.Storage.FileAccess FileAccess { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether if the navigation slider is shown below the gallery.
@@ -163,8 +167,8 @@ namespace Xrv.ImageGallery.Components
             {
                 Debug.WriteLine("Images list is null");
                 this.Images = new List<FileItem>();
-            } 
-            this.cache = new ApplicationDataFileAccess();
+            }
+
             var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
             TextureDescription desc = new TextureDescription()
@@ -279,12 +283,12 @@ namespace Xrv.ImageGallery.Components
             this.cancellationSource = new CancellationTokenSource();
             this.spinnerEntity.IsEnabled = true;
 
-            EvergineBackgroundTask.Run( 
+            EvergineBackgroundTask.Run(
                 async () =>
             {
                 AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
                 byte[] data;
-                using (var fileStream = await this.cache.GetFileAsync(filePath))
+                using (var fileStream = await this.FileAccess.GetFileAsync(filePath))
                 {
                     using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
                     {
