@@ -38,6 +38,10 @@ namespace Xrv.Core
         /// <param name="button">Button entity.</param>
         public static void MrtkRotateButton(Entity button)
         {
+            // TODO: this has been fixed in the MRTK (commit dcadcdb)
+            // When the MRTK package has been updated to a version that includes this change, delete every call
+            // to Workarounds.MrtkRotateButton. If there are any existing prefabs in the XRV using the old convention,
+            // they will have to be manually rotated in the editor and regenerated.
             var buttonTransform = button.FindComponent<Transform3D>();
             var rotation = buttonTransform.LocalRotation;
             rotation.Y = MathHelper.Pi;

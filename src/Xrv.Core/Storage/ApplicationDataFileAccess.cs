@@ -41,7 +41,7 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override Task CreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
+        protected override Task InternalCreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
         {
             if (!Directory.Exists(this.basePath))
             {
@@ -52,7 +52,7 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<DirectoryItem>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task<IEnumerable<DirectoryItem>> InternalEnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             var directories = Directory.Exists(fullPath)
@@ -61,11 +61,11 @@ namespace Xrv.Core.Storage
                     .Select(file => new DirectoryInfo(file))
                 : Enumerable.Empty<DirectoryInfo>();
 
-            return Task.FromResult(directories.Select(ConvertToDirectoryItem));
+            return Task.FromResult(directories.Select(item => ConvertToDirectoryItem(item, relativePath)));
         }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<FileItem>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task<IEnumerable<FileItem>> InternalEnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             var files = Directory.Exists(fullPath)
@@ -74,11 +74,11 @@ namespace Xrv.Core.Storage
                     .Select(file => new FileInfo(file))
                 : Enumerable.Empty<FileInfo>();
 
-            return Task.FromResult(files.Select(ConvertToFileItem));
+            return Task.FromResult(files.Select(item => ConvertToFileItem(item, relativePath)));
         }
 
         /// <inheritdoc/>
-        public override Task<bool> ExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task<bool> InternalExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             bool exists = Directory.Exists(fullPath);
@@ -86,7 +86,7 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override Task<bool> ExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task<bool> InternalExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             bool exists = File.Exists(fullPath);
@@ -94,7 +94,7 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task CreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task InternalCreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             bool exists = await this.ExistsDirectoryAsync(fullPath, cancellationToken).ConfigureAwait(false);
@@ -105,17 +105,17 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task WriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
+        protected override async Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
-            using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate, IOFileAccess.Write, FileShare.Write, FileBufferSize, true))
+            using (var fileStream = new FileStream(fullPath, FileMode.Create, IOFileAccess.Write, FileShare.Read, FileBufferSize, true))
             {
                 await stream.CopyToAsync(fileStream, FileBufferSize, cancellationToken).ConfigureAwait(false);
             }
         }
 
         /// <inheritdoc/>
-        public override Task<Stream> GetFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task<Stream> InternalGetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             var stream = new FileStream(fullPath, FileMode.Open, IOFileAccess.Read, FileShare.Read);
@@ -123,7 +123,7 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task DeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task InternalDeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             bool exists = await this.ExistsDirectoryAsync(fullPath, cancellationToken).ConfigureAwait(false);
@@ -134,7 +134,7 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task InternalDeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
             bool exists = await this.ExistsFileAsync(fullPath, cancellationToken).ConfigureAwait(false);
@@ -142,6 +142,14 @@ namespace Xrv.Core.Storage
             {
                 File.Delete(fullPath);
             }
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<FileItem> InternalGetFileItemAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            var fullPath = this.GetFullPath(relativePath);
+            bool exists = await this.ExistsFileAsync(fullPath, cancellationToken).ConfigureAwait(false);
+            return exists ? ConvertToFileItem(new FileInfo(fullPath), relativePath.GetDirectoryName()) : null;
         }
 
         /// <inheritdoc/>
@@ -153,18 +161,19 @@ namespace Xrv.Core.Storage
 
         private string GetFullPath(string relativePath) => Path.Combine(this.basePath, relativePath);
 
-        private static DirectoryItem ConvertToDirectoryItem(DirectoryInfo directory) =>
-            new DirectoryItem(directory.Name)
+        private static DirectoryItem ConvertToDirectoryItem(DirectoryInfo directory, string basePath) =>
+            new DirectoryItem(Path.Combine(basePath ?? string.Empty, directory.Name))
             {
                 CreationTime = directory.CreationTime,
                 ModificationTime = directory.LastWriteTime,
             };
 
-        private static FileItem ConvertToFileItem(FileInfo file) =>
-            new FileItem(file.Name)
+        private static FileItem ConvertToFileItem(FileInfo file, string basePath) =>
+            new FileItem(Path.Combine(basePath ?? string.Empty, file.Name))
             {
                 CreationTime = file.CreationTime,
                 ModificationTime = file.LastWriteTime,
+                Size = file.Length,
             };
     }
 }

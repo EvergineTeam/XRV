@@ -8,6 +8,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK;
+using Evergine.MRTK.SDK.Features.Input.Constraints;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
@@ -383,6 +384,7 @@ namespace Xrv.LoadModel
                 FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
                 HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
             });
+            entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
             entity.AddComponent(new SimpleManipulationHandler()
             {
                 SmoothingActive = true,

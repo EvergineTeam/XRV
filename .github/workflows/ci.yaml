@@ -51,6 +51,9 @@ jobs:
             Write-Host "Restore and build $($_.Name)" 
             nuget restore $_.FullName
             msbuild $_.FullName /p:Configuration=${{  env.buildConfiguration  }}
+            if (-Not $?) {
+              exit $LastExitCode
+            }
           }
       - name: Prepare tests
         shell: pwsh
@@ -64,6 +67,9 @@ jobs:
           Foreach-Object { 
             Write-Host "Running tests for $($_.Name)" 
             dotnet test $_.FullName --configuration ${{  env.buildConfiguration  }} --logger trx --results-directory ${{  env.testResultsDirectory  }}
+            if (-Not $?) {
+              exit $LastExitCode
+            }
           }
           Write-Host "Collected test result files"
           Get-ChildItem -Path ${{  env.testResultsDirectory  }} | Select FullName

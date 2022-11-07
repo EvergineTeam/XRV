@@ -11,21 +11,10 @@ namespace Xrv.Core.Tests.Storage
 {
     public class AzureBlobFileAccessShould : IAsyncLifetime
     {
-        async Task IAsyncLifetime.InitializeAsync()
+        Task IAsyncLifetime.InitializeAsync()
         {
             var fileAccess = this.CreateFileAccessFromAuthentitactionType(AuthenticationType.ConnectionString);
-            var directories = await fileAccess.EnumerateDirectoriesAsync();
-
-            foreach (var directory in directories)
-            {
-                await fileAccess.DeleteDirectoryAsync(directory.Name);
-            }
-
-            var files = await fileAccess.EnumerateFilesAsync();
-            foreach (var file in files)
-            {
-                await fileAccess.DeleteFileAsync(file.Name);
-            }
+            return fileAccess.ClearAsync();
         }
 
         Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask;
@@ -70,7 +59,7 @@ namespace Xrv.Core.Tests.Storage
             const int numberOfFilesPerDirectory = 3;
 
             var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
-            await TestHelpers.PrepareTestFileSystem(fileAccess, numberOfDirectories, numberOfFilesPerDirectory);
+            await TestHelpers.PrepareTestFileSystemAsync(fileAccess, numberOfDirectories, numberOfFilesPerDirectory);
 
             var rootFolderFiles = await fileAccess.EnumerateFilesAsync();
             Assert.Single(rootFolderFiles);
@@ -125,6 +114,21 @@ namespace Xrv.Core.Tests.Storage
             var files = await fileAccess.EnumerateFilesAsync();
             Assert.True(files.All(file => file.CreationTime != null));
             Assert.True(files.All(file => file.ModificationTime != null));
+        }
+
+        [Theory]
+        [InlineData(AuthenticationType.ConnectionString)]
+        [InlineData(AuthenticationType.Uri)]
+        [InlineData(AuthenticationType.Signature)]
+        public async Task RetrieveFileItem(AuthenticationType type)
+        {
+            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");
+            var file = await fileAccess.GetFileItemAsync(filePath);
+            Assert.NotNull(file);
+            Assert.True(file.CreationTime != null);
+            Assert.True(file.ModificationTime != null);
+            Assert.NotNull(file.Size);
         }
 
         private AzureBlobFileAccess CreateFileAccessFromAuthentitactionType(AuthenticationType type)

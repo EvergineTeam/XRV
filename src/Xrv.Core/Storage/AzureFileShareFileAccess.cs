@@ -17,7 +17,6 @@ namespace Xrv.Core.Storage
     /// </summary>
     public class AzureFileShareFileAccess : FileAccess
     {
-        private const string DirectoryDelimiter = @"\";
         private readonly ShareClient client;
 
         /// <summary>
@@ -27,13 +26,6 @@ namespace Xrv.Core.Storage
         public AzureFileShareFileAccess(ShareClient client)
         {
             this.client = client;
-        }
-
-        /// <inheritdoc/>
-        public override Task CreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
-        {
-            ShareDirectoryClient directory = this.client.GetDirectoryClient(this.BaseDirectory);
-            return directory.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -81,7 +73,14 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task CreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task InternalCreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
+        {
+            ShareDirectoryClient directory = this.client.GetDirectoryClient(this.BaseDirectory);
+            return directory.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task InternalCreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var directories = relativePath.Split(Path.DirectorySeparatorChar);
             ShareDirectoryClient directory = string.IsNullOrEmpty(this.BaseDirectory)
@@ -93,11 +92,12 @@ namespace Xrv.Core.Storage
                 string subDirectory = directories[i];
                 directory = directory.GetSubdirectoryClient(subDirectory);
                 await directory.CreateIfNotExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
             }
         }
 
         /// <inheritdoc/>
-        public override async Task DeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task InternalDeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
             bool exists = await directory.ExistsAsync().ConfigureAwait(false);
@@ -111,15 +111,17 @@ namespace Xrv.Core.Storage
             if (!string.IsNullOrEmpty(this.BaseDirectory))
             {
                 var parts = directory.Path
-                    .Split(new[] { DirectoryDelimiter }, StringSplitOptions.RemoveEmptyEntries)
+                    .FixSlashes()
+                    .Split(new[] { DirectoryItem.PathSeparator }, StringSplitOptions.RemoveEmptyEntries)
                     .Skip(1)
                     .ToArray();
-                directoryPath = string.Join(DirectoryDelimiter, parts);
+                directoryPath = string.Join(DirectoryItem.PathSeparator, parts);
             }
 
             foreach (var subDirectoryItem in await this.EnumerateDirectoriesAsync(directoryPath).ConfigureAwait(false))
             {
                 await this.DeleteDirectoryAsync(Path.Combine(relativePath, subDirectoryItem.Name)).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
             }
 
             // Delete directory files
@@ -127,13 +129,14 @@ namespace Xrv.Core.Storage
             {
                 var file = directory.GetFileClient(fileItem.Name);
                 await file.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
             }
 
             await directory.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public override Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task InternalDeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             string directoryPath = Path.GetDirectoryName(relativePath);
             string fileName = Path.GetFileName(relativePath);
@@ -143,50 +146,60 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<DirectoryItem>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<IEnumerable<DirectoryItem>> InternalEnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            var items = await this.EnumerateItemsAuxAsync(relativePath, true, cancellationToken);
-            return items.Select(ConvertToDirectoryItem);
+            var items = await this.EnumerateItemsAuxAsync(relativePath, true, cancellationToken).ConfigureAwait(false);
+            return items.Select(item => ConvertToDirectoryItem(item, relativePath));
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<FileItem>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<IEnumerable<FileItem>> InternalEnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            var items = await this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken);
-            return items.Select(ConvertToFileItem);
+            var items = await this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken).ConfigureAwait(false);
+            return items.Select(item => ConvertToFileItem(item, relativePath));
         }
 
         /// <inheritdoc/>
-        public override async Task<bool> ExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<bool> InternalExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             bool exists = false;
 
             try
             {
                 ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
-                exists = await directory.ExistsAsync(cancellationToken: cancellationToken);
+                exists = await directory.ExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             catch
             {
+                // empty catch, as SDK throws an exception if directory does not exist
             }
 
             return exists;
         }
 
         /// <inheritdoc/>
-        public override async Task<bool> ExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<bool> InternalExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             string directoryPath = Path.GetDirectoryName(relativePath);
             string fileName = Path.GetFileName(relativePath);
-            ShareDirectoryClient directory = this.CreateDirectoryClient(directoryPath);
-            ShareFileClient file = directory.GetFileClient(fileName);
+            bool exists = false;
 
-            bool exists = await file.ExistsAsync(cancellationToken: cancellationToken);
+            try
+            {
+                ShareDirectoryClient directory = this.CreateDirectoryClient(directoryPath);
+                ShareFileClient file = directory.GetFileClient(fileName);
+                exists = await file.ExistsAsync(cancellationToken: cancellationToken);
+            }
+            catch
+            {
+                // empty catch, as SDK throws an exception if directory does not exist
+            }
+
             return exists;
         }
 
         /// <inheritdoc/>
-        public override async Task<Stream> GetFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<Stream> InternalGetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             string directoryPath = Path.GetDirectoryName(relativePath);
             string fileName = Path.GetFileName(relativePath);
@@ -197,7 +210,7 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task WriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
+        protected override async Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
             string directoryPath = Path.GetDirectoryName(relativePath);
             string fileName = Path.GetFileName(relativePath);
@@ -207,6 +220,18 @@ namespace Xrv.Core.Storage
                 .ConfigureAwait(false);
 
             await file.UploadAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<FileItem> InternalGetFileItemAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            string directoryPath = Path.GetDirectoryName(relativePath);
+            string fileName = Path.GetFileName(relativePath);
+            ShareDirectoryClient directory = this.CreateDirectoryClient(directoryPath);
+            ShareFileClient file = directory.GetFileClient(fileName);
+            ShareFileProperties properties = await file.GetPropertiesAsync(cancellationToken).ConfigureAwait(false);
+
+            return ConvertToFileItem(relativePath, properties);
         }
 
         private async Task<IEnumerable<ShareFileItem>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
@@ -220,6 +245,7 @@ namespace Xrv.Core.Storage
             ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
             var options = new ShareDirectoryGetFilesAndDirectoriesOptions
             {
+                // this is required to retrieve creation and modification dates
                 Traits = ShareFileTraits.Timestamps,
             };
 
@@ -259,18 +285,27 @@ namespace Xrv.Core.Storage
             return relativePath;
         }
 
-        private static DirectoryItem ConvertToDirectoryItem(ShareFileItem item) =>
-            new DirectoryItem(item.Name)
+        private static DirectoryItem ConvertToDirectoryItem(ShareFileItem item, string basePath) =>
+            new DirectoryItem(Path.Combine(basePath ?? string.Empty, item.Name))
             {
                 CreationTime = item.Properties.CreatedOn?.UtcDateTime,
                 ModificationTime = item.Properties.LastModified?.UtcDateTime,
             };
 
-        private static FileItem ConvertToFileItem(ShareFileItem item) =>
-            new FileItem(item.Name)
+        private static FileItem ConvertToFileItem(ShareFileItem item, string basePath) =>
+            new FileItem(Path.Combine(basePath ?? string.Empty, item.Name))
             {
                 CreationTime = item.Properties.CreatedOn?.UtcDateTime,
                 ModificationTime = item.Properties.LastModified?.UtcDateTime,
+                Size = item.FileSize,
+            };
+
+        private static FileItem ConvertToFileItem(string filePath, ShareFileProperties properties) =>
+            new FileItem(filePath)
+            {
+                CreationTime = properties.SmbProperties.FileCreatedOn?.UtcDateTime,
+                ModificationTime = properties.SmbProperties.FileLastWrittenOn?.UtcDateTime,
+                Size = properties.ContentLength,
             };
     }
 }

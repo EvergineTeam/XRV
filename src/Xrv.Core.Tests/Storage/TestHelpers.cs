@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FileAccess = Xrv.Core.Storage.FileAccess;
@@ -19,9 +20,9 @@ namespace Xrv.Core.Tests.Storage
             return filePath;
         }
 
-        public static async Task PrepareTestFileSystem(
-            FileAccess fileAccess, 
-            int numberOfDirectories, 
+        public static async Task PrepareTestFileSystemAsync(
+            FileAccess fileAccess,
+            int numberOfDirectories,
             int numberOfFilesPerDirectory)
         {
             string filePath;
@@ -44,6 +45,28 @@ namespace Xrv.Core.Tests.Storage
 
             filePath = "file.txt";
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(filePath)))
+            {
+                await fileAccess.WriteFileAsync(filePath, stream);
+            }
+        }
+
+        public static async Task<string[]> CreateTestFilesWithSizeAsync(FileAccess fileAccess, long[] fileSizes, int startIndex = 0)
+        {
+            var fileNames = new string[fileSizes.Length];
+
+            for (int i = startIndex; i - startIndex < fileSizes.Length; i++)
+            {
+                var size = fileSizes[i];
+                fileNames[i] = $"file_{i}.dat";
+                await CreateSingleFilesWithSizeAsync(fileAccess, fileNames[i], size);
+            }
+
+            return fileNames;
+        }
+
+        public static async Task CreateSingleFilesWithSizeAsync(FileAccess fileAccess, string filePath, long size)
+        {
+            using (var stream = new MemoryStream(new byte[size]))
             {
                 await fileAccess.WriteFileAsync(filePath, stream);
             }
