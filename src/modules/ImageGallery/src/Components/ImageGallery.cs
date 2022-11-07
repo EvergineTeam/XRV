@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using BulletSharp;
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
@@ -16,7 +15,6 @@ using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 using Evergine.Platform;
 using SixLabors.ImageSharp.PixelFormats;
 using Xrv.Core.Storage;
-using Xrv.Core.Storage.Cache;
 using Xrv.ImageGallery.Helpers;
 
 namespace Xrv.ImageGallery.Components
@@ -171,7 +169,7 @@ namespace Xrv.ImageGallery.Components
 
             var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
-            TextureDescription desc = new TextureDescription()
+            TextureDescription desc = new ()
             {
                 Type = TextureType.Texture2D,
                 Width = this.ImagePixelsWidth,

@@ -7,9 +7,6 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -17,7 +14,6 @@ using Xrv.Core.Storage;
 using Xrv.Core.Storage.Cache;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
-using Application = Evergine.Framework.Application;
 
 namespace Xrv.ImageGallery
 {
@@ -100,11 +96,11 @@ namespace Xrv.ImageGallery
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
 
-            // Connecting to azure
+            // Connecting to azure and setting cache
             this.FileAccess.Cache = new DiskCache("Image Gallery Cache");
-
             var fileList = await this.FileAccess.EnumerateFilesAsync();
 
+            // Loading and setting Gallery Asset
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
             var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
             imageGallery.FileAccess = this.FileAccess;
@@ -119,6 +115,7 @@ namespace Xrv.ImageGallery
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
             imageGallery.Images = new List<FileItem>(fileList);
 
+            // Setting Window
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
                 config.Title = this.Name;
