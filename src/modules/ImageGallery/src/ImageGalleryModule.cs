@@ -98,6 +98,7 @@ namespace Xrv.ImageGallery
 
             // Connecting to azure and setting cache
             this.FileAccess.Cache = new DiskCache("Image Gallery Cache");
+            await this.FileAccess.Cache.InitializeAsync();
             var fileList = await this.FileAccess.EnumerateFilesAsync();
 
             // Loading and setting Gallery Asset
