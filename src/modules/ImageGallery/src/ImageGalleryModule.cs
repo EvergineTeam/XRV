@@ -29,9 +29,7 @@ namespace Xrv.ImageGallery
         private TabItem help = null;
         private Entity imageGalleryHelp;
         private Entity imageGallerySettings;
-        private Scene scene;
         private Window window = null;
-        private DiskCache cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageGalleryModule"/> class.
@@ -46,6 +44,7 @@ namespace Xrv.ImageGallery
                 TextOn = "Image Gallery",
             };
 
+            //// In case we need settings in the future
             ////this.settings = new TabItem()
             ////{
             ////    Name = "Image Gallery",
@@ -94,7 +93,6 @@ namespace Xrv.ImageGallery
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
-            this.scene = scene;
 
             // Connecting to azure and setting cache
             this.FileAccess.Cache = new DiskCache("Image Gallery Cache");
