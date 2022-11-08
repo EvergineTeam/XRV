@@ -24,6 +24,7 @@ Items:
           Z: 1.0
       - !Xrv.ImageGallery.Components.ImageGallery,Xrv.ImageGallery
         Id: 8da728bf-14b7-4c32-9157-0c0f14eea2ef
+        FileAccess: null
         ImageIndex: 0
         ImagePixelsHeight: 640
         ImagePixelsWidth: 640
@@ -362,7 +363,7 @@ Items:
                       - !Evergine.Components.Graphics3D.MeshComponent,Evergine.Framework
                         Id: 39315cc9-b184-4807-bcdd-38e211a4e75b
                         IsEnabled: true
-                        Model: null
+                        Model: d062dd03-25f9-4635-af8c-7435b93bbfd2
                         ModelMeshName: Button_Oval_Concave_12x24mm
                       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                         Id: d7f7a043-18cb-4159-a1b7-004cc8ffdc41
@@ -493,7 +494,7 @@ Items:
                             Size:
                               X: 8.0
                               Y: 1.10000002
-                            Text: 0.00
+                            Text: 0,00
                             VerticalAlignment: Top
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -515,7 +516,7 @@ Items:
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: PreviousButton
             Tag: PART_image_gallery_previous
-            IsEnabled: false
+            IsEnabled: true
             IsStatic: false
             Components:
               - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -1439,14 +1440,10 @@ Items:
         Id: 8f2e001d-65ac-4c3e-9cc9-392f3fe4ab8e
     Id: b6f5fe77-582e-47e4-9beb-f0ad22e93a02
   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 61fe2448-9a53-4cd3-b39b-c24f63788e30
-    Source: 2a3c11f6-fc32-4e5a-ac2a-34c3d911eb85
+    Id: 2f10bf3e-f650-4e3e-b690-1e11b1800178
+    Source: 6ba95274-252e-407c-a69a-048508f642f5
     entityLinks: {}
-    modificationList:
-      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[System.String,System.Private.CoreLib]],Evergine.Framework
-        Name: Text
-        Target: ece7ac4a-b7db-467b-8f2d-fe844682c590
-        TypedValue: 0.00
+    modificationList: []
     removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
