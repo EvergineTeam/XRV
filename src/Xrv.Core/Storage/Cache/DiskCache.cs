@@ -161,8 +161,9 @@ namespace Xrv.Core.Storage.Cache
             {
                 LastAccess = DateTime.UtcNow,
             };
-            cacheEntry.Paths[relativePath] = stream.Length;
-            long streamLength = stream.Length;
+
+            long streamLength = stream.CanSeek ? stream.Length : stream.Position;
+            cacheEntry.Paths[relativePath] = streamLength;
 
             this.cacheEntries.AddOrUpdate(cacheKey, cacheEntry, (key, existing) =>
             {
