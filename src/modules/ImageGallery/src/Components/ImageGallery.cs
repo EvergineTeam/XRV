@@ -247,6 +247,11 @@ namespace Xrv.ImageGallery.Components
 
         private void ReloadImage()
         {
+            if (this.Images.Count == 0)
+            {
+                return;
+            }
+
             this.LoadRawJPG(this.Images[this.ImageIndex].Name);
             if (!Application.Current.IsEditor)
             {
