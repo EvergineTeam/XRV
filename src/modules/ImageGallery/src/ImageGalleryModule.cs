@@ -20,11 +20,11 @@ namespace Xrv.ImageGallery
     /// </summary>
     public class ImageGalleryModule : Module
     {
+        private readonly MenuButtonDescription handMenuDescription;
+        private readonly TabItem settings = null;
+        private TabItem help = null;
         private AssetsService assetsService;
         private XrvService xrv;
-        private MenuButtonDescription handMenuDescription;
-        private TabItem settings = null;
-        private TabItem help = null;
         private Entity imageGalleryHelp;
         private Window window = null;
 

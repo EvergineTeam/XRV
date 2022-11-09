@@ -201,6 +201,7 @@ namespace Xrv.ImageGallery.Components
                 this.previousButtonEntity.IsEnabled = this.ShowNavigationButtons;
                 this.sliderEntity.IsEnabled = this.ShowNavigationSlider;
             }
+
             return base.OnAttached();
         }
 
