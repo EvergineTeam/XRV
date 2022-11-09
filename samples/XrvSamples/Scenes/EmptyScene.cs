@@ -1,6 +1,7 @@
-using Evergine.Common.Graphics;
 using Evergine.Framework;
+using Evergine.Platform;
 using Xrv.Core;
+using Xrv.Core.Networking;
 
 namespace XrvSamples.Scenes
 {
@@ -14,6 +15,15 @@ namespace XrvSamples.Scenes
 
             xrv = Application.Current.Container.Resolve<XrvService>();
             xrv.Initialize(this);
+
+            // Networking
+            var configuration = new NetworkConfigurationBuilder()
+                .ForApplication(nameof(XrvSamples))
+                .UsePort(DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? 12345 : 12344)
+                .Build();
+            xrv.Networking.Configuration = configuration;
+            xrv.Networking.OverrideScanningPort = 12345; // UWP client should be always the host
+            xrv.Networking.NetworkingAvailable = true;
         }       
     }
 }

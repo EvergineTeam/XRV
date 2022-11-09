@@ -11,6 +11,7 @@ using Xrv.Core.Help;
 using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
+using Xrv.Core.Networking;
 using Xrv.Core.Settings;
 using Xrv.Core.Themes;
 using Xrv.Core.UI.Tabs;
@@ -57,6 +58,11 @@ namespace Xrv.Core
         /// Gets access to help system.
         /// </summary>
         public HelpSystem Help { get; private set; }
+
+        /// <summary>
+        /// Gets access to network system.
+        /// </summary>
+        public NetworkSystem Networking { get; private set; }
 
         /// <summary>
         /// Gets basic publisher-subscriber implementation.
@@ -147,6 +153,10 @@ namespace Xrv.Core
 
             // Voice commands
             this.voiceSystem.Load();
+
+            this.Networking = new NetworkSystem(this, this.assetsService);
+            this.Networking.RegisterServices();
+            this.Networking.Load();
 
             foreach (var module in this.modules.Values)
             {

@@ -41,13 +41,15 @@ namespace Xrv.Core
         {
             public static Guid About_weprefab = new Guid("adf890cb-87ff-4ddf-be94-98472df4ebb0");
 
-            public static Guid BaseDialogContents = new Guid("f544117b-51ca-46af-894e-49a48094651f");
+            public static Guid BaseDialogContents = new Guid("a3566fc1-12f4-4545-93a7-8f7e1da22a36");
 
             public static Guid GeneralHelp_weprefab = new Guid("d16caec5-e260-47ce-a812-15f98c31d0ad");
 
             public static Guid GeneralSettings_weprefab = new Guid("372c3942-5cf9-4ef0-a88e-d162a4b4abe1");
 
             public static Guid HandMenu = new Guid("890eb664-4c07-4b33-afca-7e428b2fbc11");
+
+            public static Guid SessionSettings_weprefab = new Guid("c5dce6a9-e53e-43b5-9645-f8808fa85e21");
 
             public static Guid TabControl = new Guid("4cd4a3d9-33e4-4b2a-8dbf-5b25aa014a0b");
 
