@@ -44,13 +44,6 @@ namespace Xrv.ImageGallery
                 TextOn = "Image Gallery",
             };
 
-            //// In case we need settings in the future
-            ////this.settings = new TabItem()
-            ////{
-            ////    Name = "Image Gallery",
-            ////    Contents = this.SettingContent,
-            ////};
-
             this.help = new TabItem()
             {
                 Name = "Image Gallery",

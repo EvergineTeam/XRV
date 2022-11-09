@@ -68,6 +68,7 @@ namespace Xrv.ImageGallery.Components
         /// <summary>
         /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
         /// </summary>
+        [IgnoreEvergine]
         public Core.Storage.FileAccess FileAccess { get; set; }
 
         /// <summary>
