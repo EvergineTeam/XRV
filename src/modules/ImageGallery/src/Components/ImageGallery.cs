@@ -157,10 +157,7 @@ namespace Xrv.ImageGallery.Components
         {
             base.OnActivated();
             var fileList = await this.FileAccess.EnumerateFilesAsync();
-            if(fileList == null)
-            {
-                fileList = new List<FileItem>();
-            }
+            fileList ??= new List<FileItem>();
             this.images = new List<FileItem>(fileList);
             this.ReloadImage();
             this.RecalculateSliderPosition();

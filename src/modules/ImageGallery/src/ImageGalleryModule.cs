@@ -26,7 +26,6 @@ namespace Xrv.ImageGallery
         private TabItem settings = null;
         private TabItem help = null;
         private Entity imageGalleryHelp;
-        private Entity imageGallerySettings;
         private Window window = null;
 
         /// <summary>
@@ -85,7 +84,7 @@ namespace Xrv.ImageGallery
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
 
-            // Connecting to azure and setting cache
+            // Setting cache
             if (this.FileAccess.IsCachingEnabled)
             {
                 await this.FileAccess.Cache.InitializeAsync();
