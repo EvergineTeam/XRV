@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
-using Xrv.Core.Storage;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
 
@@ -128,17 +127,6 @@ namespace Xrv.ImageGallery
         private void ImageGalleryImageUpdated(object sender, string e)
         {
             this.window.Configurator.Title = this.Name + " " + e;
-        }
-
-        private Entity SettingContent()
-        {
-            if (this.imageGallerySettings == null)
-            {
-                var imageGallerySettingsPrefab = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Settings);
-                this.imageGallerySettings = imageGallerySettingsPrefab.Instantiate();
-            }
-
-            return this.imageGallerySettings;
         }
 
         private Entity HelpContent()
