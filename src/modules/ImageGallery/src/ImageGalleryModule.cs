@@ -11,7 +11,6 @@ using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.Storage;
-using Xrv.Core.Storage.Cache;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
 
@@ -88,14 +87,16 @@ namespace Xrv.ImageGallery
             this.xrv = Application.Current.Container.Resolve<XrvService>();
 
             // Connecting to azure and setting cache
-            this.FileAccess.Cache = new DiskCache("Image Gallery Cache");
-            await this.FileAccess.Cache.InitializeAsync();
-            var fileList = await this.FileAccess.EnumerateFilesAsync();
+            if (this.FileAccess.IsCachingEnabled)
+            {
+                await this.FileAccess.Cache.InitializeAsync();
+            }
 
             // Loading and setting Gallery Asset
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
             var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
             imageGallery.FileAccess = this.FileAccess;
+
             imageGallery.ImageUpdated += this.ImageGalleryImageUpdated;
             var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
             var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
@@ -105,7 +106,6 @@ namespace Xrv.ImageGallery
             galleryImageFrame.Width = size.X;
             galleryImageFrame.Height = size.Y;
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
-            imageGallery.Images = new List<FileItem>(fileList);
 
             // Setting Window
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
