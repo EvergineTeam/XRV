@@ -7,6 +7,7 @@ using Xrv.ImageGallery;
 using Xrv.Core;
 using Xrv.LoadModel;
 using Xrv.Ruler;
+using Xrv.StreamingViewer;
 using System;
 using Xrv.Core.Storage;
 using Random = Evergine.Framework.Services.Random;
@@ -51,6 +52,7 @@ namespace XrvSamples
                 ImagePixelsWidth = 640,
                 ImagePixelsHeight = 640
             });
+            xrv.AddModule(new StreamingViewerModule());
 
             this.Container.RegisterInstance(xrv);
         }

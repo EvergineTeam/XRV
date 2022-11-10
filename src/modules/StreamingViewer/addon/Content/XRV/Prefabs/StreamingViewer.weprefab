@@ -1,0 +1,80 @@
+!Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
+Root:
+  Name: StreamingViewer
+  Tag: null
+  IsEnabled: true
+  IsStatic: false
+  Components:
+    - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+      Id: 48114f88-724f-4c02-b329-027c012f50e8
+      IsEnabled: true
+      LocalOrientation:
+        W: 1.0
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalPosition:
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+      LocalScale:
+        X: 1.0
+        Y: 1.0
+        Z: 1.0
+    - !Xrv.StreamingViewer.Components.StreamingViewerComponent,Xrv.StreamingViewer
+      Id: 660c9073-14c8-4fcc-b775-4cbf0a6e936b
+      IsEnabled: true
+      VideoPixelsHeight: 720
+      VideoPixelsWidth: 1280
+      frame: null
+  Children:
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: VideoFrame
+      Tag: PART_video_frame
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: 8ec4622b-cf52-4d82-99e4-7cc3eec23078
+          IsEnabled: true
+          LocalOrientation:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+          Id: 7992b25f-48ca-4039-8c2d-766954d53a96
+          AsignedTo: Default
+          IsEnabled: true
+          Material: 724be777-bffd-4564-a75f-55f4bd394ae3
+        - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+          Id: ddd8ea22-5e9b-4052-a7a1-459b64d22af9
+          Height: 0.300000012
+          InitialU: 0.0
+          InitialV: 0.0
+          IsEnabled: true
+          PlaneNormal: ZPositive
+          TwoSides: false
+          UTile: 1.0
+          UVHorizontalFlip: false
+          UVVerticalFlip: false
+          Width: 0.300000012
+          YTile: 1.0
+        - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+          Id: 17818895-251c-4d42-a26a-20900da68be9
+          DebugBoundingbox: true
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+      Children: []
+      Id: 9dfec6ec-c4b2-404d-908e-047cb2a37b06
+  Id: cc89c86f-a8f0-4baf-947b-0f797914fcf5
