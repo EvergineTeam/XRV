@@ -44,12 +44,14 @@ namespace Xrv.StreamingViewer.Components
         public MeshRenderer frame;
         private Texture texture;
         //private string sourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
-        private string sourceURL = "http://213.193.89.202/mjpg/video.mjpg";
+        //private string sourceURL = "http://213.193.89.202/mjpg/video.mjpg";
+        //private string sourceURL = "http://161.72.22.244/mjpg/video.mjpg?timestamp=1668154449782";
+        private string sourceURL = "http://153.142.212.238:8081/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
         private Stream stream;
         public uint VideoPixelsWidth = 1280;
         public uint VideoPixelsHeight = 720;
 
-        
+        private bool initializedTexture = false;
 
         protected override void OnActivated()
         {
@@ -60,27 +62,9 @@ namespace Xrv.StreamingViewer.Components
             }
         }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
-            var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
-            TextureDescription desc = new TextureDescription()
-            {
-                Type = TextureType.Texture2D,
-                Width = 1280,
-                Height = 720,
-                Depth = 1,
-                ArraySize = 1,
-                Faces = 1,
-                Usage = ResourceUsage.Default,
-                CpuAccess = ResourceCpuAccess.None,
-                Flags = TextureFlags.ShaderResource | TextureFlags.RenderTarget,
-                Format = PixelFormat.R8G8B8A8_UNorm,
-                MipLevels = 1,
-                SampleCount = TextureSampleCount.None,
-            };
-
-            this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
-            holographicEffect.Texture = this.imageTexture;
             return base.OnAttached();
         }
 
@@ -88,24 +72,23 @@ namespace Xrv.StreamingViewer.Components
         {
             if (tryNum < 5)
             {
-            WebResponse response;
-            try
-            {
-                var req = (WebRequest)ar.AsyncState;
-                response = req.EndGetResponse(ar);
-                return response;
-            }
-            catch (Exception)
-            {
-                return this.tryConnection(ar, tryNum + 1);
-            }
+                WebResponse response;
+                try
+                {
+                    var req = (WebRequest)ar.AsyncState;
+                    response = req.EndGetResponse(ar);
+                    return response;
+                }
+                catch (Exception)
+                {
+                    return this.tryConnection(ar, tryNum + 1);
+                }
             }
             else
             {
                 Debug.WriteLine("Connection error");
                 return null;
             }
-            
         }
 
         public void GetVideo()
@@ -119,16 +102,15 @@ namespace Xrv.StreamingViewer.Components
             WebRequest req = WebRequest.Create(this.sourceURL);
             req.BeginGetResponse(
                 ar =>
-            {
-                
-                // TODO: Add exception handling: EndGetResponse could throw
-                
-                using (var response = req.EndGetResponse(ar))
                     {
+                // TODO: Add exception handling: EndGetResponse could throw
+
+                using (var response = req.EndGetResponse(ar))
+                {
                     // using (var reader = new StreamReader(response.GetResponseStream()))
                     using (var responseStream = response.GetResponseStream())
                     {
-                            int responseByte;
+                        int responseByte;
                         bool atEndOfLine = false;
                         string line = "";
                         int size = 0;
@@ -153,7 +135,8 @@ namespace Xrv.StreamingViewer.Components
                                     this.readStreaming(responseStream, size);
                                     atEndOfLine = false;
                                     line = "";
-                                } else
+                                }
+                                else
                                 {
                                     atEndOfLine = true;
                                 }
@@ -167,7 +150,7 @@ namespace Xrv.StreamingViewer.Components
                                     line = "";
                                 }
 
-                                
+
                             }
                             else
                             {
@@ -190,7 +173,8 @@ namespace Xrv.StreamingViewer.Components
                             ////}
                             //// Debug.WriteLine(line);
                         }
-                    } }
+                    }
+                }
             }, req);
             //Console.ReadLine();
 
@@ -224,19 +208,20 @@ namespace Xrv.StreamingViewer.Components
         ////    Debug.WriteLine("New Frame");
         ////}
 
-        private void GetFrame() { 
+        private void GetFrame()
+        {
             ////while ((this.stream = resp.GetResponseStream()) != null)
             ////{
-                bool streamFinished = false;
+            bool streamFinished = false;
 
 
-                ////var fileStream = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "testimagestream.txt");
-                //////this.stream.Seek(0, SeekOrigin.Begin);
-                ////this.stream.CopyTo(fileStream);
-                ////fileStream.Close();
+            ////var fileStream = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "testimagestream.txt");
+            //////this.stream.Seek(0, SeekOrigin.Begin);
+            ////this.stream.CopyTo(fileStream);
+            ////fileStream.Close();
 
-                byte[] jpegData = new byte[5000000];
-            
+            byte[] jpegData = new byte[5000000];
+
             //// this.ReadStream(this.stream);
             while (!streamFinished)
             {
@@ -256,11 +241,11 @@ namespace Xrv.StreamingViewer.Components
                     bytesLeft -= stream.Read(jpegData, bytesToRead - bytesLeft, bytesLeft);
                     //yield return null;
                 }
-                
+
                 //this.stream.Read(jpegData, 0, bytesLeft);
                 this.SetTextureFromBytesArray(jpegData);
 
-                
+
 
 
                 //var fileStream = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "testimagestream.txt");
@@ -314,18 +299,42 @@ namespace Xrv.StreamingViewer.Components
 
         private void SetTextureFromBytesArray(byte[] bytes)
         {
-            using (var image2 = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(bytes))
+            try
             {
-                RawImageLoader.CopyImageToArrayPool(image2, false, out var size, out var newJpgData);
-                this.graphicsContext.UpdateTextureData(this.imageTexture, newJpgData);
+                using (var image = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(bytes))
+                {
+                    if (!this.initializedTexture)
+                    {
+                        var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
+                        TextureDescription desc = new TextureDescription()
+                        {
+                            Type = TextureType.Texture2D,
+                            Width = (uint)image.Width,
+                            Height = (uint)image.Height,
+                            Depth = 1,
+                            ArraySize = 1,
+                            Faces = 1,
+                            Usage = ResourceUsage.Default,
+                            CpuAccess = ResourceCpuAccess.None,
+                            Flags = TextureFlags.ShaderResource | TextureFlags.RenderTarget,
+                            Format = PixelFormat.R8G8B8A8_UNorm,
+                            MipLevels = 1,
+                            SampleCount = TextureSampleCount.None,
+                        };
+
+                        this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
+                        holographicEffect.Texture = this.imageTexture;
+                        this.initializedTexture = true;
+                    }
+
+                    RawImageLoader.CopyImageToArrayPool(image, false, out var size, out var newJpgData);
+                    this.graphicsContext.UpdateTextureData(this.imageTexture, newJpgData);
+                }
+            } catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
-            // TENEMOS ESTA OPCION TAMBIEN
-            ////var texturajpg = this.assetsService.Load<Texture>("a.jpg", ms);
-            ////var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
-            ////holographicEffect.Texture = texturajpg;
         }
-
-
 
         private void ReadStream(Stream stream)
         {
