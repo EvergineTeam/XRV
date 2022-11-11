@@ -70,6 +70,7 @@ namespace Xrv.StreamingViewer.Components
             return base.OnAttached();
         }
 
+        // This will try to establish connections five times before give an error
         private WebResponse tryConnection(IAsyncResult ar, int tryNum = 0)
         {
             if (tryNum < 5)
@@ -93,7 +94,7 @@ namespace Xrv.StreamingViewer.Components
             }
         }
 
-        public void GetVideo()
+        private void GetVideo()
         {
             ////texture = new RGBTexture()
             //HttpWebRequest req = (HttpWebRequest)WebRequest.Create(this.sourceURL);
@@ -104,92 +105,87 @@ namespace Xrv.StreamingViewer.Components
             WebRequest req = WebRequest.Create(this.SourceURL);
             req.BeginGetResponse(
                 ar =>
-                    {
-                // TODO: Add exception handling: EndGetResponse could throw
-
-                using (var response = req.EndGetResponse(ar))
                 {
-                    // using (var reader = new StreamReader(response.GetResponseStream()))
-                    using (var responseStream = response.GetResponseStream())
+                    // TODO: Add exception handling: EndGetResponse could throw
+                    using (var response = req.EndGetResponse(ar))
                     {
-                        int responseByte;
-                        bool atEndOfLine = false;
-                        string line = "";
-                        int size = 0;
-                        // This loop goes as long as twitter is streaming
-                        while ((responseByte = responseStream.ReadByte()) != -1)
+                        // using (var reader = new StreamReader(response.GetResponseStream()))
+                        using (var responseStream = response.GetResponseStream())
                         {
-                            // Ignore Blanks
-                            if (responseByte == 10)
-                            {
-                                continue;
-                            }
+                            int responseByte;
+                            bool atEndOfLine = false;
+                            string line = string.Empty;
+                            int size = 0;
 
-                            // Check if Carriage Return (We will start a new line)
-                            if (responseByte == 13)
+                            // This loop goes as long as twitter is streaming
+                            while ((responseByte = responseStream.ReadByte()) != -1)
                             {
-                                // Check if two blank lines (end of header)
-                                if (atEndOfLine)
+                                // Ignore Blanks
+                                if (responseByte == 10)
                                 {
-                                    responseStream.ReadByte();
-                                    //return result;
-                                    //Read all
-                                    this.readStreaming(responseStream, size);
+                                    continue;
+                                }
+
+                                // Check if Carriage Return (We will start a new line)
+                                if (responseByte == 13)
+                                {
+                                    // Check if two blank lines (end of header)
+                                    if (atEndOfLine)
+                                    {
+                                        responseStream.ReadByte();
+                                        //return result;
+                                        //Read all
+                                        this.ReadStreaming(responseStream, size);
+                                        atEndOfLine = false;
+                                        line = string.Empty;
+                                    }
+                                    else
+                                    {
+                                        atEndOfLine = true;
+                                    }
+
+                                    if (line.ToLower().StartsWith("content-length:"))
+                                    {
+                                        size = Convert.ToInt32(line.Substring("Content-Length:".Length).Trim());
+                                    }
+                                    else
+                                    {
+                                        line = string.Empty;
+                                    }
+                                }
+                                else
+                                {
                                     atEndOfLine = false;
-                                    line = "";
-                                }
-                                else
-                                {
-                                    atEndOfLine = true;
+                                    line += (char)responseByte;
                                 }
 
-                                if (line.ToLower().StartsWith("content-length:"))
-                                {
-                                    size = Convert.ToInt32(line.Substring("Content-Length:".Length).Trim());
-                                }
-                                else
-                                {
-                                    line = "";
-                                }
+                                //var in = reader.Read()
+                                ////MemoryStream memoryStream = new MemoryStream();
 
 
+                                ////reader.Read(memoryStream.GetBuffer, 0, )
+                                ////if (FindLength(stream))
+                                ////    //memoryStream.Write()
+                                ////    var line = reader.ReadLine();
+                                ////if (line.ToLower().Contains("image/jpeg".ToLower()))
+                                ////{
+                                ////    Debug.WriteLine("new frame");
+                                ////}
+                                //// Debug.WriteLine(line);
                             }
-                            else
-                            {
-                                atEndOfLine = false;
-                                line += (char)responseByte;
-                            }
-
-
-                            //var in = reader.Read()
-                            ////MemoryStream memoryStream = new MemoryStream();
-
-
-                            ////reader.Read(memoryStream.GetBuffer, 0, )
-                            ////if (FindLength(stream))
-                            ////    //memoryStream.Write()
-                            ////    var line = reader.ReadLine();
-                            ////if (line.ToLower().Contains("image/jpeg".ToLower()))
-                            ////{
-                            ////    Debug.WriteLine("new frame");
-                            ////}
-                            //// Debug.WriteLine(line);
                         }
                     }
-                }
-            }, req);
+                }, req);
             //Console.ReadLine();
-
 
             //this.GetFrame();
             Debug.WriteLine("Starting");
             ////MJPEGStream stream = new MJPEGStream(this.sourceURL);
             ////stream.NewFrame += new NewFrameEventHandler(StreamNewFrame);
             ////stream.Start();
-
         }
 
-        private void readStreaming(Stream responseStream, int bytesToRead)
+        private void ReadStreaming(Stream responseStream, int bytesToRead)
         {
             int bytesLeft = bytesToRead;
             MemoryStream memoryStream = new MemoryStream();
@@ -199,11 +195,11 @@ namespace Xrv.StreamingViewer.Components
                 bytesLeft -= responseStream.Read(buffer, bytesToRead - bytesLeft, bytesLeft);
                 //yield return null;
             }
+
             //responseStream.Position = bytesToRead;
             Debug.WriteLine("NEW FRAME");
             this.SetTextureFromBytesArray(buffer);
         }
-
 
         ////private void StreamNewFrame(object sender, NewFrameEventArgs eventArgs)
         ////{
@@ -215,7 +211,6 @@ namespace Xrv.StreamingViewer.Components
             ////while ((this.stream = resp.GetResponseStream()) != null)
             ////{
             bool streamFinished = false;
-
 
             ////var fileStream = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "testimagestream.txt");
             //////this.stream.Seek(0, SeekOrigin.Begin);
@@ -332,7 +327,8 @@ namespace Xrv.StreamingViewer.Components
                     RawImageLoader.CopyImageToArrayPool(image, false, out var size, out var newJpgData);
                     this.graphicsContext.UpdateTextureData(this.imageTexture, newJpgData);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Debug.WriteLine(e);
             }
