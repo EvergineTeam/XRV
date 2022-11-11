@@ -20,6 +20,7 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
+using Xrv.LoadModel.Importers.GLB;
 using Xrv.LoadModel.Structs;
 
 namespace Xrv.LoadModel
@@ -153,15 +154,9 @@ namespace Xrv.LoadModel
 
             await EvergineBackgroundTask.Run(() =>
             {
-                Thread.Sleep(2000);
-
-                // Teapot
-                var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
-                var modelEntity = new Entity()
-                                .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
-                                .AddComponent(new MaterialComponent() { Material = material })
-                                .AddComponent(new TeapotMesh())
-                                .AddComponent(new MeshRenderer());
+                var model = GLBRuntime.Instance.Read("XRV/Models/DamagedHelmet.glb");
+                var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+                modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * 0.2f;
 
                 loadModelBehavior.ModelEntity = modelEntity;
             });
