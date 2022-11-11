@@ -43,10 +43,6 @@ namespace Xrv.StreamingViewer.Components
         //private string sourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
         private string sourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
         private Stream stream;
-        public uint VideoPixelsWidth = 1024;
-        public uint VideoPixelsHeight = 768;
-
-
 
         protected override void OnActivated()
         {

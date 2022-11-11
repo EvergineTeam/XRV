@@ -52,7 +52,10 @@ namespace XrvSamples
                 ImagePixelsWidth = 640,
                 ImagePixelsHeight = 640
             });
-            xrv.AddModule(new StreamingViewerModule());
+            xrv.AddModule(new StreamingViewerModule()
+            {
+                SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER"
+            }); ;
 
             this.Container.RegisterInstance(xrv);
         }

@@ -44,9 +44,11 @@ namespace Xrv.StreamingViewer.Components
         public MeshRenderer frame;
         private Texture texture;
         //private string sourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
-        //private string sourceURL = "http://213.193.89.202/mjpg/video.mjpg";
+        //private string sourceURL = "http://213.193.89.202/mjpg/video.mjpg"; THIS ONE SHOULD FAIL BY AUTH
         //private string sourceURL = "http://161.72.22.244/mjpg/video.mjpg?timestamp=1668154449782";
-        private string sourceURL = "http://153.142.212.238:8081/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
+        //private string sourceURL = "http://153.142.212.238:8081/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
+        public string SourceURL { get; set; }
+
         private Stream stream;
         public uint VideoPixelsWidth = 1280;
         public uint VideoPixelsHeight = 720;
@@ -99,7 +101,7 @@ namespace Xrv.StreamingViewer.Components
             //this.stream = resp.GetResponseStream();
             //EvergineBackgroundTask.Run(this.GetFrame);
 
-            WebRequest req = WebRequest.Create(this.sourceURL);
+            WebRequest req = WebRequest.Create(this.SourceURL);
             req.BeginGetResponse(
                 ar =>
                     {

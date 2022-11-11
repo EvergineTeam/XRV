@@ -12,6 +12,7 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
+using Xrv.StreamingViewer.Components;
 
 namespace Xrv.StreamingViewer
 {
@@ -29,6 +30,8 @@ namespace Xrv.StreamingViewer
         ////private Entity imageGallerySettings;
         private Scene scene;
         private Window window = null;
+
+        public string SourceURL { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingViewerModule"/> class.
@@ -87,7 +90,9 @@ namespace Xrv.StreamingViewer
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
-            var streamingViewer = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingViewer_weprefab).Instantiate();
+            var streamingViewerPrefab = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingViewer_weprefab).Instantiate();
+            var streamingViewerComponent = streamingViewerPrefab.FindComponent<StreamingViewerComponent>();
+            streamingViewerComponent.SourceURL = this.SourceURL;
 
             // // var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
             // // var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
@@ -109,7 +114,7 @@ namespace Xrv.StreamingViewer
                 config.FrontPlateSize = size;
                 config.FrontPlateOffsets = Vector2.Zero;
                 config.DisplayLogo = false;
-                config.Content = streamingViewer;
+                config.Content = streamingViewerPrefab;
             });
         }
 
