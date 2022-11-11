@@ -7,6 +7,8 @@ using Evergine.Framework.Graphics.Effects;
 using Evergine.Framework.Graphics.Materials;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK;
+using Evergine.MRTK.Effects;
 using Evergine.Platform;
 using glTFLoader;
 using glTFLoader.Schema;
@@ -38,7 +40,7 @@ namespace Xrv.LoadModel.Importers.GLB
         private AssetsService assetsService;
         private AssetsDirectory assetsDirectory;
 
-        private Effect standardEffect;
+        private Effect holographicEffect;
         private RenderLayerDescription opaqueLayer;
         private RenderLayerDescription alphaLayer;
         private SamplerState linearClampSampler;
@@ -67,9 +69,37 @@ namespace Xrv.LoadModel.Importers.GLB
         /// <returns>Model asset.</returns>
         public Model Read(string filePath)
         {
+            Model model = null;
+
+            if (this.assetsDirectory == null)
+            {
+                this.assetsDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
+            }
+
+            using (var stream = this.assetsDirectory.Open(filePath))
+            {
+                if (stream == null || !stream.CanRead)
+                {
+                    throw new ArgumentException("Invalid parameter. Stream must be readable", "imageStream");
+                }
+
+                model = this.Read(stream, stream.Path);
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Read a glb file from stream and return a model asset.
+        /// </summary>
+        /// <param name="stream">Seeked stream.</param>
+        /// <param name="path">file path.</param>
+        /// <returns>Model asset.</returns>
+        public Model Read(Stream stream, string path)
+        {
             this.LoadStaticResources();
 
-            var model = this.ReadGLB(filePath);
+            var model = this.ReadGLB(stream, path);
 
             this.FreeResources();
 
@@ -83,7 +113,6 @@ namespace Xrv.LoadModel.Importers.GLB
                 // Get Services
                 this.graphicsContext = Application.Current.Container.Resolve<GraphicsContext>();
                 this.assetsService = Application.Current.Container.Resolve<AssetsService>();
-                this.assetsDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
 
                 // Get invalid character used in node names
                 this.invalidNameCharacters = Path.GetInvalidFileNameChars().ToList();
@@ -92,7 +121,7 @@ namespace Xrv.LoadModel.Importers.GLB
                 this.invalidNameCharacters.Add(']');
 
                 // Get static resources
-                this.standardEffect = this.assetsService.Load<Effect>(DefaultResourcesIDs.StandardEffectID);
+                this.holographicEffect = this.assetsService.Load<Effect>(MRTKResourceIDs.Effects.HoloGraphic);
                 this.opaqueLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.OpaqueRenderLayerID);
                 this.alphaLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.AlphaRenderLayerID);
                 this.linearClampSampler = this.assetsService.Load<SamplerState>(DefaultResourcesIDs.LinearClampSamplerID);
@@ -116,39 +145,37 @@ namespace Xrv.LoadModel.Importers.GLB
             this.rootIndices.Clear();
         }
 
-        private Model ReadGLB(string filePath)
+        private Model ReadGLB(Stream stream, string path)
         {
             Model model = null;
 
-            using (var stream = this.assetsDirectory.Open(filePath))
+
+            if (stream == null || !stream.CanRead)
             {
-                if (stream == null || !stream.CanRead)
-                {
-                    throw new ArgumentException("Invalid parameter. Stream must be readable", "imageStream");
-                }
-
-                this.glbModel = Interface.LoadModel(stream);
-                this.glbPath = stream.Path;
-
-                this.ReadBuffers();
-                this.ReadDefaultScene();
-
-                var materialCollection = new List<(string, Guid)>();
-                foreach (var materialInfo in this.materials.Values)
-                {
-                    ////this.assetsService.RegisterInstance<Material>(materialInfo.material);
-                    ////materialCollection.Add((materialInfo.name, materialInfo.material.Id));
-                    materialCollection.Add((materialInfo.name, DefaultResourcesIDs.DefaultMaterialID));
-                }
-
-                model = new Model()
-                {
-                    MeshContainers = this.meshContainers.ToArray(),
-                    AllNodes = this.allNodes.ToArray(),
-                    Materials = materialCollection,
-                    RootNodes = this.rootIndices.ToArray(),
-                };
+                throw new ArgumentException("Invalid parameter. Stream must be readable", "imageStream");
             }
+
+            this.glbModel = Interface.LoadModel(stream);
+            this.glbPath = path;
+
+            this.ReadBuffers();
+            this.ReadDefaultScene();
+
+            var materialCollection = new List<(string, Guid)>();
+            foreach (var materialInfo in this.materials.Values)
+            {
+                ////this.assetsService.RegisterInstance<Material>(materialInfo.material);
+                ////materialCollection.Add((materialInfo.name, materialInfo.material.Id));
+                materialCollection.Add((materialInfo.name, DefaultResourcesIDs.DefaultMaterialID));
+            }
+
+            model = new Model()
+            {
+                MeshContainers = this.meshContainers.ToArray(),
+                AllNodes = this.allNodes.ToArray(),
+                Materials = materialCollection,
+                RootNodes = this.rootIndices.ToArray(),
+            };
 
             return model;
         }
@@ -250,6 +277,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     Name = string.IsNullOrEmpty(glbMesh.Name) ? $"_Mesh_{meshId}" : this.MakeSafeName(glbMesh.Name),
                     Meshes = nodePrimitives,
                 };
+                meshContainer.RefreshBoundingBox();
 
                 this.meshContainers.Add(meshContainer);
             }
@@ -634,19 +662,17 @@ namespace Xrv.LoadModel.Importers.GLB
                         break;
                 }
 
-                StandardMaterial standardMaterial = new StandardMaterial(this.standardEffect)
+                HoloGraphic holographic = new HoloGraphic(this.holographicEffect)
                 {
-                    LightingEnabled = false,
-                    IBLEnabled = false,
-                    BaseColor = baseColor.ToColor(),
-                    BaseColorTexture = baseColorTexture,
-                    BaseColorSampler = baseColorSampler,
+                    Parameters_Color = baseColor.ToColor().ToVector3(),
+                    Texture = baseColorTexture,
+                    Sampler = baseColorSampler,
                     LayerDescription = layer,
-                    Alpha = baseColor.A,
-                    AlphaCutout = glbMaterial.AlphaCutoff,
+                    AlphaCutoff = glbMaterial.AlphaCutoff,
+                    Parameters_Alpha = baseColor.A,
                 };
 
-                this.materials.Add(materialId, (glbMaterial.Name, standardMaterial.Material));
+                this.materials.Add(materialId, (glbMaterial.Name, holographic.Material));
 
                 return this.materials.Count - 1;
             }
