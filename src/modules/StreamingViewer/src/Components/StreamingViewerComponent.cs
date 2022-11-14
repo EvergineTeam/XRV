@@ -26,15 +26,6 @@ namespace Xrv.StreamingViewer.Components
         private readonly MaterialComponent videoFrameMaterial = null;
 
         private Texture imageTexture = null;
-        ////private string sourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
-        ////private string sourceURL = "http://213.193.89.202/mjpg/video.mjpg"; THIS ONE SHOULD FAIL BY AUTH
-        ////private string sourceURL = "http://161.72.22.244/mjpg/video.mjpg?timestamp=1668154449782";
-        ////private string sourceURL = "http://153.142.212.238:8081/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
-        ////private string sourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg";
-
-        ////public uint VideoPixelsWidth = 1280;
-        ////public uint VideoPixelsHeight = 720;
-
         private bool initializedTexture = false;
 
         /// <summary>
@@ -146,8 +137,6 @@ namespace Xrv.StreamingViewer.Components
 
         private void ReadStreaming(Stream responseStream, int bytesToRead)
         {
-            ////Debug.WriteLine("NEW FRAME");
-            ////Debug.WriteLine(bytesToRead);
             int bytesLeft = bytesToRead;
             byte[] buffer = new byte[bytesToRead];
             while (bytesLeft > 0)
