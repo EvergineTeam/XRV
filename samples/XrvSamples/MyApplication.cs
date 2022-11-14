@@ -54,7 +54,7 @@ namespace XrvSamples
             });
             xrv.AddModule(new StreamingViewerModule()
             {
-                SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER"
+                SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
             }); ;
 
             this.Container.RegisterInstance(xrv);
