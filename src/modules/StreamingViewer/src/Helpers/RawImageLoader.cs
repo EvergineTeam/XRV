@@ -27,22 +27,6 @@ namespace Xrv.ImageGallery.Helpers
             dataLength = image.Width * image.Height * bytesPerPixel;
             var shared = ArrayPool<byte>.Shared;
             data = shared.Rent(dataLength);
-
-            ////var index = 0;
-            ////for (int y = 0; y < image.Height; y++)
-            ////{
-            ////    for (int x = 0; x < image.Width; x++)
-            ////    {
-            ////        var rgba = image.Frames[0].PixelBuffer[x, y];
-            ////        data[index + 0] = rgba.R; 
-            ////        data[index+1] = rgba.G; 
-            ////        data[index+2] = rgba.B; 
-            ////        data[index+3] = rgba.A;
-            ////        index+=4;
-            ////    }
-            ////}
-
-
             var dataPixels = MemoryMarshal.Cast<byte, Rgba32>(data);
             if (image.DangerousTryGetSinglePixelMemory(out var pixels))
             {
