@@ -164,9 +164,9 @@ namespace Xrv.LoadModel.Importers.GLB
             var materialCollection = new List<(string, Guid)>();
             foreach (var materialInfo in this.materials.Values)
             {
-                ////this.assetsService.RegisterInstance<Material>(materialInfo.material);
-                ////materialCollection.Add((materialInfo.name, materialInfo.material.Id));
-                materialCollection.Add((materialInfo.name, DefaultResourcesIDs.DefaultMaterialID));
+                this.assetsService.RegisterInstance<Material>(materialInfo.material);
+                materialCollection.Add((materialInfo.name, materialInfo.material.Id));
+                ////materialCollection.Add((materialInfo.name, DefaultResourcesIDs.DefaultMaterialID));
             }
 
             model = new Model()

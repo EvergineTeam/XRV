@@ -3,20 +3,20 @@
     <TargetFrameworks>netstandard2.0;uap10.0.16299</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-	  <_Parameter1>Xrv.Core.Tests</_Parameter1>
-	</AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Xrv.Core.Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.1" />
     <PackageReference Include="Azure.Storage.Files.Shares" Version="12.11.0" />
-    <PackageReference Include="Evergine.Common" Version="2022.9.28.3" />
-    <PackageReference Include="Evergine.Components" Version="2022.9.28.3" />
-    <PackageReference Include="Evergine.Framework" Version="2022.9.28.3" />
-    <PackageReference Include="Evergine.Mathematics" Version="2022.9.28.3" />
-	<PackageReference Include="Evergine.Networking" Version="2022.9.28.3" />
-    <PackageReference Include="Evergine.Platform" Version="2022.9.28.3" />
-	<PackageReference Include="System.Text.Json" Version="5.0.2" />
+    <PackageReference Include="Evergine.Common" Version="2022.11.11.2-nightly" />
+    <PackageReference Include="Evergine.Components" Version="2022.11.11.2-nightly" />
+    <PackageReference Include="Evergine.Framework" Version="2022.11.11.2-nightly" />
+    <PackageReference Include="Evergine.Mathematics" Version="2022.11.11.2-nightly" />
+    <PackageReference Include="Evergine.Networking" Version="2022.11.11.2-nightly" />
+    <PackageReference Include="Evergine.Platform" Version="2022.11.11.2-nightly" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
