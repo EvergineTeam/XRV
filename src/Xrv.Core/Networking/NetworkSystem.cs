@@ -9,6 +9,7 @@ using Lidgren.Network;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Xrv.Core.UI.Tabs;
 
@@ -240,9 +241,13 @@ namespace Xrv.Core.Networking
 #endif
             if (!isHoloLens)
             {
-                NetUtility.DefaultNetworkInterface = NetUtility
+                NetworkInterface candidate = NetUtility
                     .GetNetworkInterfaces()
-                    .First(x => x?.GetIPProperties().GatewayAddresses.Count > 0);
+                    .FirstOrDefault(x => x?.GetIPProperties().GatewayAddresses.Count > 0);
+                if (candidate != null)
+                {
+                    NetUtility.DefaultNetworkInterface = candidate;
+                }
             }
         }
     }
