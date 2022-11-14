@@ -154,17 +154,20 @@ namespace Xrv.LoadModel
 
             await EvergineBackgroundTask.Run(async () =>
             {
-                var model = GLBRuntime.Instance.Read("XRV/Models/DamagedHelmet.glb");
+                ////var model = GLBRuntime.Instance.Read("XRV/Models/scifi_girl_v.01.glb");
+                ////var model = GLBRuntime.Instance.Read("XRV/Models/DamagedHelmet.glb");
 
-                ////var repoName = this.repositoriesListView.Selected[0];
-                ////var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
-                ////var filePath = this.modelsListView.Selected[0];
-                ////using (var stream = await repo.FileAccess.GetFileAsync(filePath))
-                ////using (var memoryStream = new MemoryStream())
-                ////{
-                ////    await stream.CopyToAsync(memoryStream);
-                ////    model = GLBRuntime.Instance.Read(memoryStream, filePath);
-                ////}
+                Model model = null;
+                var repoName = this.repositoriesListView.Selected[0];
+                var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
+                var filePath = this.modelsListView.Selected[0];
+                using (var stream = await repo.FileAccess.GetFileAsync(filePath))
+                using (var memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    memoryStream.Position = 0;
+                    model = GLBRuntime.Instance.Read(memoryStream);
+                }
 
                 var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
                 modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * 0.2f;

@@ -4,7 +4,6 @@ using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
-using Evergine.Framework.Graphics.Materials;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK;
@@ -55,7 +54,7 @@ namespace Xrv.LoadModel.Importers.GLB
         private List<int> rootIndices = new List<int>();
 
         private Gltf glbModel;
-        private string glbPath;
+        private byte[] binaryChunk;
         private BufferInfo[] bufferInfos;
 
         private GLBRuntime()
@@ -83,7 +82,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     throw new ArgumentException("Invalid parameter. Stream must be readable", "imageStream");
                 }
 
-                model = this.Read(stream, stream.Path);
+                model = this.Read(stream);
             }
 
             return model;
@@ -93,13 +92,12 @@ namespace Xrv.LoadModel.Importers.GLB
         /// Read a glb file from stream and return a model asset.
         /// </summary>
         /// <param name="stream">Seeked stream.</param>
-        /// <param name="path">file path.</param>
         /// <returns>Model asset.</returns>
-        public Model Read(Stream stream, string path)
+        public Model Read(Stream stream)
         {
             this.LoadStaticResources();
 
-            var model = this.ReadGLB(stream, path);
+            var model = this.ReadGLB(stream);
 
             this.FreeResources();
 
@@ -143,20 +141,21 @@ namespace Xrv.LoadModel.Importers.GLB
             this.meshContainers.Clear();
             this.allNodes.Clear();
             this.rootIndices.Clear();
+            this.binaryChunk = null;
         }
 
-        private Model ReadGLB(Stream stream, string path)
+        private Model ReadGLB(Stream stream)
         {
             Model model = null;
-
 
             if (stream == null || !stream.CanRead)
             {
                 throw new ArgumentException("Invalid parameter. Stream must be readable", "imageStream");
             }
 
-            this.glbModel = Interface.LoadModel(stream);
-            this.glbPath = path;
+            var result = GLBHelpers.LoadModel(stream);
+            this.glbModel = result.Gltf;
+            this.binaryChunk = result.Data;
 
             this.ReadBuffers();
             this.ReadDefaultScene();
@@ -166,7 +165,6 @@ namespace Xrv.LoadModel.Importers.GLB
             {
                 this.assetsService.RegisterInstance<Material>(materialInfo.material);
                 materialCollection.Add((materialInfo.name, materialInfo.material.Id));
-                ////materialCollection.Add((materialInfo.name, DefaultResourcesIDs.DefaultMaterialID));
             }
 
             model = new Model()
@@ -187,7 +185,7 @@ namespace Xrv.LoadModel.Importers.GLB
             this.bufferInfos = new BufferInfo[numBuffers];
             for (int i = 0; i < numBuffers; ++i)
             {
-                this.bufferInfos[i] = new BufferInfo(this.glbModel.LoadBinaryBuffer(i, this.glbPath));
+                this.bufferInfos[i] = new BufferInfo(this.glbModel.LoadBinaryBuffer(i, this.GetExternalFileSolver));
             }
         }
 
@@ -734,7 +732,8 @@ namespace Xrv.LoadModel.Importers.GLB
         private Texture ReadImage(int imageId)
         {
             Texture result = null;
-            using (Stream fileStream = this.glbModel.OpenImageFile(imageId, this.glbPath))
+
+            using (Stream fileStream = this.glbModel.OpenImageFile(imageId, this.GetExternalFileSolver))
             {
                 var imageInfo = SixLabors.ImageSharp.Image.Identify(fileStream);
 
@@ -768,6 +767,11 @@ namespace Xrv.LoadModel.Importers.GLB
             }
 
             return result;
+        }
+
+        private byte[] GetExternalFileSolver(string empty)
+        {
+            return this.binaryChunk;
         }
 
         private string MakeSafeName(string name)
