@@ -1,60 +1,48 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Framework;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Text;
+using System.Net;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
-using System.Diagnostics;
-using System.Collections;
+using Evergine.Framework;
 using Evergine.MRTK.Effects;
-using Evergine.Framework.Graphics;
-using static System.Net.Mime.MediaTypeNames;
-using System.Drawing.Imaging;
-using System.Drawing;
-using SixLabors.ImageSharp.PixelFormats;
-using PixelFormat = Evergine.Common.Graphics.PixelFormat;
-using Application = Evergine.Framework.Application;
-using System.Net;
 using Xrv.ImageGallery.Helpers;
-using SixLabors.ImageSharp.ColorSpaces;
-using Evergine.Framework.Services;
-using Evergine.Framework.Threading;
-using Azure.Core;
-using static BulletSharp.DiscreteCollisionDetectorInterface;
-//using AForge.Video;
+using Application = Evergine.Framework.Application;
+using PixelFormat = Evergine.Common.Graphics.PixelFormat;
 
 namespace Xrv.StreamingViewer.Components
 {
+    /// <summary>
+    /// Module that shows a live video streaming.
+    /// </summary>
     public class StreamingViewerComponent : Component
     {
         [BindService]
         private readonly GraphicsContext graphicsContext = null;
 
-        [BindService]
-        private readonly AssetsService assetsService = null;
-
         [BindComponent(source: BindComponentSource.Children, tag: "PART_video_frame")]
         private readonly MaterialComponent videoFrameMaterial = null;
 
         private Texture imageTexture = null;
-        public MeshRenderer frame;
-        //private string sourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
-        //private string sourceURL = "http://213.193.89.202/mjpg/video.mjpg"; THIS ONE SHOULD FAIL BY AUTH
-        //private string sourceURL = "http://161.72.22.244/mjpg/video.mjpg?timestamp=1668154449782";
-        //private string sourceURL = "http://153.142.212.238:8081/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
-        //private string sourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg";
+        ////private string sourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
+        ////private string sourceURL = "http://213.193.89.202/mjpg/video.mjpg"; THIS ONE SHOULD FAIL BY AUTH
+        ////private string sourceURL = "http://161.72.22.244/mjpg/video.mjpg?timestamp=1668154449782";
+        ////private string sourceURL = "http://153.142.212.238:8081/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER";
+        ////private string sourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg";
 
-        public string SourceURL { get; set; }
-
-        private Stream stream;
-        public uint VideoPixelsWidth = 1280;
-        public uint VideoPixelsHeight = 720;
+        ////public uint VideoPixelsWidth = 1280;
+        ////public uint VideoPixelsHeight = 720;
 
         private bool initializedTexture = false;
 
+        /// <summary>
+        /// Gets or sets the URL of the source of the streaming.
+        /// </summary>
+        public string SourceURL { get; set; }
+
+        /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
@@ -126,6 +114,7 @@ namespace Xrv.StreamingViewer.Components
                             if (atEndOfLine)
                             {
                                 responseStream.ReadByte();
+
                                 // Read all
                                 this.ReadStreaming(responseStream, size);
                                 atEndOfLine = false;
@@ -160,7 +149,6 @@ namespace Xrv.StreamingViewer.Components
             ////Debug.WriteLine("NEW FRAME");
             ////Debug.WriteLine(bytesToRead);
             int bytesLeft = bytesToRead;
-            MemoryStream memoryStream = new MemoryStream();
             byte[] buffer = new byte[bytesToRead];
             while (bytesLeft > 0)
             {
@@ -178,7 +166,7 @@ namespace Xrv.StreamingViewer.Components
                 if (!this.initializedTexture)
                 {
                     var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
-                    TextureDescription desc = new TextureDescription()
+                    TextureDescription desc = new ()
                     {
                         Type = TextureType.Texture2D,
                         Width = (uint)image.Width,
@@ -209,19 +197,19 @@ namespace Xrv.StreamingViewer.Components
         }
 
         // For Debug only. Transform stream to plain text
-        private void ReadStream(Stream stream)
-        {
-            int streamByte;
-            var streamText = string.Empty;
-            int i = 0;
-            while (i < 1000)
-            {
-                streamByte = stream.ReadByte();
-                streamText += (char)streamByte;
-                i++;
-            }
+        ////private void ReadStream(Stream stream)
+        ////{
+        ////    int streamByte;
+        ////    var streamText = string.Empty;
+        ////    int i = 0;
+        ////    while (i < 1000)
+        ////    {
+        ////        streamByte = stream.ReadByte();
+        ////        streamText += (char)streamByte;
+        ////        i++;
+        ////    }
 
-            Debug.WriteLine(streamText);
-        }
+        ////    Debug.WriteLine(streamText);
+        ////}
     }
 }

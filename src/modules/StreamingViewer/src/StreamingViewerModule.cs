@@ -21,17 +21,15 @@ namespace Xrv.StreamingViewer
     /// </summary>
     public class StreamingViewerModule : Module
     {
+        private readonly TabItem settings = null;
+        private readonly TabItem help = null;
+        private readonly MenuButtonDescription handMenuDescription;
         private AssetsService assetsService;
         private XrvService xrv;
-        private MenuButtonDescription handMenuDescription;
-        private TabItem settings = null;
-        private TabItem help = null;
         private Entity imageGalleryHelp;
         ////private Entity imageGallerySettings;
         private Scene scene;
         private Window window = null;
-
-        public string SourceURL { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingViewerModule"/> class.
@@ -46,18 +44,17 @@ namespace Xrv.StreamingViewer
                 TextOn = "Streaming Viewer",
             };
 
-            ////this.settings = new TabItem()
-            ////{
-            ////    Name = "Image Gallery",
-            ////    Contents = this.SettingContent,
-            ////};
-
             this.help = new TabItem()
             {
                 Name = "Streaming Viewer",
                 Contents = this.HelpContent,
             };
         }
+
+        /// <summary>
+        /// Gets or sets the URL of the source of the streaming.
+        /// </summary>
+        public string SourceURL { get; set; }
 
         /// <summary>
         /// Gets or sets the width of the images listed in the gallery.
@@ -94,19 +91,8 @@ namespace Xrv.StreamingViewer
             var streamingViewerComponent = streamingViewerPrefab.FindComponent<StreamingViewerComponent>();
             streamingViewerComponent.SourceURL = this.SourceURL;
 
-            // // var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
-            // // var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
-            // // imageGallery.ImageUpdated += this.ImageGalleryImageUpdated;
-            // // var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
-            // // var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
-            // // imageGallery.ImagePixelsHeight = this.ImagePixelsHeight;
-            // // imageGallery.ImagePixelsWidth = this.ImagePixelsWidth;
+            // TODO: calculate size
             var size = new Vector2(0.30f, 0.30f);
-
-            // // galleryImageFrame.Width = size.X;
-            // // galleryImageFrame.Height = size.Y;
-            // // controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
-
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
                 config.Title = this.Name;
@@ -125,11 +111,6 @@ namespace Xrv.StreamingViewer
             this.window.Open();
         }
 
-        private void ImageGalleryImageUpdated(object sender, string e)
-        {
-            this.window.Configurator.Title = this.Name + " " + e;
-        }
-
         private void SetFrontPosition(Scene scene, Entity entity)
         {
             var entityTransform = entity.FindComponent<Transform3D>();
@@ -137,17 +118,6 @@ namespace Xrv.StreamingViewer
             var cameraWorldTransform = cameraTransform.WorldTransform;
             entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
         }
-
-        ////private Entity SettingContent()
-        ////{
-        ////    ////if (this.imageGallerySettings == null)
-        ////    ////{
-        ////    ////    var imageGallerySettingsPrefab = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Settings);
-        ////    ////    this.imageGallerySettings = imageGallerySettingsPrefab.Instantiate();
-        ////    ////}
-
-        ////    return this.imageGallerySettings;
-        ////}
 
         private Entity HelpContent()
         {
