@@ -7,6 +7,8 @@ using System.Net;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
+using Evergine.Framework.Graphics;
+using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
 using Xrv.ImageGallery.Helpers;
 using Application = Evergine.Framework.Application;
@@ -24,9 +26,16 @@ namespace Xrv.StreamingViewer.Components
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_video_frame")]
         private readonly MaterialComponent videoFrameMaterial = null;
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_video_frame")]
+        private readonly PlaneMesh videoFramePlaneMesh = null;
 
         private Texture imageTexture = null;
         private bool initializedTexture = false;
+
+        /// <summary>
+        /// Event fired when the size of the streaming has changed.
+        /// </summary>
+        public event EventHandler<Vector2> StreamingImageSizeUpdated;
 
         /// <summary>
         /// Gets or sets the URL of the source of the streaming.
@@ -154,6 +163,7 @@ namespace Xrv.StreamingViewer.Components
                 using var image = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(bytes);
                 if (!this.initializedTexture)
                 {
+                    // Create texture
                     var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
                     TextureDescription desc = new ()
                     {
@@ -173,6 +183,13 @@ namespace Xrv.StreamingViewer.Components
 
                     this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
                     holographicEffect.Texture = this.imageTexture;
+
+                    // Set Window Size
+                    var ownerTransform = this.Owner.FindComponent<Transform3D>();
+                    this.videoFramePlaneMesh.Width = image.Width / 2000f;
+                    this.videoFramePlaneMesh.Height = image.Height / 2000f;
+                    this.StreamingImageSizeUpdated.Invoke(this, new Vector2(image.Width, image.Height));
+
                     this.initializedTexture = true;
                 }
 
