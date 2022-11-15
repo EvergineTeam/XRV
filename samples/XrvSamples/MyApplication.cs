@@ -44,6 +44,8 @@ namespace XrvSamples
                         FileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://waveengineagentdiag159.file.core.windows.net/models?st=2022-10-26T11%3A46%3A02Z&se=2028-10-27T18%3A46%3A00Z&sp=rl&sv=2018-03-28&sr=s&sig=dOR9IQtYCPMYfoP7TouKuh9UXjPQUMABAFLYkSbaPR0%3D")),
                     }
                 },
+                NormalizedModelEnabled = true,
+                NormalizedModelSize = 0.2f,
             });
             xrv.AddModule(new AudioNoteModule());
             xrv.AddModule(new ImageGalleryModule()

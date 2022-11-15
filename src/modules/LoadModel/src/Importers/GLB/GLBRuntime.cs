@@ -4,6 +4,7 @@ using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
+using Evergine.Framework.Graphics.Materials;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK;
@@ -39,7 +40,6 @@ namespace Xrv.LoadModel.Importers.GLB
         private AssetsService assetsService;
         private AssetsDirectory assetsDirectory;
 
-        private Effect holographicEffect;
         private RenderLayerDescription opaqueLayer;
         private RenderLayerDescription alphaLayer;
         private SamplerState linearClampSampler;
@@ -119,7 +119,6 @@ namespace Xrv.LoadModel.Importers.GLB
                 this.invalidNameCharacters.Add(']');
 
                 // Get static resources
-                this.holographicEffect = this.assetsService.Load<Effect>(MRTKResourceIDs.Effects.HoloGraphic);
                 this.opaqueLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.OpaqueRenderLayerID);
                 this.alphaLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.AlphaRenderLayerID);
                 this.linearClampSampler = this.assetsService.Load<SamplerState>(DefaultResourcesIDs.LinearClampSamplerID);
@@ -174,6 +173,9 @@ namespace Xrv.LoadModel.Importers.GLB
                 Materials = materialCollection,
                 RootNodes = this.rootIndices.ToArray(),
             };
+
+            // Compute global bounding box
+            model.RefreshBoundingBox();
 
             return model;
         }
@@ -660,22 +662,41 @@ namespace Xrv.LoadModel.Importers.GLB
                         break;
                 }
 
-                HoloGraphic holographic = new HoloGraphic(this.holographicEffect)
-                {
-                    Parameters_Color = baseColor.ToColor().ToVector3(),
-                    Texture = baseColorTexture,
-                    Sampler = baseColorSampler,
-                    LayerDescription = layer,
-                    AlphaCutoff = glbMaterial.AlphaCutoff,
-                    Parameters_Alpha = baseColor.A,
-                };
-
-                this.materials.Add(materialId, (glbMaterial.Name, holographic.Material));
+                var material = this.CreateEngineMaterial(baseColor.ToColor(), baseColorTexture, baseColorSampler, layer, baseColor.A, glbMaterial.AlphaCutoff);
+                this.materials.Add(materialId, (glbMaterial.Name, material));
 
                 return this.materials.Count - 1;
             }
 
             return this.materials.Keys.ToList().IndexOf(materialId);
+        }
+
+        private Material CreateEngineMaterial(Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, RenderLayerDescription layer, float alpha, float alphaCutOff)
+        {
+            var effect = this.assetsService.Load<Effect>(MRTKResourceIDs.Effects.HoloGraphic);
+
+            ////StandardMaterial standard = new StandardMaterial(effect)
+            ////{
+            ////    LightingEnabled = true,
+            ////    IBLEnabled = true,
+            ////    BaseColor = baseColor,
+            ////    BaseColorTexture = baseColorTexture,
+            ////    BaseColorSampler = baseColorSampler,
+            ////    LayerDescription = layer,
+            ////    AlphaCutout = alphaCutOff,
+            ////    Alpha = alpha,
+            ////};
+            HoloGraphic holographic = new HoloGraphic(effect)
+            {
+                Parameters_Color = baseColor.ToVector3(),
+                Texture = baseColorTexture,
+                Sampler = baseColorSampler,
+                LayerDescription = layer,
+                AlphaCutoff = alphaCutOff,
+                Parameters_Alpha = alpha,
+            };
+
+            return holographic.Material;
         }
 
         private (Texture texture, SamplerState sampler) ReadTexture(int textureId)

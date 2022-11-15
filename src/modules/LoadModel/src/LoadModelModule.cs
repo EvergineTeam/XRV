@@ -4,6 +4,7 @@ using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
@@ -73,6 +74,17 @@ namespace Xrv.LoadModel
         /// Gets or sets the model repository list.
         /// </summary>
         public Repository[] Repositories { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the model will be normalized to standard size or
+        /// will be load using its original size.
+        /// </summary>
+        public bool NormalizedModelEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the box dimension of the model after normalize them. (Required NormalizedModelEnable=true).
+        /// </summary>
+        public float NormalizedModelSize { get; set; } = 0.2f;
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -170,7 +182,17 @@ namespace Xrv.LoadModel
                 }
 
                 var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-                modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * 0.2f;
+                if (this.NormalizedModelEnabled)
+                {
+                    modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
+                }
+
+                modelEntity.AddComponent(new BoxCollider3D()
+                {
+                    Size = model.BoundingBox.Value.HalfExtent * 2,
+                    Offset = model.BoundingBox.Value.Center,
+                });
+                modelEntity.AddComponent(new StaticBody3D());
 
                 loadModelBehavior.ModelEntity = modelEntity;
             });

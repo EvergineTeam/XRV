@@ -356,8 +356,6 @@ namespace Xrv.LoadModel
 
         private void AddManipulatorComponents(Entity entity)
         {
-            entity.AddComponent(new BoxCollider3D());
-            entity.AddComponent(new StaticBody3D());
             entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
             {
                 AutoCalculate = false,
