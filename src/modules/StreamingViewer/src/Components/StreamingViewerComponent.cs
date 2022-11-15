@@ -29,6 +29,9 @@ namespace Xrv.StreamingViewer.Components
         [BindComponent(source: BindComponentSource.Children, tag: "PART_video_frame")]
         private readonly PlaneMesh videoFramePlaneMesh = null;
 
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_video_spinner", isRecursive: true)]
+        private readonly Entity spinnerEntity = null;
+
         private Texture imageTexture = null;
         private bool initializedTexture = false;
 
@@ -183,6 +186,7 @@ namespace Xrv.StreamingViewer.Components
 
                     this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
                     holographicEffect.Texture = this.imageTexture;
+                    holographicEffect.Albedo = Color.White;
 
                     // Set Window Size
                     var ownerTransform = this.Owner.FindComponent<Transform3D>();
@@ -190,6 +194,7 @@ namespace Xrv.StreamingViewer.Components
                     this.videoFramePlaneMesh.Height = image.Height / 2000f;
                     this.StreamingImageSizeUpdated.Invoke(this, new Vector2(image.Width, image.Height));
 
+                    this.spinnerEntity.IsEnabled = false;
                     this.initializedTexture = true;
                 }
 
