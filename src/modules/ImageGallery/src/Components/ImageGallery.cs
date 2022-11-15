@@ -14,6 +14,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 using Evergine.Platform;
 using SixLabors.ImageSharp.PixelFormats;
 using Xrv.Core.Storage;
+using Xrv.Core.UI.Windows;
 using Xrv.ImageGallery.Helpers;
 
 namespace Xrv.ImageGallery.Components
@@ -51,20 +52,12 @@ namespace Xrv.ImageGallery.Components
         private readonly Entity spinnerEntity = null;
 
         private Texture imageTexture = null;
-
         private int imageIndex = 0;
         private CancellationTokenSource cancellationSource;
-
         private bool showNavigationButtons = true;
-
         private bool showNavigationSlider = true;
-
         private List<FileItem> images = null;
-
-        /// <summary>
-        /// Event fired when the image has changed.
-        /// </summary>
-        public event EventHandler<string> ImageUpdated;
+        private WindowConfigurator windowConfigurator = null;
 
         /// <summary>
         /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
@@ -152,15 +145,22 @@ namespace Xrv.ImageGallery.Components
         /// </summary>
         public uint ImagePixelsHeight { get; set; }
 
+        /// <summary>
+        /// Gets or sets gallery name.
+        /// </summary>
+        public string Name { get; set; }
+
         /// <inheritdoc/>
         protected async override void OnActivated()
         {
             base.OnActivated();
+
             var fileList = await this.FileAccess.EnumerateFilesAsync();
             fileList ??= new List<FileItem>();
             this.images = new List<FileItem>(fileList);
             this.ReloadImage();
             this.RecalculateSliderPosition();
+            this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
         }
 
         /// <inheritdoc/>
@@ -168,9 +168,6 @@ namespace Xrv.ImageGallery.Components
         {
             if (base.OnAttached())
             {
-                ////this.ShowNavigationButtons = false;
-                ////this.ShowNavigationSlider = false;
-
                 var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
                 TextureDescription desc = new ()
@@ -255,9 +252,9 @@ namespace Xrv.ImageGallery.Components
             }
 
             this.LoadRawJPG(this.images[this.ImageIndex].Name);
-            if (!Application.Current.IsEditor)
+            if (!Application.Current.IsEditor && this.windowConfigurator != null)
             {
-                this.ImageUpdated.Invoke(this, this.ImageIndex + 1 + " of " + this.images.Count);
+                this.windowConfigurator.Title = $"{this.Name} {this.ImageIndex + 1} of {this.images.Count}";
             }
 
             if (this.ShowNavigationButtons)

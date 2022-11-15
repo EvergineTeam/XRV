@@ -92,10 +92,10 @@ namespace Xrv.ImageGallery
 
             // Loading and setting Gallery Asset
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
-            var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
+            var imageGallery = gallery.FindComponent<Components.ImageGallery>();
             imageGallery.FileAccess = this.FileAccess;
+            imageGallery.Name = this.Name;
 
-            imageGallery.ImageUpdated += this.ImageGalleryImageUpdated;
             var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
             var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
             imageGallery.ImagePixelsHeight = this.ImagePixelsHeight;
@@ -121,11 +121,6 @@ namespace Xrv.ImageGallery
         public override void Run(bool turnOn)
         {
             this.window.Open();
-        }
-
-        private void ImageGalleryImageUpdated(object sender, string e)
-        {
-            this.window.Configurator.Title = this.Name + " " + e;
         }
 
         private Entity HelpContent()
