@@ -14,7 +14,7 @@ namespace Xrv.Core.Tests.Storage
     {
         Task IAsyncLifetime.InitializeAsync()
         {
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(AuthenticationType.ConnectionString);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(AuthenticationType.ConnectionString);
             return fileAccess.ClearAsync();
         }
 
@@ -26,7 +26,7 @@ namespace Xrv.Core.Tests.Storage
         [InlineData(AuthenticationType.Signature)]
         public async Task CheckThatCreatedFileExits(AuthenticationType type)
         {
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             var filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");
             bool exists = await fileAccess.ExistsFileAsync(filePath);
             Assert.True(exists);
@@ -39,7 +39,7 @@ namespace Xrv.Core.Tests.Storage
         public async Task ReadFileContents(AuthenticationType type)
         {
             const string originalFileContents = "contents";
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt", originalFileContents);
             using (var stream = await fileAccess.GetFileAsync(filePath))
             using (var memoryStream = new MemoryStream())
@@ -59,7 +59,7 @@ namespace Xrv.Core.Tests.Storage
             const int numberOfDirectories = 5;
             const int numberOfFilesPerDirectory = 3;
 
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
 
             await fileAccess.CreateBaseDirectoryIfNotExistsAsync();
             await TestHelpers.PrepareTestFileSystemAsync(fileAccess, numberOfDirectories, numberOfFilesPerDirectory);
@@ -83,7 +83,7 @@ namespace Xrv.Core.Tests.Storage
         [InlineData(AuthenticationType.Signature)]
         public async Task DeleteAFile(AuthenticationType type)
         {
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");
             await fileAccess.DeleteFileAsync(filePath);
             bool exists = await fileAccess.ExistsFileAsync(filePath);
@@ -97,7 +97,7 @@ namespace Xrv.Core.Tests.Storage
         public async Task DeleteADirectory(AuthenticationType type)
         {
             const string directoryName = "todelete";
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             await fileAccess.CreateDirectoryAsync(directoryName);
             await fileAccess.DeleteDirectoryAsync(directoryName);
 
@@ -112,7 +112,7 @@ namespace Xrv.Core.Tests.Storage
         public async Task RetrieveDirectoryDates(AuthenticationType type)
         {
             const string directoryName = "dates";
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             await fileAccess.CreateDirectoryAsync(directoryName);
 
             var directories = await fileAccess.EnumerateDirectoriesAsync();
@@ -126,7 +126,7 @@ namespace Xrv.Core.Tests.Storage
         [InlineData(AuthenticationType.Signature)]
         public async Task RetrieveFileDates(AuthenticationType type)
         {
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");
             var files = await fileAccess.EnumerateFilesAsync();
             Assert.True(files.All(file => file.CreationTime != null));
@@ -140,7 +140,7 @@ namespace Xrv.Core.Tests.Storage
         [InlineData(AuthenticationType.Signature)]
         public async Task RetrieveFileItem(AuthenticationType type)
         {
-            var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
+            var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");
             var file = await fileAccess.GetFileItemAsync(filePath);
             Assert.NotNull(file);
@@ -148,7 +148,7 @@ namespace Xrv.Core.Tests.Storage
             Assert.True(file.ModificationTime != null);
         }
 
-        private AzureFileShareFileAccess CreateFileAccessFromAuthentitactionType(AuthenticationType type)
+        internal static AzureFileShareFileAccess CreateFileAccessFromAuthentitactionType(AuthenticationType type)
         {
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")

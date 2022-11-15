@@ -37,7 +37,7 @@ namespace Xrv.LoadModel
         public sealed class Prefabs
         {
             /// <summary> Asset Path (XRV/Prefabs/Manipulator.weprefab.weprf) </summary>
-            public static readonly Guid Manipulator_weprefab = new Guid("d15e6e57-0f7d-4160-8935-b80d0cb14f12");
+            public static readonly Guid Manipulator_weprefab = new Guid("45361617-a9ab-48ae-bb8c-9ed11a79580a");
 
             /// <summary> Asset Path (XRV/Prefabs/RepositoriesWindow.weprefab.weprf) </summary>
             public static readonly Guid RepositoriesWindow_weprefab = new Guid("4c5fc907-319d-470e-a8c1-a240df618171");

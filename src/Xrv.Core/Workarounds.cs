@@ -55,6 +55,28 @@ namespace Xrv.Core
         /// <param name="setOn">Toggle status.</param>
         public static void ChangeToggleButtonState(Entity button, bool setOn)
         {
+            // TODO: This is not really a bug in the MRTK. However, improved support for simulated inputs is planned for the
+            // input system update to make it more consistent.
+            // There is another way of changing the state of the ToggleButton that is displayed here. However, this requires
+            // for the PubSubOnButtonPress<TMessage> component to subscribe to the ToggleButton's Toggled event
+            // instead of the PressableButton's ButtonReleased event for ToggleButtons, although it can use the same event handler.
+            // Doing this will make the button not emit a sound when the state is changed since the audio feedback component
+            // subscribes to the ButtonPressed and ButtonReleased events.
+            // It is also recommended to move this method to a Utils class.
+
+            ////var toggleStateManager = button.FindComponentInChildren<ToggleStateManager>();
+            ////var toggleStates = toggleStateManager.States;
+            ////if (toggleStates != null)
+            ////{
+            ////    var newToggleState = setOn ? ToggleState.On : ToggleState.Off;
+            ////    var newState = toggleStates.Where(s => s.Value == newToggleState).FirstOrDefault();
+
+            ////    if (newState != null)
+            ////    {
+            ////        toggleStateManager.ChangeState(newState);
+            ////    }
+            ////}
+
             var toggle = button.FindComponentInChildren<ToggleButton>();
             if (toggle.IsOn != setOn)
             {

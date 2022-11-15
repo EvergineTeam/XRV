@@ -1,12 +1,12 @@
 !Evergine.Framework.Assets.AssetSources.Entities.PrefabModel,Evergine.Framework
 Root:
-  Name: contents
+  Name: BaseDialogContents
   Tag: null
   IsEnabled: true
   IsStatic: false
   Components:
     - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-      Id: 37feb664-0e4a-441c-9cbe-001f02d8a361
+      Id: a9d86b0e-b721-485b-8113-c1b09599fb0a
       IsEnabled: true
       LocalOrientation:
         W: 1.0
@@ -29,7 +29,7 @@ Root:
       IsStatic: false
       Components:
         - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-          Id: 1320dd91-9218-4124-994b-228d8bff0dff
+          Id: 3616ca1e-307c-4b58-87be-14fbf74b5cfd
           IsEnabled: true
           LocalOrientation:
             W: 1.0
@@ -45,7 +45,7 @@ Root:
             Y: 1.0
             Z: 1.0
         - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
-          Id: 13d79da2-7127-4b37-af6a-a9d3c41f8b48
+          Id: 688cdc1f-446f-426b-893b-775dff866c2d
           Color:
             A: 255
             B: 255
@@ -56,7 +56,7 @@ Root:
           HorizontalAlignment: Center
           IsEnabled: true
           Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
-          LineSpacing: 0.800000012
+          LineSpacing: 0.00499999989
           Origin:
             X: 0.5
             Y: 0.5
@@ -68,7 +68,7 @@ Root:
           VerticalAlignment: Center
           Wrapping: true
         - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
-          Id: d0bd2607-602f-43fa-9cfc-c92b34f04343
+          Id: 8bd1fab8-60be-4084-bf8b-2ae4f9b11659
           DebugBoundingbox: true
           DebugMode: false
           IsCullingEnabled: true
@@ -76,7 +76,7 @@ Root:
           OrderBias: 0
           RenderFlags: CastShadows
       Children: []
-      Id: e9a4cac8-41c5-4aab-a32c-91f868d35c6a
+      Id: c1172cd4-273a-45bc-9d20-7e87dca36a4f
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: buttons
       Tag: PART_base_dialog_buttons_holder
@@ -84,7 +84,7 @@ Root:
       IsStatic: false
       Components:
         - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-          Id: d0ffaeff-09e6-4c84-89a8-5529226d5dfa
+          Id: 9c81b290-41b1-4f8d-b382-38ae0ee244ab
           IsEnabled: true
           LocalOrientation:
             W: 1.0
@@ -107,7 +107,7 @@ Root:
           IsStatic: false
           Components:
             - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-              Id: ae504830-5277-4211-ab58-6b0b0dabfbf1
+              Id: 3dc5e834-1d5d-46e9-ac41-4f7f73cdf344
               IsEnabled: true
               LocalOrientation:
                 W: 1.0
@@ -123,7 +123,7 @@ Root:
                 Y: 1.0
                 Z: 1.0
           Children: []
-          Id: 216e51a3-6302-4c4c-9b4a-9bd140c60dff
+          Id: 445bc9c2-6fda-44f0-a330-762a232e36d0
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
           Name: acceptHolder
           Tag: PART_base_dialog_accept_holder
@@ -131,7 +131,7 @@ Root:
           IsStatic: false
           Components:
             - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-              Id: 6e1478f4-2300-4853-bc3a-2b0ae7b1bc12
+              Id: aa42aefe-ac37-4549-b4bf-4f5135d4521e
               IsEnabled: true
               LocalOrientation:
                 W: 1.0
@@ -147,7 +147,7 @@ Root:
                 Y: 1.0
                 Z: 1.0
           Children: []
-          Id: 47bea373-4070-4711-a011-7917b786eca3
+          Id: b8b7e941-79eb-4b77-a6ba-b4cc74c93268
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
           Name: singleButtonHolder
           Tag: PART_base_dialog_single_holder
@@ -155,7 +155,7 @@ Root:
           IsStatic: false
           Components:
             - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-              Id: 03f757c5-1f08-46eb-afa5-1852c4a564d3
+              Id: 9aba7959-5dfb-4dd8-a070-31d40f945f85
               IsEnabled: true
               LocalOrientation:
                 W: 1.0
@@ -171,6 +171,6 @@ Root:
                 Y: 1.0
                 Z: 1.0
           Children: []
-          Id: ded5cc74-8d83-4e0d-a2d8-df9325e9306f
-      Id: 113a4966-588a-4ad2-b4b8-981021111044
-  Id: e68cad5f-5fe7-4ce9-ba18-671722f53500
+          Id: 57446123-ecf7-4781-a37a-96561dcfd7cf
+      Id: 136ff835-052a-4dc6-b898-2e935437556a
+  Id: d1b15d9a-0114-4fd6-aa07-40bb8c2fee42
