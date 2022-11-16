@@ -54,9 +54,9 @@ namespace XrvSamples
             });
             xrv.AddModule(new StreamingViewerModule()
             {
-                SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
+                //SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
                 //SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
-                //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg"
+                SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
             }); ;
 
             this.Container.RegisterInstance(xrv);
