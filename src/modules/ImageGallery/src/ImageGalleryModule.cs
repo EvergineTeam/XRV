@@ -20,14 +20,12 @@ namespace Xrv.ImageGallery
     /// </summary>
     public class ImageGalleryModule : Module
     {
+        private readonly MenuButtonDescription handMenuDescription;
+        private readonly TabItem settings = null;
+        private TabItem help = null;
         private AssetsService assetsService;
         private XrvService xrv;
-        private MenuButtonDescription handMenuDescription;
-        private TabItem settings = null;
-        private TabItem help = null;
         private Entity imageGalleryHelp;
-        private Entity imageGallerySettings;
-        private Scene scene;
         private Window window = null;
 
         /// <summary>
@@ -42,12 +40,6 @@ namespace Xrv.ImageGallery
                 IsToggle = false,
                 TextOn = "Image Gallery",
             };
-
-            ////this.settings = new TabItem()
-            ////{
-            ////    Name = "Image Gallery",
-            ////    Contents = this.SettingContent,
-            ////};
 
             this.help = new TabItem()
             {
@@ -66,6 +58,11 @@ namespace Xrv.ImageGallery
         /// </summary>
         public uint ImagePixelsHeight { get; set; }
 
+        /// <summary>
+        /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
+        /// </summary>
+        public Core.Storage.FileAccess FileAccess { get; set; }
+
         /// <inheritdoc/>
         public override string Name => "Image Gallery";
 
@@ -82,15 +79,23 @@ namespace Xrv.ImageGallery
         public override IEnumerable<string> VoiceCommands => null;
 
         /// <inheritdoc/>
-        public override void Initialize(Scene scene)
+        public async override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
-            this.scene = scene;
 
+            // Setting cache
+            if (this.FileAccess.IsCachingEnabled)
+            {
+                await this.FileAccess.Cache.InitializeAsync();
+            }
+
+            // Loading and setting Gallery Asset
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
-            var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
-            imageGallery.ImageUpdated += this.ImageGalleryImageUpdated;
+            var imageGallery = gallery.FindComponent<Components.ImageGallery>();
+            imageGallery.FileAccess = this.FileAccess;
+            imageGallery.Name = this.Name;
+
             var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
             var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
             imageGallery.ImagePixelsHeight = this.ImagePixelsHeight;
@@ -100,6 +105,7 @@ namespace Xrv.ImageGallery
             galleryImageFrame.Height = size.Y;
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
 
+            // Setting Window
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
                 config.Title = this.Name;
@@ -115,22 +121,6 @@ namespace Xrv.ImageGallery
         public override void Run(bool turnOn)
         {
             this.window.Open();
-        }
-
-        private void ImageGalleryImageUpdated(object sender, string e)
-        {
-            this.window.Configurator.Title = this.Name + " " + e;
-        }
-
-        private Entity SettingContent()
-        {
-            if (this.imageGallerySettings == null)
-            {
-                var imageGallerySettingsPrefab = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Settings);
-                this.imageGallerySettings = imageGallerySettingsPrefab.Instantiate();
-            }
-
-            return this.imageGallerySettings;
         }
 
         private Entity HelpContent()

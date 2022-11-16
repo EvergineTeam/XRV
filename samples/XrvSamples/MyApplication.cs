@@ -52,10 +52,14 @@ namespace XrvSamples
                 NormalizedModelSize = 0.2f,
             });
             xrv.AddModule(new AudioNoteModule());
+
+            var imageGalleryFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvgallerystorage.file.core.windows.net/galleryimages/?sv=2021-06-08&ss=f&srt=sco&sp=rwdlc&se=2024-11-03T21:21:33Z&st=2020-11-03T13:21:33Z&spr=https&sig=Xh73u%2FIVcw00vCm%2BN3z5EbyaxaIuISfCUUk0mdCiDnI%3D"));
+            imageGalleryFileAccess.Cache = new DiskCache("Image Gallery Cache");
             xrv.AddModule(new ImageGalleryModule()
             {
                 ImagePixelsWidth = 640,
-                ImagePixelsHeight = 640
+                ImagePixelsHeight = 640,
+                FileAccess = imageGalleryFileAccess,
             });
 
             this.Container.RegisterInstance(xrv);
