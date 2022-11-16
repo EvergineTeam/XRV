@@ -382,7 +382,7 @@ namespace Xrv.LoadModel
                 FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
                 HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
             });
-            entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
+            ////entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
             entity.AddComponent(new SimpleManipulationHandler()
             {
                 SmoothingActive = true,

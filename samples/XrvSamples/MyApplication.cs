@@ -31,13 +31,16 @@ namespace XrvSamples
             this.Container.RegisterType<ForegroundTaskSchedulerService>();
             this.Container.RegisterType<WorkActionScheduler>();
 
-            BackgroundTaskScheduler.Background.Configure(this.Container);
-
-            var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://waveengineagentdiag159.file.core.windows.net/models?st=2022-10-26T11%3A46%3A02Z&se=2028-10-27T18%3A46%3A00Z&sp=rl&sv=2018-03-28&sr=s&sig=dOR9IQtYCPMYfoP7TouKuh9UXjPQUMABAFLYkSbaPR0%3D"));
-            ////loadModelFileAccess.Cache = new DiskCache("LoadModel");
+            BackgroundTaskScheduler.Background.Configure(this.Container);            
 
             var xrv = new XrvService();
+
+            // Rule module
             xrv.AddModule(new RulerModule());
+
+            // Load Model module
+            var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://waveengineagentdiag159.file.core.windows.net/models?st=2022-10-26T11%3A46%3A02Z&se=2028-10-27T18%3A46%3A00Z&sp=rl&sv=2018-03-28&sr=s&sig=dOR9IQtYCPMYfoP7TouKuh9UXjPQUMABAFLYkSbaPR0%3D"));
+            ////loadModelFileAccess.Cache = new DiskCache("LoadModel");
             xrv.AddModule(new LoadModelModule()
             {
                 Repositories = new Repository[] 
@@ -51,8 +54,11 @@ namespace XrvSamples
                 NormalizedModelEnabled = true,
                 NormalizedModelSize = 0.2f,
             });
+
+            // Audio Note Module
             xrv.AddModule(new AudioNoteModule());
 
+            // Image gallery module
             var imageGalleryFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvgallerystorage.file.core.windows.net/galleryimages/?sv=2021-06-08&ss=f&srt=sco&sp=rwdlc&se=2024-11-03T21:21:33Z&st=2020-11-03T13:21:33Z&spr=https&sig=Xh73u%2FIVcw00vCm%2BN3z5EbyaxaIuISfCUUk0mdCiDnI%3D"));
             imageGalleryFileAccess.Cache = new DiskCache("Image Gallery Cache");
             xrv.AddModule(new ImageGalleryModule()
