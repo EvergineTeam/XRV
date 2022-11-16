@@ -20,7 +20,7 @@ namespace XrvSamples.UWP
         private void OnSwapChainPanelLoaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             // Create app
-            MyApplication application = new MyApplication();
+            var application = new UwpApplication();
 
             // Create Services
             UWPWindowsSystem windowsSystem = new UWPWindowsSystem();

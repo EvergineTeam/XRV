@@ -78,8 +78,12 @@ namespace Xrv.Core.Networking
         {
             NetworkClient client = this.xrvService.Networking.Client;
             NetworkConfiguration configuration = client.Configuration;
-            MatchmakingClientService internalClient = client.InternalClient;
             int scanningPort = this.xrvService.Networking.OverrideScanningPort ?? configuration.Port;
+            MatchmakingClientService internalClient = client.InternalClient;
+            if (internalClient.IsConnected)
+            {
+                return;
+            }
 
             do
             {
@@ -98,7 +102,7 @@ namespace Xrv.Core.Networking
                 this.AvailableSessions = sessions;
                 this.ScanningResultsUpdated?.Invoke(this, EventArgs.Empty);
             }
-            while (!cancellationToken.IsCancellationRequested);
+            while (!cancellationToken.IsCancellationRequested && !internalClient.IsConnected);
         }
     }
 }

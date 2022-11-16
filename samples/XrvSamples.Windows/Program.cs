@@ -44,7 +44,7 @@ namespace XrvSamples.Windows
             }
 
             // Create app
-            MyApplication application = new MyApplication();
+            var application = new WindowsApplication();
 
             // Create Services
             WindowsSystem windowsSystem = new Evergine.Forms.FormsWindowsSystem();

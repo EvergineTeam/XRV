@@ -6,7 +6,6 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Xrv.Core.Messaging;
 using Xrv.Core.UI.Dialogs;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
@@ -22,8 +21,6 @@ namespace Xrv.Core.Networking.Settings
 
         private Text3DMesh joinedStateText = null;
         private PressableButton endSessionButton = null;
-        private Guid subscription;
-        private PubSub pubSub = null;
         private NetworkSystem networking = null;
         private WindowsSystem windows = null;
 
@@ -33,7 +30,6 @@ namespace Xrv.Core.Networking.Settings
             bool attached = base.OnAttached();
             if (attached && !Application.Current.IsEditor)
             {
-                this.pubSub = this.xrvService.PubSub;
                 this.joinedStateText = this.Owner
                     .FindChildrenByTag("PART_Session_Settings_JoinedSession_Text", true)
                     .First()
@@ -43,20 +39,12 @@ namespace Xrv.Core.Networking.Settings
                     .First()
                     .FindComponentInChildren<PressableButton>();
 
-                this.subscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
                 this.Owner.IsEnabled = Application.Current.IsEditor;
                 this.networking = this.xrvService.Networking;
                 this.windows = this.xrvService.WindowSystem;
             }
 
             return attached;
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDetach()
-        {
-            base.OnDetach();
-            this.pubSub?.Unsubscribe(this.subscription);
         }
 
         /// <inheritdoc/>
@@ -136,8 +124,5 @@ namespace Xrv.Core.Networking.Settings
                 this.windows.ShowAlertDialog("Error leaving session", ex.Message, "OK");
             }
         }
-
-        private void OnSessionStatusChange(SessionStatusChangeMessage message) =>
-            this.Owner.IsEnabled = message.NewStatus == SessionStatus.Joined;
     }
 }
