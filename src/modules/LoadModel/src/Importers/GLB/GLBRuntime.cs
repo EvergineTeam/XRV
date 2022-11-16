@@ -4,11 +4,8 @@ using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
-using Evergine.Framework.Graphics.Materials;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
-using Evergine.MRTK;
-using Evergine.MRTK.Effects;
 using Evergine.Platform;
 using glTFLoader;
 using glTFLoader.Schema;
@@ -18,7 +15,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Xrv.LoadModel.Effects;
 using Xrv.LoadModel.Importers.Images;
+using static glTFLoader.Schema.Material;
 using Buffer = Evergine.Common.Graphics.Buffer;
 using Material = Evergine.Framework.Graphics.Material;
 using Mesh = Evergine.Framework.Graphics.Mesh;
@@ -316,6 +315,7 @@ namespace Xrv.LoadModel.Importers.GLB
             List<VertexBuffer> vertexBuffersList = new List<VertexBuffer>();
 
             BoundingBox meshBounding = default;
+            bool vertexColorEnabled = false;
             for (int i = 0; i < attributes.Length; i++)
             {
                 var attributeName = attributes[i].Key;
@@ -325,6 +325,11 @@ namespace Xrv.LoadModel.Importers.GLB
                 {
                     // Discard JOINTS and WEIGHTS
                     continue;
+                }
+
+                if (attributeName.Contains("COLOR"))
+                {
+                    vertexColorEnabled = true;
                 }
 
                 var accessor = this.glbModel.Accessors[attributes[i].Value];
@@ -380,7 +385,7 @@ namespace Xrv.LoadModel.Importers.GLB
             if (primitive.Material.HasValue)
             {
                 int materialId = primitive.Material.Value;
-                materialIndex = this.ReadMaterial(materialId);
+                materialIndex = this.ReadMaterial(materialId, vertexColorEnabled);
             }
 
             // Create Mesh
@@ -602,7 +607,7 @@ namespace Xrv.LoadModel.Importers.GLB
             }
         }
 
-        private int ReadMaterial(int materialId)
+        private int ReadMaterial(int materialId, bool vertexColorEnabled)
         {
             var glbMaterial = this.glbModel.Materials[materialId];
             if (!this.materials.ContainsKey(materialId))
@@ -649,20 +654,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     }
                 }
 
-                RenderLayerDescription layer;
-                switch (glbMaterial.AlphaMode)
-                {
-                    default:
-                    case glTFLoader.Schema.Material.AlphaModeEnum.MASK:
-                    case glTFLoader.Schema.Material.AlphaModeEnum.OPAQUE:
-                        layer = this.opaqueLayer;
-                        break;
-                    case glTFLoader.Schema.Material.AlphaModeEnum.BLEND:
-                        layer = this.alphaLayer;
-                        break;
-                }
-
-                var material = this.CreateEngineMaterial(baseColor.ToColor(), baseColorTexture, baseColorSampler, layer, baseColor.A, glbMaterial.AlphaCutoff);
+                var material = this.CreateEngineMaterial(baseColor.ToColor(), baseColorTexture, baseColorSampler, glbMaterial.AlphaMode, baseColor.A, glbMaterial.AlphaCutoff, vertexColorEnabled);
                 this.materials.Add(materialId, (glbMaterial.Name, material));
 
                 return this.materials.Count - 1;
@@ -671,32 +663,43 @@ namespace Xrv.LoadModel.Importers.GLB
             return this.materials.Keys.ToList().IndexOf(materialId);
         }
 
-        private Material CreateEngineMaterial(Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, RenderLayerDescription layer, float alpha, float alphaCutOff)
+        private Material CreateEngineMaterial(Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, AlphaModeEnum alphaMode, float alpha, float alphaCutOff, bool vertexColorEnabled)
         {
-            var effect = this.assetsService.Load<Effect>(MRTKResourceIDs.Effects.HoloGraphic);
+            RenderLayerDescription layer;
+            switch (alphaMode)
+            {
+                default:
+                case AlphaModeEnum.MASK:
+                case AlphaModeEnum.OPAQUE:
+                    layer = this.opaqueLayer;
+                    break;
+                case AlphaModeEnum.BLEND:
+                    layer = alpha < 1.0f ? this.alphaLayer : this.opaqueLayer;
+                    break;
+            }
 
-            ////StandardMaterial standard = new StandardMaterial(effect)
-            ////{
-            ////    LightingEnabled = true,
-            ////    IBLEnabled = true,
-            ////    BaseColor = baseColor,
-            ////    BaseColorTexture = baseColorTexture,
-            ////    BaseColorSampler = baseColorSampler,
-            ////    LayerDescription = layer,
-            ////    AlphaCutout = alphaCutOff,
-            ////    Alpha = alpha,
-            ////};
-            HoloGraphic holographic = new HoloGraphic(effect)
+            var effect = this.assetsService.Load<Effect>(LoadModelResourceIDs.Effects.SolidEffect);
+            SolidEffect material = new SolidEffect(effect)
             {
                 Parameters_Color = baseColor.ToVector3(),
-                Texture = baseColorTexture,
-                Sampler = baseColorSampler,
-                LayerDescription = layer,
-                AlphaCutoff = alphaCutOff,
                 Parameters_Alpha = alpha,
+                BaseColorTexture = baseColorTexture,
+                BaseColorSampler = baseColorSampler,
+                LayerDescription = layer,
+                Parameters_AlphaCutOff = alphaCutOff,
             };
 
-            return holographic.Material;
+            if (vertexColorEnabled)
+            {
+                material.ActiveDirectivesNames = new string[] { "VERTEXCOLOR" };
+            }
+
+            if (baseColorTexture != null)
+            {
+                material.ActiveDirectivesNames = new string[] { "TEXTURECOLOR" };
+            }
+
+            return material.Material;
         }
 
         private (Texture texture, SamplerState sampler) ReadTexture(int textureId)

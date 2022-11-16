@@ -164,11 +164,11 @@ namespace Xrv.LoadModel
 
             this.scene.Managers.EntityManager.Add(manipulatorEntity);
 
+            Entity modelEntity = null;
+
             await EvergineBackgroundTask.Run(async () =>
             {
-                ////var model = GLBRuntime.Instance.Read("XRV/Models/scifi_girl_v.01.glb");
-                ////var model = GLBRuntime.Instance.Read("XRV/Models/DamagedHelmet.glb");
-
+                // Read glb stream
                 Model model = null;
                 var repoName = this.repositoriesListView.Selected[0];
                 var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
@@ -181,21 +181,28 @@ namespace Xrv.LoadModel
                     model = GLBRuntime.Instance.Read(memoryStream);
                 }
 
-                var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+                // Instantiate model
+                modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+
+                // Normalizing size
                 if (this.NormalizedModelEnabled)
                 {
                     modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
                 }
 
+                // Add global bounding box
                 modelEntity.AddComponent(new BoxCollider3D()
                 {
                     Size = model.BoundingBox.Value.HalfExtent * 2,
                     Offset = model.BoundingBox.Value.Center,
                 });
                 modelEntity.AddComponent(new StaticBody3D());
-
-                loadModelBehavior.ModelEntity = modelEntity;
             });
+
+            if (modelEntity != null)
+            {
+                loadModelBehavior.ModelEntity = modelEntity;
+            }
         }
 
         private Entity CreateButton(string buttonText, Action releasedAction)
