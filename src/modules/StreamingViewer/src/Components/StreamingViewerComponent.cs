@@ -154,7 +154,7 @@ namespace Xrv.StreamingViewer.Components
                 {
                     // Create texture
                     var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
-                    TextureDescription desc = new()
+                    TextureDescription desc = new ()
                     {
                         Type = TextureType.Texture2D,
                         Width = (uint)image.Width,
