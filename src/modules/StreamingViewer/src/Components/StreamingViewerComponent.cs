@@ -31,6 +31,8 @@ namespace Xrv.StreamingViewer.Components
         private readonly PlaneMesh videoFramePlaneMesh = null;
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_video_spinner", isRecursive: true)]
         private readonly Entity spinnerEntity = null;
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_connection_error", isRecursive: true)]
+        private readonly Entity connectionErrorTextEntity = null;
 
         private WindowConfigurator windowConfigurator = null;
 
@@ -52,6 +54,7 @@ namespace Xrv.StreamingViewer.Components
             this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
             if (!Application.Current.IsEditor)
             {
+                this.connectionErrorTextEntity.IsEnabled = false;
                 this.GetVideo();
             }
         }
@@ -62,91 +65,72 @@ namespace Xrv.StreamingViewer.Components
             return base.OnAttached();
         }
 
-        // This will try to establish connections five times before give an error
-        private WebResponse TryConnection(IAsyncResult ar, int tryNum = 0)
-        {
-            if (tryNum < 5)
-            {
-                WebResponse response;
-                try
-                {
-                    var req = (WebRequest)ar.AsyncState;
-                    response = req.EndGetResponse(ar);
-                    return response;
-                }
-                catch (Exception)
-                {
-                    return this.TryConnection(ar, tryNum + 1);
-                }
-            }
-            else
-            {
-                Debug.WriteLine("Connection error");
-                return null;
-            }
-        }
-
         private void GetVideo()
         {
             WebRequest req = WebRequest.Create(this.SourceURL);
             req.BeginGetResponse(
                 ar =>
                 {
-                    // TODO: Add exception handling: EndGetResponse could throw
-                    using var response = req.EndGetResponse(ar);
-
-                    // using (var reader = new StreamReader(response.GetResponseStream()))
-                    using var responseStream = response.GetResponseStream();
-                    int responseByte;
-                    bool atEndOfLine = false;
-                    string line = string.Empty;
-                    int size = 0;
-
-                    // This loop goes as long as streaming is on
-                    while ((responseByte = responseStream.ReadByte()) != -1)
+                    try
                     {
-                        // Ignore Blanks
-                        if (responseByte == 10)
-                        {
-                            continue;
-                        }
+                        using var response = req.EndGetResponse(ar);
+                        using var responseStream = response.GetResponseStream();
+                        int responseByte;
+                        bool atEndOfLine = false;
+                        string line = string.Empty;
+                        int size = 0;
 
-                        // Check if Carriage Return (We will start a new line)
-                        if (responseByte == 13)
+                        // This loop goes as long as streaming is on
+                        while ((responseByte = responseStream.ReadByte()) != -1)
                         {
-                            // Check if two blank lines (end of header)
-                            if (atEndOfLine)
+                            // Ignore Blanks
+                            if (responseByte == 10)
                             {
-                                responseStream.ReadByte();
+                                continue;
+                            }
 
-                                // Read all
-                                this.ReadStreaming(responseStream, size);
+                            // Check if Carriage Return (We will start a new line)
+                            if (responseByte == 13)
+                            {
+                                // Check if two blank lines (end of header)
+                                if (atEndOfLine)
+                                {
+                                    responseStream.ReadByte();
+
+                                    // Read all
+                                    this.ReadStreaming(responseStream, size);
+                                    atEndOfLine = false;
+                                    line = string.Empty;
+                                }
+                                else
+                                {
+                                    atEndOfLine = true;
+                                }
+
+                                if (line.ToLower().StartsWith("content-length:"))
+                                {
+                                    size = Convert.ToInt32(line.Substring("Content-Length:".Length).Trim());
+                                }
+                                else
+                                {
+                                    line = string.Empty;
+                                }
+                            }
+                            else
+                            {
                                 atEndOfLine = false;
-                                line = string.Empty;
+                                line += (char)responseByte;
                             }
-                            else
-                            {
-                                atEndOfLine = true;
-                            }
-
-                            if (line.ToLower().StartsWith("content-length:"))
-                            {
-                                size = Convert.ToInt32(line.Substring("Content-Length:".Length).Trim());
-                                Debug.WriteLine(size);
-                            }
-                            else
-                            {
-                                line = string.Empty;
-                            }
-                        }
-                        else
-                        {
-                            atEndOfLine = false;
-                            line += (char)responseByte;
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Connection error");
+                        Debug.WriteLine(ex);
+                        this.connectionErrorTextEntity.IsEnabled = true;
+                        this.spinnerEntity.IsEnabled = false;
+                    }
                 }, req);
-            Debug.WriteLine("Starting");
         }
 
         private void ReadStreaming(Stream responseStream, int bytesToRead)
@@ -170,7 +154,7 @@ namespace Xrv.StreamingViewer.Components
                 {
                     // Create texture
                     var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
-                    TextureDescription desc = new ()
+                    TextureDescription desc = new()
                     {
                         Type = TextureType.Texture2D,
                         Width = (uint)image.Width,

@@ -141,9 +141,64 @@ Items:
             UpdateOrder: 0.5
         Children: []
         Id: f6e2d6c2-0950-49bd-9101-2a3fca2659e4
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: Connection Error Text
+        Tag: PART_connection_error
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 80850050-8f57-4e0c-ae91-06a9aea3e4d8
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.0
+              Y: 0.0
+              Z: 0.000687599182
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
+            Id: 7c232e52-6dcf-484a-8cfc-cd4b34af35b8
+            Color:
+              A: 255
+              B: 255
+              G: 255
+              R: 255
+            Ellipsis: true
+            Font: d1322288-d9e9-4b1e-b2fe-ca281f0388a2
+            HorizontalAlignment: Center
+            IsEnabled: true
+            Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+            LineSpacing: 0.0
+            Origin:
+              X: 0.509999692
+              Y: 0.544999659
+            ScaleFactor: 0.0600008033
+            Size:
+              X: 0.325000644
+              Y: 0.110000946
+            Text: Connection Error
+            VerticalAlignment: Center
+            Wrapping: true
+          - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
+            Id: 39e9522a-15ad-4304-944f-3bdde0abaab0
+            DebugBoundingbox: true
+            DebugMode: false
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+        Children: []
+        Id: 009ae4af-81d7-42bc-a1ca-b8deb60b74a2
     Id: 9ebfc03d-b0ec-4ac5-9e13-2fba94248924
   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 8b702ad6-a7a1-4212-b903-587cb5fd1a06
+    Id: f67a5939-4b36-4e6e-b572-3f1788becb2d
     Source: cad55a3e-637a-4509-b059-b844ef5c2822
     entityLinks: {}
     modificationList: []
