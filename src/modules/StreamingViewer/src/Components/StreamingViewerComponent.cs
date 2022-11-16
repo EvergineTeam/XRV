@@ -10,6 +10,7 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
+using Xrv.Core.UI.Windows;
 using Xrv.ImageGallery.Helpers;
 using Application = Evergine.Framework.Application;
 using PixelFormat = Evergine.Common.Graphics.PixelFormat;
@@ -28,17 +29,16 @@ namespace Xrv.StreamingViewer.Components
         private readonly MaterialComponent videoFrameMaterial = null;
         [BindComponent(source: BindComponentSource.Children, tag: "PART_video_frame")]
         private readonly PlaneMesh videoFramePlaneMesh = null;
-
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_video_spinner", isRecursive: true)]
         private readonly Entity spinnerEntity = null;
+
+        private WindowConfigurator windowConfigurator = null;
 
         private Texture imageTexture = null;
         private bool initializedTexture = false;
 
-        /// <summary>
-        /// Event fired when the size of the streaming has changed.
-        /// </summary>
-        public event EventHandler<Vector2> StreamingImageSizeUpdated;
+        private const float PixelsInAMeter = 2000f;
+        private const float BottomMarginForLogo = 0.05f;
 
         /// <summary>
         /// Gets or sets the URL of the source of the streaming.
@@ -49,6 +49,7 @@ namespace Xrv.StreamingViewer.Components
         protected override void OnActivated()
         {
             base.OnActivated();
+            this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
             if (!Application.Current.IsEditor)
             {
                 this.GetVideo();
@@ -131,6 +132,7 @@ namespace Xrv.StreamingViewer.Components
                             if (line.ToLower().StartsWith("content-length:"))
                             {
                                 size = Convert.ToInt32(line.Substring("Content-Length:".Length).Trim());
+                                Debug.WriteLine(size);
                             }
                             else
                             {
@@ -189,10 +191,14 @@ namespace Xrv.StreamingViewer.Components
                     holographicEffect.Albedo = Color.White;
 
                     // Set Window Size
+                    this.videoFramePlaneMesh.Width = image.Width / PixelsInAMeter;
+                    this.videoFramePlaneMesh.Height = image.Height / PixelsInAMeter;
+                    this.windowConfigurator.Size = new Vector2(image.Width / PixelsInAMeter, (image.Height / PixelsInAMeter) + BottomMarginForLogo);
+                    this.windowConfigurator.DisplayFrontPlate = false;
+
+                    // Give space to plain concepts logo
                     var ownerTransform = this.Owner.FindComponent<Transform3D>();
-                    this.videoFramePlaneMesh.Width = image.Width / 2000f;
-                    this.videoFramePlaneMesh.Height = image.Height / 2000f;
-                    this.StreamingImageSizeUpdated.Invoke(this, new Vector2(image.Width, image.Height));
+                    ownerTransform.LocalPosition = new Vector3(ownerTransform.LocalPosition.X, ownerTransform.LocalPosition.Y + (BottomMarginForLogo / 2), ownerTransform.LocalPosition.Z);
 
                     this.spinnerEntity.IsEnabled = false;
                     this.initializedTexture = true;

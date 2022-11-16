@@ -26,7 +26,6 @@ namespace Xrv.StreamingViewer
         private AssetsService assetsService;
         private XrvService xrv;
         private Entity imageGalleryHelp;
-        ////private Entity imageGallerySettings;
         private Scene scene;
         private Window window = null;
 
@@ -92,7 +91,6 @@ namespace Xrv.StreamingViewer
 
             // Initial size. Will be updated on stream load
             var size = new Vector2(0.30f, 0.30f);
-            streamingViewerComponent.StreamingImageSizeUpdated += this.StreamImageSizeUpdated;
 
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
@@ -118,12 +116,6 @@ namespace Xrv.StreamingViewer
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
             entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
-        }
-
-        private void StreamImageSizeUpdated(object sender, Vector2 size)
-        {
-            this.window.Configurator.Size = new Vector2(size.X / 2000f, size.Y / 2000f);
-            this.window.Configurator.FrontPlateSize = new Vector2(size.X / 2000f, size.Y / 2000f);
         }
 
         private Entity HelpContent()
