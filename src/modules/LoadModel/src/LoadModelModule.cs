@@ -9,6 +9,8 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
+using Evergine.MRTK;
+using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Scrolls;
 using System;
@@ -190,13 +192,9 @@ namespace Xrv.LoadModel
                     modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
                 }
 
-                // Add global bounding box
-                modelEntity.AddComponent(new BoxCollider3D()
-                {
-                    Size = model.BoundingBox.Value.HalfExtent * 2,
-                    Offset = model.BoundingBox.Value.Center,
-                });
-                modelEntity.AddComponent(new StaticBody3D());
+                // Add additional components
+                BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
+                this.AddManipulatorComponents(modelEntity, boundingBox);
             });
 
             if (modelEntity != null)
@@ -257,6 +255,52 @@ namespace Xrv.LoadModel
             this.modelsListView.Refresh();
 
             this.modelsLoading.IsEnabled = false;
+        }
+
+        private void AddManipulatorComponents(Entity entity, BoundingBox boundingBox)
+        {
+            // Add global bounding box
+            entity.AddComponent(new BoxCollider3D()
+            {
+                Size = boundingBox.HalfExtent * 2,
+                Offset = boundingBox.Center,
+            });
+            entity.AddComponent(new StaticBody3D());
+            entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
+            {
+                AutoCalculate = false,
+                ScaleHandleScale = 0.030f,
+                RotationHandleScale = 0.030f,
+                LinkScale = 0.001f,
+                BoxPadding = Vector3.One * 0.1f,
+                BoxMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisual),
+                BoxGrabbedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisualGrabbed),
+                ShowWireframe = true,
+                ShowScaleHandles = true,
+                ShowXScaleHandle = true,
+                ShowYScaleHandle = true,
+                ShowZScaleHandle = true,
+                ShowXRotationHandle = true,
+                ShowYRotationHandle = true,
+                ShowZRotationHandle = true,
+                WireframeShape = Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.WireframeType.Cubic,
+                WireframeMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxWireframe),
+                HandleMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlue),
+                HandleGrabbedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueGrabbed),
+                ScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_ScaleHandle_weprefab),
+                RotationHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_RotateHandle_weprefab),
+                FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
+                HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
+            });
+            ////entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
+            entity.AddComponent(new SimpleManipulationHandler()
+            {
+                SmoothingActive = true,
+                SmoothingAmount = 0.001f,
+                EnableSinglePointerRotation = true,
+                KeepRigidBodyActiveDuringDrag = false,
+                IncludeChildrenColliders = true,
+            });
         }
     }
 }

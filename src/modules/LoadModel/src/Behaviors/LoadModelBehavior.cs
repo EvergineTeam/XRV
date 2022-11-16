@@ -104,7 +104,6 @@ namespace Xrv.LoadModel
                     this.LockedIcon.IsEnabled = false;
                     this.modelEntity = value;
                     this.modelEntityWorld = this.modelEntity.FindComponent<Transform3D>().WorldTransform;
-                    this.AddManipulatorComponents(this.modelEntity);
                     this.Owner.AddChild(this.modelEntity);
 
                     var modelTransform = this.modelEntity.FindComponent<Transform3D>();
@@ -352,45 +351,6 @@ namespace Xrv.LoadModel
                     this.Managers.EntityManager.Remove(this.Owner);
                 }
             }
-        }
-
-        private void AddManipulatorComponents(Entity entity)
-        {
-            entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
-            {
-                AutoCalculate = false,
-                ScaleHandleScale = 0.030f,
-                RotationHandleScale = 0.030f,
-                LinkScale = 0.001f,
-                BoxPadding = Vector3.One * 0.1f,
-                BoxMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisual),
-                BoxGrabbedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisualGrabbed),
-                ShowWireframe = true,
-                ShowScaleHandles = true,
-                ShowXScaleHandle = true,
-                ShowYScaleHandle = true,
-                ShowZScaleHandle = true,
-                ShowXRotationHandle = true,
-                ShowYRotationHandle = true,
-                ShowZRotationHandle = true,
-                WireframeShape = Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.WireframeType.Cubic,
-                WireframeMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxWireframe),
-                HandleMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlue),
-                HandleGrabbedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueGrabbed),
-                ScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_ScaleHandle_weprefab),
-                RotationHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_RotateHandle_weprefab),
-                FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
-                HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
-            });
-            ////entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
-            entity.AddComponent(new SimpleManipulationHandler()
-            {
-                SmoothingActive = true,
-                SmoothingAmount = 0.001f,
-                EnableSinglePointerRotation = true,
-                KeepRigidBodyActiveDuringDrag = false,
-                IncludeChildrenColliders = true,
-            });
         }
     }
 }
