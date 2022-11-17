@@ -51,7 +51,7 @@ namespace Xrv.Core.UI.Buttons
                 button.AddComponent(new BoxCollider3D()
                 {
                     Size = new Vector3(ButtonConstants.SquareButtonSize),
-                    Offset = new Vector3(0f, 0f, -0.01f),
+                    Offset = new Vector3(0f, 0f, 0.01f),
                 });
             }
 
@@ -74,9 +74,9 @@ namespace Xrv.Core.UI.Buttons
                 this.textTransform.LocalPosition = textPosition;
 
                 this.textDefaultPosition = this.textTransform.LocalPosition;
-                this.textHoverPosition = this.textDefaultPosition + (Vector3.Forward * 0.01f);
+                this.textHoverPosition = this.textDefaultPosition - (Vector3.Forward * 0.01f);
                 this.iconDefaultPosition = this.iconTransform.LocalPosition;
-                this.iconHoverPosition = this.iconDefaultPosition + (Vector3.Forward * 0.01f);
+                this.iconHoverPosition = this.iconDefaultPosition - (Vector3.Forward * 0.01f);
             }
 
             return attached;

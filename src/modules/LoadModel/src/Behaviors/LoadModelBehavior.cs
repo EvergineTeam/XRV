@@ -3,12 +3,9 @@
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Physics3D;
-using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK;
-using Evergine.MRTK.SDK.Features.Input.Constraints;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
@@ -196,7 +193,6 @@ namespace Xrv.LoadModel
             foreach (var definition in buttons)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(definition);
-                Workarounds.MrtkRotateButton(buttonInstance);
                 this.buttonsContainer.AddChild(buttonInstance);
                 this.instantiatedButtons.Add(definition.Id, buttonInstance);
             }

@@ -234,7 +234,6 @@ namespace Xrv.LoadModel
             buttonText3D.Text = buttonText;
             var buttonPlate = button.FindComponentInChildren<MaterialComponent>(true, "PART_Plate", true, true);
             buttonPlate.Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1);
-            Workarounds.MrtkRotateButton(button);
 
             button.FindComponentInChildren<PressableButton>().ButtonReleased += (s, e) => releasedAction.Invoke();
 

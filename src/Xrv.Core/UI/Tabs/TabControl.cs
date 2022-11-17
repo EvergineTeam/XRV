@@ -243,7 +243,6 @@ namespace Xrv.Core.UI.Tabs
             foreach (var item in items)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(item);
-                Workarounds.MrtkRotateButton(buttonInstance);
                 var transform = buttonInstance.FindComponent<Transform3D>();
 
                 var pressableButton = buttonInstance.FindComponentInChildren<PressableButton>();

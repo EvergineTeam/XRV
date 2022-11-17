@@ -228,7 +228,6 @@ namespace Xrv.Core.Menu
             foreach (var definition in buttons)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(definition);
-                Workarounds.MrtkRotateButton(buttonInstance);
                 this.buttonsContainer.AddChild(buttonInstance);
                 this.instantiatedButtons.Add(definition.Id, buttonInstance);
             }

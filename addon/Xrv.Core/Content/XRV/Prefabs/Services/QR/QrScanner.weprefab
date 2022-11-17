@@ -142,9 +142,9 @@ Root:
               Id: 8d0577b1-d8df-4001-90af-ecdd1319ec23
               IsEnabled: true
               LocalOrientation:
-                W: -4.37113883E-08
-                X: -0.0
-                Y: 1.0
+                W: 1.0
+                X: 0.0
+                Y: 0.0
                 Z: 0.0
               LocalPosition:
                 X: 0.0549999997
@@ -156,14 +156,14 @@ Root:
                 Z: 1.0
             - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
               Id: f87ca98f-cc73-49d1-962b-4e9ace333a43
-              AllowBackPlateNullMaterial: false
+              AllowBackPlateNullMaterial: true
               AllowIconNullMaterial: false
               CreatesNewBackPlateMaterialInstance: false
               CreatesNewIconMaterialInstance: false
               Font: 1c6e2929-d555-4c02-af49-50b4ecb01ce3
               Icon: 55b023eb-a334-44b2-8cc1-d0d2ccae5b3c
               IsEnabled: true
-              Plate: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+              Plate: null
               PrimaryColor:
                 A: 255
                 B: 255
@@ -177,7 +177,7 @@ Root:
               Offset:
                 X: 0.0
                 Y: 0.0
-                Z: -0.00100000005
+                Z: 0.0
               OrientationOffset:
                 W: 1.0
                 X: 0.0
@@ -222,7 +222,7 @@ Root:
                   Offset:
                     X: 0.0
                     Y: 0.0
-                    Z: -0.00800000038
+                    Z: 0.00800000038
                   OrientationOffset:
                     W: 1.0
                     X: 0.0
@@ -291,7 +291,7 @@ Root:
                       Id: 942854fc-440c-4520-af9e-54b929b0ea54
                       AsignedTo: Default
                       IsEnabled: true
-                      Material: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+                      Material: null
                       UseCopy: false
                     - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                       Id: 48049596-360b-4dfd-a97d-3a9fcc767317
@@ -300,7 +300,7 @@ Root:
                       Origin:
                         X: 0.5
                         Y: 0.5
-                      PlaneNormal: ZNegative
+                      PlaneNormal: ZPositive
                       TwoSides: false
                       UMirror: false
                       UOffset: 0.0
@@ -335,7 +335,7 @@ Root:
                       LocalPosition:
                         X: 0.0
                         Y: 2.13162821E-13
-                        Z: -0.00800000038
+                        Z: 0.00800000038
                       LocalScale:
                         X: 1.0
                         Y: 1.0
@@ -385,7 +385,7 @@ Root:
                           Origin:
                             X: 0.5
                             Y: 0.5
-                          PlaneNormal: ZNegative
+                          PlaneNormal: ZPositive
                           TwoSides: false
                           UMirror: false
                           UOffset: 0.0
@@ -413,9 +413,9 @@ Root:
                           Id: c4a7fc72-c0e6-47e5-aaa5-f07bd0ed29b7
                           IsEnabled: true
                           LocalOrientation:
-                            W: -4.37113883E-08
-                            X: -0.0
-                            Y: 1.0
+                            W: 1.0
+                            X: 0.0
+                            Y: 0.0
                             Z: 0.0
                           LocalPosition:
                             X: 0.0
@@ -508,7 +508,7 @@ Root:
                           LocalPosition:
                             X: 0.0
                             Y: 0.0
-                            Z: -0.00800000038
+                            Z: 0.00800000038
                           LocalScale:
                             X: 0.0320000015
                             Y: 0.0320000015

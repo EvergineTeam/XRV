@@ -25,12 +25,11 @@ namespace Xrv.Core.UI.Tabs
             {
                 Text = item.Name,
                 Icon = null,
+                AllowBackPlateNullMaterial = true,
             });
 
             var cage = button.FindChildrenByTag("PART_text_button_cage", true).First();
             cage.IsEnabled = false;
-
-            Workarounds.MrtkForceButtonNullPlate(button);
 
             return button;
         }

@@ -110,8 +110,7 @@ namespace Xrv.ImageGallery
             {
                 config.Title = this.Name;
                 config.Size = size;
-                config.FrontPlateSize = size;
-                config.FrontPlateOffsets = Vector2.Zero;
+                config.DisplayFrontPlate = false;
                 config.DisplayLogo = false;
                 config.Content = gallery;
             });
