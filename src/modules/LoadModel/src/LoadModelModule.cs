@@ -172,34 +172,48 @@ namespace Xrv.LoadModel
             {
                 // Read glb stream
                 Model model = null;
-                var repoName = this.repositoriesListView.Selected[0];
-                var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
-                var filePath = this.modelsListView.Selected[0];
-                using (var stream = await repo.FileAccess.GetFileAsync(filePath))
-                using (var memoryStream = new MemoryStream())
+                
+                var selectedRepo = this.repositoriesListView.Selected;
+                if (selectedRepo != null)
                 {
-                    stream.CopyTo(memoryStream);
-                    memoryStream.Position = 0;
-                    model = GLBRuntime.Instance.Read(memoryStream);
+                    var repoName = selectedRepo[0];
+                    var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
+                    var modelSelected = this.modelsListView.Selected;
+
+                    if (modelSelected != null)
+                    {
+                        var filePath = modelSelected[0];
+                        using (var stream = await repo.FileAccess.GetFileAsync(filePath))
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Position = 0;
+                            model = GLBRuntime.Instance.Read(memoryStream);
+                        }
+
+                        // Instantiate model
+                        modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+
+                        // Normalizing size
+                        if (this.NormalizedModelEnabled)
+                        {
+                            modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
+                        }
+
+                        // Add additional components
+                        BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
+                        this.AddManipulatorComponents(modelEntity, boundingBox);
+                    }
                 }
-
-                // Instantiate model
-                modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-
-                // Normalizing size
-                if (this.NormalizedModelEnabled)
-                {
-                    modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
-                }
-
-                // Add additional components
-                BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
-                this.AddManipulatorComponents(modelEntity, boundingBox);
             });
 
             if (modelEntity != null)
             {
                 loadModelBehavior.ModelEntity = modelEntity;
+            }
+            else
+            {
+                this.scene.Managers.EntityManager.Remove(manipulatorEntity);
             }
         }
 
@@ -243,18 +257,22 @@ namespace Xrv.LoadModel
 
             this.modelsLoading.IsEnabled = true;
 
-            var repoName = this.repositoriesListView.Selected[0];
-            var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
-            var models = await repo.FileAccess.EnumerateFilesAsync();
-
-            foreach (var modelFile in models)
+            var repoSelected = this.repositoriesListView.Selected;
+            if (repoSelected != null)
             {
-                modelsDataSource.Add(modelFile.Name, modelFile.ModificationTime.Value.ToString("dd-MM-yyyy"));
+                var repoName = repoSelected[0];
+                var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
+                var models = await repo.FileAccess.EnumerateFilesAsync();
+
+                foreach (var modelFile in models)
+                {
+                    modelsDataSource.Add(modelFile.Name, modelFile.ModificationTime.Value.ToString("dd-MM-yyyy"));
+                }
+
+                this.modelsListView.Refresh();
+
+                this.modelsLoading.IsEnabled = false;
             }
-
-            this.modelsListView.Refresh();
-
-            this.modelsLoading.IsEnabled = false;
         }
 
         private void AddManipulatorComponents(Entity entity, BoundingBox boundingBox)

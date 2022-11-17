@@ -54,11 +54,11 @@ namespace Xrv.LoadModel.Importers.GLB
             }
 
             uint length = binaryReader.ReadUInt32();
-            long fileLength = binaryReader.BaseStream.Length;
-            if (length != fileLength)
-            {
-                throw new InvalidDataException($"The specified length of the file ({length}) is not equal to the actual length of the file ({fileLength}).");
-            }
+            ////long fileLength = binaryReader.BaseStream.Length;
+            ////if (length != fileLength)
+            ////{
+            ////    throw new InvalidDataException($"The specified length of the file ({length}) is not equal to the actual length of the file ({fileLength}).");
+            ////}
         }
 
         internal static byte[] ReadBinaryChunk(BinaryReader binaryReader, uint format)
