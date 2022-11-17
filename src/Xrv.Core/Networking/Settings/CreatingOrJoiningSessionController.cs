@@ -2,9 +2,7 @@
 
 using Evergine.Components.Fonts;
 using Evergine.Framework;
-using System;
 using System.Linq;
-using Xrv.Core.Messaging;
 
 namespace Xrv.Core.Networking.Settings
 {
@@ -17,8 +15,6 @@ namespace Xrv.Core.Networking.Settings
         private XrvService xrvService = null;
 
         private Text3DMesh statusText = null;
-        private Guid subscription;
-        private PubSub pubSub = null;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -26,23 +22,14 @@ namespace Xrv.Core.Networking.Settings
             bool attached = base.OnAttached();
             if (attached && !Application.Current.IsEditor)
             {
-                this.pubSub = this.xrvService.PubSub;
                 this.statusText = this.Owner
                     .FindChildrenByTag("PART_Session_Settings_StatusText", true)
                     .First()
                     .FindComponentInChildren<Text3DMesh>();
-                this.subscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
                 this.Owner.IsEnabled = Application.Current.IsEditor;
             }
 
             return attached;
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDetach()
-        {
-            base.OnDetach();
-            this.pubSub?.Unsubscribe(this.subscription);
         }
 
         /// <inheritdoc/>
@@ -56,8 +43,5 @@ namespace Xrv.Core.Networking.Settings
                 this.statusText.Text = session.CurrentUserIsHost ? "Creating Session..." : "Joining Session...";
             }
         }
-
-        private void OnSessionStatusChange(SessionStatusChangeMessage message) =>
-            this.Owner.IsEnabled = message.NewStatus == SessionStatus.Joining;
     }
 }

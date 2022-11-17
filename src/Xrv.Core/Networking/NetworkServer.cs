@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Evergine.Networking;
 using Evergine.Networking.Server;
@@ -15,6 +16,7 @@ namespace Xrv.Core.Networking
     {
         private readonly NetworkConfiguration configuration;
         private readonly MatchmakingServerService server;
+        private readonly SemaphoreSlim livingStatusSemaphore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkServer"/> class.
@@ -35,6 +37,8 @@ namespace Xrv.Core.Networking
                 PingInterval = configuration.PingInterval,
                 ConnectionTimeout = configuration.ConnectionTimeout,
             };
+
+            this.livingStatusSemaphore = new SemaphoreSlim(1);
         }
 
         /// <summary>
@@ -58,20 +62,29 @@ namespace Xrv.Core.Networking
         /// <returns>A task.</returns>
         public async Task StartAsync(string serverName)
         {
+            await this.livingStatusSemaphore.WaitAsync().ConfigureAwait(false);
+
             if (this.IsStarted)
             {
                 return;
             }
 
-            Debug.WriteLine($"Initializing network server with name '{serverName}'");
-            this.server.ServerName = serverName;
+            try
+            {
+                Debug.WriteLine($"Initializing network server with name '{serverName}'");
+                this.server.ServerName = serverName;
 
-            await this.server.StartAsync(this.configuration.Port).ConfigureAwait(false);
-            Debug.WriteLine($"Started server at port {this.configuration.Port}");
-            this.IsStarted = true;
-            this.Host = new SessionHostInfo(
-                serverName,
-                new NetworkEndpoint("127.0.0.1", this.configuration.Port));
+                await this.server.StartAsync(this.configuration.Port).ConfigureAwait(false);
+                Debug.WriteLine($"Started server at port {this.configuration.Port}");
+                this.IsStarted = true;
+                this.Host = new SessionHostInfo(
+                    serverName,
+                    new NetworkEndpoint("127.0.0.1", this.configuration.Port));
+            }
+            finally
+            {
+                this.livingStatusSemaphore.Release();
+            }
         }
 
         /// <summary>
@@ -80,14 +93,23 @@ namespace Xrv.Core.Networking
         /// <returns>A task.</returns>
         public async Task StopAsync()
         {
+            await this.livingStatusSemaphore.WaitAsync().ConfigureAwait(false);
+
             if (!this.IsStarted)
             {
                 return;
             }
 
-            Debug.WriteLine("Shutting down network server");
-            await this.server.ShutdownAsync().ConfigureAwait(false);
-            this.IsStarted = false;
+            try
+            {
+                Debug.WriteLine("Shutting down network server");
+                await this.server.ShutdownAsync().ConfigureAwait(false);
+                this.IsStarted = false;
+            }
+            finally
+            {
+                this.livingStatusSemaphore.Release();
+            }
         }
     }
 }

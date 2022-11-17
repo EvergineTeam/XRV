@@ -24,6 +24,7 @@ namespace XrvSamples.Scenes
             xrv.Networking.Configuration = configuration;
             xrv.Networking.OverrideScanningPort = 12345; // UWP client should be always the host
             xrv.Networking.NetworkingAvailable = true;
+            xrv.Services.QrScanningFlow.ExpectedCodes = new[] { "This is XRV!" };
         }       
     }
 }
