@@ -168,7 +168,7 @@ Items:
         Id: 11791bc9-7652-4ac2-924a-b27486ff7bd3
         AsignedTo: Default
         IsEnabled: true
-        Material: 19417b3b-3c40-410d-adc1-caadf450aff2
+        Material: 8e48542b-8460-45bf-96ff-3aea218a9f62
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: 1ca79cc7-d039-4c9f-9a90-9bdf6a7880ba
@@ -445,6 +445,9 @@ Items:
           X: 1.0
           Y: 1.0
           Z: 1.0
+      - !Xrv.Core.Networking.Settings.MainSessionController,Xrv.Core
+        Id: 392f4a58-279f-4539-83d1-f516bda7240b
+        IsEnabled: true
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Create Or Join

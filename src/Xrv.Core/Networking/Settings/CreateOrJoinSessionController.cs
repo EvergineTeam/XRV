@@ -6,7 +6,6 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Xrv.Core.Messaging;
 
 namespace Xrv.Core.Networking.Settings
 {
@@ -21,8 +20,6 @@ namespace Xrv.Core.Networking.Settings
         [BindComponent]
         private SessionScanner sessionScanner = null;
 
-        private Guid subscription;
-        private PubSub pubSub = null;
         private NetworkSystem networkSystem;
         private Text3DMesh sessionNameText = null;
         private Text3DMesh selectedSessionText = null;
@@ -37,8 +34,6 @@ namespace Xrv.Core.Networking.Settings
             if (attached && !Application.Current.IsEditor)
             {
                 this.networkSystem = this.xrvService.Networking;
-                this.pubSub = this.xrvService.PubSub;
-
                 this.sessionNameText = this.Owner
                     .FindChildrenByTag("PART_Session_Settings_SessionName_Text", true)
                     .First()
@@ -56,17 +51,9 @@ namespace Xrv.Core.Networking.Settings
                     .First()
                     .FindComponentInChildren<PressableButton>();
                 this.sessionNameText.Text = this.CreateRandomSessionName();
-                this.subscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
             }
 
             return attached;
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDetach()
-        {
-            base.OnDetach();
-            this.pubSub?.Unsubscribe(this.subscription);
         }
 
         /// <inheritdoc/>
@@ -102,12 +89,12 @@ namespace Xrv.Core.Networking.Settings
 
         private async void CreateSessionButton_ButtonReleased(object sender, EventArgs e)
         {
-            var succeeded = false;
             this.sessionScanner.StopScanning();
 
             try
             {
-                succeeded = await this.networkSystem.StartSessionAsync(this.sessionNameText.Text);
+                await this.networkSystem.StartSessionAsync(this.sessionNameText.Text);
+                this.sessionScanner.StartScanning();
             }
             catch (Exception ex)
             {
@@ -115,16 +102,6 @@ namespace Xrv.Core.Networking.Settings
                 this.xrvService.WindowSystem.ShowAlertDialog(
                     "Could not start session",
                     ex.Message,
-                    "OK");
-            }
-
-            if (!succeeded)
-            {
-                this.sessionScanner.StartScanning();
-                Trace.TraceError("Server could not be started");
-                this.xrvService.WindowSystem.ShowAlertDialog(
-                    "Could not start server",
-                    string.Empty,
                     "OK");
             }
         }
@@ -167,8 +144,5 @@ namespace Xrv.Core.Networking.Settings
             this.selectedHost = this.sessionScanner.AvailableSessions.FirstOrDefault();
             this.selectedSessionText.Text = this.selectedHost?.Name ?? "No session found";
         }
-
-        private void OnSessionStatusChange(SessionStatusChangeMessage message) =>
-            this.Owner.IsEnabled = message.NewStatus == SessionStatus.Disconnected;
     }
 }

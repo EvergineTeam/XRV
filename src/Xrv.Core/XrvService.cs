@@ -12,6 +12,8 @@ using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking;
+using Xrv.Core.Services;
+using Xrv.Core.Services.QR;
 using Xrv.Core.Settings;
 using Xrv.Core.Themes;
 using Xrv.Core.UI.Tabs;
@@ -75,6 +77,11 @@ namespace Xrv.Core
         public SettingsSystem Settings { get; private set; }
 
         /// <summary>
+        /// Gets cross-cutting services.
+        /// </summary>
+        public CrossCutting Services { get; private set; }
+
+        /// <summary>
         /// Gets window system access.
         /// </summary>
         public WindowsSystem WindowSystem { get; private set; }
@@ -128,6 +135,13 @@ namespace Xrv.Core
         /// <param name="scene">Scene instance.</param>
         public void Initialize(Scene scene)
         {
+            // Services
+            this.Services = new CrossCutting();
+            this.Services.QrScanningFlow = new QrScanningFlow(
+                scene.Managers.EntityManager,
+                scene.Managers.RenderManager,
+                this.assetsService);
+
             // Themes
             this.ThemesSystem = new ThemesSystem(this.assetsService, this.graphicsContext);
             this.ThemesSystem.Load();

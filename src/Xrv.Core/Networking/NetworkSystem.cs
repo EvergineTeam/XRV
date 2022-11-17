@@ -11,7 +11,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Xrv.Core.Services.QR;
 using Xrv.Core.UI.Tabs;
+using Xrv.Core.Utils;
 
 namespace Xrv.Core.Networking
 {
@@ -124,7 +126,7 @@ namespace Xrv.Core.Networking
                 await this.ConnectToSessionAsync(this.Server.Host).ConfigureAwait(false);
             }
 
-            return this.Server.IsStarted;
+            return this.Server?.IsStarted ?? false;
         }
 
         internal async Task<bool> ConnectToSessionAsync(SessionHostInfo host)
@@ -134,17 +136,30 @@ namespace Xrv.Core.Networking
 
             // just to give enough time to show status changes to the user
             await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+
+            // close settings panel
+            this.xrvService.Settings.Window.Close();
+
+            // execute QR scanning flow to determine world center
+            var scanningFlow = this.xrvService.Services.QrScanningFlow;
+            QrScanningResult result = await scanningFlow.ExecuteFlowAsync().ConfigureAwait(false);
+            if (result == null)
+            {
+                await this.ClearSessionStatusAsync().ConfigureAwait(false);
+                return false;
+            }
+
             bool succeeded = await this.Client.ConnectAsync(host).ConfigureAwait(false);
             if (!succeeded)
             {
-                this.ClearSessionStatus();
+                await this.ClearSessionStatusAsync().ConfigureAwait(false);
                 return false;
             }
 
             bool joined = await this.Client.JoinSessionAsync().ConfigureAwait(false);
             if (!joined)
             {
-                this.ClearSessionStatus();
+                await this.ClearSessionStatusAsync().ConfigureAwait(false);
                 return false;
             }
 
@@ -156,14 +171,7 @@ namespace Xrv.Core.Networking
         internal async Task LeaveSessionAsync()
         {
             this.Client.Disconnect();
-
-            if (this.session.CurrentUserIsHost)
-            {
-                await this.Server.StopAsync().ConfigureAwait(false);
-                this.Server = null;
-            }
-
-            this.ClearSessionStatus();
+            await this.ClearSessionStatusAsync().ConfigureAwait(false);
         }
 
         private void SubscribeClientEvents()
@@ -189,10 +197,24 @@ namespace Xrv.Core.Networking
             return rulerSettingPrefab.Instantiate();
         }
 
-        private void ClearSessionStatus()
+        private async Task ClearSessionStatusAsync()
         {
             this.session.Host = null;
             this.session.Status = SessionStatus.Disconnected;
+
+            var scanningFlow = this.xrvService.Services.QrScanningFlow;
+            scanningFlow.Marker.IsEnabled = false;
+
+            // Remove flow marker world anchor, if any
+            var worldAnchor = scanningFlow.Marker.FindComponent<WorldAnchor>();
+            worldAnchor.RemoveAnchor();
+
+            if (this.Server?.IsStarted == true)
+            {
+                await this.Server.StopAsync().ConfigureAwait(false);
+            }
+
+            this.Server = null;
         }
 
         private void AddOrRemoveSettingItem()
@@ -217,13 +239,13 @@ namespace Xrv.Core.Networking
             }
         }
 
-        private void InternalClient_ClientStateChanged(object sender, ClientStates state)
+        private async void InternalClient_ClientStateChanged(object sender, ClientStates state)
         {
             Debug.WriteLine($"Client state changed to {state}");
 
             if (state == ClientStates.Disconnected)
             {
-                this.ClearSessionStatus();
+                await this.ClearSessionStatusAsync();
             }
         }
 
@@ -234,12 +256,7 @@ namespace Xrv.Core.Networking
             // (internally used when creating server). We were struggling some days about what
             // was happening because HoloLens server was not reachable by other clients, and
             // we found this issue.
-            bool isHoloLens = false;
-
-#if UWP
-            isHoloLens = Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview.IsCurrentViewPresentedOnHolographicDisplay();
-#endif
-            if (!isHoloLens)
+            if (!DeviceHelper.IsHoloLens())
             {
                 NetworkInterface candidate = NetUtility
                     .GetNetworkInterfaces()

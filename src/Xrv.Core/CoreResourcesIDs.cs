@@ -49,13 +49,23 @@ namespace Xrv.Core
 
             public static Guid HandMenu = new Guid("890eb664-4c07-4b33-afca-7e428b2fbc11");
 
-            public static Guid SessionSettings_weprefab = new Guid("c5dce6a9-e53e-43b5-9645-f8808fa85e21");
+            public static Guid SessionSettings_weprefab = new Guid("6c05a9e8-7b69-4c52-9bbd-223fed12ee83");
 
             public static Guid TabControl = new Guid("4cd4a3d9-33e4-4b2a-8dbf-5b25aa014a0b");
 
             public static Guid TextButton = new Guid("69925256-16a0-4938-81fb-2810f6afa4eb");
 
             public static Guid Window = new Guid("76a3430f-9ddd-4536-abef-d51e7d67e444");
+
+            public static class Services
+            {
+                public static class QR
+                {
+                    public static Guid QrMarker_weprefab = new Guid("56ab9099-2cc9-4606-b59c-b631983a7926");
+
+                    public static Guid QrScanner_weprefab = new Guid("1a3917ef-322f-4563-9be5-68690e539f71");
+                }
+            }
         }
 
         public static class Textures

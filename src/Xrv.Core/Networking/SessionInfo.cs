@@ -33,7 +33,7 @@ namespace Xrv.Core.Networking
         /// </summary>
         public SessionStatus Status
         {
-            get => this.Status;
+            get => this.status;
             internal set
             {
                 if (this.status != value)
