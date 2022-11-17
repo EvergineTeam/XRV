@@ -41,12 +41,6 @@ namespace Xrv.StreamingViewer
                 IsToggle = false,
                 TextOn = "Streaming Viewer",
             };
-
-            this.help = new TabItem()
-            {
-                Name = "Streaming Viewer",
-                Contents = this.HelpContent,
-            };
         }
 
         /// <summary>
@@ -116,17 +110,6 @@ namespace Xrv.StreamingViewer
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
             entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
-        }
-
-        private Entity HelpContent()
-        {
-            if (this.imageGalleryHelp == null)
-            {
-                var imageGalleryHelpPrefab = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingViewerHelp_weprefab);
-                this.imageGalleryHelp = imageGalleryHelpPrefab.Instantiate();
-            }
-
-            return this.imageGalleryHelp;
         }
     }
 }
