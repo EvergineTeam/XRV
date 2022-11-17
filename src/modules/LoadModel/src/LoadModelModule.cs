@@ -95,7 +95,7 @@ namespace Xrv.LoadModel
         public override async void Initialize(Scene scene)
         {
             // Setting cache
-            foreach(var repo in this.Repositories)
+            foreach (var repo in this.Repositories)
             {
                 if (repo.FileAccess.IsCachingEnabled)
                 {
@@ -181,7 +181,7 @@ namespace Xrv.LoadModel
             {
                 // Read glb stream
                 Model model = null;
-                
+
                 var selectedRepo = this.repositoriesListView.Selected;
                 if (selectedRepo != null)
                 {
