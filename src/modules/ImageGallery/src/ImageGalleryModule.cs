@@ -79,16 +79,10 @@ namespace Xrv.ImageGallery
         public override IEnumerable<string> VoiceCommands => null;
 
         /// <inheritdoc/>
-        public async override void Initialize(Scene scene)
+        public override void Initialize(Scene scene)
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
-
-            // Setting cache
-            if (this.FileAccess.IsCachingEnabled)
-            {
-                await this.FileAccess.Cache.InitializeAsync();
-            }
 
             // Loading and setting Gallery Asset
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();

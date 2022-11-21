@@ -21,11 +21,7 @@ namespace Xrv.Core.Tests.Storage.Cache
             };
         }
 
-        async Task IAsyncLifetime.InitializeAsync()
-        {
-            await this.diskCache.ClearAsync();
-            await this.diskCache.InitializeAsync();
-        }
+        Task IAsyncLifetime.InitializeAsync() => this.diskCache.ClearAsync();
 
         Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask;
 
@@ -154,7 +150,7 @@ namespace Xrv.Core.Tests.Storage.Cache
             };
 
             await TestHelpers.CreateTestFilesWithSizeAsync(fileAccess, new[] { CacheSizeLimit / 3, CacheSizeLimit / 2, CacheSizeLimit / 2 });
-            await this.diskCache.InitializeAsync();
+            await this.diskCache.InitializeAsync(true);
 
             Assert.Equal(2, this.diskCache.CacheEntries.Count);
         }
@@ -169,7 +165,7 @@ namespace Xrv.Core.Tests.Storage.Cache
             stream.Dispose();
 
             diskCache.SizeLimit = (long)(CacheSizeLimit * 0.8f);
-            await this.diskCache.InitializeAsync();
+            await this.diskCache.InitializeAsync(true);
 
             Assert.True(await this.diskCache.ExistsFileAsync("file1.dat"));
             Assert.True(this.diskCache.CacheEntries.ContainsKey("file1.dat"));
@@ -184,7 +180,7 @@ namespace Xrv.Core.Tests.Storage.Cache
         {
             await TestHelpers.CreateSingleFilesWithSizeAsync(this.diskCache, "file1.dat", CacheSizeLimit / 3);
             await TestHelpers.CreateSingleFilesWithSizeAsync(this.diskCache, "file2.dat", CacheSizeLimit / 4);
-            await this.diskCache.InitializeAsync();
+            await this.diskCache.InitializeAsync(true);
 
             var files = await this.diskCache.EnumerateFilesAsync();
 
@@ -204,7 +200,7 @@ namespace Xrv.Core.Tests.Storage.Cache
                 BaseDirectory = this.diskCache.BaseDirectory,
             };
             await fileAccess.DeleteFileAsync("file2.dat");
-            await this.diskCache.InitializeAsync();
+            await this.diskCache.InitializeAsync(true);
 
             Assert.Equal(2, this.diskCache.CacheEntries.Count);
             Assert.True(await this.diskCache.ExistsFileAsync("file1.dat"));

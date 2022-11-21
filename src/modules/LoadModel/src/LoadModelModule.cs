@@ -104,17 +104,8 @@ namespace Xrv.LoadModel
         public override IEnumerable<string> VoiceCommands => null;
 
         /// <inheritdoc/>
-        public override async void Initialize(Scene scene)
+        public override void Initialize(Scene scene)
         {
-            // Setting cache
-            foreach (var repo in this.Repositories)
-            {
-                if (repo.FileAccess.IsCachingEnabled)
-                {
-                    await repo.FileAccess.Cache.InitializeAsync();
-                }
-            }
-
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;

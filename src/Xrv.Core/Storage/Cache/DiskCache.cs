@@ -25,6 +25,9 @@ namespace Xrv.Core.Storage.Cache
         private readonly ICacheBlockSelector blockSelector;
         private readonly SemaphoreSlim statusFileSemaphore;
 
+        private readonly SemaphoreSlim initializationSemaphore;
+        private bool initializationStarted;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DiskCache"/> class.
         /// </summary>
@@ -45,6 +48,7 @@ namespace Xrv.Core.Storage.Cache
             this.readOnlyCacheEntries = new ReadOnlyDictionary<string, CacheEntry>(this.cacheEntries);
             this.blockSelector = keySelector ?? new DefaultFileBlockSelector();
             this.statusFileSemaphore = new SemaphoreSlim(1);
+            this.initializationSemaphore = new SemaphoreSlim(1);
             base.BaseDirectory = $"{CacheRootFolderName}/{cacheName}";
         }
 
@@ -92,20 +96,6 @@ namespace Xrv.Core.Storage.Cache
         public long CurrentCacheSize { get => this.cacheEntries.Sum(entry => entry.Value.DiskSize); }
 
         /// <summary>
-        /// Initializes cache, creating cache folder if not existing. All cache elements that
-        /// do not comply <see cref="SlidingExpiration"/> and/or <see cref="SizeLimit"/> constraints
-        /// will be removed.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task.</returns>
-        public async Task InitializeAsync(CancellationToken cancellationToken = default)
-        {
-            await this.CreateBaseDirectoryIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
-            await this.UpdateCacheEntriesAsync(cancellationToken).ConfigureAwait(false);
-            await this.FlushAsync(cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Flushes cache contents, removing all files that do not pass current constraints.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -113,9 +103,45 @@ namespace Xrv.Core.Storage.Cache
         public Task FlushAsync(CancellationToken cancellationToken = default) =>
             this.FlushAsync(null, cancellationToken);
 
+        internal async Task InitializeAsync(bool forceInitialization, CancellationToken cancellationToken = default)
+        {
+            if (forceInitialization)
+            {
+                this.initializationStarted = false;
+            }
+
+            if (this.initializationStarted)
+            {
+                return;
+            }
+
+            await this.initializationSemaphore.WaitAsync(cancellationToken);
+
+            if (!this.initializationStarted)
+            {
+                this.initializationStarted = true;
+                await this.CreateBaseDirectoryIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+                await this.UpdateCacheEntriesAsync(cancellationToken).ConfigureAwait(false);
+                await this.FlushAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            this.initializationSemaphore.Release();
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<IEnumerable<DirectoryItem>> InternalEnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
+            var directories = await base.InternalEnumerateDirectoriesAsync(relativePath, cancellationToken).ConfigureAwait(false);
+            return directories;
+        }
+
         /// <inheritdoc/>
         protected override async Task<IEnumerable<FileItem>> InternalEnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
             var files = await base.InternalEnumerateFilesAsync(relativePath, cancellationToken).ConfigureAwait(false);
             bool isRootFolder = string.IsNullOrEmpty(relativePath);
             if (isRootFolder)
@@ -129,6 +155,8 @@ namespace Xrv.Core.Storage.Cache
         /// <inheritdoc/>
         protected override async Task<Stream> InternalGetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
             var stream = await base.InternalGetFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
             if (relativePath == CacheStatusFileName)
             {
@@ -149,6 +177,8 @@ namespace Xrv.Core.Storage.Cache
         /// <inheritdoc/>
         protected override async Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
             // Save file and add register into cache
             await base.InternalWriteFileAsync(relativePath, stream, cancellationToken).ConfigureAwait(false);
             if (relativePath == CacheStatusFileName)
@@ -179,6 +209,7 @@ namespace Xrv.Core.Storage.Cache
         /// <inheritdoc/>
         protected override async Task InternalDeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
             await base.InternalDeleteFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
 
             var cacheKey = this.blockSelector.GetKey(relativePath);
@@ -261,7 +292,7 @@ namespace Xrv.Core.Storage.Cache
 
                     var directoryName = Path.GetDirectoryName(filePath);
                     var directoryFiles = await this.EnumerateFilesAsync(directoryName, cancellationToken).ConfigureAwait(false);
-                    if (!directoryFiles.Any())
+                    if (!directoryFiles.Any() && !string.IsNullOrEmpty(directoryName))
                     {
                         await this.DeleteDirectoryAsync(directoryName, cancellationToken).ConfigureAwait(false);
                     }
