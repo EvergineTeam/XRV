@@ -242,8 +242,8 @@ namespace Xrv.LoadModel
 
         private async Task ConnectToRepositoriesAsync()
         {
+            this.repositoriesListView.ClearData();
             var repositoriesDataSource = this.repositoriesListView.DataSource;
-            repositoriesDataSource.ClearData();
             this.repositoriesLoading.IsEnabled = true;
             foreach (var repo in this.Repositories)
             {
@@ -260,9 +260,7 @@ namespace Xrv.LoadModel
 
         private async void RefreshModelList()
         {
-            var modelsDataSource = this.modelsListView.DataSource;
-            modelsDataSource.ClearData();
-
+            this.modelsListView.ClearData();
             this.modelsLoading.IsEnabled = true;
 
             var repoSelected = this.repositoriesListView.Selected;
@@ -272,6 +270,7 @@ namespace Xrv.LoadModel
                 var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
                 var models = await repo.FileAccess.EnumerateFilesAsync();
 
+                var modelsDataSource = this.modelsListView.DataSource;
                 foreach (var modelFile in models)
                 {
                     modelsDataSource.Add(modelFile.Name, modelFile.ModificationTime.Value.ToString("dd-MM-yyyy"));
