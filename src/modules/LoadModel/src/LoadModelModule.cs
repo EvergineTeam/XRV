@@ -341,7 +341,7 @@ namespace Xrv.LoadModel
             });
         }
 
-        private Material MaterialAssignerToSolidEffect (Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, AlphaModeEnum alphaMode, float alpha, float alphaCutOff, bool vertexColorEnabled)
+        private Material MaterialAssignerToSolidEffect(Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, AlphaModeEnum alphaMode, float alpha, float alphaCutOff, bool vertexColorEnabled)
         {
             if (this.alphaLayer == null || this.opaqueLayer == null)
             {
