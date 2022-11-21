@@ -97,7 +97,8 @@ namespace Xrv.Core
         /// <param name="module">Module instance.</param>
         /// <exception cref="ArgumentNullException">Thrown when supplied module is null.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register a module twice.</exception>
-        public void AddModule(Module module)
+        /// <returns>Return instance of myself (Fluent interface pattern).</returns>
+        public XrvService AddModule(Module module)
         {
             if (module == null)
             {
@@ -111,6 +112,8 @@ namespace Xrv.Core
             }
 
             this.modules.Add(type, module);
+
+            return this;
         }
 
         /// <summary>
