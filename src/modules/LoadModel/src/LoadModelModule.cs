@@ -1,9 +1,11 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Graphics;
 using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Graphics.Effects;
 using Evergine.Framework.Physics3D;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
@@ -22,9 +24,11 @@ using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
-using Xrv.Core.UI.Windows;
+using Xrv.LoadModel.Effects;
 using Xrv.LoadModel.Importers.GLB;
 using Xrv.LoadModel.Structs;
+using static glTFLoader.Schema.Material;
+using Window = Xrv.Core.UI.Windows.Window;
 
 namespace Xrv.LoadModel
 {
@@ -44,6 +48,9 @@ namespace Xrv.LoadModel
         private ListView modelsListView;
         private Entity repositoriesLoading;
         private Entity modelsLoading;
+
+        private RenderLayerDescription opaqueLayer;
+        private RenderLayerDescription alphaLayer;
 
         private Window window = null;
 
@@ -87,6 +94,11 @@ namespace Xrv.LoadModel
         /// Gets or sets the box dimension of the model after normalize them. (Required NormalizedModelEnable=true).
         /// </summary>
         public float NormalizedModelSize { get; set; } = 0.2f;
+
+        /// <summary>
+        /// Gets or sets the material created by the loader.
+        /// </summary>
+        public Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> MaterialAssigner { get; set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -197,7 +209,8 @@ namespace Xrv.LoadModel
                         {
                             stream.CopyTo(memoryStream);
                             memoryStream.Position = 0;
-                            model = GLBRuntime.Instance.Read(memoryStream);
+                            var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
+                            model = GLBRuntime.Instance.Read(memoryStream, materialAssignerFunc);
                         }
 
                         // Instantiate model
@@ -326,6 +339,51 @@ namespace Xrv.LoadModel
                 KeepRigidBodyActiveDuringDrag = false,
                 IncludeChildrenColliders = true,
             });
+        }
+
+        private Material MaterialAssignerToSolidEffect (Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, AlphaModeEnum alphaMode, float alpha, float alphaCutOff, bool vertexColorEnabled)
+        {
+            if (this.alphaLayer == null || this.opaqueLayer == null)
+            {
+                this.opaqueLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.OpaqueRenderLayerID);
+                this.alphaLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.AlphaRenderLayerID);
+            }
+
+            RenderLayerDescription layer;
+            switch (alphaMode)
+            {
+                default:
+                case AlphaModeEnum.MASK:
+                case AlphaModeEnum.OPAQUE:
+                    layer = this.opaqueLayer;
+                    break;
+                case AlphaModeEnum.BLEND:
+                    layer = alpha < 1.0f ? this.alphaLayer : this.opaqueLayer;
+                    break;
+            }
+
+            var effect = this.assetsService.Load<Effect>(LoadModelResourceIDs.Effects.SolidEffect);
+            SolidEffect material = new SolidEffect(effect)
+            {
+                Parameters_Color = baseColor.ToVector3(),
+                Parameters_Alpha = alpha,
+                BaseColorTexture = baseColorTexture,
+                BaseColorSampler = baseColorSampler,
+                LayerDescription = layer,
+                Parameters_AlphaCutOff = alphaCutOff,
+            };
+
+            if (vertexColorEnabled)
+            {
+                material.ActiveDirectivesNames = new string[] { "VERTEXCOLOR" };
+            }
+
+            if (baseColorTexture != null)
+            {
+                material.ActiveDirectivesNames = new string[] { "TEXTURECOLOR" };
+            }
+
+            return material.Material;
         }
     }
 }

@@ -2,16 +2,16 @@ using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Platform;
-using Xrv.AudioNote;
-using Xrv.ImageGallery;
-using Xrv.Core;
-using Xrv.LoadModel;
-using Xrv.Ruler;
 using System;
+using Xrv.AudioNote;
+using Xrv.Core;
 using Xrv.Core.Storage;
-using Random = Evergine.Framework.Services.Random;
-using Xrv.LoadModel.Structs;
 using Xrv.Core.Storage.Cache;
+using Xrv.ImageGallery;
+using Xrv.LoadModel;
+using Xrv.LoadModel.Structs;
+using Xrv.Ruler;
+using Random = Evergine.Framework.Services.Random;
 
 namespace XrvSamples
 {
@@ -44,8 +44,8 @@ namespace XrvSamples
             var xrv = new XrvService()
                 .AddModule(new RulerModule())
                 .AddModule(new LoadModelModule()
-                                {
-                                    Repositories = new Repository[] 
+                {
+                    Repositories = new Repository[]
                                     {
                                         new Repository()
                                         {
@@ -53,16 +53,16 @@ namespace XrvSamples
                                             FileAccess = loadModelFileAccess,
                                         }
                                     },
-                                    NormalizedModelEnabled = true,
-                                    NormalizedModelSize = 0.2f,
-                                })
+                    NormalizedModelEnabled = true,
+                    NormalizedModelSize = 0.2f,
+                })
                 .AddModule(new AudioNoteModule())
                 .AddModule(new ImageGalleryModule()
-                                {
-                                    ImagePixelsWidth = 640,
-                                    ImagePixelsHeight = 640,
-                                    FileAccess = imageGalleryFileAccess,
-                                });
+                {
+                    ImagePixelsWidth = 640,
+                    ImagePixelsHeight = 640,
+                    FileAccess = imageGalleryFileAccess,
+                });
 
             this.Container.RegisterInstance(xrv);
         }

@@ -4,6 +4,7 @@ using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
+using Evergine.Framework.Graphics.Materials;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.Platform;
@@ -15,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Xrv.LoadModel.Effects;
 using Xrv.LoadModel.Importers.Images;
 using static glTFLoader.Schema.Material;
 using Buffer = Evergine.Common.Graphics.Buffer;
@@ -55,6 +55,7 @@ namespace Xrv.LoadModel.Importers.GLB
         private Gltf glbModel;
         private byte[] binaryChunk;
         private BufferInfo[] bufferInfos;
+        private Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner;
 
         private GLBRuntime()
         {
@@ -64,8 +65,9 @@ namespace Xrv.LoadModel.Importers.GLB
         /// Read a glb file and return a model asset.
         /// </summary>
         /// <param name="filePath">Glb filepath.</param>
+        /// <param name="materialAssigner">Material assigner.</param>
         /// <returns>Model asset.</returns>
-        public Model Read(string filePath)
+        public Model Read(string filePath, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
             Model model = null;
 
@@ -81,7 +83,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     throw new ArgumentException("Invalid parameter. Stream must be readable", "imageStream");
                 }
 
-                model = this.Read(stream);
+                model = this.Read(stream, materialAssigner);
             }
 
             return model;
@@ -91,9 +93,12 @@ namespace Xrv.LoadModel.Importers.GLB
         /// Read a glb file from stream and return a model asset.
         /// </summary>
         /// <param name="stream">Seeked stream.</param>
+        /// <param name="materialAssigner">Material assigner.</param>
         /// <returns>Model asset.</returns>
-        public Model Read(Stream stream)
+        public Model Read(Stream stream, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
+            this.materialAssigner = materialAssigner;
+
             this.LoadStaticResources();
 
             var model = this.ReadGLB(stream);
@@ -654,7 +659,16 @@ namespace Xrv.LoadModel.Importers.GLB
                     }
                 }
 
-                var material = this.CreateEngineMaterial(baseColor.ToColor(), baseColorTexture, baseColorSampler, glbMaterial.AlphaMode, baseColor.A, glbMaterial.AlphaCutoff, vertexColorEnabled);
+                Material material = null;
+                if (this.materialAssigner == null)
+                {
+                    material = this.CreateEngineMaterial(baseColor.ToColor(), baseColorTexture, baseColorSampler, glbMaterial.AlphaMode, baseColor.A, glbMaterial.AlphaCutoff, vertexColorEnabled);
+                }
+                else
+                {
+                    material = this.materialAssigner(baseColor.ToColor(), baseColorTexture, baseColorSampler, glbMaterial.AlphaMode, baseColor.A, glbMaterial.AlphaCutoff, vertexColorEnabled);
+                }
+
                 this.materials.Add(materialId, (glbMaterial.Name, material));
 
                 return this.materials.Count - 1;
@@ -678,25 +692,28 @@ namespace Xrv.LoadModel.Importers.GLB
                     break;
             }
 
-            var effect = this.assetsService.Load<Effect>(LoadModelResourceIDs.Effects.SolidEffect);
-            SolidEffect material = new SolidEffect(effect)
+            var effect = this.assetsService.Load<Effect>(DefaultResourcesIDs.StandardEffectID);
+            StandardMaterial material = new StandardMaterial(effect)
             {
-                Parameters_Color = baseColor.ToVector3(),
-                Parameters_Alpha = alpha,
+                LightingEnabled = true,
+                IBLEnabled = true,
+                BaseColor = baseColor,
+                Alpha = alpha,
                 BaseColorTexture = baseColorTexture,
                 BaseColorSampler = baseColorSampler,
                 LayerDescription = layer,
-                Parameters_AlphaCutOff = alphaCutOff,
+                AlphaCutout = alphaCutOff,
             };
 
             if (vertexColorEnabled)
             {
-                material.ActiveDirectivesNames = new string[] { "VERTEXCOLOR" };
-            }
-
-            if (baseColorTexture != null)
-            {
-                material.ActiveDirectivesNames = new string[] { "TEXTURECOLOR" };
+                if (material.ActiveDirectivesNames.Contains("VCOLOR"))
+                {
+                    var directivesArray = material.ActiveDirectivesNames;
+                    Array.Resize(ref directivesArray, directivesArray.Length + 1);
+                    directivesArray[directivesArray.Length - 1] = "VCOLOR";
+                    material.ActiveDirectivesNames = directivesArray;
+                }
             }
 
             return material.Material;
