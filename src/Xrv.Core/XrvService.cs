@@ -8,6 +8,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -216,9 +217,7 @@ namespace Xrv.Core
             this.voiceSystem.Initialize();
 
             // Add Hand tutorial to the scene
-            this.handTutorialRootEntity = this.CreateHandTutorial();
-            scene.Managers.EntityManager.Add(this.handTutorialRootEntity);
-            this.HandMenu.PalmUpDetected += this.HandMenu_PalmUpDetected;
+            this.handTutorialRootEntity = this.CreateHandTutorial(scene);
         }
 
         internal Module GetModuleForHandButton(MenuButtonDescription definition)
@@ -234,16 +233,19 @@ namespace Xrv.Core
             return null;
         }
 
-        private Entity CreateHandTutorial()
+        private Entity CreateHandTutorial(Scene scene)
         {
+            // Load handtutorial model
             var handTutorialModel = this.assetsService.Load<Model>(CoreResourcesIDs.Models.Hand_Panel_anim_glb);
             var handTutorialEntity = handTutorialModel.InstantiateModelHierarchy(this.assetsService);
+            handTutorialEntity.FindComponent<Transform3D>().Position = Vector3.Down * 0.3f;
             handTutorialEntity.FindComponent<Animation3D>().PlayAutomatically = true;
             var handMesh = handTutorialEntity.Find("[this].L_Hand.MeshL");
-            handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = false;
+            handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? false : true;
             var panelMesh = handTutorialEntity.Find("[this].Panel");
             panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1);
 
+            // Root with Tagalong
             Entity root = new Entity()
                .AddComponent(new Transform3D())
                .AddComponent(new WindowTagAlong()
@@ -261,6 +263,9 @@ namespace Xrv.Core
                });
 
             root.AddChild(handTutorialEntity);
+
+            scene.Managers.EntityManager.Add(root);
+            this.HandMenu.PalmUpDetected += this.HandMenu_PalmUpDetected;
 
             return root;
         }
