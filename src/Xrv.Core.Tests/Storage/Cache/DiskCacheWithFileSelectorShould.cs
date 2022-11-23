@@ -149,10 +149,14 @@ namespace Xrv.Core.Tests.Storage.Cache
                 BaseDirectory = this.diskCache.BaseDirectory,
             };
 
-            await TestHelpers.CreateTestFilesWithSizeAsync(fileAccess, new[] { CacheSizeLimit / 3, CacheSizeLimit / 2, CacheSizeLimit / 2 });
-            await this.diskCache.InitializeAsync(true);
+            await TestHelpers.CreateTestFilesWithSizeAsync(this.diskCache, new[] { CacheSizeLimit / 3, CacheSizeLimit / 2 });
+            await TestHelpers.CreateSingleFilesWithSizeAsync(fileAccess, "extraFile", CacheSizeLimit / 2);
 
+            await this.diskCache.InitializeAsync(true);
             Assert.Equal(2, this.diskCache.CacheEntries.Count);
+
+            var numberOfFiles = await this.diskCache.EnumerateFilesAsync();
+            Assert.Equal(2, numberOfFiles.Count());
         }
 
         [Fact]

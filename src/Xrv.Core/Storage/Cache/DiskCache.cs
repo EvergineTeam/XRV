@@ -121,11 +121,26 @@ namespace Xrv.Core.Storage.Cache
             {
                 this.initializationStarted = true;
                 await this.CreateBaseDirectoryIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
-                await this.UpdateCacheEntriesAsync(cancellationToken).ConfigureAwait(false);
+                await this.LoadStatusAsync(cancellationToken).ConfigureAwait(false);
+                await this.ClearNotRegisteredFilesAsync(string.Empty, cancellationToken).ConfigureAwait(false);
                 await this.FlushAsync(cancellationToken).ConfigureAwait(false);
             }
 
             this.initializationSemaphore.Release();
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<bool> InternalExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+            return await base.InternalExistsDirectoryAsync(relativePath, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<bool> InternalExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+            return await base.InternalExistsFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -303,13 +318,7 @@ namespace Xrv.Core.Storage.Cache
             while (releasedSize < sizeToRelease && this.cacheEntries.Any());
         }
 
-        private async Task UpdateCacheEntriesAsync(CancellationToken cancellationToken)
-        {
-            await this.LoadStatusAsync(cancellationToken).ConfigureAwait(false);
-            await this.UpdateCacheEntriesFromDirectoryAsync(string.Empty, cancellationToken).ConfigureAwait(false);
-        }
-
-        private async Task UpdateCacheEntriesFromDirectoryAsync(string directoryPath, CancellationToken cancellationToken = default)
+        private async Task ClearNotRegisteredFilesAsync(string directoryPath, CancellationToken cancellationToken)
         {
             bool isRootPath = string.IsNullOrEmpty(directoryPath);
             var files = await this.EnumerateFilesAsync(directoryPath, cancellationToken).ConfigureAwait(false);
@@ -320,28 +329,32 @@ namespace Xrv.Core.Storage.Cache
                     continue;
                 }
 
-                var filePath = file.Path;
-                var fileSize = file.Size ?? 0;
                 var cacheKey = this.blockSelector.GetKey(file.Path);
-                var cacheEntry = new CacheEntry();
-                cacheEntry.Paths.TryAdd(filePath, fileSize);
-
-                this.cacheEntries.AddOrUpdate(cacheKey, cacheEntry, (key, existing) =>
+                bool deleteFile = false;
+                if (this.cacheEntries.TryGetValue(cacheKey, out var entry))
                 {
-                    if (existing.LastAccess < cacheEntry.LastAccess)
-                    {
-                        existing.LastAccess = cacheEntry.LastAccess;
-                    }
+                    deleteFile = !entry.Paths.ContainsKey(cacheKey);
+                }
+                else
+                {
+                    deleteFile = true;
+                }
 
-                    existing.Paths.AddOrUpdate(filePath, fileSize, (key, existing) => fileSize);
-                    return existing;
-                });
+                if (deleteFile)
+                {
+                    await this.DeleteFileAsync(file.Path, cancellationToken).ConfigureAwait(false);
+                }
             }
 
             var directories = await this.EnumerateDirectoriesAsync(directoryPath, cancellationToken).ConfigureAwait(false);
             foreach (var directory in directories)
             {
-                await this.UpdateCacheEntriesFromDirectoryAsync(directory.Path, cancellationToken).ConfigureAwait(false);
+                await this.ClearNotRegisteredFilesAsync(directory.Path, cancellationToken).ConfigureAwait(false);
+                files = await this.EnumerateFilesAsync(directoryPath, cancellationToken).ConfigureAwait(false);
+                if (files.Count() == 0 && !string.IsNullOrEmpty(directoryPath))
+                {
+                    await this.DeleteDirectoryAsync(directoryPath, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 

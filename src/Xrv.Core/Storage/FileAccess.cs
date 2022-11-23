@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Xrv.Core.Storage.Cache;
@@ -178,8 +180,11 @@ namespace Xrv.Core.Storage
         /// <returns>File contents stream.</returns>
         public virtual async Task<Stream> GetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
+            var fileItem = await this.GetFileItemAsync(relativePath, cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+
             Stream stream = this.IsCachingEnabled
-                ? await this.RetrieveItemFromCacheAsync(relativePath, cancellationToken).ConfigureAwait(false)
+                ? await this.RetrieveItemFromCacheAsync(relativePath, fileItem, cancellationToken).ConfigureAwait(false)
                 : null;
 
             if (cancellationToken.IsCancellationRequested)
@@ -199,9 +204,7 @@ namespace Xrv.Core.Storage
 
                 if (this.IsCachingEnabled)
                 {
-                    Trace.TraceInformation($"Caching version of {relativePath}.");
-                    await this.cache.WriteFileAsync(relativePath, stream, cancellationToken).ConfigureAwait(false);
-                    stream = await this.cache.GetFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
+                    stream = await this.SaveItemToCacheAsync(fileItem, stream, cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -371,9 +374,11 @@ namespace Xrv.Core.Storage
         private bool EvaluateCacheUsageOnException(Exception exception) =>
             this.IsCachingEnabled ? this.InternalEvaluateCacheUsageOnException(exception) : false;
 
-        private async Task<Stream> RetrieveItemFromCacheAsync(string relativePath, CancellationToken cancellationToken)
+        private async Task<Stream> RetrieveItemFromCacheAsync(string relativePath, FileItem fileItem, CancellationToken cancellationToken)
         {
             Stream stream = null;
+
+            fileItem = fileItem ?? await this.GetFileItemAsync(relativePath, cancellationToken).ConfigureAwait(false);
 
             // Evaluate if file is already cached
             bool exists = await this.cache.ExistsFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
@@ -384,10 +389,9 @@ namespace Xrv.Core.Storage
                 // Compare cache modification date with source modification date. If current cached
                 // date is lower than source date, we should not retrieve item from cache.
                 var cacheFileItem = await this.cache.GetFileItemAsync(relativePath, cancellationToken).ConfigureAwait(false);
-                var sourceFileItem = await this.GetFileItemAsync(relativePath, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (cacheFileItem.ModificationTime < sourceFileItem.ModificationTime)
+                if (cacheFileItem.ModificationTime < fileItem.ModificationTime)
                 {
                     Trace.TraceInformation($"Current version of {relativePath} is not valid.");
                 }
@@ -403,6 +407,53 @@ namespace Xrv.Core.Storage
             }
 
             return stream;
+        }
+
+        private async Task<Stream> SaveItemToCacheAsync(FileItem fileItem, Stream stream, CancellationToken cancellationToken = default)
+        {
+            Trace.TraceInformation($"Caching version of {fileItem.Path}.");
+
+            // First save file into cache
+            await this.cache.WriteFileAsync(fileItem.Path, stream, cancellationToken).ConfigureAwait(false);
+
+            // Then check its integrity: file size and file checksum (when available)
+            stream = await this.cache.GetFileAsync(fileItem.Path, cancellationToken).ConfigureAwait(false);
+            bool integrityOk = fileItem.Size.HasValue
+                ? fileItem.Size == (stream.CanSeek ? stream.Length : stream.Position)
+                : true;
+            if (integrityOk && fileItem.HasMd5Hash)
+            {
+                integrityOk = this.ValidateMd5Hash(stream, fileItem.Md5Hash);
+            }
+
+            if (!integrityOk)
+            {
+                Trace.TraceWarning($"File {fileItem.Path} integrity check not succeeded, removing file...");
+                await this.cache.DeleteFileAsync(fileItem.Path, cancellationToken).ConfigureAwait(false);
+                throw new FileIntegrityException($"File {fileItem.Path} integrity check failed");
+            }
+
+            // Ensure stream is going to be returned from the beginning
+            if (stream.CanSeek == true)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+            else
+            {
+                stream = await this.cache.GetFileAsync(fileItem.Path, cancellationToken).ConfigureAwait(false);
+            }
+
+            return stream;
+        }
+
+        private bool ValidateMd5Hash(Stream fileStream, byte[] expectedHash)
+        {
+            using (var md5 = MD5.Create())
+            {
+                var hash = md5.ComputeHash(fileStream);
+                bool isValid = hash.SequenceEqual(expectedHash);
+                return isValid;
+            }
         }
     }
 }

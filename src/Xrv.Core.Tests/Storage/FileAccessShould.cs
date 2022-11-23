@@ -60,6 +60,13 @@ namespace Xrv.Core.Tests.Storage
         public async Task UseCacheGettingFiles()
         {
             const string fileName = "test.txt";
+
+            this.diskCache
+                .Setup(cache => cache.GetFileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => new MemoryStream(new byte[1024]));
+
             await TestHelpers.CreateTestFileAsync(this.fileAccess, fileName);
             await this.fileAccess.GetFileAsync(fileName);
             this.diskCache
@@ -85,9 +92,84 @@ namespace Xrv.Core.Tests.Storage
             Assert.Empty(files);
         }
 
+        [Fact]
+        public async Task NotSaveFileToCacheIfDownloadIsNotCompleted()
+        {
+            bool fileSaved = false;
+            this.diskCache
+                .Setup(cache => cache.WriteFileAsync(
+                    MockFileAccess.IncorrectDownloadFilePath,
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback(() => fileSaved = true);
+            this.diskCache
+                .Setup(cache => cache.GetFileAsync(
+                    MockFileAccess.IncorrectDownloadFilePath,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => new MemoryStream(new byte[512]));
+            this.diskCache
+                .Setup(cache => cache.DeleteFileAsync(
+                    MockFileAccess.IncorrectDownloadFilePath,
+                    It.IsAny<CancellationToken>()))
+                .Callback(() => fileSaved = false);
+            this.diskCache
+                .Setup(cache => cache.ExistsFileAsync(
+                    MockFileAccess.IncorrectDownloadFilePath,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => fileSaved);
+
+            bool fileIntegrityCheckFailed = false;
+            try
+            {
+                await this.fileAccess.GetFileAsync(MockFileAccess.IncorrectDownloadFilePath);
+            }
+            catch (FileIntegrityException)
+            {
+                fileIntegrityCheckFailed = true;
+            }
+
+            Assert.True(fileIntegrityCheckFailed);
+
+            bool existsFile = await this.fileAccess.Cache.ExistsFileAsync(MockFileAccess.IncorrectDownloadFilePath);
+            Assert.False(existsFile);
+        }
+
         private class MockFileAccess : ApplicationDataFileAccess
         {
+            public const string IncorrectDownloadFilePath = "incorrect_download.bin";
+
             public bool ThrowException { get; set; } = false;
+
+            public override Task<FileItem> GetFileItemAsync(string relativePath, CancellationToken cancellationToken = default)
+            {
+                return Task.FromResult(new FileItem(relativePath)
+                {
+                    Size = 1024,
+                });
+            }
+
+            protected override Task<FileItem> InternalGetFileItemAsync(string relativePath, CancellationToken cancellationToken = default)
+            {
+                FileItem item = new FileItem(relativePath) { Size = 1024 };
+                return Task.FromResult(item);
+            }
+
+            protected override async Task<Stream> InternalGetFileAsync(string relativePath, CancellationToken cancellationToken = default)
+            {
+                var itemData = await this.GetFileItemAsync(relativePath, cancellationToken).ConfigureAwait(false);
+                Stream stream = null;
+
+                if (relativePath == IncorrectDownloadFilePath)
+                {
+                    stream = new MemoryStream(new byte[(int)itemData.Size / 2]);
+                }
+                else
+                {
+                    stream = new MemoryStream(new byte[(int)itemData.Size]);
+                }
+
+                return stream;
+            }
 
             protected override Task<IEnumerable<DirectoryItem>> InternalEnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
             {

@@ -107,13 +107,15 @@ namespace Xrv.Core.Tests.Storage
         [InlineData(AuthenticationType.ConnectionString)]
         [InlineData(AuthenticationType.Uri)]
         [InlineData(AuthenticationType.Signature)]
-        public async Task RetrieveFileDates(AuthenticationType type)
+        public async Task RetrieveFileMetadata(AuthenticationType type)
         {
             var fileAccess = this.CreateFileAccessFromAuthentitactionType(type);
             string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");
             var files = await fileAccess.EnumerateFilesAsync();
             Assert.True(files.All(file => file.CreationTime != null));
             Assert.True(files.All(file => file.ModificationTime != null));
+            Assert.True(files.All(file => file.Size != null));
+            Assert.True(files.All(file => file.HasMd5Hash));
         }
 
         [Theory]
