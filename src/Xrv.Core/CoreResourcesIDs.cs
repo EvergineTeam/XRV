@@ -72,5 +72,11 @@ namespace Xrv.Core
         {
             public static Guid IridescentSpectrum = new Guid("ba547d15-0927-4bfe-b7da-6625fdd7d9a5");
         }
+
+        public sealed class Models
+        {
+            /// <summary> Asset Path (XRV/Models/Hand_Panel_anim.glb.wemd) </summary>
+            public static readonly Guid Hand_Panel_anim_glb = new Guid("769ab5a4-32b4-4b30-945a-3f121608ed88");
+        }
     }
 }

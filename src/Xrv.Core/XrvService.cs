@@ -1,9 +1,13 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Common.Graphics;
+using Evergine.Components.Animation;
+using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +21,7 @@ using Xrv.Core.Services.QR;
 using Xrv.Core.Settings;
 using Xrv.Core.Themes;
 using Xrv.Core.UI.Tabs;
+using Xrv.Core.UI.Windows;
 using Xrv.Core.VoiceCommands;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
 
@@ -29,6 +34,7 @@ namespace Xrv.Core
     {
         private readonly Dictionary<Type, Module> modules;
         private readonly VoiceCommandsSystem voiceSystem = null;
+        private Entity handTutorialRootEntity;
 
         [BindService]
         private AssetsService assetsService = null;
@@ -208,6 +214,11 @@ namespace Xrv.Core
 
             // Initialize voice commands (after collecting keywords)
             this.voiceSystem.Initialize();
+
+            // Add Hand tutorial to the scene
+            this.handTutorialRootEntity = this.CreateHandTutorial();
+            scene.Managers.EntityManager.Add(this.handTutorialRootEntity);
+            this.HandMenu.PalmUpDetected += this.HandMenu_PalmUpDetected;
         }
 
         internal Module GetModuleForHandButton(MenuButtonDescription definition)
@@ -221,6 +232,43 @@ namespace Xrv.Core
             }
 
             return null;
+        }
+
+        private Entity CreateHandTutorial()
+        {
+            var handTutorialModel = this.assetsService.Load<Model>(CoreResourcesIDs.Models.Hand_Panel_anim_glb);
+            var handTutorialEntity = handTutorialModel.InstantiateModelHierarchy(this.assetsService);
+            handTutorialEntity.FindComponent<Animation3D>().PlayAutomatically = true;
+            var handMesh = handTutorialEntity.Find("[this].L_Hand.MeshL");
+            handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = false;
+            var panelMesh = handTutorialEntity.Find("[this].Panel");
+            panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1);
+
+            Entity root = new Entity()
+               .AddComponent(new Transform3D())
+               .AddComponent(new WindowTagAlong()
+               {
+                   MaxHAngle = MathHelper.ToRadians(15),
+                   MaxVAngle = MathHelper.ToRadians(45),
+                   MaxLookAtAngle = MathHelper.ToRadians(15),
+                   MinDistance = 0.4f,
+                   MaxDistance = 0.6f,
+                   DisableVerticalLookAt = false,
+                   MaxVerticalDistance = 0.1f,
+                   SmoothPositionFactor = 0.01f,
+                   SmoothOrientationFactor = 0.05f,
+                   SmoothDistanceFactor = 1.2f,
+               });
+
+            root.AddChild(handTutorialEntity);
+
+            return root;
+        }
+
+        private void HandMenu_PalmUpDetected(object sender, EventArgs e)
+        {
+            this.handTutorialRootEntity.IsEnabled = false;
+            this.HandMenu.PalmUpDetected -= this.HandMenu_PalmUpDetected;
         }
     }
 }
