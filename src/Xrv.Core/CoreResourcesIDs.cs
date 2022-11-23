@@ -35,6 +35,9 @@ namespace Xrv.Core
             public static Guid BorderlessFrontPlate = new Guid("117070d5-cccf-4b60-93c8-eddafd9b51d5");
 
             public static Guid FrontPlateMaterial = new Guid("1a7070d5-cccf-4b60-93c8-eddafd9b51d5");
+
+            /// <summary> Asset Path (XRV/Materials/HandTutorial.wemt) </summary>
+            public static readonly Guid HandTutorial = new Guid("66f1bb1f-95e9-49a6-9a59-88371ccc8a16");
         }
 
         public static class Prefabs

@@ -241,9 +241,10 @@ namespace Xrv.Core
             handTutorialEntity.FindComponent<Transform3D>().Position = Vector3.Down * 0.3f;
             handTutorialEntity.FindComponent<Animation3D>().PlayAutomatically = true;
             var handMesh = handTutorialEntity.Find("[this].L_Hand.MeshL");
+            handMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.HandTutorial);
             handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? false : true;
             var panelMesh = handTutorialEntity.Find("[this].Panel");
-            panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1);
+            panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor2);
 
             // Root with Tagalong
             Entity root = new Entity()
