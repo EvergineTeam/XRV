@@ -7,11 +7,14 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xrv.Core.Help;
 using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
@@ -217,7 +220,13 @@ namespace Xrv.Core
             this.voiceSystem.Initialize();
 
             // Add Hand tutorial to the scene
-            this.handTutorialRootEntity = this.CreateHandTutorial(scene);
+            scene.Started += async (s,e) =>
+            {
+                await EvergineBackgroundTask.Run(() =>
+                {
+                    this.CreateHandTutorial(scene);
+                });
+            };
         }
 
         internal Module GetModuleForHandButton(MenuButtonDescription definition)
@@ -233,8 +242,10 @@ namespace Xrv.Core
             return null;
         }
 
-        private Entity CreateHandTutorial(Scene scene)
+        private async Task CreateHandTutorial(Scene scene)
         {
+            await Task.Delay(1000);
+
             // Load handtutorial model
             var handTutorialModel = this.assetsService.Load<Model>(CoreResourcesIDs.Models.Hand_Panel_anim_glb);
             var handTutorialEntity = handTutorialModel.InstantiateModelHierarchy(this.assetsService);
@@ -246,9 +257,13 @@ namespace Xrv.Core
             var panelMesh = handTutorialEntity.Find("[this].Panel");
             panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor2);
 
+            // In front of the camera
+            var camera = scene.Managers.RenderManager.ActiveCamera3D;
+            var intFrontCamera = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * 1.0f);
+
             // Root with Tagalong
-            Entity root = new Entity()
-               .AddComponent(new Transform3D())
+            this.handTutorialRootEntity = new Entity()
+               .AddComponent(new Transform3D() { Position = intFrontCamera })
                .AddComponent(new WindowTagAlong()
                {
                    MaxHAngle = MathHelper.ToRadians(15),
@@ -263,12 +278,10 @@ namespace Xrv.Core
                    SmoothDistanceFactor = 1.2f,
                });
 
-            root.AddChild(handTutorialEntity);
+            this.handTutorialRootEntity.AddChild(handTutorialEntity);
 
-            scene.Managers.EntityManager.Add(root);
+            scene.Managers.EntityManager.Add(this.handTutorialRootEntity);
             this.HandMenu.PalmUpDetected += this.HandMenu_PalmUpDetected;
-
-            return root;
         }
 
         private void HandMenu_PalmUpDetected(object sender, EventArgs e)
