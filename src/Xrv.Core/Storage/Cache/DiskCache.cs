@@ -25,6 +25,9 @@ namespace Xrv.Core.Storage.Cache
         private readonly ICacheBlockSelector blockSelector;
         private readonly SemaphoreSlim statusFileSemaphore;
 
+        private readonly SemaphoreSlim initializationSemaphore;
+        private bool initializationStarted;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DiskCache"/> class.
         /// </summary>
@@ -45,6 +48,7 @@ namespace Xrv.Core.Storage.Cache
             this.readOnlyCacheEntries = new ReadOnlyDictionary<string, CacheEntry>(this.cacheEntries);
             this.blockSelector = keySelector ?? new DefaultFileBlockSelector();
             this.statusFileSemaphore = new SemaphoreSlim(1);
+            this.initializationSemaphore = new SemaphoreSlim(1);
             base.BaseDirectory = $"{CacheRootFolderName}/{cacheName}";
         }
 
@@ -92,20 +96,6 @@ namespace Xrv.Core.Storage.Cache
         public long CurrentCacheSize { get => this.cacheEntries.Sum(entry => entry.Value.DiskSize); }
 
         /// <summary>
-        /// Initializes cache, creating cache folder if not existing. All cache elements that
-        /// do not comply <see cref="SlidingExpiration"/> and/or <see cref="SizeLimit"/> constraints
-        /// will be removed.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task.</returns>
-        public async Task InitializeAsync(CancellationToken cancellationToken = default)
-        {
-            await this.CreateBaseDirectoryIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
-            await this.UpdateCacheEntriesAsync(cancellationToken).ConfigureAwait(false);
-            await this.FlushAsync(cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Flushes cache contents, removing all files that do not pass current constraints.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -113,9 +103,60 @@ namespace Xrv.Core.Storage.Cache
         public Task FlushAsync(CancellationToken cancellationToken = default) =>
             this.FlushAsync(null, cancellationToken);
 
+        internal async Task InitializeAsync(bool forceInitialization, CancellationToken cancellationToken = default)
+        {
+            if (forceInitialization)
+            {
+                this.initializationStarted = false;
+            }
+
+            if (this.initializationStarted)
+            {
+                return;
+            }
+
+            await this.initializationSemaphore.WaitAsync(cancellationToken);
+
+            if (!this.initializationStarted)
+            {
+                this.initializationStarted = true;
+                await this.CreateBaseDirectoryIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+                await this.LoadStatusAsync(cancellationToken).ConfigureAwait(false);
+                await this.ClearNotRegisteredFilesAsync(string.Empty, cancellationToken).ConfigureAwait(false);
+                await this.FlushAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            this.initializationSemaphore.Release();
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<bool> InternalExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+            return await base.InternalExistsDirectoryAsync(relativePath, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<bool> InternalExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+            return await base.InternalExistsFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<IEnumerable<DirectoryItem>> InternalEnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
+            var directories = await base.InternalEnumerateDirectoriesAsync(relativePath, cancellationToken).ConfigureAwait(false);
+            return directories;
+        }
+
         /// <inheritdoc/>
         protected override async Task<IEnumerable<FileItem>> InternalEnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
             var files = await base.InternalEnumerateFilesAsync(relativePath, cancellationToken).ConfigureAwait(false);
             bool isRootFolder = string.IsNullOrEmpty(relativePath);
             if (isRootFolder)
@@ -129,6 +170,8 @@ namespace Xrv.Core.Storage.Cache
         /// <inheritdoc/>
         protected override async Task<Stream> InternalGetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
             var stream = await base.InternalGetFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
             if (relativePath == CacheStatusFileName)
             {
@@ -149,6 +192,8 @@ namespace Xrv.Core.Storage.Cache
         /// <inheritdoc/>
         protected override async Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
+
             // Save file and add register into cache
             await base.InternalWriteFileAsync(relativePath, stream, cancellationToken).ConfigureAwait(false);
             if (relativePath == CacheStatusFileName)
@@ -179,6 +224,7 @@ namespace Xrv.Core.Storage.Cache
         /// <inheritdoc/>
         protected override async Task InternalDeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
+            await this.InitializeAsync(false, cancellationToken).ConfigureAwait(false);
             await base.InternalDeleteFileAsync(relativePath, cancellationToken).ConfigureAwait(false);
 
             var cacheKey = this.blockSelector.GetKey(relativePath);
@@ -261,7 +307,7 @@ namespace Xrv.Core.Storage.Cache
 
                     var directoryName = Path.GetDirectoryName(filePath);
                     var directoryFiles = await this.EnumerateFilesAsync(directoryName, cancellationToken).ConfigureAwait(false);
-                    if (!directoryFiles.Any())
+                    if (!directoryFiles.Any() && !string.IsNullOrEmpty(directoryName))
                     {
                         await this.DeleteDirectoryAsync(directoryName, cancellationToken).ConfigureAwait(false);
                     }
@@ -272,13 +318,7 @@ namespace Xrv.Core.Storage.Cache
             while (releasedSize < sizeToRelease && this.cacheEntries.Any());
         }
 
-        private async Task UpdateCacheEntriesAsync(CancellationToken cancellationToken)
-        {
-            await this.LoadStatusAsync(cancellationToken).ConfigureAwait(false);
-            await this.UpdateCacheEntriesFromDirectoryAsync(string.Empty, cancellationToken).ConfigureAwait(false);
-        }
-
-        private async Task UpdateCacheEntriesFromDirectoryAsync(string directoryPath, CancellationToken cancellationToken = default)
+        private async Task ClearNotRegisteredFilesAsync(string directoryPath, CancellationToken cancellationToken)
         {
             bool isRootPath = string.IsNullOrEmpty(directoryPath);
             var files = await this.EnumerateFilesAsync(directoryPath, cancellationToken).ConfigureAwait(false);
@@ -289,28 +329,32 @@ namespace Xrv.Core.Storage.Cache
                     continue;
                 }
 
-                var filePath = file.Path;
-                var fileSize = file.Size ?? 0;
                 var cacheKey = this.blockSelector.GetKey(file.Path);
-                var cacheEntry = new CacheEntry();
-                cacheEntry.Paths.TryAdd(filePath, fileSize);
-
-                this.cacheEntries.AddOrUpdate(cacheKey, cacheEntry, (key, existing) =>
+                bool deleteFile = false;
+                if (this.cacheEntries.TryGetValue(cacheKey, out var entry))
                 {
-                    if (existing.LastAccess < cacheEntry.LastAccess)
-                    {
-                        existing.LastAccess = cacheEntry.LastAccess;
-                    }
+                    deleteFile = !entry.Paths.ContainsKey(cacheKey);
+                }
+                else
+                {
+                    deleteFile = true;
+                }
 
-                    existing.Paths.AddOrUpdate(filePath, fileSize, (key, existing) => fileSize);
-                    return existing;
-                });
+                if (deleteFile)
+                {
+                    await this.DeleteFileAsync(file.Path, cancellationToken).ConfigureAwait(false);
+                }
             }
 
             var directories = await this.EnumerateDirectoriesAsync(directoryPath, cancellationToken).ConfigureAwait(false);
             foreach (var directory in directories)
             {
-                await this.UpdateCacheEntriesFromDirectoryAsync(directory.Path, cancellationToken).ConfigureAwait(false);
+                await this.ClearNotRegisteredFilesAsync(directory.Path, cancellationToken).ConfigureAwait(false);
+                files = await this.EnumerateFilesAsync(directoryPath, cancellationToken).ConfigureAwait(false);
+                if (files.Count() == 0 && !string.IsNullOrEmpty(directoryPath))
+                {
+                    await this.DeleteDirectoryAsync(directoryPath, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 

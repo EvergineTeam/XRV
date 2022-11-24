@@ -9,14 +9,14 @@ Root:
       Id: 8299e62d-51a5-4065-a798-2a774c599e63
       IsEnabled: true
       LocalOrientation:
-        W: 0.0262673683
-        X: -0.00123805401
-        Y: 0.998545766
-        Z: 0.0470642447
+        W: 0.998891115
+        X: -0.0470805205
+        Y: -1.09617879E-11
+        Z: -2.32572461E-10
       LocalPosition:
-        X: -0.0116693191
-        Y: 0.029710032
-        Z: -0.0455083847
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
       LocalScale:
         X: 1.0
         Y: 1.0
@@ -111,19 +111,23 @@ Root:
           AsignedTo: Default
           IsEnabled: true
           Material: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+          UseCopy: false
         - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
           Id: bdcae392-5cf0-4014-9231-64e6e3d89375
           Height: 0.200000003
-          UOffset: 0.0
-          VOffset: 0.0
           IsEnabled: true
+          Origin:
+            X: 0.5
+            Y: 0.5
           PlaneNormal: ZPositive
           TwoSides: true
-          UTile: 1.0
           UMirror: false
+          UOffset: 0.0
+          UTile: 1.0
           VMirror: false
-          Width: 0.300000012
+          VOffset: 0.0
           VTile: 1.0
+          Width: 0.300000012
         - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
           Id: 5f6d342a-6878-44c8-9012-bc85a6bc2294
           DebugBoundingbox: true
@@ -160,19 +164,23 @@ Root:
           AsignedTo: Default
           IsEnabled: true
           Material: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+          UseCopy: false
         - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
           Id: 8db7f893-4826-4061-9362-2c5fc731b838
           Height: 0.0320000015
-          UOffset: 0.0
-          VOffset: 0.0
           IsEnabled: true
+          Origin:
+            X: 0.5
+            Y: 0.5
           PlaneNormal: ZPositive
           TwoSides: true
-          UTile: 1.0
           UMirror: false
+          UOffset: 0.0
+          UTile: 1.0
           VMirror: false
-          Width: 0.300000012
+          VOffset: 0.0
           VTile: 1.0
+          Width: 0.300000012
         - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
           Id: d665f502-e358-4e4f-8b68-fe9e6a846e7b
           DebugBoundingbox: true
@@ -293,9 +301,9 @@ Root:
                   Id: c6a83e26-6f8d-44a6-a656-57887fbe8ea4
                   IsEnabled: true
                   LocalOrientation:
-                    W: -4.37113883E-08
-                    X: -0.0
-                    Y: 1.0
+                    W: 1.0
+                    X: 0.0
+                    Y: 0.0
                     Z: 0.0
                   LocalPosition:
                     X: -0.0520000011
@@ -311,9 +319,12 @@ Root:
                 - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleStateManager,Evergine.MRTK
                   Id: 2f7f89d3-d106-42a4-a707-1026ef31a85a
                   DefaultComponentsAdded: true
+                  InitialState: Off
                   IsEnabled: true
                 - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                   Id: 4627712e-1322-4139-825a-0e63ed616037
+                  AllowBackPlateNullMaterial: true
+                  AllowIconNullMaterial: false
                   CreatesNewBackPlateMaterialInstance: false
                   CreatesNewIconMaterialInstance: false
                   Font: null
@@ -329,6 +340,8 @@ Root:
                   Text: Follow
                 - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                   Id: 1c0be061-559b-4544-ba71-14b5f57ca7b3
+                  AllowBackPlateNullMaterial: true
+                  AllowIconNullMaterial: false
                   CreatesNewBackPlateMaterialInstance: false
                   CreatesNewIconMaterialInstance: false
                   Font: null
@@ -349,7 +362,7 @@ Root:
                   Offset:
                     X: 0.0
                     Y: 0.0
-                    Z: -0.00999999978
+                    Z: 0.00999999978
                   OrientationOffset:
                     W: 1.0
                     X: 0.0
@@ -394,7 +407,7 @@ Root:
                       Offset:
                         X: 0.0
                         Y: 0.0
-                        Z: -0.00800000038
+                        Z: 0.00800000038
                       OrientationOffset:
                         W: 1.0
                         X: 0.0
@@ -463,20 +476,24 @@ Root:
                           Id: 98e9a2cc-d1e3-4bd4-9140-8a07b33d12fe
                           AsignedTo: Default
                           IsEnabled: true
-                          Material: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+                          Material: null
+                          UseCopy: false
                         - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                           Id: a8f0a819-4f19-49f5-9e1a-bed763925656
                           Height: 1.0
-                          UOffset: 0.0
-                          VOffset: 0.0
                           IsEnabled: true
+                          Origin:
+                            X: 0.5
+                            Y: 0.5
                           PlaneNormal: ZNegative
                           TwoSides: false
-                          UTile: 1.0
                           UMirror: false
+                          UOffset: 0.0
+                          UTile: 1.0
                           VMirror: false
-                          Width: 1.0
+                          VOffset: 0.0
                           VTile: 1.0
+                          Width: 1.0
                         - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                           Id: aee3d9dd-cd0d-43f8-940d-c595b4b50320
                           DebugBoundingbox: true
@@ -503,7 +520,7 @@ Root:
                           LocalPosition:
                             X: 0.0
                             Y: 2.13162821E-13
-                            Z: -0.00800000038
+                            Z: 0.00800000038
                           LocalScale:
                             X: 1.0
                             Y: 1.0
@@ -545,19 +562,23 @@ Root:
                               AsignedTo: Default
                               IsEnabled: true
                               Material: fc03c81e-dc30-460b-be14-bf92963b12c3
+                              UseCopy: false
                             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                               Id: 5ff08d94-13cd-4b09-94e0-1ccf116efca8
                               Height: 1.0
-                              UOffset: 0.0
-                              VOffset: 0.0
                               IsEnabled: true
-                              PlaneNormal: ZNegative
+                              Origin:
+                                X: 0.5
+                                Y: 0.5
+                              PlaneNormal: ZPositive
                               TwoSides: false
-                              UTile: 1.0
                               UMirror: false
+                              UOffset: 0.0
+                              UTile: 1.0
                               VMirror: false
-                              Width: 1.0
+                              VOffset: 0.0
                               VTile: 1.0
+                              Width: 1.0
                             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                               Id: f3164ace-cd26-443d-9715-e0611f10d4ca
                               DebugBoundingbox: true
@@ -577,9 +598,9 @@ Root:
                               Id: 45531e31-fc5d-456f-be12-b2bd6cf63765
                               IsEnabled: true
                               LocalOrientation:
-                                W: -4.37113883E-08
-                                X: -0.0
-                                Y: 1.0
+                                W: 1.0
+                                X: 0.0
+                                Y: 0.0
                                 Z: 0.0
                               LocalPosition:
                                 X: 0.0
@@ -672,7 +693,7 @@ Root:
                               LocalPosition:
                                 X: 0.0
                                 Y: 0.0
-                                Z: -0.00800000038
+                                Z: 0.00800000038
                               LocalScale:
                                 X: 0.0320000015
                                 Y: 0.0320000015
@@ -682,15 +703,16 @@ Root:
                               AsignedTo: Default
                               IsEnabled: true
                               Material: 75122a47-663c-4625-8118-ff2e2a2bcaeb
+                              UseCopy: false
                             - !Evergine.Components.Graphics3D.CubeMesh,Evergine.Components
                               Id: 169d3eaf-3059-498e-9750-5bf281aaef17
-                              UOffset: 0.0
-                              VOffset: 0.0
                               IsEnabled: true
                               Size: 1.0
-                              UTile: 1.0
                               UMirror: false
+                              UOffset: 0.0
+                              UTile: 1.0
                               VMirror: false
+                              VOffset: 0.0
                               VTile: 1.0
                             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                               Id: 5525c06e-b7a8-487a-a1e7-078858897708
@@ -717,7 +739,7 @@ Root:
                                   LocalPosition:
                                     X: 0.0
                                     Y: 0.0
-                                    Z: -0.510592341
+                                    Z: 0.510999978
                                   LocalScale:
                                     X: 1.0
                                     Y: 1.0
@@ -727,19 +749,23 @@ Root:
                                   AsignedTo: Default
                                   IsEnabled: true
                                   Material: 876d9b5c-5016-4796-8473-92a19a5d244c
+                                  UseCopy: false
                                 - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                   Id: 125ac3b3-7285-4871-b1ae-c903b3b0ff28
                                   Height: 1.0
-                                  UOffset: 0.0
-                                  VOffset: 0.0
                                   IsEnabled: true
-                                  PlaneNormal: ZNegative
+                                  Origin:
+                                    X: 0.5
+                                    Y: 0.5
+                                  PlaneNormal: ZPositive
                                   TwoSides: false
-                                  UTile: 1.0
                                   UMirror: false
+                                  UOffset: 0.0
+                                  UTile: 1.0
                                   VMirror: false
-                                  Width: 1.0
+                                  VOffset: 0.0
                                   VTile: 1.0
+                                  Width: 1.0
                                 - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                   Id: 36ce4232-64e0-41e2-8dc8-50b728acbee1
                                   DebugBoundingbox: true
@@ -763,9 +789,9 @@ Root:
                   Id: 1695a0cf-50cc-40df-bba8-ee8b0b50615a
                   IsEnabled: true
                   LocalOrientation:
-                    W: -4.37113883E-08
-                    X: -0.0
-                    Y: 1.0
+                    W: 1.0
+                    X: 0.0
+                    Y: 0.0
                     Z: 0.0
                   LocalPosition:
                     X: -0.0196635649
@@ -777,12 +803,14 @@ Root:
                     Z: 1.0
                 - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                   Id: 1427ee66-3525-4864-ad38-149a72e94243
+                  AllowBackPlateNullMaterial: true
+                  AllowIconNullMaterial: false
                   CreatesNewBackPlateMaterialInstance: false
                   CreatesNewIconMaterialInstance: false
                   Font: 1c6e2929-d555-4c02-af49-50b4ecb01ce3
                   Icon: 55b023eb-a334-44b2-8cc1-d0d2ccae5b3c
                   IsEnabled: true
-                  Plate: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+                  Plate: null
                   PrimaryColor:
                     A: 255
                     B: 255
@@ -841,7 +869,7 @@ Root:
                       Offset:
                         X: 0.0
                         Y: 0.0
-                        Z: -0.00800000038
+                        Z: 0.00800000038
                       OrientationOffset:
                         W: 1.0
                         X: 0.0
@@ -910,20 +938,24 @@ Root:
                           Id: 1e881ced-8e31-444d-95f3-9ba93ee3b4a3
                           AsignedTo: Default
                           IsEnabled: true
-                          Material: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+                          Material: null
+                          UseCopy: false
                         - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                           Id: c5ed9ce9-c50e-4cfb-9e54-44b55fd1e80e
                           Height: 1.0
-                          UOffset: 0.0
-                          VOffset: 0.0
                           IsEnabled: true
-                          PlaneNormal: ZNegative
+                          Origin:
+                            X: 0.5
+                            Y: 0.5
+                          PlaneNormal: ZPositive
                           TwoSides: false
-                          UTile: 1.0
                           UMirror: false
+                          UOffset: 0.0
+                          UTile: 1.0
                           VMirror: false
-                          Width: 1.0
+                          VOffset: 0.0
                           VTile: 1.0
+                          Width: 1.0
                         - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                           Id: 7d2a1074-dd73-4e83-ace6-cd6d1c165141
                           DebugBoundingbox: true
@@ -950,7 +982,7 @@ Root:
                           LocalPosition:
                             X: 0.0
                             Y: 2.13162821E-13
-                            Z: -0.00800000038
+                            Z: 0.00800000038
                           LocalScale:
                             X: 1.0
                             Y: 1.0
@@ -992,19 +1024,23 @@ Root:
                               AsignedTo: Default
                               IsEnabled: true
                               Material: 55b023eb-a334-44b2-8cc1-d0d2ccae5b3c
+                              UseCopy: false
                             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                               Id: 5b4f571d-4653-457a-bf0c-65b9fc0c8c80
                               Height: 1.0
-                              UOffset: 0.0
-                              VOffset: 0.0
                               IsEnabled: true
-                              PlaneNormal: ZNegative
+                              Origin:
+                                X: 0.5
+                                Y: 0.5
+                              PlaneNormal: ZPositive
                               TwoSides: false
-                              UTile: 1.0
                               UMirror: false
+                              UOffset: 0.0
+                              UTile: 1.0
                               VMirror: false
-                              Width: 1.0
+                              VOffset: 0.0
                               VTile: 1.0
+                              Width: 1.0
                             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                               Id: d379a8e9-06d8-4916-944a-6dfcbb5133fa
                               DebugBoundingbox: true
@@ -1024,9 +1060,9 @@ Root:
                               Id: eb04ab8f-8678-46a0-8fa6-bc8787def865
                               IsEnabled: true
                               LocalOrientation:
-                                W: -4.37113883E-08
-                                X: -0.0
-                                Y: 1.0
+                                W: 1.0
+                                X: 0.0
+                                Y: 0.0
                                 Z: 0.0
                               LocalPosition:
                                 X: 0.0
@@ -1119,7 +1155,7 @@ Root:
                               LocalPosition:
                                 X: 0.0
                                 Y: 0.0
-                                Z: -0.00800000038
+                                Z: 0.00800000038
                               LocalScale:
                                 X: 0.0320000015
                                 Y: 0.0320000015
@@ -1129,15 +1165,16 @@ Root:
                               AsignedTo: Default
                               IsEnabled: true
                               Material: 75122a47-663c-4625-8118-ff2e2a2bcaeb
+                              UseCopy: false
                             - !Evergine.Components.Graphics3D.CubeMesh,Evergine.Components
                               Id: 74994d89-cca0-47a9-b555-436055e48678
-                              UOffset: 0.0
-                              VOffset: 0.0
                               IsEnabled: true
                               Size: 1.0
-                              UTile: 1.0
                               UMirror: false
+                              UOffset: 0.0
+                              UTile: 1.0
                               VMirror: false
+                              VOffset: 0.0
                               VTile: 1.0
                             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                               Id: ea2bc3ca-e8db-47f0-9597-e7ad0df704f3
@@ -1164,7 +1201,7 @@ Root:
                                   LocalPosition:
                                     X: 0.0
                                     Y: 0.0
-                                    Z: -0.510592341
+                                    Z: 0.510999978
                                   LocalScale:
                                     X: 1.0
                                     Y: 1.0
@@ -1174,19 +1211,23 @@ Root:
                                   AsignedTo: Default
                                   IsEnabled: true
                                   Material: 876d9b5c-5016-4796-8473-92a19a5d244c
+                                  UseCopy: false
                                 - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                   Id: bed35c4a-be38-41e5-8aa0-65c5ad9f5e46
                                   Height: 1.0
-                                  UOffset: 0.0
-                                  VOffset: 0.0
                                   IsEnabled: true
-                                  PlaneNormal: ZNegative
+                                  Origin:
+                                    X: 0.5
+                                    Y: 0.5
+                                  PlaneNormal: ZPositive
                                   TwoSides: false
-                                  UTile: 1.0
                                   UMirror: false
+                                  UOffset: 0.0
+                                  UTile: 1.0
                                   VMirror: false
-                                  Width: 1.0
+                                  VOffset: 0.0
                                   VTile: 1.0
+                                  Width: 1.0
                                 - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                   Id: dd7ba3f4-6ff4-41c1-9ccc-dc6dd49ce009
                                   DebugBoundingbox: true
@@ -1229,19 +1270,23 @@ Root:
           AsignedTo: Default
           IsEnabled: true
           Material: db59d1e4-43a8-4e6b-94c8-bf5bf44a7d7b
+          UseCopy: false
         - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
           Id: fe988d2b-0c34-4177-9832-cbbb33914059
           Height: 0.0130000003
-          UOffset: 0.0
-          VOffset: 0.0
           IsEnabled: true
+          Origin:
+            X: 0.5
+            Y: 0.5
           PlaneNormal: ZPositive
           TwoSides: false
-          UTile: 1.0
           UMirror: false
+          UOffset: 0.0
+          UTile: 1.0
           VMirror: false
-          Width: 0.0359999985
+          VOffset: 0.0
           VTile: 1.0
+          Width: 0.0359999985
         - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
           Id: 38bfcb43-a82a-4b91-9722-ca4c8fab4a5f
           DebugBoundingbox: true
@@ -1301,19 +1346,23 @@ Root:
               AsignedTo: Default
               IsEnabled: true
               Material: 1a7070d5-cccf-4b60-93c8-eddafd9b51d5
+              UseCopy: false
             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
               Id: 46559f83-94df-4662-bf9d-fc896780cc16
               Height: 0.159999996
-              UOffset: 0.0
-              VOffset: 0.0
               IsEnabled: true
+              Origin:
+                X: 0.5
+                Y: 0.5
               PlaneNormal: ZPositive
               TwoSides: true
-              UTile: 1.0
               UMirror: false
+              UOffset: 0.0
+              UTile: 1.0
               VMirror: false
-              Width: 0.300000012
+              VOffset: 0.0
               VTile: 1.0
+              Width: 0.300000012
             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
               Id: e12144c7-42f8-48d2-97c0-96c049f549e3
               DebugBoundingbox: true

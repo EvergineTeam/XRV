@@ -277,6 +277,7 @@ namespace Xrv.Core.Storage
                 CreationTime = item.Properties.CreatedOn?.UtcDateTime,
                 ModificationTime = item.Properties.LastModified?.UtcDateTime,
                 Size = item.Properties.ContentLength,
+                Md5Hash = item.Properties.ContentHash,
             };
 
         private static FileItem ConvertToFileItem(string blobPath, BlobProperties properties) =>
@@ -285,6 +286,7 @@ namespace Xrv.Core.Storage
                 CreationTime = properties.CreatedOn.UtcDateTime,
                 ModificationTime = properties.LastModified.UtcDateTime,
                 Size = properties.ContentLength,
+                Md5Hash = properties.ContentHash,
             };
     }
 }

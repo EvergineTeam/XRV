@@ -17,11 +17,7 @@ namespace Xrv.Core.Tests.Storage.Cache
             };
         }
 
-        async Task IAsyncLifetime.InitializeAsync()
-        {
-            await this.diskCache.ClearAsync();
-            await this.diskCache.InitializeAsync();
-        }
+        Task IAsyncLifetime.InitializeAsync() => this.diskCache.ClearAsync();
 
         Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask;
 

@@ -306,6 +306,7 @@ namespace Xrv.Core.Storage
                 CreationTime = properties.SmbProperties.FileCreatedOn?.UtcDateTime,
                 ModificationTime = properties.SmbProperties.FileLastWrittenOn?.UtcDateTime,
                 Size = properties.ContentLength,
+                Md5Hash = properties.ContentHash,
             };
     }
 }

@@ -1,26 +1,34 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Graphics;
 using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Graphics.Effects;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
+using Evergine.MRTK;
+using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Scrolls;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
-using Xrv.Core.UI.Windows;
+using Xrv.LoadModel.Effects;
+using Xrv.LoadModel.Importers.GLB;
 using Xrv.LoadModel.Structs;
+using static glTFLoader.Schema.Material;
+using Window = Xrv.Core.UI.Windows.Window;
 
 namespace Xrv.LoadModel
 {
@@ -40,6 +48,9 @@ namespace Xrv.LoadModel
         private ListView modelsListView;
         private Entity repositoriesLoading;
         private Entity modelsLoading;
+
+        private RenderLayerDescription opaqueLayer;
+        private RenderLayerDescription alphaLayer;
 
         private Window window = null;
 
@@ -72,6 +83,22 @@ namespace Xrv.LoadModel
         /// Gets or sets the model repository list.
         /// </summary>
         public Repository[] Repositories { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the model will be normalized to standard size or
+        /// will be load using its original size.
+        /// </summary>
+        public bool NormalizedModelEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the box dimension of the model after normalize them. (Required NormalizedModelEnable=true).
+        /// </summary>
+        public float NormalizedModelSize { get; set; } = 0.2f;
+
+        /// <summary>
+        /// Gets or sets the material created by the loader.
+        /// </summary>
+        public Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> MaterialAssigner { get; set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -151,20 +178,56 @@ namespace Xrv.LoadModel
 
             this.scene.Managers.EntityManager.Add(manipulatorEntity);
 
-            await EvergineBackgroundTask.Run(() =>
+            Entity modelEntity = null;
+
+            await EvergineBackgroundTask.Run(async () =>
             {
-                Thread.Sleep(2000);
+                // Read glb stream
+                Model model = null;
 
-                // Teapot
-                var material = this.assetsService.Load<Material>(DefaultResourcesIDs.DefaultMaterialID);
-                var modelEntity = new Entity()
-                                .AddComponent(new Transform3D() { LocalScale = Vector3.One * 0.2f })
-                                .AddComponent(new MaterialComponent() { Material = material })
-                                .AddComponent(new TeapotMesh())
-                                .AddComponent(new MeshRenderer());
+                var selectedRepo = this.repositoriesListView.Selected;
+                if (selectedRepo != null)
+                {
+                    var repoName = selectedRepo[0];
+                    var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
+                    var modelSelected = this.modelsListView.Selected;
 
-                loadModelBehavior.ModelEntity = modelEntity;
+                    if (modelSelected != null)
+                    {
+                        var filePath = modelSelected[0];
+                        using (var stream = await repo.FileAccess.GetFileAsync(filePath))
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Position = 0;
+                            var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
+                            model = GLBRuntime.Instance.Read(memoryStream, materialAssignerFunc);
+                        }
+
+                        // Instantiate model
+                        modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+
+                        // Normalizing size
+                        if (this.NormalizedModelEnabled)
+                        {
+                            modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
+                        }
+
+                        // Add additional components
+                        BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
+                        this.AddManipulatorComponents(modelEntity, boundingBox);
+                    }
+                }
             });
+
+            if (modelEntity != null)
+            {
+                loadModelBehavior.ModelEntity = modelEntity;
+            }
+            else
+            {
+                this.scene.Managers.EntityManager.Remove(manipulatorEntity);
+            }
         }
 
         private Entity CreateButton(string buttonText, Action releasedAction)
@@ -175,7 +238,6 @@ namespace Xrv.LoadModel
             buttonText3D.Text = buttonText;
             var buttonPlate = button.FindComponentInChildren<MaterialComponent>(true, "PART_Plate", true, true);
             buttonPlate.Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1);
-            Workarounds.MrtkRotateButton(button);
 
             button.FindComponentInChildren<PressableButton>().ButtonReleased += (s, e) => releasedAction.Invoke();
 
@@ -184,8 +246,8 @@ namespace Xrv.LoadModel
 
         private async Task ConnectToRepositoriesAsync()
         {
+            this.repositoriesListView.ClearData();
             var repositoriesDataSource = this.repositoriesListView.DataSource;
-            repositoriesDataSource.ClearData();
             this.repositoriesLoading.IsEnabled = true;
             foreach (var repo in this.Repositories)
             {
@@ -202,23 +264,117 @@ namespace Xrv.LoadModel
 
         private async void RefreshModelList()
         {
-            var modelsDataSource = this.modelsListView.DataSource;
-            modelsDataSource.ClearData();
-
+            this.modelsListView.ClearData();
             this.modelsLoading.IsEnabled = true;
 
-            var repoName = this.repositoriesListView.Selected[0];
-            var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
-            var models = await repo.FileAccess.EnumerateFilesAsync();
-
-            foreach (var modelFile in models)
+            var repoSelected = this.repositoriesListView.Selected;
+            if (repoSelected != null)
             {
-                modelsDataSource.Add(modelFile.Name, modelFile.ModificationTime.Value.ToString("dd-MM-yyyy"));
+                var repoName = repoSelected[0];
+                var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
+                var models = await repo.FileAccess.EnumerateFilesAsync();
+
+                var modelsDataSource = this.modelsListView.DataSource;
+                foreach (var modelFile in models)
+                {
+                    modelsDataSource.Add(modelFile.Name, modelFile.ModificationTime.Value.ToString("dd-MM-yyyy"));
+                }
+
+                this.modelsListView.Refresh();
+
+                this.modelsLoading.IsEnabled = false;
+            }
+        }
+
+        private void AddManipulatorComponents(Entity entity, BoundingBox boundingBox)
+        {
+            // Add global bounding box
+            entity.AddComponent(new BoxCollider3D()
+            {
+                Size = boundingBox.HalfExtent * 2,
+                Offset = boundingBox.Center,
+            });
+            entity.AddComponent(new StaticBody3D());
+            entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
+            {
+                AutoCalculate = false,
+                ScaleHandleScale = 0.030f,
+                RotationHandleScale = 0.030f,
+                LinkScale = 0.001f,
+                BoxPadding = Vector3.One * 0.1f,
+                BoxMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisual),
+                BoxGrabbedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxVisualGrabbed),
+                ShowWireframe = true,
+                ShowScaleHandles = true,
+                ShowXScaleHandle = true,
+                ShowYScaleHandle = true,
+                ShowZScaleHandle = true,
+                ShowXRotationHandle = true,
+                ShowYRotationHandle = true,
+                ShowZRotationHandle = true,
+                WireframeShape = Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.WireframeType.Cubic,
+                WireframeMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxWireframe),
+                HandleMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlue),
+                HandleGrabbedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueGrabbed),
+                ScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_ScaleHandle_weprefab),
+                RotationHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_RotateHandle_weprefab),
+                FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
+                HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
+            });
+            ////entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
+            entity.AddComponent(new SimpleManipulationHandler()
+            {
+                SmoothingActive = true,
+                SmoothingAmount = 0.001f,
+                EnableSinglePointerRotation = true,
+                KeepRigidBodyActiveDuringDrag = false,
+                IncludeChildrenColliders = true,
+            });
+        }
+
+        private Material MaterialAssignerToSolidEffect(Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, AlphaModeEnum alphaMode, float alpha, float alphaCutOff, bool vertexColorEnabled)
+        {
+            if (this.alphaLayer == null || this.opaqueLayer == null)
+            {
+                this.opaqueLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.OpaqueRenderLayerID);
+                this.alphaLayer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.AlphaRenderLayerID);
             }
 
-            this.modelsListView.Refresh();
+            RenderLayerDescription layer;
+            switch (alphaMode)
+            {
+                default:
+                case AlphaModeEnum.MASK:
+                case AlphaModeEnum.OPAQUE:
+                    layer = this.opaqueLayer;
+                    break;
+                case AlphaModeEnum.BLEND:
+                    layer = alpha < 1.0f ? this.alphaLayer : this.opaqueLayer;
+                    break;
+            }
 
-            this.modelsLoading.IsEnabled = false;
+            var effect = this.assetsService.Load<Effect>(LoadModelResourceIDs.Effects.SolidEffect);
+            SolidEffect material = new SolidEffect(effect)
+            {
+                Parameters_Color = baseColor.ToVector3(),
+                Parameters_Alpha = alpha,
+                BaseColorTexture = baseColorTexture,
+                BaseColorSampler = baseColorSampler,
+                LayerDescription = layer,
+                Parameters_AlphaCutOff = alphaCutOff,
+            };
+
+            if (vertexColorEnabled)
+            {
+                material.ActiveDirectivesNames = new string[] { "VERTEXCOLOR" };
+            }
+
+            if (baseColorTexture != null)
+            {
+                material.ActiveDirectivesNames = new string[] { "TEXTURECOLOR" };
+            }
+
+            return material.Material;
         }
     }
 }

@@ -45,7 +45,11 @@ namespace Xrv.Core.Networking.Settings
         protected override void OnActivated()
         {
             base.OnActivated();
-            this.UpdateSessionStatus(this.networkSystem.Session.Status);
+
+            if (this.networkSystem != null)
+            {
+                this.UpdateSessionStatus(this.networkSystem.Session.Status);
+            }
         }
 
         /// <inheritdoc/>

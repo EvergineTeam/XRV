@@ -103,6 +103,11 @@ namespace Xrv.Core.Menu
         public event EventHandler MenuStateChanged;
 
         /// <summary>
+        /// Gets a value indicating whether the Palm was detected for the first time.
+        /// </summary>
+        public event EventHandler PalmUpDetected;
+
+        /// <summary>
         /// Gets or sets number of buttons per column. When a column can't hold more buttons,
         /// a new column will be added. Minimum number of buttons per column is 4, as this is
         /// the minimal number to have a proper layout when menu is detached.
@@ -201,6 +206,7 @@ namespace Xrv.Core.Menu
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool palmUp)
         {
             this.AppearAnimation(palmUp);
+            this.PalmUpDetected?.Invoke(this, null);
         }
 
         private void ButtonDefinitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -228,7 +234,6 @@ namespace Xrv.Core.Menu
             foreach (var definition in buttons)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(definition);
-                Workarounds.MrtkRotateButton(buttonInstance);
                 this.buttonsContainer.AddChild(buttonInstance);
                 this.instantiatedButtons.Add(definition.Id, buttonInstance);
             }

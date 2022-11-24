@@ -25,7 +25,6 @@ namespace Xrv.StreamingViewer
         private readonly MenuButtonDescription handMenuDescription;
         private AssetsService assetsService;
         private XrvService xrv;
-        private Entity imageGalleryHelp;
         private Scene scene;
         private Window window = null;
 

@@ -21,5 +21,15 @@ namespace Xrv.Core.Storage
         /// Gets or sets file size, in bytes.
         /// </summary>
         public long? Size { get; set; }
+
+        /// <summary>
+        /// Gets or sets MD5 hash of the file.
+        /// </summary>
+        public byte[] Md5Hash { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether file has MD5 hash.
+        /// </summary>
+        public bool HasMd5Hash { get => this.Md5Hash?.Length > 0; }
     }
 }

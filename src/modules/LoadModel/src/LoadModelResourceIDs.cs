@@ -7,6 +7,12 @@ namespace Xrv.LoadModel
 {
     public sealed class LoadModelResourceIDs
     {
+        public sealed class Effects
+        {
+            /// <summary> Asset Path (XRV/Effects/SolidEffect.wefx) </summary>
+            public static readonly Guid SolidEffect = new Guid("d0d24ac6-f92d-455a-96e3-7957d219772b");
+        }
+
         public sealed class Materials
         {
             public sealed class Icons

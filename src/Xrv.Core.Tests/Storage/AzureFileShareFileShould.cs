@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System;
-using Xunit;
 using Xrv.Core.Storage;
-using System.Linq;
-using static System.Net.WebRequestMethods;
+using Xunit;
 
 namespace Xrv.Core.Tests.Storage
 {
@@ -124,7 +123,7 @@ namespace Xrv.Core.Tests.Storage
         [InlineData(AuthenticationType.ConnectionString)]
         [InlineData(AuthenticationType.Uri)]
         [InlineData(AuthenticationType.Signature)]
-        public async Task RetrieveFileDates(AuthenticationType type)
+        public async Task RetrieveFileMetadata(AuthenticationType type)
         {
             var fileAccess = CreateFileAccessFromAuthentitactionType(type);
             string filePath = await TestHelpers.CreateTestFileAsync(fileAccess, "file.txt");

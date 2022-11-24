@@ -115,7 +115,6 @@ namespace Xrv.Core.UI.Dialogs
             var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);
             var buttonInstance = prefab.Instantiate();
             buttonInstance.AddComponent(option.Configuration);
-            Workarounds.MrtkRotateButton(buttonInstance);
 
             return buttonInstance;
         }

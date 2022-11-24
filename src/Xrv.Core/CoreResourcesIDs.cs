@@ -35,6 +35,9 @@ namespace Xrv.Core
             public static Guid BorderlessFrontPlate = new Guid("117070d5-cccf-4b60-93c8-eddafd9b51d5");
 
             public static Guid FrontPlateMaterial = new Guid("1a7070d5-cccf-4b60-93c8-eddafd9b51d5");
+
+            /// <summary> Asset Path (XRV/Materials/HandTutorial.wemt) </summary>
+            public static readonly Guid HandTutorial = new Guid("66f1bb1f-95e9-49a6-9a59-88371ccc8a16");
         }
 
         public static class Prefabs
@@ -71,6 +74,12 @@ namespace Xrv.Core
         public static class Textures
         {
             public static Guid IridescentSpectrum = new Guid("ba547d15-0927-4bfe-b7da-6625fdd7d9a5");
+        }
+
+        public sealed class Models
+        {
+            /// <summary> Asset Path (XRV/Models/Hand_Panel_anim.glb.wemd) </summary>
+            public static readonly Guid Hand_Panel_anim_glb = new Guid("769ab5a4-32b4-4b30-945a-3f121608ed88");
         }
     }
 }

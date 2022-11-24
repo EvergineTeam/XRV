@@ -27,7 +27,7 @@ namespace Xrv.Core.Tests.Storage.Cache
             await TestHelpers.CreateTestFileAsync(fileShare, "test.txt", "contents here");
 
             fileShare.Cache = this.diskCache;
-            await this.diskCache.InitializeAsync();
+            await this.diskCache.InitializeAsync(true);
             await fileShare.GetFileAsync("test.txt");
         }
     }

@@ -52,6 +52,7 @@ namespace Xrv.Core.Menu
             {
                 Text = description.TextOn,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
+                AllowBackPlateNullMaterial = true,
             });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn))
@@ -64,7 +65,6 @@ namespace Xrv.Core.Menu
             }
 
             this.AssociateActivationPublishers(description, button);
-            Workarounds.MrtkForceButtonNullPlate(button);
             var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
             lookAndFeel.TextPositionOffset = -0.002f;
 
@@ -100,10 +100,10 @@ namespace Xrv.Core.Menu
                 TargetState = ToggleState.On,
                 Text = description.TextOn,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
+                AllowBackPlateNullMaterial = true,
             });
 
             this.AssociateActivationPublishers(description, button);
-            Workarounds.MrtkForceButtonNullPlate(button);
             var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
             lookAndFeel.TextPositionOffset = -0.002f;
 
