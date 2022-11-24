@@ -231,6 +231,7 @@ namespace Xrv.Core
             {
                 scene.Started += async (s, e) =>
                 {
+                    await Task.Delay(1000);
                     await EvergineBackgroundTask.Run(() =>
                     {
                         this.CreateHandTutorial(scene);
@@ -252,10 +253,8 @@ namespace Xrv.Core
             return null;
         }
 
-        private async Task CreateHandTutorial(Scene scene)
+        private void CreateHandTutorial(Scene scene)
         {
-            await Task.Delay(1000);
-
             // Load handtutorial model
             var handTutorialModel = this.assetsService.Load<Model>(CoreResourcesIDs.Models.Hand_Panel_anim_glb);
             var handTutorialEntity = handTutorialModel.InstantiateModelHierarchy(this.assetsService);
