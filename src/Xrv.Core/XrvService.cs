@@ -249,7 +249,7 @@ namespace Xrv.Core
             // Load handtutorial model
             var handTutorialModel = this.assetsService.Load<Model>(CoreResourcesIDs.Models.Hand_Panel_anim_glb);
             var handTutorialEntity = handTutorialModel.InstantiateModelHierarchy(this.assetsService);
-            handTutorialEntity.FindComponent<Transform3D>().Position = Vector3.Down * 0.3f;
+            handTutorialEntity.FindComponent<Transform3D>().Position = Vector3.Down * 0.2f;
             handTutorialEntity.FindComponent<Animation3D>().PlayAutomatically = true;
             var handMesh = handTutorialEntity.Find("[this].L_Hand.MeshL");
             handMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.HandTutorial);
@@ -269,8 +269,8 @@ namespace Xrv.Core
                    MaxHAngle = MathHelper.ToRadians(15),
                    MaxVAngle = MathHelper.ToRadians(45),
                    MaxLookAtAngle = MathHelper.ToRadians(15),
-                   MinDistance = 0.4f,
-                   MaxDistance = 0.6f,
+                   MinDistance = 0.6f,
+                   MaxDistance = 0.8f,
                    DisableVerticalLookAt = false,
                    MaxVerticalDistance = 0.1f,
                    SmoothPositionFactor = 0.01f,
