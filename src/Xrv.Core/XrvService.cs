@@ -3,6 +3,7 @@
 using Evergine.Common.Graphics;
 using Evergine.Components.Animation;
 using Evergine.Components.Graphics3D;
+using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
@@ -15,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Xrv.Core.HandTutorial;
 using Xrv.Core.Help;
 using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
@@ -100,6 +102,11 @@ namespace Xrv.Core
         /// Gets access to themes system.
         /// </summary>
         public ThemesSystem ThemesSystem { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the hand tutorial will be shown.
+        /// </summary>
+        public bool HandTutorialEnabled { get; set; } = true;
 
         /// <summary>
         /// Adds a module to module system. Module will be initalized on scene initialization.
@@ -220,13 +227,16 @@ namespace Xrv.Core
             this.voiceSystem.Initialize();
 
             // Add Hand tutorial to the scene
-            scene.Started += async (s,e) =>
+            if (this.HandTutorialEnabled)
             {
-                await EvergineBackgroundTask.Run(() =>
+                scene.Started += async (s, e) =>
                 {
-                    this.CreateHandTutorial(scene);
-                });
-            };
+                    await EvergineBackgroundTask.Run(() =>
+                    {
+                        this.CreateHandTutorial(scene);
+                    });
+                };
+            }
         }
 
         internal Module GetModuleForHandButton(MenuButtonDescription definition)
@@ -250,7 +260,7 @@ namespace Xrv.Core
             var handTutorialModel = this.assetsService.Load<Model>(CoreResourcesIDs.Models.Hand_Panel_anim_glb);
             var handTutorialEntity = handTutorialModel.InstantiateModelHierarchy(this.assetsService);
             handTutorialEntity.FindComponent<Transform3D>().Position = Vector3.Down * 0.2f;
-            handTutorialEntity.FindComponent<Animation3D>().PlayAutomatically = true;
+            handTutorialEntity.AddComponent(new PingPongAnimation() { AnimationName = "Take 001" });
             var handMesh = handTutorialEntity.Find("[this].L_Hand.MeshL");
             handMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.HandTutorial);
             handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? false : true;
@@ -258,8 +268,12 @@ namespace Xrv.Core
             panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor2);
 
             // In front of the camera
-            var camera = scene.Managers.RenderManager.ActiveCamera3D;
-            var intFrontCamera = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * 1.0f);
+            var camera = scene.Managers.RenderManager?.ActiveCamera3D;
+            var intFrontCamera = Vector3.Zero;
+            if (camera != null)
+            {
+                intFrontCamera = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * 1.0f);
+            }
 
             // Root with Tagalong
             this.handTutorialRootEntity = new Entity()
