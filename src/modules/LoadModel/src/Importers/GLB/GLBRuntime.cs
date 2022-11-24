@@ -319,44 +319,55 @@ namespace Xrv.LoadModel.Importers.GLB
 
             List<VertexBuffer> vertexBuffersList = new List<VertexBuffer>();
 
+            var sortedAttributes = this.SortAttributes(attributes);
+
             BoundingBox meshBounding = default;
             bool vertexColorEnabled = false;
-            for (int i = 0; i < attributes.Length; i++)
+            int lastBufferViewId = -1;
+            LayoutDescription currentLayout = null;
+            uint lastAttributeSizeInBytes = 0;
+            for (int i = 0; i < sortedAttributes.Length; i++)
             {
-                var attributeName = attributes[i].Key;
-
-                if (attributeName.Contains("JOINTS") ||
-                    attributeName.Contains("WEIGHTS"))
-                {
-                    // Discard JOINTS and WEIGHTS
-                    continue;
-                }
+                var attributeName = sortedAttributes[i].name;
 
                 if (attributeName.Contains("COLOR"))
                 {
                     vertexColorEnabled = true;
                 }
 
-                var accessor = this.glbModel.Accessors[attributes[i].Value];
+                var accessor = sortedAttributes[i].accessor;
                 int bufferViewId = accessor.BufferView.Value;
                 var bufferView = this.glbModel.BufferViews[bufferViewId];
 
-                IntPtr attributePointer = this.bufferInfos[bufferView.Buffer].bufferPointer + bufferView.ByteOffset + accessor.ByteOffset;
                 ElementDescription elementDesc = this.GetElementFromAttribute(attributeName, accessor);
-                uint attributeSizeInBytes = (uint)(this.SizeInBytes(accessor) * accessor.Count);
-                int strideInBytes = bufferView.ByteStride.HasValue ? bufferView.ByteStride.Value : 0;
 
-                BufferDescription bufferDesc = new BufferDescription(
-                                                                    attributeSizeInBytes,
-                                                                    BufferFlags.ShaderResource | BufferFlags.VertexBuffer,
-                                                                    ResourceUsage.Default,
-                                                                    ResourceCpuAccess.None,
-                                                                    strideInBytes);
+                if (bufferViewId != lastBufferViewId ||
+                    accessor.ByteOffset >= lastAttributeSizeInBytes)
+                {
+                    lastBufferViewId = bufferViewId;
+                    IntPtr attributePointer = this.bufferInfos[bufferView.Buffer].bufferPointer + bufferView.ByteOffset + accessor.ByteOffset;
+                    int dataSize = this.SizeInBytes(accessor);
+                    int strideInBytes = bufferView.ByteStride.HasValue ? bufferView.ByteStride.Value : dataSize;
 
-                Buffer buffer = this.graphicsContext.Factory.CreateBuffer(attributePointer, ref bufferDesc);
-                var layoutDescription = new LayoutDescription()
-                                                .Add(elementDesc);
-                vertexBuffersList.Add(new VertexBuffer(buffer, layoutDescription));
+                    uint attributeSizeInBytes = (uint)(strideInBytes * accessor.Count);
+                    lastAttributeSizeInBytes = attributeSizeInBytes;
+
+                    BufferDescription bufferDesc = new BufferDescription(
+                                                                        attributeSizeInBytes,
+                                                                        BufferFlags.ShaderResource | BufferFlags.VertexBuffer,
+                                                                        ResourceUsage.Default,
+                                                                        ResourceCpuAccess.None,
+                                                                        strideInBytes);
+
+                    Buffer buffer = this.graphicsContext.Factory.CreateBuffer(attributePointer, ref bufferDesc);
+                    currentLayout = new LayoutDescription()
+                                                  .Add(elementDesc);
+                    vertexBuffersList.Add(new VertexBuffer(buffer, currentLayout));
+                }
+                else
+                {
+                    currentLayout.Add(elementDesc);
+                }
 
                 // Create bounding box
                 if (elementDesc.Semantic == ElementSemanticType.Position && elementDesc.SemanticIndex == 0)
@@ -399,6 +410,36 @@ namespace Xrv.LoadModel.Importers.GLB
                 BoundingBox = meshBounding,
                 MaterialIndex = materialIndex,
             };
+        }
+
+        private (string name, Accessor accessor)[] SortAttributes(KeyValuePair<string, int>[] attributes)
+        {
+            List<(string name, Accessor accessor)> sortedAttriburtes = new List<(string name, Accessor accessor)>(attributes.Length);
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                var attribute = attributes[i];
+                if (attribute.Key.Contains("JOINTS") ||
+                    attribute.Key.Contains("WEIGHTS"))
+                {
+                    // Discard JOINTS and WEIGHTS
+                    continue;
+                }
+
+                sortedAttriburtes.Add((attribute.Key, this.glbModel.Accessors[attribute.Value]));
+            }
+
+            sortedAttriburtes.Sort((a, b) =>
+            {
+                var res = a.accessor.BufferView.Value.CompareTo(b.accessor.BufferView.Value);
+                if (res == 0)
+                {
+                    res = a.accessor.ByteOffset.CompareTo(b.accessor.ByteOffset);
+                }
+
+                return res;
+            });
+
+            return sortedAttriburtes.ToArray();
         }
 
         private ElementDescription GetElementFromAttribute(string name, Accessor accessor)
@@ -577,6 +618,44 @@ namespace Xrv.LoadModel.Importers.GLB
         {
             switch (accessor.ComponentType)
             {
+                case Accessor.ComponentTypeEnum.BYTE:
+                case Accessor.ComponentTypeEnum.UNSIGNED_BYTE:
+                    switch (accessor.Type)
+                    {
+                        default:
+                        case Accessor.TypeEnum.SCALAR:
+                            return 1;
+
+                        case Accessor.TypeEnum.VEC2:
+                            return 2;
+
+                        case Accessor.TypeEnum.VEC3:
+                            return 3;
+
+                        case Accessor.TypeEnum.VEC4:
+                            return 4;
+                    }
+
+                case Accessor.ComponentTypeEnum.SHORT:
+                case Accessor.ComponentTypeEnum.UNSIGNED_SHORT:
+
+                    switch (accessor.Type)
+                    {
+                        default:
+                        case Accessor.TypeEnum.SCALAR:
+                            return 2;
+
+                        case Accessor.TypeEnum.VEC2:
+                            return 4;
+
+                        case Accessor.TypeEnum.VEC3:
+                            return 6;
+
+                        case Accessor.TypeEnum.VEC4:
+                            return 8;
+                    }
+
+                case Accessor.ComponentTypeEnum.UNSIGNED_INT:
                 case Accessor.ComponentTypeEnum.FLOAT:
 
                     switch (accessor.Type)
@@ -596,7 +675,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     }
             }
 
-            return 0;
+            throw new Exception($"Accessor type {accessor.ComponentType} not supported");
         }
 
         private (IndexFormat format, int size) GetIndexFormat(Accessor.ComponentTypeEnum componentType)
