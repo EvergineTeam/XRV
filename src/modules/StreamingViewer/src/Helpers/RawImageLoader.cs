@@ -7,7 +7,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Xrv.ImageGallery.Helpers
+namespace Xrv.StreamingViewer.Helpers
 {
     /// <summary>
     /// Helper class to read JPG as an array of bytes.
