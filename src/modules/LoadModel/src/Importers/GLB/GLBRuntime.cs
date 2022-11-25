@@ -878,7 +878,7 @@ namespace Xrv.LoadModel.Importers.GLB
 
                 using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
                 {
-                    RawImageLoader.CopyImageToArrayPool(image, false, out _, out byte[] data);
+                    RawImageLoader.CopyImageToArrayPool(image, out _, out byte[] data);
                     this.graphicsContext.UpdateTextureData(result, data);
                 }
 

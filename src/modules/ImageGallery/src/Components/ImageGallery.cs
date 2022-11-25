@@ -294,7 +294,7 @@ namespace Xrv.ImageGallery.Components
                 {
                     using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
                     {
-                        RawImageLoader.CopyImageToArrayPool(image, false, out _, out data);
+                        RawImageLoader.CopyImageToArrayPool(image, out _, out data);
                     }
 
                     this.graphicsContext.UpdateTextureData(this.imageTexture, data);
