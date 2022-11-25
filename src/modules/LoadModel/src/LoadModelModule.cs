@@ -201,7 +201,7 @@ namespace Xrv.LoadModel
                             stream.CopyTo(memoryStream);
                             memoryStream.Position = 0;
                             var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
-                            model = GLBRuntime.Instance.Read(memoryStream, materialAssignerFunc);
+                            model = await GLBRuntime.Instance.Read(memoryStream, materialAssignerFunc);
                         }
 
                         // Instantiate model

@@ -6,6 +6,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
 using Evergine.Framework.Graphics.Materials;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Platform;
 using glTFLoader;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Xrv.LoadModel.Importers.Images;
 using static glTFLoader.Schema.Material;
 using Buffer = Evergine.Common.Graphics.Buffer;
@@ -67,7 +69,7 @@ namespace Xrv.LoadModel.Importers.GLB
         /// <param name="filePath">Glb filepath.</param>
         /// <param name="materialAssigner">Material assigner.</param>
         /// <returns>Model asset.</returns>
-        public Model Read(string filePath, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
+        public async Task<Model> Read(string filePath, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
             Model model = null;
 
@@ -83,7 +85,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     throw new ArgumentException("Invalid parameter. Stream must be readable", "imageStream");
                 }
 
-                model = this.Read(stream, materialAssigner);
+                model = await this.Read(stream, materialAssigner);
             }
 
             return model;
@@ -95,13 +97,13 @@ namespace Xrv.LoadModel.Importers.GLB
         /// <param name="stream">Seeked stream.</param>
         /// <param name="materialAssigner">Material assigner.</param>
         /// <returns>Model asset.</returns>
-        public Model Read(Stream stream, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
+        public async Task<Model> Read(Stream stream, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
             this.materialAssigner = materialAssigner;
 
             this.LoadStaticResources();
 
-            var model = this.ReadGLB(stream);
+            var model = await this.ReadGLB(stream);
 
             this.FreeResources();
 
@@ -147,7 +149,7 @@ namespace Xrv.LoadModel.Importers.GLB
             this.binaryChunk = null;
         }
 
-        private Model ReadGLB(Stream stream)
+        private async Task<Model> ReadGLB(Stream stream)
         {
             Model model = null;
 
@@ -161,7 +163,7 @@ namespace Xrv.LoadModel.Importers.GLB
             this.binaryChunk = result.Data;
 
             this.ReadBuffers();
-            this.ReadDefaultScene();
+            await this.ReadDefaultScene();
 
             var materialCollection = new List<(string, Guid)>();
             foreach (var materialInfo in this.materials.Values)
@@ -195,7 +197,7 @@ namespace Xrv.LoadModel.Importers.GLB
             }
         }
 
-        private void ReadDefaultScene()
+        private async Task ReadDefaultScene()
         {
             if (this.glbModel.Scene.HasValue)
             {
@@ -206,7 +208,7 @@ namespace Xrv.LoadModel.Importers.GLB
                 for (int n = 0; n < nodeCount; n++)
                 {
                     int nodeId = scene.Nodes[n];
-                    var rootNode = this.ReadNode(nodeId);
+                    var rootNode = await this.ReadNode(nodeId);
                     this.rootIndices.Add(rootNode.index);
                 }
             }
@@ -216,7 +218,7 @@ namespace Xrv.LoadModel.Importers.GLB
             }
         }
 
-        private (NodeContent node, int index) ReadNode(int nodeId)
+        private async Task<(NodeContent node, int index)> ReadNode(int nodeId)
         {
             var node = this.glbModel.Nodes[nodeId];
 
@@ -230,7 +232,7 @@ namespace Xrv.LoadModel.Importers.GLB
                 for (int c = 0; c < node.Children.Length; c++)
                 {
                     int childNodeId = node.Children[c];
-                    var childNode = this.ReadNode(childNodeId);
+                    var childNode = await this.ReadNode(childNodeId);
 
                     children[c] = childNode.node;
                     childIndices[c] = childNode.index;
@@ -269,8 +271,9 @@ namespace Xrv.LoadModel.Importers.GLB
                     nodePrimitives = new List<Mesh>(glbMesh.Primitives.Length);
                     for (int p = 0; p < glbMesh.Primitives.Length; p++)
                     {
-                        var primitive = glbMesh.Primitives[p];
-                        nodePrimitives.Add(this.ReadPrimitive(primitive));
+                        var primitiveInfo = glbMesh.Primitives[p];
+                        var primitive = await this.ReadPrimitive(primitiveInfo);
+                        nodePrimitives.Add(primitive);
                     }
 
                     this.meshes[meshId] = nodePrimitives;
@@ -312,7 +315,7 @@ namespace Xrv.LoadModel.Importers.GLB
             return (nodeContent, this.allNodes.Count - 1);
         }
 
-        private Mesh ReadPrimitive(MeshPrimitive primitive)
+        private async Task<Mesh> ReadPrimitive(MeshPrimitive primitive)
         {
             // Create Vertex Buffers
             var attributes = primitive.Attributes.ToArray();
@@ -352,16 +355,21 @@ namespace Xrv.LoadModel.Importers.GLB
                     uint attributeSizeInBytes = (uint)(strideInBytes * accessor.Count);
                     lastAttributeSizeInBytes = attributeSizeInBytes;
 
-                    BufferDescription bufferDesc = new BufferDescription(
-                                                                        attributeSizeInBytes,
-                                                                        BufferFlags.ShaderResource | BufferFlags.VertexBuffer,
-                                                                        ResourceUsage.Default,
-                                                                        ResourceCpuAccess.None,
-                                                                        strideInBytes);
+                    Buffer buffer = null;
+                    await EvergineForegroundTask.Run(() =>
+                    {
+                        BufferDescription bufferDesc = new BufferDescription(
+                                                                            attributeSizeInBytes,
+                                                                            BufferFlags.ShaderResource | BufferFlags.VertexBuffer,
+                                                                            ResourceUsage.Default,
+                                                                            ResourceCpuAccess.None,
+                                                                            strideInBytes);
 
-                    Buffer buffer = this.graphicsContext.Factory.CreateBuffer(attributePointer, ref bufferDesc);
+                        buffer = this.graphicsContext.Factory.CreateBuffer(attributePointer, ref bufferDesc);
+                    });
+
                     currentLayout = new LayoutDescription()
-                                                  .Add(elementDesc);
+                                              .Add(elementDesc);
                     vertexBuffersList.Add(new VertexBuffer(buffer, currentLayout));
                 }
                 else
@@ -389,9 +397,13 @@ namespace Xrv.LoadModel.Importers.GLB
             uint indexSizeInBytes = (uint)(indexFormatInfo.size * indicesAccessor.Count);
             int indexStrideInBytes = indicesbufferView.ByteStride.HasValue ? indicesbufferView.ByteStride.Value : 0;
 
-            var iBufferDesc = new BufferDescription(indexSizeInBytes, BufferFlags.IndexBuffer, ResourceUsage.Default, ResourceCpuAccess.None, indexStrideInBytes);
-            Buffer iBuffer = this.graphicsContext.Factory.CreateBuffer(indicesPointer, ref iBufferDesc);
-            var indexBuffer = new IndexBuffer(iBuffer, indexFormatInfo.format, flipWinding: true);
+            IndexBuffer indexBuffer = null;
+            await EvergineForegroundTask.Run(() =>
+            {
+                var iBufferDesc = new BufferDescription(indexSizeInBytes, BufferFlags.IndexBuffer, ResourceUsage.Default, ResourceCpuAccess.None, indexStrideInBytes);
+                Buffer iBuffer = this.graphicsContext.Factory.CreateBuffer(indicesPointer, ref iBufferDesc);
+                indexBuffer = new IndexBuffer(iBuffer, indexFormatInfo.format, flipWinding: true);
+            });
 
             // Get Topology
             primitive.Mode.ToEverginePrimitive(out var primitiveTopology);
@@ -401,7 +413,7 @@ namespace Xrv.LoadModel.Importers.GLB
             if (primitive.Material.HasValue)
             {
                 int materialId = primitive.Material.Value;
-                materialIndex = this.ReadMaterial(materialId, vertexColorEnabled);
+                materialIndex = await this.ReadMaterial(materialId, vertexColorEnabled);
             }
 
             // Create Mesh
@@ -691,7 +703,7 @@ namespace Xrv.LoadModel.Importers.GLB
             }
         }
 
-        private int ReadMaterial(int materialId, bool vertexColorEnabled)
+        private async Task<int> ReadMaterial(int materialId, bool vertexColorEnabled)
         {
             var glbMaterial = this.glbModel.Materials[materialId];
             if (!this.materials.ContainsKey(materialId))
@@ -708,7 +720,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     if (this.glbModel.Images != null && glbMaterial.PbrMetallicRoughness.BaseColorTexture != null)
                     {
                         var textureId = glbMaterial.PbrMetallicRoughness.BaseColorTexture.Index;
-                        var result = this.ReadTexture(textureId);
+                        var result = await this.ReadTexture(textureId);
 
                         baseColorTexture = result.texture;
                         baseColorSampler = result.sampler;
@@ -731,7 +743,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     if (diffuseTextureToken != null && diffuseTextureToken.HasValues)
                     {
                         int textureId = (int)diffuseTextureToken["index"];
-                        var result = this.ReadTexture(textureId);
+                        var result = await this.ReadTexture(textureId);
 
                         baseColorTexture = result.texture;
                         baseColorSampler = result.sampler;
@@ -798,7 +810,7 @@ namespace Xrv.LoadModel.Importers.GLB
             return material.Material;
         }
 
-        private (Texture texture, SamplerState sampler) ReadTexture(int textureId)
+        private async Task<(Texture texture, SamplerState sampler)> ReadTexture(int textureId)
         {
             // Get texture info
             if (textureId > this.glbModel.Textures.Length)
@@ -828,7 +840,7 @@ namespace Xrv.LoadModel.Importers.GLB
                     }
                     else
                     {
-                        texture = this.ReadImage(imageId);
+                        texture = await this.ReadImage(imageId);
                     }
                 }
             }
@@ -849,37 +861,36 @@ namespace Xrv.LoadModel.Importers.GLB
             return (texture, sampler);
         }
 
-        private Texture ReadImage(int imageId)
+        private async Task<Texture> ReadImage(int imageId)
         {
             Texture result = null;
 
             using (Stream fileStream = this.glbModel.OpenImageFile(imageId, this.GetExternalFileSolver))
             {
-                var imageInfo = SixLabors.ImageSharp.Image.Identify(fileStream);
-
-                TextureDescription desc = new TextureDescription()
-                {
-                    Type = TextureType.Texture2D,
-                    Width = (uint)imageInfo.Width,
-                    Height = (uint)imageInfo.Height,
-                    Depth = 1,
-                    ArraySize = 1,
-                    Faces = 1,
-                    Usage = ResourceUsage.Default,
-                    CpuAccess = ResourceCpuAccess.None,
-                    Flags = TextureFlags.ShaderResource,
-                    Format = PixelFormat.R8G8B8A8_UNorm,
-                    MipLevels = 1,
-                    SampleCount = TextureSampleCount.None,
-                };
-                result = this.graphicsContext.Factory.CreateTexture(ref desc);
-
-                fileStream.Seek(0, SeekOrigin.Begin);
-
                 using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
                 {
                     RawImageLoader.CopyImageToArrayPool(image, out _, out byte[] data);
-                    this.graphicsContext.UpdateTextureData(result, data);
+                    await EvergineForegroundTask.Run(() =>
+                    {
+                        TextureDescription desc = new TextureDescription()
+                        {
+                            Type = TextureType.Texture2D,
+                            Width = (uint)image.Width,
+                            Height = (uint)image.Height,
+                            Depth = 1,
+                            ArraySize = 1,
+                            Faces = 1,
+                            Usage = ResourceUsage.Default,
+                            CpuAccess = ResourceCpuAccess.None,
+                            Flags = TextureFlags.ShaderResource,
+                            Format = PixelFormat.R8G8B8A8_UNorm,
+                            MipLevels = 1,
+                            SampleCount = TextureSampleCount.None,
+                        };
+                        result = this.graphicsContext.Factory.CreateTexture(ref desc);
+
+                        this.graphicsContext.UpdateTextureData(result, data);
+                    });
                 }
 
                 // Read
