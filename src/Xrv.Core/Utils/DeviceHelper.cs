@@ -1,6 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+#if UWP
 using System;
+#endif
 using System.Threading.Tasks;
 
 namespace Xrv.Core.Utils

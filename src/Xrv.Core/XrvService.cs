@@ -1,12 +1,9 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Common.Graphics;
-using Evergine.Components.Animation;
 using Evergine.Components.Graphics3D;
-using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
@@ -14,7 +11,6 @@ using Evergine.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xrv.Core.HandTutorial;
 using Xrv.Core.Help;

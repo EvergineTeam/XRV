@@ -1,6 +1,5 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
