@@ -172,7 +172,7 @@ namespace Xrv.StreamingViewer.Components
                 using (var image = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(bytes))
                 {
                     // Option 1
-                    RawImageLoader.CopyImageToArrayPool(image, false, out var size, out this.textureBuffer);
+                    RawImageLoader.CopyImageToArrayPool(image, out var size, out this.textureBuffer);
 
                     // Option 2
                     ////var iMemoryGroup = image.GetPixelMemoryGroup();
