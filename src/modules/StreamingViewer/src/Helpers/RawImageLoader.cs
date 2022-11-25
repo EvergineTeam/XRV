@@ -1,10 +1,10 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using System.Buffers;
-using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace Xrv.StreamingViewer.Helpers
 {
