@@ -2,6 +2,7 @@
 
 using Azure;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,9 +17,11 @@ namespace Xrv.Core.Storage
     /// </summary>
     public class AzureBlobFileAccess : FileAccess
     {
-        private const string PathDelimiter = @"/";
+        /*
+         * Note: Please, remember that in Azure Storage Blobs, there is no concept for directories.
+         */
+
         private readonly BlobContainerClient container;
-        private readonly string[] prefixSplit = new string[] { PathDelimiter };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobFileAccess"/> class.
@@ -69,6 +72,10 @@ namespace Xrv.Core.Storage
             return new AzureBlobFileAccess(container);
         }
 
+        /// <inheritdoc/>
+        protected override Task InternalCreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
         /// <summary>
         /// The concept of directory does not exist in Azure Blobs. The only way to have a new "directory" is
         /// to create a dummy blob there, that is not worthy.
@@ -76,20 +83,20 @@ namespace Xrv.Core.Storage
         /// <param name="relativePath">Directory path.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task.</returns>
-        public override Task CreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default) =>
+        protected override Task InternalCreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default) =>
             Task.CompletedTask;
 
         /// <inheritdoc/>
-        public override async Task DeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task InternalDeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             bool isRoot = string.IsNullOrEmpty(relativePath);
-            relativePath = this.FixPath(relativePath);
-            if (!isRoot && !relativePath.EndsWith(PathDelimiter))
+            relativePath = this.GetFullPath(relativePath);
+            if (!isRoot && !relativePath.EndsWith(DirectoryItem.PathSeparator))
             {
-                relativePath += PathDelimiter;
+                relativePath += DirectoryItem.PathSeparator;
             }
 
-            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: PathDelimiter, prefix: relativePath);
+            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: DirectoryItem.PathSeparator, prefix: relativePath).ConfigureAwait(false);
             var enumerator = pageable.GetAsyncEnumerator();
 
             while (!cancellationToken.IsCancellationRequested && await enumerator.MoveNextAsync())
@@ -97,7 +104,6 @@ namespace Xrv.Core.Storage
                 var item = enumerator.Current;
                 if (item.IsPrefix)
                 {
-                    var directory = item.Prefix.Split(this.prefixSplit, StringSplitOptions.RemoveEmptyEntries).Last();
                     await this.DeleteDirectoryAsync(item.Prefix, cancellationToken).ConfigureAwait(false);
                 }
                 else if (item.IsBlob)
@@ -108,38 +114,44 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override Task InternalDeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var file = this.container.GetBlobClient(relativePath);
             return file.DeleteIfExistsAsync(cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<string>> EnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
-            => this.EnumerateItemsAuxAsync(relativePath, true, cancellationToken);
+        protected override async Task<IEnumerable<DirectoryItem>> InternalEnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            var items = await this.EnumerateItemsAuxAsync(relativePath, true, cancellationToken).ConfigureAwait(false);
+            return items.Select(item => ConvertToDirectoryItem(item, relativePath));
+        }
 
         /// <inheritdoc/>
-        public override Task<IEnumerable<string>> EnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
-            => this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken);
+        protected override async Task<IEnumerable<FileItem>> InternalEnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
+        {
+            var items = await this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken).ConfigureAwait(false);
+            return items.Select(item => ConvertToFileItem(item.Blob, Path.GetDirectoryName(relativePath)));
+        }
 
         /// <inheritdoc/>
-        public override async Task<bool> ExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<bool> InternalExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(relativePath))
             {
                 return true;
             }
 
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
-            var pathParts = relativePath.Split(this.prefixSplit, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            var parent = pathParts.Length > 1 ? string.Join(PathDelimiter, pathParts.Take(pathParts.Length - 1)) : pathParts[0];
-            parent += PathDelimiter;
+            var pathParts = relativePath.Split(DirectoryItem.SplitSeparators, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var parent = pathParts.Length > 1 ? string.Join(DirectoryItem.PathSeparator, pathParts.Take(pathParts.Length - 1)) : pathParts[0];
+            parent += DirectoryItem.PathSeparator;
             var directory = pathParts.Last();
 
-            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: PathDelimiter, prefix: parent).ConfigureAwait(false);
+            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: DirectoryItem.PathSeparator, prefix: parent).ConfigureAwait(false);
             var enumerator = pageable.GetAsyncEnumerator();
 
             while (!cancellationToken.IsCancellationRequested && await enumerator.MoveNextAsync())
@@ -147,7 +159,7 @@ namespace Xrv.Core.Storage
                 var item = enumerator.Current;
                 if (item.IsPrefix)
                 {
-                    var prefixName = item.Prefix.Split(this.prefixSplit, StringSplitOptions.RemoveEmptyEntries).Last();
+                    var prefixName = item.Prefix.Split(DirectoryItem.SplitSeparators, StringSplitOptions.RemoveEmptyEntries).Last();
                     if (prefixName == directory)
                     {
                         return true;
@@ -159,9 +171,9 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task<bool> ExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<bool> InternalExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var file = this.container.GetBlobClient(relativePath);
             bool exists = await file.ExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -169,9 +181,9 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override async Task<Stream> GetFileAsync(string relativePath, CancellationToken cancellationToken = default)
+        protected override async Task<Stream> InternalGetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var file = this.container.GetBlobClient(relativePath);
             var contents = await file.DownloadContentAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -179,25 +191,53 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        public override Task WriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
+        protected override Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
 
             var blob = this.container.GetBlobClient(relativePath);
             return blob.UploadAsync(stream, true, cancellationToken);
         }
 
-        private async Task<IEnumerable<string>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        protected override async Task<FileItem> InternalGetFileItemAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.FixPath(relativePath);
+            relativePath = this.GetFullPath(relativePath);
+            var blob = this.container.GetBlobClient(relativePath);
+            var properties = await blob.GetPropertiesAsync();
+            var fileItem = ConvertToFileItem(Path.GetFileName(relativePath), properties);
+            return fileItem;
+        }
 
-            var items = new List<string>();
-            if (!string.IsNullOrEmpty(relativePath))
+        /// <inheritdoc/>
+        protected override bool InternalEvaluateCacheUsageOnException(Exception exception)
+        {
+            RequestFailedException requestFailedException = null;
+            if (exception is AggregateException aggregateException && aggregateException.InnerException is RequestFailedException innerException)
             {
-                relativePath += PathDelimiter;
+                requestFailedException = innerException;
+            }
+            else if (exception is RequestFailedException failedException)
+            {
+                requestFailedException = failedException;
             }
 
-            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: PathDelimiter, prefix: relativePath);
+            // ErrorCode is null for scenarios where there is no internet connection, but
+            // also if account name is not properly set.
+            return requestFailedException != null && requestFailedException.ErrorCode == null;
+        }
+
+        private async Task<IEnumerable<BlobHierarchyItem>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
+        {
+            relativePath = this.GetFullPath(relativePath);
+
+            var items = new List<BlobHierarchyItem>();
+            if (!string.IsNullOrEmpty(relativePath))
+            {
+                relativePath += DirectoryItem.PathSeparator;
+            }
+
+            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: DirectoryItem.PathSeparator, prefix: relativePath);
             var enumerator = pageable.GetAsyncEnumerator();
 
             while (!cancellationToken.IsCancellationRequested && await enumerator.MoveNextAsync())
@@ -205,18 +245,48 @@ namespace Xrv.Core.Storage
                 var item = enumerator.Current;
                 if (directoriesOnly && item.IsPrefix)
                 {
-                    var directory = item.Prefix.Split(this.prefixSplit, StringSplitOptions.RemoveEmptyEntries).Last();
-                    items.Add(directory);
+                    items.Add(item);
                 }
                 else if (!directoriesOnly && item.IsBlob)
                 {
-                    items.Add(item.Blob.Name);
+                    items.Add(item);
                 }
             }
 
             return items;
         }
 
-        private string FixPath(string relativePath) => relativePath.Replace(@"\", PathDelimiter);
+        private string GetFullPath(string relativePath)
+        {
+            if (!string.IsNullOrEmpty(this.BaseDirectory))
+            {
+                relativePath = Path.Combine(this.BaseDirectory, relativePath);
+            }
+
+            return relativePath.FixSlashes();
+        }
+
+        private static DirectoryItem ConvertToDirectoryItem(BlobHierarchyItem item, string basePath)
+        {
+            return new DirectoryItem(item.Prefix);
+        }
+
+        private static FileItem ConvertToFileItem(BlobItem item, string basePath) =>
+            new FileItem(Path.Combine(basePath ?? string.Empty, item.Name))
+            {
+                CreationTime = item.Properties.CreatedOn?.UtcDateTime,
+                ModificationTime = item.Properties.LastModified?.UtcDateTime,
+                Size = item.Properties.ContentLength,
+                Md5Hash = item.Properties.ContentHash,
+            };
+
+        private static FileItem ConvertToFileItem(string blobPath, BlobProperties properties) =>
+            new FileItem(blobPath)
+            {
+                CreationTime = properties.CreatedOn.UtcDateTime,
+                ModificationTime = properties.LastModified.UtcDateTime,
+                Size = properties.ContentLength,
+                Md5Hash = properties.ContentHash,
+            };
     }
 }

@@ -119,8 +119,8 @@ Items:
         ColorByTemperature: true
         DebugMode: false
         GammaDistribution: 0.800000012
-        Illuminance: 3.0
-        Intensity: 3.0
+        Illuminance: 1.0
+        Intensity: 1.0
         IsEnabled: true
         IsShadowEnabled: true
         LinearColor:
@@ -168,14 +168,15 @@ Items:
         Id: bb44cd62-4d92-418a-8a42-bbc2ed2b6f07
         AsignedTo: Default
         IsEnabled: true
-        Material: 24261507-ae75-4e40-934f-8a5a67dca16a
+        Material: b4d38f3a-d18e-49cd-b692-934b77487feb
+        UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: 3ef37285-f016-4173-bbf0-278ec1624224
         Diameter: 1.0
         IsEnabled: true
         Tessellation: 32
-        UVHorizontalFlip: false
-        UVVerticalFlip: false
+        UMirror: false
+        VMirror: false
       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
         Id: 1665742b-454f-4cda-9b9b-df6698342e5d
         DebugBoundingbox: true

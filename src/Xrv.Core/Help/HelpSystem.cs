@@ -69,12 +69,14 @@ namespace Xrv.Core.Help
             window.Tabs.Add(new TabItem
             {
                 Name = "General",
+                Order = int.MinValue,
                 Contents = this.GeneralHelp,
             });
 
             window.Tabs.Add(new TabItem
             {
                 Name = "About",
+                Order = int.MaxValue,
                 Contents = this.AboutHelp,
             });
 

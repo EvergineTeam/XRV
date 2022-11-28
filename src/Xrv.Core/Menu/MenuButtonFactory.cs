@@ -4,6 +4,7 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.Input.Handlers;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -51,6 +52,7 @@ namespace Xrv.Core.Menu
             {
                 Text = description.TextOn,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
+                AllowBackPlateNullMaterial = true,
             });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn))
@@ -63,7 +65,6 @@ namespace Xrv.Core.Menu
             }
 
             this.AssociateActivationPublishers(description, button);
-            Workarounds.MrtkForceButtonNullPlate(button);
             var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
             lookAndFeel.TextPositionOffset = -0.002f;
 
@@ -99,10 +100,10 @@ namespace Xrv.Core.Menu
                 TargetState = ToggleState.On,
                 Text = description.TextOn,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
+                AllowBackPlateNullMaterial = true,
             });
 
             this.AssociateActivationPublishers(description, button);
-            Workarounds.MrtkForceButtonNullPlate(button);
             var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
             lookAndFeel.TextPositionOffset = -0.002f;
 
@@ -129,6 +130,6 @@ namespace Xrv.Core.Menu
         }
 
         private Prefab GetButtonPrefab() =>
-            this.assetsService.Load<Prefab>(CoreResourcesIDs.Mrtk.Prefabs.PressableButtonPlated);
+            this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.PressableButtonPlated);
     }
 }

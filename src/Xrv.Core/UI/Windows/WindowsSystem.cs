@@ -179,7 +179,7 @@ namespace Xrv.Core.UI.Windows
             configurator.Content = contentPrefab.Instantiate();
 
             var configuration = this.confirmDialog.AcceptOption.Configuration;
-            configuration.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.Buttons.ButtonPrimary);
+            configuration.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor3);
 
             owner.IsEnabled = false;
         }

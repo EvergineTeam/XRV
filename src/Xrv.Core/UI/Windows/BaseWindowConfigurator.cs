@@ -185,7 +185,7 @@ namespace Xrv.Core.UI.Windows
         /// </summary>
         public bool DisplayBackPlate
         {
-            get => this.displayFrontPlate;
+            get => this.displayBackPlate;
 
             set
             {
@@ -363,7 +363,7 @@ namespace Xrv.Core.UI.Windows
         {
             if (this.IsAttached)
             {
-                this.backPlate.Owner.IsEnabled = this.displayFrontPlate;
+                this.backPlate.Owner.IsEnabled = this.displayBackPlate;
             }
         }
     }

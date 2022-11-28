@@ -3,10 +3,9 @@
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Physics3D;
-using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
@@ -102,7 +101,6 @@ namespace Xrv.LoadModel
                     this.LockedIcon.IsEnabled = false;
                     this.modelEntity = value;
                     this.modelEntityWorld = this.modelEntity.FindComponent<Transform3D>().WorldTransform;
-                    this.AddManipulatorComponents(this.modelEntity);
                     this.Owner.AddChild(this.modelEntity);
 
                     var modelTransform = this.modelEntity.FindComponent<Transform3D>();
@@ -195,7 +193,6 @@ namespace Xrv.LoadModel
             foreach (var definition in buttons)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(definition);
-                Workarounds.MrtkRotateButton(buttonInstance);
                 this.buttonsContainer.AddChild(buttonInstance);
                 this.instantiatedButtons.Add(definition.Id, buttonInstance);
             }
@@ -333,7 +330,7 @@ namespace Xrv.LoadModel
 
             var confirmDialog = this.xrvService.WindowSystem.ShowConfirmDialog(this.modelEntity.Name, "Delete this model? /n This action can't be undone.", "No", "Yes");
             var configuration = confirmDialog.AcceptOption.Configuration;
-            configuration.Plate = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.Buttons.ButtonPrimary);
+            configuration.Plate = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;
 
             this.options.ChangeState(this.options.States.ElementAt(0));
@@ -350,45 +347,6 @@ namespace Xrv.LoadModel
                     this.Managers.EntityManager.Remove(this.Owner);
                 }
             }
-        }
-
-        private void AddManipulatorComponents(Entity entity)
-        {
-            entity.AddComponent(new BoxCollider3D());
-            entity.AddComponent(new StaticBody3D());
-            entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
-            {
-                AutoCalculate = false,
-                ScaleHandleScale = 0.030f,
-                RotationHandleScale = 0.030f,
-                LinkScale = 0.001f,
-                BoxPadding = Vector3.Zero,
-                BoxMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxVisual),
-                BoxGrabbedMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxVisualGrabbed),
-                ShowWireframe = true,
-                ShowScaleHandles = true,
-                ShowXScaleHandle = true,
-                ShowYScaleHandle = true,
-                ShowZScaleHandle = true,
-                ShowXRotationHandle = true,
-                ShowYRotationHandle = true,
-                ShowZRotationHandle = true,
-                WireframeShape = Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.WireframeType.Cubic,
-                WireframeMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxWireframe),
-                HandleMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxHandleBlue),
-                HandleGrabbedMaterial = this.assetsService.Load<Material>(LoadModelResourceIDs.MRTK.Materials.BoundingBox.BoundingBoxHandleBlueGrabbed),
-                ScaleHandlePrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.MRTK.Prefabs.BoundingBox_ScaleHandle_weprefab),
-                RotationHandlePrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.MRTK.Prefabs.BoundingBox_RotateHandle_weprefab),
-                FaceScaleHandlePrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.MRTK.Prefabs.BoundingBox_FaceScaleHandle_weprefab),
-            });
-            entity.AddComponent(new SimpleManipulationHandler()
-            {
-                SmoothingActive = true,
-                SmoothingAmount = 0.001f,
-                EnableSinglePointerRotation = true,
-                KeepRigidBodyActiveDuringDrag = false,
-                IncludeChildrenColliders = true,
-            });
         }
     }
 }

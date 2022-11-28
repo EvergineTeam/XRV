@@ -1,0 +1,1374 @@
+!Evergine.Framework.Assets.AssetSources.Entities.SceneModel,Evergine.Framework
+Items:
+  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+    Name: Camera
+    Tag: null
+    IsEnabled: true
+    IsStatic: false
+    Components:
+      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+        Id: 596c9620-1532-4cce-8b33-ddcfc7e4e336
+        IsEnabled: true
+        LocalOrientation:
+          W: 0.923879504
+          X: -0.382683456
+          Y: 0.0
+          Z: 0.0
+        LocalPosition:
+          X: 0.0
+          Y: 2.0
+          Z: 2.0
+        LocalScale:
+          X: 1.0
+          Y: 1.0
+          Z: 1.0
+      - !Evergine.Components.Cameras.FreeCamera3D,Evergine.Components
+        Id: 4ccdea1c-d7f1-46fb-aa7d-dcb0d8d51acc
+        IsEnabled: true
+        MaxPitch: 1.49225652
+        MouseSensibility: 0.0299999993
+        MoveSpeed: 5.0
+        RotationSpeed: 5.0
+        TouchMoveAndOrientationRatio: 0.5
+        TouchSensibility: 1.0
+        UpdateOrder: 0.5
+      - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
+        Id: c6dca868-d8ca-46ed-b19b-9c248ecf3121
+        Aperture: 1.0
+        AspectRatio: 0.894927561
+        AutoDepthBounds: false
+        AutoExposureEnabled: false
+        CameraOrder: 0.0
+        ClearDepth: 1.0
+        ClearFlags: All
+        ClearStencil: 0
+        Compensation: 0.0
+        DepthRange:
+          MaxDepth: 1.0
+          MinDepth: 0.0
+        DisplayTag: null
+        Exposure: 1.0
+        FarPlane: 1000.0
+        FieldOfView: 0.785398185
+        FieldOfViewAxis: Vertical
+        FocalDistance: 1.0
+        FocalLength: 50.0
+        FrameBuffer: null
+        FrustumCullingEnabled: true
+        HDREnabled: true
+        IsEnabled: true
+        LayerMaskDefaultValue: true
+        LinearBackgroundColor:
+          A: 1.0
+          B: 0.851251662
+          G: 0.306634784
+          R: 0.12752977
+        LogLuminanceRange: 12.0
+        MinLogLuminance: -10.0
+        NearPlane: 0.100000001
+        ScreenViewport:
+          Height: 0.0
+          MaxDepth: 0.0
+          MinDepth: 0.0
+          Width: 0.0
+          X: 0.0
+          Y: 0.0
+        Sensitivity: 100.0
+        SensorSize:
+          X: 36.0
+          Y: 24.0
+        ShutterSpeed: 1.20000005
+        TAU: 1.10000002
+        TagFilter: null
+        UpVector:
+          X: 0.0
+          Y: 1.0
+          Z: 0.0
+        UsePhysicalParameters: false
+    Children: []
+    Id: a8e878e7-5ab0-4b41-aac8-c4a5322632fd
+  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+    Name: SunLight
+    Tag: null
+    IsEnabled: true
+    IsStatic: false
+    Components:
+      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+        Id: e960c8fc-0bf1-4eb6-a899-5dd948ce1768
+        IsEnabled: true
+        LocalOrientation:
+          W: 0.582563519
+          X: -0.271654308
+          Y: 0.694271922
+          Z: 0.323743761
+        LocalPosition:
+          X: 4.0
+          Y: 4.0
+          Z: 4.0
+        LocalScale:
+          X: 1.0
+          Y: 1.0
+          Z: 1.0
+      - !Evergine.Framework.Graphics.PhotometricDirectionalLight,Evergine.Framework
+        Id: d392b859-ac87-40aa-9099-a9ad4ed4e5ae
+        Color:
+          A: 0
+          B: 228
+          G: 240
+          R: 249
+        ColorByTemperature: true
+        DebugMode: false
+        GammaDistribution: 0.800000012
+        Illuminance: 3.0
+        Intensity: 3.0
+        IsEnabled: true
+        IsShadowEnabled: true
+        LinearColor:
+          A: 0.0
+          B: 0.77908951
+          G: 0.874792635
+          R: 0.9453125
+        ShadowBias: 0.00499999989
+        ShadowDistance: 80.0
+        ShadowOpacity: 1.0
+        SplitDistance:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 0.0
+        Temperature: 6500.0
+      - !Evergine.Framework.Graphics.SunComponent,Evergine.Framework
+        Id: 484e997f-23ca-43ec-bde7-c2168656f9cc
+        IsEnabled: true
+    Children: []
+    Id: a4bc4cd0-de99-4abd-a9fe-f7828f1602f5
+  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+    Name: SkyAtmosphere
+    Tag: Skybox
+    IsEnabled: true
+    IsStatic: false
+    Components:
+      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+        Id: d5df00c3-d320-48fe-8e73-2b4d0c3cce8e
+        IsEnabled: true
+        LocalOrientation:
+          W: 1.0
+          X: 0.0
+          Y: 0.0
+          Z: 0.0
+        LocalPosition:
+          X: 0.0
+          Y: 0.0
+          Z: 0.0
+        LocalScale:
+          X: 1.0
+          Y: 1.0
+          Z: 1.0
+      - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+        Id: dd5d1676-38a6-48eb-8dae-6ca89a3b4577
+        AsignedTo: Default
+        IsEnabled: true
+        Material: f4918fc3-8bd0-4073-9f09-09370644ef5d
+        UseCopy: false
+      - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
+        Id: cda5f813-597d-48bd-87c9-a1da972219be
+        Diameter: 1.0
+        IsEnabled: true
+        Tessellation: 32
+        UMirror: false
+        VMirror: false
+      - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+        Id: 2c449078-d448-4a57-80f3-f8803770ff0a
+        DebugBoundingbox: true
+        IsCullingEnabled: false
+        IsEnabled: true
+        OrderBias: 0
+        RenderFlags: CastShadows
+      - !Evergine.Components.Environment.AtmosphereController,Evergine.Components
+        Id: 6d990b81-8013-4e2d-8ada-be65099a596c
+        AtmosphereRadiusInKm: 6471.0
+        IsEnabled: true
+        MiePreferredScatteringDirection: 0.758000016
+        MieScaleHeight: 1200.0
+        MieScatteringCoefficient: 21.0
+        ModifySunColor: true
+        PlanetRadiusInKm: 6371.0
+        RayleighScaleHeight: 8000.0
+        RayleighScatteringCoefficient:
+          X: 5.5
+          Y: 13.0
+          Z: 22.3999996
+        SunDiskEnabled: true
+        SunDiskSize: 0.0199999996
+        SunIntensity: 22.0
+        UpdateOrder: 0.5
+    Children: []
+    Id: b320ff9a-8971-40ec-8cfe-ab8e1d03bfee
+  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+    Name: Reference
+    Tag: null
+    IsEnabled: true
+    IsStatic: false
+    Components:
+      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+        Id: f50e1cbc-5877-4e35-b101-ce04b0b5479f
+        IsEnabled: true
+        LocalOrientation:
+          W: 1.0
+          X: 0.0
+          Y: 0.0
+          Z: 0.0
+        LocalPosition:
+          X: 0.0
+          Y: 0.0153279044
+          Z: -0.00100000005
+        LocalScale:
+          X: 1.0
+          Y: 1.0
+          Z: 1.0
+      - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+        Id: 81664275-d903-46ee-936a-af424dbe170a
+        AsignedTo: Default
+        IsEnabled: true
+        Material: 02181b63-5a0e-46d1-9208-d92376ae33fb
+        UseCopy: false
+      - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+        Id: 412e98dd-f02f-4275-8215-891ed0b47f7e
+        Height: 0.159999996
+        IsEnabled: true
+        Origin:
+          X: 0.5
+          Y: 0.5
+        PlaneNormal: ZPositive
+        TwoSides: false
+        UMirror: false
+        UOffset: 0.0
+        UTile: 1.0
+        VMirror: false
+        VOffset: 0.0
+        VTile: 1.0
+        Width: 0.300000012
+      - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+        Id: 9df15c12-5cb7-437f-b967-0787dfbbbdf4
+        DebugBoundingbox: true
+        IsCullingEnabled: true
+        IsEnabled: true
+        OrderBias: 0
+        RenderFlags: CastShadows
+    Children: []
+    Id: 268b6686-c1ec-4854-8397-6cb3df4b791b
+  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+    Name: RepositoriesWindow
+    Tag: null
+    IsEnabled: true
+    IsStatic: false
+    Components:
+      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+        Id: d924746f-f34e-46dc-8ed9-b848c05d9c95
+        IsEnabled: true
+        LocalOrientation:
+          W: 1.0
+          X: 0.0
+          Y: 0.0
+          Z: 0.0
+        LocalPosition:
+          X: 0.0
+          Y: 0.0
+          Z: 0.0
+        LocalScale:
+          X: 1.0
+          Y: 1.0
+          Z: 1.0
+    Children:
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: Repositories
+        Tag: null
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 4fefe655-5205-4888-815e-8b5563e48f65
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: -0.131145209
+              Y: 0.0930499732
+              Z: 2.2927388E-08
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
+            Id: aa3517d5-22c6-44a6-99f3-fd002aa763e8
+            Color:
+              A: 255
+              B: 248
+              G: 242
+              R: 112
+            Ellipsis: true
+            Font: d1322288-d9e9-4b1e-b2fe-ca281f0388a2
+            HorizontalAlignment: Left
+            IsEnabled: true
+            Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+            LineSpacing: 0.0
+            Origin:
+              X: 0.0
+              Y: 0.0
+            ScaleFactor: 0.00999999978
+            Size:
+              X: 0.0799999982
+              Y: 0.00999999978
+            Text: Repositories
+            VerticalAlignment: Top
+            Wrapping: true
+          - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
+            Id: 3ac94a6d-fc70-4db7-9dfd-44266deae755
+            DebugBoundingbox: true
+            DebugMode: false
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+        Children: []
+        Id: 6b99a122-f3c1-4002-9b06-59ba58174ff1
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: RepositoriesListView
+        Tag: PART_repositories
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: e474add8-1d16-421a-a9bb-8916eb57ca74
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: -0.0747176558
+              Y: 0.000493120402
+              Z: -8.46687431E-09
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.MRTK.SDK.Features.UX.Components.Scrolls.ListView,Evergine.MRTK
+            Id: 5f1cf029-c521-4366-8d6f-c646f80b4022
+            BarWidth: 0.00300000003
+            ContentPadding: 0.0199999996
+            DataSource: null
+            ElasticTime: 0.100000001
+            HeaderEnabled: true
+            IsEnabled: true
+            Render: null
+            RowHeight: 0.0149999997
+            UpdateOrder: 0.5
+            ZContentDistance: 0.00400000019
+        Children:
+          - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+            Name: ScrollArea
+            Tag: PART_scrollviewer_scrollarea
+            IsEnabled: true
+            IsStatic: false
+            Components:
+              - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                Id: e1ed67b6-660a-4157-ab13-b83f78c50add
+                IsEnabled: true
+                LocalOrientation:
+                  W: 1.0
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalPosition:
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalScale:
+                  X: 1.0
+                  Y: 1.0
+                  Z: 1.0
+              - !Evergine.Framework.Physics3D.StaticBody3D,Evergine.Framework
+                Id: bb6ff5d1-e6bf-44d1-8e26-fc59b06068eb
+                CcdMotionThreshold: 0.0
+                CcdSweptSphereRadius: 0.200000003
+                CollisionCategories: Cat1
+                Friction: 0.5
+                IsEnabled: true
+                IsSensor: true
+                MaskBits: All
+                Restitution: 0.0
+                RollingFriction: 0.0
+                UpdateOrder: 0.5
+              - !Evergine.Components.Graphics3D.CubeMesh,Evergine.Components
+                Id: 7bb7f63a-6de0-4098-824a-b9f3c6a4c068
+                IsEnabled: true
+                Size: 1.0
+                UMirror: false
+                UOffset: 0.0
+                UTile: 1.0
+                VMirror: false
+                VOffset: 0.0
+                VTile: 1.0
+              - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
+                Id: 4ba91fa9-05bd-44f4-a938-60f28fff377c
+                IsEnabled: true
+                Margin: 0.0399999991
+                Offset:
+                  X: 0.0
+                  Y: 0.0
+                  Z: -0.0199999996
+                OrientationOffset:
+                  W: 1.0
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                Size:
+                  X: 0.150000006
+                  Y: 0.129999995
+                  Z: 0.0500000007
+            Children:
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Background
+                Tag: PART_scrollviewer_background
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: 18d04a43-9016-491e-bbb8-ca74b14773d4
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: 202cc863-1236-4d1a-b90b-5481c09f7c68
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: f478b4e6-db00-44f4-a529-3126487183ea
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: 389c07b6-316b-4165-b49c-6639c47f2973
+                    Height: 0.129999995
+                    IsEnabled: true
+                    Origin:
+                      X: 0.5
+                      Y: 0.5
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.150000006
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: d8d83e77-2faa-4302-917a-dce6f0a2b128
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: f05d44df-78fa-4f70-b51c-6a8f444a9d1a
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Separator
+                Tag: PART_scrollviewer_separator
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: aaadf3f2-7a5d-4a1f-8578-bf585e4a0fae
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0
+                      Y: 0.0577114224
+                      Z: 0.00100000191
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: 1d1d93d2-5057-4f5a-9670-ae0a3e91e240
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: 98337cd0-8fcc-40f9-953f-b5d5abe34ebf
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: a45e233b-7269-4099-83e5-d2bc0c5bd719
+                    Height: 0.0149999997
+                    IsEnabled: true
+                    Origin:
+                      X: 0.5
+                      Y: 0.5
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.150000006
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: 14df0f2e-e318-4b9f-b526-4125027f1b93
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: 12a2b40b-1792-4eeb-97fa-44162ebff8e3
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Content
+                Tag: PART_scrollviewer_content
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: a038bc32-5a16-443c-9fd7-2c4d548cd146
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                Children: []
+                Id: 937d7b6f-ba4d-4192-8324-038ef91429ff
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Bar
+                Tag: PART_scrollviewer_bar
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: ec88e98c-f85d-40d7-b0b2-7d36a18b4879
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0711061135
+                      Y: 0.0643594414
+                      Z: 0.00130886328
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: 3c11fafc-9149-46f9-827c-32c4b7f3e41d
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: 09b7e0f4-19dc-4643-909b-a3494e81343c
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: 26144bb5-e21c-4ba9-900e-ee5b9966b3da
+                    Height: 0.129999995
+                    IsEnabled: true
+                    Origin:
+                      X: 0.5
+                      Y: 0.0
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.00300000003
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: 820ee16d-0e7f-4b9c-8bfb-ab000b3723d8
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: 36c4fe6e-fde5-4b61-bea5-7531161320e7
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Selection
+                Tag: PART_scrollviewer_selection
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: 4580aa47-e6b4-4c8b-9710-87788620a1e2
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: -0.0750318319
+                      Y: 0.0647293627
+                      Z: 0.000999999349
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: d0b8ba67-db07-46e8-b38c-e83b02e8f0e9
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: 09f7e0f4-19dc-4643-909b-a3494e81343c
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: 41a962c8-c56f-4d87-8a21-a2a5038782e2
+                    Height: 0.0149999997
+                    IsEnabled: true
+                    Origin:
+                      X: 0.0
+                      Y: 0.0
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.150000006
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: 87d31de5-8452-4c77-ac87-d8bb8765d5cb
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: 65b93a1c-0f47-41d0-bae7-d7eb639253f7
+            Id: 20cf5335-6aa3-4dfa-97ac-88650c496118
+          - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+            Name: Header
+            Tag: PART_scrollviewer_header
+            IsEnabled: true
+            IsStatic: false
+            Components:
+              - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                Id: 0286c362-8ddb-40a2-af7a-52d7284673a2
+                IsEnabled: true
+                LocalOrientation:
+                  W: 1.0
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalPosition:
+                  X: 0.0
+                  Y: 0.0724972188
+                  Z: 8.64235083E-09
+                LocalScale:
+                  X: 1.0
+                  Y: 1.0
+                  Z: 1.0
+              - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                Id: f452d53c-bd70-4bc1-8a66-937948c9ddfc
+                AsignedTo: Default
+                IsEnabled: true
+                Material: ff78b4e6-db00-44f4-a529-3126487183ea
+                UseCopy: false
+              - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                Id: 8364abb2-21ad-4572-b25b-ef5c6b610549
+                Height: 0.0149999997
+                IsEnabled: true
+                Origin:
+                  X: 0.5
+                  Y: 0.5
+                PlaneNormal: ZPositive
+                TwoSides: false
+                UMirror: false
+                UOffset: 0.0
+                UTile: 1.0
+                VMirror: false
+                VOffset: 0.0
+                VTile: 1.0
+                Width: 0.150000006
+              - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                Id: aaffb2fd-5751-4554-bd48-6c863b59fd45
+                DebugBoundingbox: true
+                IsCullingEnabled: true
+                IsEnabled: true
+                OrderBias: 0
+                RenderFlags: None
+            Children: []
+            Id: 46adbb48-b02d-4415-922c-0f8c6da19e0f
+        Id: fb31e9ac-8805-4785-9bd7-c58fed425784
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: RepositoriesLoading
+        Tag: PART_repositories_loading
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: dfeef0ba-1ef7-4956-9502-27733bf33183
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: -0.0747176558
+              Y: 0.000493120402
+              Z: 0.00499999151
+            LocalScale:
+              X: 0.300000012
+              Y: 0.300000012
+              Z: 0.300000012
+          - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+            Id: 6da52b95-a35c-4b29-acf1-62fd49489f3c
+            AsignedTo: Default
+            IsEnabled: true
+            Material: 00fd8a25-0cdd-40ad-b39d-12608e78194e
+            UseCopy: false
+          - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+            Id: 4728c6f7-51e9-4318-b15d-23c12b257e57
+            Height: 0.100000001
+            IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
+            PlaneNormal: ZPositive
+            TwoSides: false
+            UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
+            VMirror: false
+            VOffset: 0.0
+            VTile: 1.0
+            Width: 0.100000001
+          - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+            Id: 79c6e427-9d5c-4abd-9c40-e6d0757353f2
+            DebugBoundingbox: true
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+          - !Evergine.Components.Graphics3D.Spinner,Evergine.Components
+            Id: 495c1c4b-095c-4db9-80a4-974311619d0b
+            AxisIncrease:
+              X: 0.0
+              Y: 0.0
+              Z: -5.0
+            IsEnabled: true
+            UpdateOrder: 0.5
+        Children: []
+        Id: 2848e669-5595-4d77-b991-c437c49e2979
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: Models
+        Tag: null
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 0050bafe-c2e7-4d18-bb0e-2d86dcd08601
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.0182711557
+              Y: 0.0930000022
+              Z: 4.42505304E-08
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.Components.Fonts.Text3DMesh,Evergine.Components
+            Id: 3f919250-58d8-4213-adba-3a802cd86af3
+            Color:
+              A: 255
+              B: 248
+              G: 242
+              R: 112
+            Ellipsis: true
+            Font: d1322288-d9e9-4b1e-b2fe-ca281f0388a2
+            HorizontalAlignment: Left
+            IsEnabled: true
+            Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
+            LineSpacing: 0.0
+            Origin:
+              X: 0.0
+              Y: 0.0
+            ScaleFactor: 0.00999999978
+            Size:
+              X: 0.0799999982
+              Y: 0.00999999978
+            Text: Models
+            VerticalAlignment: Top
+            Wrapping: true
+          - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
+            Id: 585d4df5-fafd-4e1b-ac9f-6b013bc9bca5
+            DebugBoundingbox: true
+            DebugMode: false
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+        Children: []
+        Id: ca872187-740d-4e22-befa-f93625d79d6a
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: ModelsListView
+        Tag: PART_models
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 98737de4-9637-4599-a7e2-aaf744bd956d
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.075239189
+              Y: 0.0
+              Z: 1.744319E-08
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.MRTK.SDK.Features.UX.Components.Scrolls.ListView,Evergine.MRTK
+            Id: a766992d-3eab-4d31-a010-1b5dda25a0aa
+            BarWidth: 0.00300000003
+            ContentPadding: 0.0199999996
+            DataSource: null
+            ElasticTime: 0.100000001
+            HeaderEnabled: true
+            IsEnabled: true
+            Render: null
+            RowHeight: 0.0149999997
+            UpdateOrder: 0.5
+            ZContentDistance: 0.00400000019
+        Children:
+          - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+            Name: ScrollArea
+            Tag: PART_scrollviewer_scrollarea
+            IsEnabled: true
+            IsStatic: false
+            Components:
+              - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                Id: cb466ed6-2614-4c28-b925-4ad45aa5b0da
+                IsEnabled: true
+                LocalOrientation:
+                  W: 1.0
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalPosition:
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalScale:
+                  X: 1.0
+                  Y: 1.0
+                  Z: 1.0
+              - !Evergine.Framework.Physics3D.StaticBody3D,Evergine.Framework
+                Id: 4cb26b78-5c58-4630-84a2-88a905d6f50b
+                CcdMotionThreshold: 0.0
+                CcdSweptSphereRadius: 0.200000003
+                CollisionCategories: Cat1
+                Friction: 0.5
+                IsEnabled: true
+                IsSensor: true
+                MaskBits: All
+                Restitution: 0.0
+                RollingFriction: 0.0
+                UpdateOrder: 0.5
+              - !Evergine.Components.Graphics3D.CubeMesh,Evergine.Components
+                Id: 8418273a-4907-4bee-ad82-f664b5e5757b
+                IsEnabled: true
+                Size: 1.0
+                UMirror: false
+                UOffset: 0.0
+                UTile: 1.0
+                VMirror: false
+                VOffset: 0.0
+                VTile: 1.0
+              - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
+                Id: 3355aff4-33a8-4f2e-9f7e-263a390f98a7
+                IsEnabled: true
+                Margin: 0.0399999991
+                Offset:
+                  X: 0.0
+                  Y: 0.0
+                  Z: -0.0199999996
+                OrientationOffset:
+                  W: 1.0
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                Size:
+                  X: 0.150000006
+                  Y: 0.129999995
+                  Z: 0.0500000007
+            Children:
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Background
+                Tag: PART_scrollviewer_background
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: 0e517fb5-0749-41f2-9d1c-72b414d164c9
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: ad72d70e-801e-4da7-9a6f-fff112b8bea8
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: f478b4e6-db00-44f4-a529-3126487183ea
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: 6049531c-80f5-4fed-9464-32c8c9d2a532
+                    Height: 0.129999995
+                    IsEnabled: true
+                    Origin:
+                      X: 0.5
+                      Y: 0.5
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.150000006
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: ca65524a-7e12-4129-a030-70515ac443b9
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: 98e2b2ea-23b9-4566-8886-9a0cc22d4d18
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Separator
+                Tag: PART_scrollviewer_separator
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: f9979930-6913-4b06-a2b0-1f731a82782c
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0
+                      Y: 0.0579999983
+                      Z: 0.000999996788
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: 4202e4c2-10c3-44f3-a938-aa124f8d2c62
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: 98337cd0-8fcc-40f9-953f-b5d5abe34ebf
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: ae8c9c6c-8bcb-443c-b786-ee709f2abe14
+                    Height: 0.0149999997
+                    IsEnabled: true
+                    Origin:
+                      X: 0.5
+                      Y: 0.5
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.150000006
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: f6109ae8-e69f-42f1-9cfa-28a399bde6a2
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: 1977fade-8cf3-4d64-87e8-a74b4265ec63
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Content
+                Tag: PART_scrollviewer_content
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: 831bce90-c3af-434a-8617-2202863b9aa1
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                Children: []
+                Id: 1c273e8e-09d7-45b2-9c44-b1119dc2677a
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Bar
+                Tag: PART_scrollviewer_bar
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: 3b50e924-8927-4ea3-bb67-344a5bbcedeb
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0710000023
+                      Y: 0.064000003
+                      Z: 0.00130886585
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: a971ab03-07e9-4beb-9557-1378789e0cc2
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: 09b7e0f4-19dc-4643-909b-a3494e81343c
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: 12902e9a-7a21-4aae-925e-43c22c0d03e2
+                    Height: 0.129999995
+                    IsEnabled: true
+                    Origin:
+                      X: 0.5
+                      Y: 0.0
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.00300000003
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: 2d5e018f-7ed2-48ca-93cc-d6adaf6f5772
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: 9246c213-c0d3-4e5c-8e8f-fb5e3f42a722
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: Selection
+                Tag: PART_scrollviewer_selection
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: 683f9fd1-1527-43b1-b1be-b18090447a30
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: -0.075000003
+                      Y: 0.0649999976
+                      Z: 0.00100000005
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: 1bd20b4e-57bb-4843-954f-403ca904bca2
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: 09f7e0f4-19dc-4643-909b-a3494e81343c
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: 8dd0f652-0cdf-462f-8350-cd46f8c826ed
+                    Height: 0.0149999997
+                    IsEnabled: true
+                    Origin:
+                      X: 0.0
+                      Y: 0.0
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 0.150000006
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: bf1a303f-272f-46d4-bf85-d043cd216f12
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: fc80ef29-791e-4607-933b-b86633e8dd83
+            Id: 6a223b39-d445-4ac0-a5d2-089756c05647
+          - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+            Name: Header
+            Tag: PART_scrollviewer_header
+            IsEnabled: true
+            IsStatic: false
+            Components:
+              - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                Id: 6ef66924-7e47-45d7-bed4-45c2da644212
+                IsEnabled: true
+                LocalOrientation:
+                  W: 1.0
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
+                LocalPosition:
+                  X: 0.0
+                  Y: 0.0719999969
+                  Z: 1.1610271E-08
+                LocalScale:
+                  X: 1.0
+                  Y: 1.0
+                  Z: 1.0
+              - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                Id: 2a617a68-6249-466a-b0b7-5290eb7e30be
+                AsignedTo: Default
+                IsEnabled: true
+                Material: ff78b4e6-db00-44f4-a529-3126487183ea
+                UseCopy: false
+              - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                Id: dfb63b85-0883-46bb-a137-2568d22e5fa1
+                Height: 0.0149999997
+                IsEnabled: true
+                Origin:
+                  X: 0.5
+                  Y: 0.5
+                PlaneNormal: ZPositive
+                TwoSides: false
+                UMirror: false
+                UOffset: 0.0
+                UTile: 1.0
+                VMirror: false
+                VOffset: 0.0
+                VTile: 1.0
+                Width: 0.150000006
+              - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                Id: e38cc89a-4326-4efe-975e-dde1e827c0ce
+                DebugBoundingbox: true
+                IsCullingEnabled: true
+                IsEnabled: true
+                OrderBias: 0
+                RenderFlags: None
+            Children: []
+            Id: 4b22e194-c3b7-4891-86a1-d4635af341ab
+        Id: 72373d3c-d9f0-4059-b248-86d15eb57cb4
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: ModelsLoading
+        Tag: PART_models_loading
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: c18e358d-9eb2-43e5-ac4c-6f4701e0a8ac
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.075239189
+              Y: 0.0
+              Z: 0.00500001712
+            LocalScale:
+              X: 0.300000012
+              Y: 0.300000012
+              Z: 0.300000012
+          - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+            Id: d7042d88-1e7e-49ce-b872-82177f66ffd5
+            AsignedTo: Default
+            IsEnabled: true
+            Material: 00fd8a25-0cdd-40ad-b39d-12608e78194e
+            UseCopy: false
+          - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+            Id: 483a8cd2-6407-4f06-99a5-7fa3fd799879
+            Height: 0.100000001
+            IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
+            PlaneNormal: ZPositive
+            TwoSides: false
+            UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
+            VMirror: false
+            VOffset: 0.0
+            VTile: 1.0
+            Width: 0.100000001
+          - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+            Id: eaa7b997-991f-4d6d-81fd-4e36c576b3d0
+            DebugBoundingbox: true
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+          - !Evergine.Components.Graphics3D.Spinner,Evergine.Components
+            Id: 432829c3-486b-43da-833c-44c7bbe38e02
+            AxisIncrease:
+              X: 0.0
+              Y: 0.0
+              Z: -5.0
+            IsEnabled: true
+            UpdateOrder: 0.5
+        Children: []
+        Id: b882fb1a-d6e0-493f-9406-09d6d83ed01f
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: LoadButtonHolder
+        Tag: PART_loadbutton
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 03682ee3-803d-45fc-bb9c-cfbf4bfad93f
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.115000002
+              Y: -0.0869999975
+              Z: 0.0
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+        Children: []
+        Id: 0f9a2844-9d40-4b69-87a8-2bb0f48066af
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: CancelButtonHolder
+        Tag: PART_cancelbutton
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: ef1c37e5-aebe-4e8c-9530-9cedac7c14f8
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.0370000005
+              Y: -0.0869999975
+              Z: 0.0
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+        Children: []
+        Id: 26066dce-bb1b-4e03-9d1a-115bc4b5f317
+    Id: d5ff5e1c-473c-45c2-b5b4-ed5665b27083
+Managers:
+  - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
+    Id: 66e41043-bf8c-41c2-a2c3-bcaaa44e70be
+    IsEnabled: true
+  - !Evergine.Framework.Managers.AssetSceneManager,Evergine.Framework
+    Id: 5f081509-1bd2-4fe1-900b-7794b20976f0
+    IsEnabled: true
+  - !Evergine.Framework.Managers.BehaviorManager,Evergine.Framework
+    Id: 9f502a3e-d0da-4145-8222-76d061caf2ef
+    IsEnabled: true
+  - !Evergine.Framework.Managers.RenderManager,Evergine.Framework
+    Id: f968f799-7a0c-4e83-9ee1-62ac01a119c4
+    DebugLines: false
+    IsEnabled: true
+  - !Evergine.Framework.Managers.VirtualScreenManager,Evergine.Framework
+    Id: 6c795ac3-8f2a-4e6a-a32d-e72606e74ac5
+    Expand: true
+    IsEnabled: false
+    Stretch: Uniform
+    VirtualHeight: 0.0
+    VirtualWidth: 0.0
+  - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
+    Id: e5736168-e2b8-4fac-a3e2-3be81ea9b597
+    IBLReflectionProbe: 40c8bc53-3c24-4e88-ae19-62ce40537646
+    IntensityMultiplier: 1.0
+    IsEnabled: true
+    Strategy: OnDemand
+  - !Evergine.Framework.Managers.ShadowMapManager,Evergine.Framework
+    Id: 131e71d2-e24e-4583-9419-dcc6cda57d77
+    AutoDepthBounds: false
+    DirectionalResolution: Size_2048
+    IsEnabled: true
+    PunctualResolution: Size_512
+    ShadowFilter: PCF3x3
+    SpotResolution: Size_512

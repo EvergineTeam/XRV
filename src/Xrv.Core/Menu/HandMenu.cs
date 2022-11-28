@@ -25,20 +25,17 @@ namespace Xrv.Core.Menu
     /// </summary>
     public class HandMenu : Component
     {
+        internal const int MinimumNumberOfButtonsPerColumn = 4;
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
 
         private readonly ObservableCollection<MenuButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
 
-        private int maxButtonsPerColumn = 4;
-
         private IWorkAction appearAnimation;
         private IWorkAction extendedAnimation;
-        private int numberOfButtons;
-        private int numberOfColumns;
-        private int numberOfButtonsPerColumn;
-        private bool isExtended = false;
+        private int numberOfButtonsPerColumn = MinimumNumberOfButtonsPerColumn;
+        private bool isDetached = false;
 
         private Vector3 initialManipulationBoxSize;
         private Vector3 initialManipulationBoxOffset;
@@ -101,19 +98,35 @@ namespace Xrv.Core.Menu
         }
 
         /// <summary>
+        /// Raised when menu state changes from attached to detached, or vice versa.
+        /// </summary>
+        public event EventHandler MenuStateChanged;
+
+        /// <summary>
+        /// Gets a value indicating whether the Palm was detected for the first time.
+        /// </summary>
+        public event EventHandler PalmUpDetected;
+
+        /// <summary>
         /// Gets or sets number of buttons per column. When a column can't hold more buttons,
-        /// a new column will be added.
+        /// a new column will be added. Minimum number of buttons per column is 4, as this is
+        /// the minimal number to have a proper layout when menu is detached.
         /// </summary>
         public int ButtonsPerColumn
         {
-            get => this.maxButtonsPerColumn;
+            get => this.numberOfButtonsPerColumn;
 
             set
             {
-                if (this.maxButtonsPerColumn != value && value > 0)
+                if (value < 4)
                 {
-                    this.maxButtonsPerColumn = value;
-                    this.ReorderButtons();
+                    throw new InvalidOperationException($"Minimum number of buttons is {MinimumNumberOfButtonsPerColumn}");
+                }
+
+                if (this.numberOfButtonsPerColumn != value && value > 0)
+                {
+                    this.numberOfButtonsPerColumn = value;
+                    this.UpdateLayoutImmediately();
                 }
             }
         }
@@ -122,6 +135,14 @@ namespace Xrv.Core.Menu
         /// Gets button descriptions.
         /// </summary>
         public IList<MenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
+
+        /// <summary>
+        /// Gets a value indicating whether menu is in a detached state.
+        /// </summary>
+        public bool IsDetached
+        {
+            get => this.isDetached;
+        }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -165,7 +186,7 @@ namespace Xrv.Core.Menu
             this.handMenuTransform.Owner.IsEnabled = false;
             this.UpdateFollowBehavior(false);
 
-            this.ReorderButtons();
+            this.UpdateLayoutImmediately();
         }
 
         /// <inheritdoc/>
@@ -185,6 +206,7 @@ namespace Xrv.Core.Menu
         private void PalmPanelBehavior_PalmUpChanged(object sender, bool palmUp)
         {
             this.AppearAnimation(palmUp);
+            this.PalmUpDetected?.Invoke(this, null);
         }
 
         private void ButtonDefinitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -202,7 +224,7 @@ namespace Xrv.Core.Menu
                     break;
             }
 
-            this.ReorderButtons();
+            this.UpdateLayoutImmediately();
         }
 
         private void InternalAddButtons(IEnumerable<MenuButtonDescription> buttons)
@@ -212,7 +234,6 @@ namespace Xrv.Core.Menu
             foreach (var definition in buttons)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(definition);
-                Workarounds.MrtkRotateButton(buttonInstance);
                 this.buttonsContainer.AddChild(buttonInstance);
                 this.instantiatedButtons.Add(definition.Id, buttonInstance);
             }
@@ -237,38 +258,6 @@ namespace Xrv.Core.Menu
         {
             this.instantiatedButtons.Clear();
             this.buttonsContainer.RemoveAllChildren();
-        }
-
-        private void ReorderButtons()
-        {
-            this.numberOfButtons = this.buttonDescriptions.Count;
-            this.numberOfColumns = (int)Math.Ceiling(this.numberOfButtons / (float)this.maxButtonsPerColumn);
-            this.numberOfButtonsPerColumn = this.numberOfButtons < this.maxButtonsPerColumn ? Math.Max(this.numberOfButtons, 4) : this.maxButtonsPerColumn;
-
-            // Resize back plate
-            this.backPlateTransform.LocalScale = new Vector3(this.numberOfColumns, 1, 1);
-
-            // Resize front plate
-            this.frontPlateTransform.LocalScale = new Vector3(this.numberOfColumns, this.numberOfButtonsPerColumn, 1);
-
-            // Resize manipulation collider
-            this.manipulationCollider.Size = new Vector3(
-                this.initialManipulationBoxSize.X * this.numberOfButtonsPerColumn,
-                ButtonWidth * (this.numberOfColumns + 1),
-                this.initialManipulationBoxSize.Z);
-            this.manipulationCollider.Offset = new Vector3(
-                this.initialManipulationBoxOffset.X * this.numberOfButtonsPerColumn,
-                -ButtonWidth / 2 * (this.numberOfColumns - 1),
-                this.initialManipulationBoxOffset.Z);
-
-            // Add buttons
-            int i = 0;
-            foreach (var button in this.instantiatedButtons.Values.Reverse())
-            {
-                var buttonTransform = button.FindComponent<Transform3D>();
-                buttonTransform.LocalPosition = new Vector3(ButtonWidthOverTwo + (ButtonWidth * (i / this.numberOfButtonsPerColumn)), -ButtonWidthOverTwo - ((i % this.numberOfButtonsPerColumn) * ButtonWidth), 0);
-                i++;
-            }
         }
 
         private void AppearAnimation(bool show)
@@ -301,17 +290,17 @@ namespace Xrv.Core.Menu
             this.appearAnimation.Run();
         }
 
-        private void ExtendedAnimation(bool extended)
+        private void DetachAnimation(bool detach)
         {
-            if (this.isExtended == extended)
+            if (this.isDetached == detach)
             {
                 return;
             }
 
-            this.isExtended = extended;
+            this.isDetached = detach;
 
-            float start = extended ? 0 : 1;
-            float end = extended ? 1 : 0;
+            float start = detach ? 0 : 1;
+            float end = detach ? 1 : 0;
 
             this.extendedAnimation?.Cancel();
             this.extendedAnimation = new ActionWorkAction(() =>
@@ -324,32 +313,7 @@ namespace Xrv.Core.Menu
                 }
             })
             .ContinueWith(
-                new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
-                {
-                    // Front and back plates animation
-                    this.frontPlateTransform.Scale = Vector3.Lerp(new Vector3(this.numberOfColumns, this.numberOfButtonsPerColumn, 1), new Vector3(this.numberOfButtonsPerColumn, this.numberOfColumns, 1), f);
-                    this.backPlateTransform.Scale = Vector3.Lerp(new Vector3(this.numberOfColumns, 1, 1), new Vector3(this.numberOfButtonsPerColumn, 1, 1), f);
-
-                    // Header animation
-                    this.detachButtonTransform.LocalPosition = Vector3.Lerp(new Vector3(ButtonWidthOverTwo, 0, 0.003f), new Vector3(ButtonWidthOverTwo + (ButtonWidth * (this.numberOfButtonsPerColumn - 1)), 0, 0.003f), f);
-                    this.followButtonTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidthOverTwo, 0, 0.003f), new Vector3(-ButtonWidthOverTwo + (ButtonWidth * (this.numberOfButtonsPerColumn - 1)), 0, 0.003f), f);
-
-                    this.textTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidth * 2, 0, 0.003f), new Vector3(0.015f, 0, 0.003f), f);
-                    this.text3DMesh.Color = Color.Lerp(Color.Transparent, Color.White, f);
-
-                    // Buttons animation
-                    int i = 0;
-                    foreach (var button in this.instantiatedButtons.Values.Reverse())
-                    {
-                        var buttonTransform = button.FindComponent<Transform3D>();
-                        buttonTransform.LocalPosition = Vector3.Lerp(
-                            new Vector3(ButtonWidthOverTwo + (ButtonWidth * (i / this.numberOfButtonsPerColumn)), -ButtonWidthOverTwo - ((i % this.numberOfButtonsPerColumn) * ButtonWidth), 0),
-                            new Vector3(ButtonWidthOverTwo + ((i % this.numberOfButtonsPerColumn) * ButtonWidth), -ButtonWidthOverTwo - (ButtonWidth * (i / this.numberOfButtonsPerColumn)), 0),
-                            f);
-
-                        i++;
-                    }
-                }))
+                new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, this.UpdateLayout))
             .ContinueWith(
                 new ActionWorkAction(() =>
                 {
@@ -363,6 +327,39 @@ namespace Xrv.Core.Menu
             this.extendedAnimation.Run();
         }
 
+        private void UpdateLayoutImmediately() => this.UpdateLayout(this.isDetached ? 1 : 0);
+
+        private void UpdateLayout(float animationProgress)
+        {
+            var numberOfButtons = this.buttonDescriptions.Count;
+            var numberOfColumns = (int)Math.Ceiling(numberOfButtons / (float)this.numberOfButtonsPerColumn);
+
+            // Front and back plates animation
+            this.frontPlateTransform.Scale = Vector3.Lerp(new Vector3(numberOfColumns, this.numberOfButtonsPerColumn, 1), new Vector3(this.numberOfButtonsPerColumn, numberOfColumns, 1), animationProgress);
+            this.backPlateTransform.Scale = Vector3.Lerp(new Vector3(numberOfColumns, 1, 1), new Vector3(this.numberOfButtonsPerColumn, 1, 1), animationProgress);
+
+            // Header animation
+            this.detachButtonTransform.LocalPosition = Vector3.Lerp(new Vector3(ButtonWidthOverTwo, 0, 0.003f), new Vector3(ButtonWidthOverTwo + (ButtonWidth * (this.numberOfButtonsPerColumn - 1)), 0, 0.003f), animationProgress);
+            this.followButtonTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidthOverTwo, 0, 0.003f), new Vector3(-ButtonWidthOverTwo + (ButtonWidth * (this.numberOfButtonsPerColumn - 1)), 0, 0.003f), animationProgress);
+
+            this.textTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidth * 2, 0, 0.003f), new Vector3(0.015f, 0, 0.003f), animationProgress);
+            this.text3DMesh.Color = Color.Lerp(Color.Transparent, Color.White, animationProgress);
+
+            // Buttons animation
+            int i = 0;
+
+            foreach (var button in this.instantiatedButtons.Values.Reverse())
+            {
+                var buttonTransform = button.FindComponent<Transform3D>();
+                buttonTransform.LocalPosition = Vector3.Lerp(
+                    new Vector3(ButtonWidthOverTwo + (ButtonWidth * (i / this.numberOfButtonsPerColumn)), -ButtonWidthOverTwo - ((i % this.numberOfButtonsPerColumn) * ButtonWidth), 0),
+                    new Vector3(ButtonWidthOverTwo + ((i % this.numberOfButtonsPerColumn) * ButtonWidth), -ButtonWidthOverTwo - (ButtonWidth * (i / this.numberOfButtonsPerColumn)), 0),
+                    animationProgress);
+
+                i++;
+            }
+        }
+
         private void DetachButtonToggle_Toggled(object sender, EventArgs e)
         {
             // Reset hand menu local position, as user may have moved it when detached
@@ -372,7 +369,8 @@ namespace Xrv.Core.Menu
             }
 
             this.UpdateFollowBehavior(false);
-            this.ExtendedAnimation(this.detachButtonToggle.IsOn);
+            this.DetachAnimation(this.detachButtonToggle.IsOn);
+            this.MenuStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void FollowButtonToggle_Toggled(object sender, EventArgs e) =>
@@ -389,50 +387,5 @@ namespace Xrv.Core.Menu
         {
             public static string DetachMenu = "Detach menu";
         }
-
-        //// -- Begin Debug area --
-
-        ////[BindService]
-        ////protected GraphicsPresenter graphicsPresenter;
-
-        ////protected override void Update(TimeSpan gameTime)
-        ////{
-        ////    KeyboardDispatcher keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
-
-        ////    if (keyboardDispatcher?.ReadKeyState(Keys.K) == ButtonState.Pressing)
-        ////    {
-        ////        this.ExtendedAnimation(true);
-        ////    }
-        ////    else if (keyboardDispatcher?.ReadKeyState(Keys.J) == ButtonState.Pressing)
-        ////    {
-        ////        this.ExtendedAnimation(false);
-        ////    }
-
-        ////    if (keyboardDispatcher?.ReadKeyState(Keys.O) == ButtonState.Pressing)
-        ////    {
-        ////        this.AppearAnimation(true);
-        ////    }
-        ////    else if (keyboardDispatcher?.ReadKeyState(Keys.P) == ButtonState.Pressing)
-        ////    {
-        ////        this.AppearAnimation(false);
-        ////    }
-
-        ////    if (keyboardDispatcher?.ReadKeyState(Keys.I) == ButtonState.Pressing)
-        ////    {
-        ////        this.AddButton();
-        ////    }
-        ////}
-
-        ////private void AddButton()
-        ////{
-        ////    this.ButtonDescriptions.Add(new MenuButtonDescription
-        ////    {
-        ////        IsToggle = false,
-        ////        TextOn = this.buttonDescriptions.Count.ToString(),
-        ////        IconOn = CoreResourcesIDs.Materials.Icons.Help,
-        ////    });
-        ////}
-
-        //// -- End Debug area --
     }
 }

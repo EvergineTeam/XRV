@@ -1,0 +1,87 @@
+name: CI
+on:
+  push:
+    branches:
+    - develop
+  pull_request:
+    branches:
+    - develop
+  workflow_dispatch:
+concurrency: ci-workflow
+env:
+  coreProjectFilePath: src/Xrv.Core/Xrv.Core.csproj
+  mrtkProjectFilePath: submodules/MRTK/Source/Evergine.MRTK/Evergine.MRTK.csproj
+  windowsSdkVersion: 18362
+  buildConfiguration: Release
+  testResultsDirectory: testResults
+  testConfigurationCore: src/Xrv.Core.Tests/appsettings.json
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: MSBuild setup
+        uses: microsoft/setup-msbuild@v1.1.3
+      - name: NuGet setup
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: "6.x"
+      - name: Install Windows SDK
+        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.8
+        with:
+          sdk-version: ${{  env.windowsSdkVersion }}
+      - name: Build MRTK
+        shell: pwsh
+        run: |
+          nuget restore ${{  env.mrtkProjectFilePath  }}
+          msbuild ${{  env.mrtkProjectFilePath  }} /p:Configuration=${{  env.buildConfiguration  }}
+      - name: Build Xrv.Core
+        shell: pwsh
+        run: |
+          nuget restore ${{  env.coreProjectFilePath  }}
+          msbuild ${{  env.coreProjectFilePath  }} /p:Configuration=${{  env.buildConfiguration  }}
+      - name: Build modules
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path src/modules -Recurse -Filter '*.csproj' | 
+          Where-Object { $_.Directory.Name -like "src" } | 
+          Foreach-Object { 
+            Write-Host "Restore and build $($_.Name)" 
+            nuget restore $_.FullName
+            msbuild $_.FullName /p:Configuration=${{  env.buildConfiguration  }}
+            if (-Not $?) {
+              exit $LastExitCode
+            }
+          }
+      - name: Prepare tests
+        shell: pwsh
+        run: |
+          Write-Host "Replace appsettings.json file for core tests"
+          (Invoke-WebRequest -URI "${{ secrets.XRV_CORE_TEST_SETTINGS_URL }}").Content > ${{  env.testConfigurationCore }}
+      - name: Run tests
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path src -Recurse -Filter '*.Tests.csproj' | 
+          Foreach-Object { 
+            Write-Host "Running tests for $($_.Name)" 
+            dotnet test $_.FullName --configuration ${{  env.buildConfiguration  }} --logger trx --results-directory ${{  env.testResultsDirectory  }}
+            if (-Not $?) {
+              exit $LastExitCode
+            }
+          }
+          Write-Host "Collected test result files"
+          Get-ChildItem -Path ${{  env.testResultsDirectory  }} | Select FullName
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Test results
+          path: ${{  env.testResultsDirectory  }}/*.trx    # Path to test results
+          reporter: dotnet-trx
+        
+        
+      
+      

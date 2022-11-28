@@ -11,11 +11,13 @@ using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Xrv.Core.Extensions;
+using Xrv.Core.Themes;
 using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Tabs
@@ -27,6 +29,7 @@ namespace Xrv.Core.UI.Tabs
     {
         private readonly ObservableCollection<TabItem> items;
         private readonly Dictionary<Entity, TabItem> mappings;
+        private readonly OrderedItemsEnumerator itemsEnumerator;
 
         private Vector2 size;
         private TabItem selectedItem;
@@ -61,6 +64,7 @@ namespace Xrv.Core.UI.Tabs
         {
             this.items = new ObservableCollection<TabItem>();
             this.mappings = new Dictionary<Entity, TabItem>();
+            this.itemsEnumerator = new OrderedItemsEnumerator(this.mappings);
             this.size = new Vector2(0.3f, 0.2f);
         }
 
@@ -174,9 +178,9 @@ namespace Xrv.Core.UI.Tabs
             base.OnActivated();
             this.UpdateFrontPlateSize();
             this.ReorderItems();
-            this.UpdateItemsTextColor();
             this.selectedItem = this.items.FirstOrDefault();
             this.UpdateSelectedItem();
+            this.UpdateItemsTextColor();
         }
 
         /// <inheritdoc/>
@@ -239,11 +243,7 @@ namespace Xrv.Core.UI.Tabs
             foreach (var item in items)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(item);
-                Workarounds.MrtkRotateButton(buttonInstance);
                 var transform = buttonInstance.FindComponent<Transform3D>();
-                var position = transform.LocalPosition;
-                position.Y = this.buttonsContainer.ChildEntities.Count() * ButtonConstants.SquareButtonSize;
-                transform.LocalPosition = position;
 
                 var pressableButton = buttonInstance.FindComponentInChildren<PressableButton>();
                 pressableButton.ButtonReleased += this.PressableButton_ButtonReleased;
@@ -253,6 +253,7 @@ namespace Xrv.Core.UI.Tabs
             }
 
             this.UpdateItemsTextColor();
+            this.ReorderItems();
         }
 
         private void InternalRemoveItems(IEnumerable<TabItem> items)
@@ -284,6 +285,8 @@ namespace Xrv.Core.UI.Tabs
                 }
             }
 
+            this.ReorderItems();
+
             if (currentItemRemoved)
             {
                 var newSelectedIndex = Math.Max(0, Math.Min(currentItemIndex - 1, this.Items.Count - 1));
@@ -296,15 +299,17 @@ namespace Xrv.Core.UI.Tabs
         {
             var itemIndex = -1;
 
-            for (int i = 0; i < this.buttonsContainer.ChildEntities.Count(); i++)
+            int i = 0;
+            foreach (var child in this.itemsEnumerator)
             {
-                Entity child = this.buttonsContainer.ChildEntities.ElementAt(i);
                 TabItem currentItem = this.mappings.ContainsKey(child) ? this.mappings[child] : null;
                 if (currentItem == this.selectedItem)
                 {
                     itemIndex = i;
                     break;
                 }
+
+                i++;
             }
 
             if (itemIndex != -1)
@@ -372,6 +377,11 @@ namespace Xrv.Core.UI.Tabs
                 this.contentsContainer.AddChild(content);
             }
 
+            if (content.FindComponent<ApplyTheme>() == null)
+            {
+                content.AddComponent(new ApplyTheme());
+            }
+
             content.IsEnabled = true;
         }
 
@@ -379,13 +389,14 @@ namespace Xrv.Core.UI.Tabs
         {
             if (this.IsAttached)
             {
-                for (int i = 0; i < this.buttonsContainer.ChildEntities.Count(); i++)
+                int i = 0;
+                foreach (var child in this.itemsEnumerator)
                 {
-                    var child = this.buttonsContainer.ChildEntities.ElementAt(i);
                     var transform = child.FindComponent<Transform3D>();
                     var position = transform.LocalPosition;
                     position.Y = -i * ButtonConstants.SquareButtonSize;
                     transform.LocalPosition = position;
+                    i++;
                 }
 
                 this.currentItemPlate.Owner.IsEnabled = this.items.Any() || Application.Current.IsEditor;
@@ -422,6 +433,30 @@ namespace Xrv.Core.UI.Tabs
                     this.UpdateItemsTextColor();
                 }
             }
+        }
+
+        private class OrderedItemsEnumerator : IEnumerable<Entity>
+        {
+            private readonly Dictionary<Entity, TabItem> mappings;
+
+            public OrderedItemsEnumerator(Dictionary<Entity, TabItem> mappings)
+            {
+                this.mappings = mappings;
+            }
+
+            public IEnumerator<Entity> GetEnumerator()
+            {
+                var orderedEntities = this.mappings
+                        .OrderBy(map => map.Value.Order)
+                        .Select(map => map.Key);
+
+                foreach (var item in orderedEntities)
+                {
+                    yield return item;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
         }
     }
 }

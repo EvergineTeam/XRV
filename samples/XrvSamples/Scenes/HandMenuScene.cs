@@ -2,6 +2,7 @@
 using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Xrv.Core;
 using Xrv.Core.Menu;
@@ -13,6 +14,7 @@ namespace XrvSamples.Scenes
         private HandMenu handMenu;
         private Text3DMesh columnSize;
         private Text3DMesh numberOfButtons;
+        private Text3DMesh detachStatus;
         private int counter;
 
         protected override void OnPostCreateXRScene()
@@ -59,6 +61,13 @@ namespace XrvSamples.Scenes
             {
                 this.AddButton();
             }
+
+            this.detachStatus = this.Managers.EntityManager
+                .FindAllByTag("detachStatus")
+                .First()
+                .FindComponentInChildren<Text3DMesh>();
+            this.UpdateStatusInfo();
+            this.handMenu.MenuStateChanged += this.HandMenu_MenuStateChanged;
         }
 
         private void IncreseColumnSize_ButtonReleased(object sender, EventArgs e)
@@ -69,8 +78,15 @@ namespace XrvSamples.Scenes
 
         private void DecreaseColumnSize_ButtonReleased(object sender, EventArgs e)
         {
-            this.handMenu.ButtonsPerColumn--;
-            this.UpdateCounts();
+            try
+            {
+                this.handMenu.ButtonsPerColumn--;
+                this.UpdateCounts();
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
         }
 
         private void IncreaseNumberOfButtons_ButtonReleased(object sender, EventArgs e) =>
@@ -104,5 +120,9 @@ namespace XrvSamples.Scenes
             this.columnSize.Text = this.handMenu.ButtonsPerColumn.ToString();
             this.numberOfButtons.Text = this.handMenu.ButtonDescriptions.Count.ToString();
         }
+
+        private void HandMenu_MenuStateChanged(object sender, EventArgs e) => this.UpdateStatusInfo();
+
+        private void UpdateStatusInfo() => this.detachStatus.Text = this.handMenu.IsDetached ? "Detached" : "Attached";
     }
 }

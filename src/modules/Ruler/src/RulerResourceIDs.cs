@@ -23,18 +23,22 @@ namespace Xrv.Ruler
 
             /// <summary> Asset Path (XRV/Materials/HandleSelected.wemt) </summary>
             public static readonly Guid HandleSelected = new Guid("5552c50c-36c4-424c-9355-3e5c7ad8af04");
+
+            public static Guid HolographicButtonContentCageProximity = new Guid("876d9b5c-5016-4796-8473-92a19a5d244c");
         }
 
         public sealed class Prefabs
         {
             /// <summary> Asset Path (Prefabs/Ruler.weprefab.weprf) </summary>
-            public static readonly Guid Ruler_weprefab = new Guid("b28d413a-da9d-4269-b289-6c98f05e1b6f");
+            public static readonly Guid Ruler_weprefab = new Guid("15b0b106-d886-45d4-80ee-2c986c544033");
 
             /// <summary> Asset Path (XRV/Prefabs/RulerHelp.weprefab.weprf) </summary>
-            public static readonly Guid RulerHelp_weprefab = new Guid("ee76d37e-f934-4583-b50a-09f61a1e4e79");
+            public static readonly Guid RulerHelp_weprefab = new Guid("05bfcd22-2b83-4858-8f08-6c671f14b48e");
 
             /// <summary> Asset Path (XRV/Prefabs/RulerSettings.weprefab.weprf) </summary>
             public static readonly Guid RulerSettings_weprefab = new Guid("86606363-84f4-47c8-955e-7ea8be9dd9bd");
+
+            public static Guid PressableButtonPlated = new Guid("dabe9073-b1d1-42c5-99b9-ebc0cb4a7430");
         }
     }
 }

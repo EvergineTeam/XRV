@@ -13,6 +13,8 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 using Evergine.Platform;
 using SixLabors.ImageSharp.PixelFormats;
+using Xrv.Core.Storage;
+using Xrv.Core.UI.Windows;
 using Xrv.ImageGallery.Helpers;
 
 namespace Xrv.ImageGallery.Components
@@ -50,18 +52,18 @@ namespace Xrv.ImageGallery.Components
         private readonly Entity spinnerEntity = null;
 
         private Texture imageTexture = null;
-
         private int imageIndex = 0;
         private CancellationTokenSource cancellationSource;
-
         private bool showNavigationButtons = true;
-
         private bool showNavigationSlider = true;
+        private List<FileItem> images = null;
+        private WindowConfigurator windowConfigurator = null;
 
         /// <summary>
-        /// Event fired when the image has changed.
+        /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
         /// </summary>
-        public event EventHandler<string> ImageUpdated;
+        [IgnoreEvergine]
+        public Core.Storage.FileAccess FileAccess { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether if the navigation slider is shown below the gallery.
@@ -124,7 +126,7 @@ namespace Xrv.ImageGallery.Components
             {
                 if (value >= 0)
                 {
-                    if (this.Images != null && value < this.Images.Count)
+                    if (this.images != null && value < this.images.Count)
                     {
                         this.imageIndex = value;
                         this.ReloadImage();
@@ -144,55 +146,58 @@ namespace Xrv.ImageGallery.Components
         public uint ImagePixelsHeight { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of paths to the images to show in the Gallery.
+        /// Gets or sets gallery name.
         /// </summary>
-        [IgnoreEvergine]
-        public List<string> Images { get; set; }
+        public string Name { get; set; }
+
+        /// <inheritdoc/>
+        protected async override void OnActivated()
+        {
+            base.OnActivated();
+
+            var fileList = await this.FileAccess.EnumerateFilesAsync();
+            fileList ??= new List<FileItem>();
+            this.images = new List<FileItem>(fileList);
+            this.ReloadImage();
+            this.RecalculateSliderPosition();
+            this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
+        }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
         {
-            ////this.ShowNavigationButtons = false;
-            ////this.ShowNavigationSlider = false;
-            if (this.Images == null)
+            if (base.OnAttached())
             {
-                // TODO Load from a source
-                string[] array = { "XRV/Textures/TestImages/test1.jpg", "XRV/Textures/TestImages/test2.jpg", "XRV/Textures/TestImages/test3.jpg" };
-                this.Images = new List<string>(array);
+                var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
+
+                TextureDescription desc = new ()
+                {
+                    Type = TextureType.Texture2D,
+                    Width = this.ImagePixelsWidth,
+                    Height = this.ImagePixelsHeight,
+                    Depth = 1,
+                    ArraySize = 1,
+                    Faces = 1,
+                    Usage = ResourceUsage.Default,
+                    CpuAccess = ResourceCpuAccess.None,
+                    Flags = TextureFlags.ShaderResource,
+                    Format = PixelFormat.R8G8B8A8_UNorm,
+                    MipLevels = 1,
+                    SampleCount = TextureSampleCount.None,
+                };
+
+                this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
+                holographicEffect.Texture = this.imageTexture;
+
+                this.nextButton.ButtonReleased += this.NextButtonReleased;
+                this.previousButton.ButtonReleased += this.PreviousButtonReleased;
+                this.slider.ValueUpdated += this.SliderValueUpdated;
+                this.slider.InteractionEnded += this.SliderInteractionEnded;
+
+                this.nextButtonEntity.IsEnabled = this.ShowNavigationButtons;
+                this.previousButtonEntity.IsEnabled = this.ShowNavigationButtons;
+                this.sliderEntity.IsEnabled = this.ShowNavigationSlider;
             }
-
-            var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
-
-            TextureDescription desc = new TextureDescription()
-            {
-                Type = TextureType.Texture2D,
-                Width = this.ImagePixelsWidth,
-                Height = this.ImagePixelsHeight,
-                Depth = 1,
-                ArraySize = 1,
-                Faces = 1,
-                Usage = ResourceUsage.Default,
-                CpuAccess = ResourceCpuAccess.None,
-                Flags = TextureFlags.ShaderResource,
-                Format = PixelFormat.R8G8B8A8_UNorm,
-                MipLevels = 1,
-                SampleCount = TextureSampleCount.None,
-            };
-
-            this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
-            holographicEffect.Texture = this.imageTexture;
-
-            this.nextButton.ButtonReleased += this.NextButtonReleased;
-            this.previousButton.ButtonReleased += this.PreviousButtonReleased;
-            this.slider.ValueUpdated += this.SliderValueUpdated;
-            this.slider.InteractionEnded += this.SliderInteractionEnded;
-
-            this.nextButtonEntity.IsEnabled = this.ShowNavigationButtons;
-            this.previousButtonEntity.IsEnabled = this.ShowNavigationButtons;
-            this.sliderEntity.IsEnabled = this.ShowNavigationSlider;
-
-            this.ReloadImage();
-            this.RecalculateSliderPosition();
 
             return base.OnAttached();
         }
@@ -214,13 +219,13 @@ namespace Xrv.ImageGallery.Components
         {
             if (this.ShowNavigationSlider)
             {
-                this.slider.SliderValue = this.ImageIndex / (float)(this.Images.Count - 1);
+                this.slider.SliderValue = this.ImageIndex / (float)(this.images.Count - 1);
             }
         }
 
         private void SliderValueUpdated(object sender, SliderEventData e)
         {
-            var newImageIndex = (int)Math.Round(e.NewValue * (this.Images.Count - 1));
+            var newImageIndex = (int)Math.Round(e.NewValue * (this.images.Count - 1));
             if (newImageIndex != this.ImageIndex)
             {
                 this.ImageIndex = newImageIndex;
@@ -241,10 +246,15 @@ namespace Xrv.ImageGallery.Components
 
         private void ReloadImage()
         {
-            this.LoadRawJPG(this.Images[this.ImageIndex]);
-            if (!Application.Current.IsEditor)
+            if (this.images.Count == 0)
             {
-                this.ImageUpdated.Invoke(this, this.ImageIndex + 1 + " of " + this.Images.Count);
+                return;
+            }
+
+            this.LoadRawJPG(this.images[this.ImageIndex].Name);
+            if (!Application.Current.IsEditor && this.windowConfigurator != null)
+            {
+                this.windowConfigurator.Title = $"{this.Name} {this.ImageIndex + 1} of {this.images.Count}";
             }
 
             if (this.ShowNavigationButtons)
@@ -258,7 +268,7 @@ namespace Xrv.ImageGallery.Components
                     this.previousButtonEntity.IsEnabled = true;
                 }
 
-                if (this.ImageIndex >= this.Images.Count - 1)
+                if (this.ImageIndex >= this.images.Count - 1)
                 {
                     this.nextButtonEntity.IsEnabled = false;
                 }
@@ -276,15 +286,15 @@ namespace Xrv.ImageGallery.Components
             this.spinnerEntity.IsEnabled = true;
 
             EvergineBackgroundTask.Run(
-            () =>
+                async () =>
             {
                 AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
                 byte[] data;
-                using (var fileStream = assetDirectory.Open(filePath))
+                using (var fileStream = await this.FileAccess.GetFileAsync(filePath))
                 {
                     using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
                     {
-                        RawImageLoader.CopyImageToArrayPool(image, false, out _, out data);
+                        RawImageLoader.CopyImageToArrayPool(image, out _, out data);
                     }
 
                     this.graphicsContext.UpdateTextureData(this.imageTexture, data);

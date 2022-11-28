@@ -174,8 +174,8 @@ Items:
         Diameter: 1.0
         IsEnabled: true
         Tessellation: 32
-        UVHorizontalFlip: false
-        UVVerticalFlip: false
+        UMirror: false
+        VMirror: false
       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
         Id: 5b2616ab-7741-48fa-9a9e-c8f45add52c0
         DebugBoundingbox: true
@@ -521,16 +521,16 @@ Items:
                           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                             Id: 5a37e502-9435-42b1-ae65-e0b93018a044
                             Height: 1.0
-                            InitialU: 0.0
-                            InitialV: 0.0
+                            UOffset: 0.0
+                            VOffset: 0.0
                             IsEnabled: true
                             PlaneNormal: ZNegative
                             TwoSides: false
                             UTile: 1.0
-                            UVHorizontalFlip: false
-                            UVVerticalFlip: false
+                            UMirror: false
+                            VMirror: false
                             Width: 1.0
-                            YTile: 1.0
+                            VTile: 1.0
                           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                             Id: 38362fb1-5907-43f8-82e8-3e9428e5a7d8
                             DebugBoundingbox: true
@@ -602,16 +602,16 @@ Items:
                               - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                 Id: 8dde4a6c-75dc-45a2-abdc-91f8bee519c4
                                 Height: 1.0
-                                InitialU: 0.0
-                                InitialV: 0.0
+                                UOffset: 0.0
+                                VOffset: 0.0
                                 IsEnabled: true
                                 PlaneNormal: ZNegative
                                 TwoSides: false
                                 UTile: 1.0
-                                UVHorizontalFlip: false
-                                UVVerticalFlip: false
+                                UMirror: false
+                                VMirror: false
                                 Width: 1.0
-                                YTile: 1.0
+                                VTile: 1.0
                               - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                 Id: 857e9927-983b-441b-ba29-90e104b8e543
                                 DebugBoundingbox: true
@@ -738,14 +738,14 @@ Items:
                                 Material: 75122a47-663c-4625-8118-ff2e2a2bcaeb
                               - !Evergine.Components.Graphics3D.CubeMesh,Evergine.Components
                                 Id: 7b26582b-1d43-4886-9b15-2accad1f90f6
-                                InitialU: 0.0
-                                InitialV: 0.0
+                                UOffset: 0.0
+                                VOffset: 0.0
                                 IsEnabled: true
                                 Size: 1.0
                                 UTile: 1.0
-                                UVHorizontalFlip: false
-                                UVVerticalFlip: false
-                                YTile: 1.0
+                                UMirror: false
+                                VMirror: false
+                                VTile: 1.0
                               - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                 Id: c630c336-e572-4e83-84f4-10543d97611a
                                 DebugBoundingbox: true
@@ -784,16 +784,16 @@ Items:
                                   - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                     Id: 6032efb7-9c16-4c69-8d86-8b0374800e32
                                     Height: 1.0
-                                    InitialU: 0.0
-                                    InitialV: 0.0
+                                    UOffset: 0.0
+                                    VOffset: 0.0
                                     IsEnabled: true
                                     PlaneNormal: ZNegative
                                     TwoSides: false
                                     UTile: 1.0
-                                    UVHorizontalFlip: false
-                                    UVVerticalFlip: false
+                                    UMirror: false
+                                    VMirror: false
                                     Width: 1.0
-                                    YTile: 1.0
+                                    VTile: 1.0
                                   - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                     Id: a69c67ca-80e9-4f1d-9f56-a66e63b7cb48
                                     DebugBoundingbox: true
@@ -1104,16 +1104,16 @@ Items:
                           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                             Id: 40e0ad4b-6145-4e1a-9ea5-5609e70a9da9
                             Height: 1.0
-                            InitialU: 0.0
-                            InitialV: 0.0
+                            UOffset: 0.0
+                            VOffset: 0.0
                             IsEnabled: true
                             PlaneNormal: ZNegative
                             TwoSides: false
                             UTile: 1.0
-                            UVHorizontalFlip: false
-                            UVVerticalFlip: false
+                            UMirror: false
+                            VMirror: false
                             Width: 1.0
-                            YTile: 1.0
+                            VTile: 1.0
                           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                             Id: a8bcb69b-d987-4959-876e-aae2fd60fae6
                             DebugBoundingbox: true
@@ -1185,16 +1185,16 @@ Items:
                               - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                 Id: 199aa3d4-7eb0-445a-a32e-d52a53194fc7
                                 Height: 1.0
-                                InitialU: 0.0
-                                InitialV: 0.0
+                                UOffset: 0.0
+                                VOffset: 0.0
                                 IsEnabled: true
                                 PlaneNormal: ZNegative
                                 TwoSides: false
                                 UTile: 1.0
-                                UVHorizontalFlip: false
-                                UVVerticalFlip: false
+                                UMirror: false
+                                VMirror: false
                                 Width: 1.0
-                                YTile: 1.0
+                                VTile: 1.0
                               - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                 Id: c46ad509-adac-4cd6-ab4e-506cd3b99edf
                                 DebugBoundingbox: true
@@ -1321,14 +1321,14 @@ Items:
                                 Material: 75122a47-663c-4625-8118-ff2e2a2bcaeb
                               - !Evergine.Components.Graphics3D.CubeMesh,Evergine.Components
                                 Id: b20157e4-dde7-43c0-bbad-bf71c59de33e
-                                InitialU: 0.0
-                                InitialV: 0.0
+                                UOffset: 0.0
+                                VOffset: 0.0
                                 IsEnabled: true
                                 Size: 1.0
                                 UTile: 1.0
-                                UVHorizontalFlip: false
-                                UVVerticalFlip: false
-                                YTile: 1.0
+                                UMirror: false
+                                VMirror: false
+                                VTile: 1.0
                               - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                 Id: e67ebd9f-4984-47ae-9fa8-b0d629c8503a
                                 DebugBoundingbox: true
@@ -1367,16 +1367,16 @@ Items:
                                   - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                     Id: ef0a46b8-1e75-49ac-8ae1-062e19b292d9
                                     Height: 1.0
-                                    InitialU: 0.0
-                                    InitialV: 0.0
+                                    UOffset: 0.0
+                                    VOffset: 0.0
                                     IsEnabled: true
                                     PlaneNormal: ZNegative
                                     TwoSides: false
                                     UTile: 1.0
-                                    UVHorizontalFlip: false
-                                    UVVerticalFlip: false
+                                    UMirror: false
+                                    VMirror: false
                                     Width: 1.0
-                                    YTile: 1.0
+                                    VTile: 1.0
                                   - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                     Id: 66793741-e435-4c94-b4de-e1ec9ec3e026
                                     DebugBoundingbox: true
@@ -1687,16 +1687,16 @@ Items:
                           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                             Id: 8b4e86fa-9702-4c26-b132-077e109e3ed1
                             Height: 1.0
-                            InitialU: 0.0
-                            InitialV: 0.0
+                            UOffset: 0.0
+                            VOffset: 0.0
                             IsEnabled: true
                             PlaneNormal: ZNegative
                             TwoSides: false
                             UTile: 1.0
-                            UVHorizontalFlip: false
-                            UVVerticalFlip: false
+                            UMirror: false
+                            VMirror: false
                             Width: 1.0
-                            YTile: 1.0
+                            VTile: 1.0
                           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                             Id: b01ef13f-77d2-415c-acf6-725e68df975e
                             DebugBoundingbox: true
@@ -1768,16 +1768,16 @@ Items:
                               - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                 Id: 346c7ec3-1e42-4a07-975f-120230761443
                                 Height: 1.0
-                                InitialU: 0.0
-                                InitialV: 0.0
+                                UOffset: 0.0
+                                VOffset: 0.0
                                 IsEnabled: true
                                 PlaneNormal: ZNegative
                                 TwoSides: false
                                 UTile: 1.0
-                                UVHorizontalFlip: false
-                                UVVerticalFlip: false
+                                UMirror: false
+                                VMirror: false
                                 Width: 1.0
-                                YTile: 1.0
+                                VTile: 1.0
                               - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                 Id: d3db33e4-3170-4375-8a33-2349cdeaa798
                                 DebugBoundingbox: true
@@ -1904,14 +1904,14 @@ Items:
                                 Material: 75122a47-663c-4625-8118-ff2e2a2bcaeb
                               - !Evergine.Components.Graphics3D.CubeMesh,Evergine.Components
                                 Id: 00a689c7-d38e-4116-81db-166219efe9db
-                                InitialU: 0.0
-                                InitialV: 0.0
+                                UOffset: 0.0
+                                VOffset: 0.0
                                 IsEnabled: true
                                 Size: 1.0
                                 UTile: 1.0
-                                UVHorizontalFlip: false
-                                UVVerticalFlip: false
-                                YTile: 1.0
+                                UMirror: false
+                                VMirror: false
+                                VTile: 1.0
                               - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                 Id: 910913ae-ea2b-4894-809d-5f90458b8c03
                                 DebugBoundingbox: true
@@ -1950,16 +1950,16 @@ Items:
                                   - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                                     Id: 446cdd74-a337-4508-9048-40ed6a88d96d
                                     Height: 1.0
-                                    InitialU: 0.0
-                                    InitialV: 0.0
+                                    UOffset: 0.0
+                                    VOffset: 0.0
                                     IsEnabled: true
                                     PlaneNormal: ZNegative
                                     TwoSides: false
                                     UTile: 1.0
-                                    UVHorizontalFlip: false
-                                    UVVerticalFlip: false
+                                    UMirror: false
+                                    VMirror: false
                                     Width: 1.0
-                                    YTile: 1.0
+                                    VTile: 1.0
                                   - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                                     Id: a5e60da5-e393-46a0-a844-d193ae33f161
                                     DebugBoundingbox: true

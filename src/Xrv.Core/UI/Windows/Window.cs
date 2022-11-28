@@ -109,10 +109,11 @@ namespace Xrv.Core.UI.Windows
         {
             if (!this.IsOpened)
             {
-                this.PlaceInFrontOfUser();
                 this.Owner.IsEnabled = true;
                 this.Opened?.Invoke(this, EventArgs.Empty);
             }
+
+            this.PlaceInFrontOfUser();
         }
 
         /// <summary>
@@ -210,10 +211,7 @@ namespace Xrv.Core.UI.Windows
             var distance = this.GetOpenDistance();
             var position = camera.Transform.Position + (camera.Transform.WorldTransform.Forward * distance);
             this.transform.Position = position;
-
-            // default LookAt makes window to be oriented backwards to the camera
-            this.transform.LookAt(camera.Transform.Position);
-            this.transform.RotateAround(position, Vector3.Up, MathHelper.Pi);
+            this.transform.LookAt(camera.Transform.Position, Vector3.Up, false);
         }
 
         private void UpdateFollowBehavior(bool followEnabled)

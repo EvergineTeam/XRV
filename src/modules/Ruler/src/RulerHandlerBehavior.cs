@@ -7,7 +7,10 @@ using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.Base.EventDatum.Input;
 using Evergine.MRTK.Base.Interfaces.InputSystem.Handlers;
+using Evergine.MRTK.Effects;
 using Evergine.MRTK.Emulation;
+using Xrv.Core;
+using Xrv.Core.Themes;
 
 namespace Xrv.Ruler
 {
@@ -34,6 +37,9 @@ namespace Xrv.Ruler
 
         [BindComponent]
         private MaterialComponent materialComponent = null;
+
+        [BindService]
+        private XrvService xrvService = null;
 
         /// <inheritdoc/>
         public void OnPointerClicked(MixedRealityPointerEventData eventData)
@@ -78,6 +84,8 @@ namespace Xrv.Ruler
 
                 this.transform.Position = this.lastCursorPosition + delta + this.initialOffset;
                 this.lastCursorPosition = this.lastCursorPosition + delta;
+
+                this.materialComponent.Material = this.grabbed;
 
                 eventData.SetHandled();
             }
@@ -128,6 +136,70 @@ namespace Xrv.Ruler
             this.grabbed = this.assetsService.Load<Material>(RulerResourceIDs.Materials.HandleGrabbed);
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnActivated()
+        {
+            base.OnActivated();
+
+            if (this.xrvService?.ThemesSystem != null)
+            {
+                this.RefreshThemeDependantElements(this.xrvService.ThemesSystem.CurrentTheme);
+                this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDeactivated()
+        {
+            base.OnDeactivated();
+
+            if (this.xrvService?.ThemesSystem != null)
+            {
+                this.xrvService.ThemesSystem.ThemeUpdated -= this.ThemesSystem_ThemeUpdated;
+            }
+        }
+
+        private void ThemesSystem_ThemeUpdated(object sender, ThemeUpdatedEventArgs args)
+        {
+            if (args.IsNewThemeInstance)
+            {
+                this.RefreshThemeDependantElements(args.Theme);
+                return;
+            }
+
+            switch (args.UpdatedColor)
+            {
+                case ThemeColor.PrimaryColor3:
+                    this.OnPrimaryColor3Updated(args.Theme);
+                    break;
+                case ThemeColor.SecondaryColor2:
+                    this.OnSecondaryControl2Updated(args.Theme);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void RefreshThemeDependantElements(Theme theme)
+        {
+            this.OnPrimaryColor3Updated(theme);
+            this.OnSecondaryControl2Updated(theme);
+        }
+
+        private void OnPrimaryColor3Updated(Theme theme)
+        {
+            var holoGraphic = new HoloGraphic(this.idle);
+            holoGraphic.Albedo = theme[ThemeColor.PrimaryColor3];
+            holoGraphic = new HoloGraphic(this.grabbed);
+            holoGraphic.Albedo = theme[ThemeColor.PrimaryColor3];
+        }
+
+        private void OnSecondaryControl2Updated(Theme theme)
+        {
+            var holoGraphic = new HoloGraphic(this.selected);
+            holoGraphic.Albedo = theme[ThemeColor.SecondaryColor2];
         }
     }
 }

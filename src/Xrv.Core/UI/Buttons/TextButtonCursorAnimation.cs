@@ -30,7 +30,7 @@ namespace Xrv.Core.UI.Buttons
             if (attached)
             {
                 this.contentDefaultPosition = this.contentTransform.LocalPosition;
-                this.contentHoverPosition = this.contentTransform.LocalPosition + (Vector3.Forward * 0.002f);
+                this.contentHoverPosition = this.contentTransform.LocalPosition - (Vector3.Forward * 0.002f);
             }
 
             return attached;

@@ -20,14 +20,12 @@ namespace Xrv.ImageGallery
     /// </summary>
     public class ImageGalleryModule : Module
     {
+        private readonly MenuButtonDescription handMenuDescription;
+        private readonly TabItem settings = null;
+        private TabItem help = null;
         private AssetsService assetsService;
         private XrvService xrv;
-        private MenuButtonDescription handMenuDescription;
-        private TabItem settings = null;
-        private TabItem help = null;
         private Entity imageGalleryHelp;
-        private Entity imageGallerySettings;
-        private Scene scene;
         private Window window = null;
 
         /// <summary>
@@ -42,12 +40,6 @@ namespace Xrv.ImageGallery
                 IsToggle = false,
                 TextOn = "Image Gallery",
             };
-
-            ////this.settings = new TabItem()
-            ////{
-            ////    Name = "Image Gallery",
-            ////    Contents = this.SettingContent,
-            ////};
 
             this.help = new TabItem()
             {
@@ -65,6 +57,11 @@ namespace Xrv.ImageGallery
         /// Gets or sets the height of the images listed in the gallery.
         /// </summary>
         public uint ImagePixelsHeight { get; set; }
+
+        /// <summary>
+        /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
+        /// </summary>
+        public Core.Storage.FileAccess FileAccess { get; set; }
 
         /// <inheritdoc/>
         public override string Name => "Image Gallery";
@@ -86,11 +83,13 @@ namespace Xrv.ImageGallery
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
-            this.scene = scene;
 
+            // Loading and setting Gallery Asset
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
-            var imageGallery = gallery.FindComponent<ImageGallery.Components.ImageGallery>();
-            imageGallery.ImageUpdated += this.ImageGalleryImageUpdated;
+            var imageGallery = gallery.FindComponent<Components.ImageGallery>();
+            imageGallery.FileAccess = this.FileAccess;
+            imageGallery.Name = this.Name;
+
             var galleryImageFrame = gallery.FindComponentInChildren<PlaneMesh>(tag: "PART_image_gallery_picture");
             var controllersTransform = gallery.FindComponentInChildren<Transform3D>(tag: "PART_image_gallery_controllers");
             imageGallery.ImagePixelsHeight = this.ImagePixelsHeight;
@@ -100,12 +99,12 @@ namespace Xrv.ImageGallery
             galleryImageFrame.Height = size.Y;
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
 
+            // Setting Window
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
                 config.Title = this.Name;
                 config.Size = size;
-                config.FrontPlateSize = size;
-                config.FrontPlateOffsets = Vector2.Zero;
+                config.DisplayFrontPlate = false;
                 config.DisplayLogo = false;
                 config.Content = gallery;
             });
@@ -114,32 +113,7 @@ namespace Xrv.ImageGallery
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.SetFrontPosition(this.scene, this.window.Owner);
             this.window.Open();
-        }
-
-        private void ImageGalleryImageUpdated(object sender, string e)
-        {
-            this.window.Configurator.Title = this.Name + " " + e;
-        }
-
-        private void SetFrontPosition(Scene scene, Entity entity)
-        {
-            var entityTransform = entity.FindComponent<Transform3D>();
-            var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
-            var cameraWorldTransform = cameraTransform.WorldTransform;
-            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
-        }
-
-        private Entity SettingContent()
-        {
-            if (this.imageGallerySettings == null)
-            {
-                var imageGallerySettingsPrefab = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Settings);
-                this.imageGallerySettings = imageGallerySettingsPrefab.Instantiate();
-            }
-
-            return this.imageGallerySettings;
         }
 
         private Entity HelpContent()

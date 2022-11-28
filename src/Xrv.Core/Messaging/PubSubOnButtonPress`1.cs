@@ -20,20 +20,36 @@ namespace Xrv.Core.Messaging
         private PressableButton button = null;
 
         [BindComponent(source: BindComponentSource.Children, isExactType: false, isRequired: false)]
-        private ToggleButton toggleButton = null;
+        private ToggleStateManager toggleStateManager = null;
 
         /// <inheritdoc/>
         protected override void OnActivated()
         {
             base.OnActivated();
-            this.button.ButtonReleased += this.Button_ButtonReleased;
+
+            if (this.toggleStateManager != null)
+            {
+                this.toggleStateManager.StateChanged += this.StateChangedEvent;
+            }
+            else
+            {
+                this.button.ButtonReleased += this.StateChangedEvent;
+            }
         }
 
         /// <inheritdoc/>
         protected override void OnDeactivated()
         {
             base.OnDeactivated();
-            this.button.ButtonReleased -= this.Button_ButtonReleased;
+
+            if (this.toggleStateManager != null)
+            {
+                this.toggleStateManager.StateChanged -= this.StateChangedEvent;
+            }
+            else
+            {
+                this.button.ButtonReleased -= this.StateChangedEvent;
+            }
         }
 
         /// <summary>
@@ -44,9 +60,9 @@ namespace Xrv.Core.Messaging
         /// <returns>Message instance.</returns>
         protected abstract TMessage GetPublishData(bool isOn);
 
-        private void Button_ButtonReleased(object sender, EventArgs e)
+        private void StateChangedEvent(object sender, EventArgs e)
         {
-            bool isOn = this.toggleButton?.IsOn ?? true;
+            bool isOn = this.toggleStateManager != null ? this.toggleStateManager.CurrentState.Value == ToggleState.On : true;
             this.xrvService.PubSub.Publish(this.GetPublishData(isOn));
         }
     }

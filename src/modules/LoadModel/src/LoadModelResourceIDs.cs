@@ -7,6 +7,12 @@ namespace Xrv.LoadModel
 {
     public sealed class LoadModelResourceIDs
     {
+        public sealed class Effects
+        {
+            /// <summary> Asset Path (XRV/Effects/SolidEffect.wefx) </summary>
+            public static readonly Guid SolidEffect = new Guid("d0d24ac6-f92d-455a-96e3-7957d219772b");
+        }
+
         public sealed class Materials
         {
             public sealed class Icons
@@ -37,50 +43,10 @@ namespace Xrv.LoadModel
         public sealed class Prefabs
         {
             /// <summary> Asset Path (XRV/Prefabs/Manipulator.weprefab.weprf) </summary>
-            public static readonly Guid Manipulator_weprefab = new Guid("d15e6e57-0f7d-4160-8935-b80d0cb14f12");
-        }
+            public static readonly Guid Manipulator_weprefab = new Guid("45361617-a9ab-48ae-bb8c-9ed11a79580a");
 
-        public sealed class MRTK
-        {
-            public sealed class Materials
-            {
-                public sealed class BoundingBox
-                {
-
-                    /// <summary> Asset Path (MRTK/Materials/BoundingBox/BoundingBoxHandleBlue.wemt) </summary>
-                    public static readonly Guid BoundingBoxHandleBlue = new Guid("9adff77b-f6b6-4683-bf28-243fafea5436");
-
-                    /// <summary> Asset Path (MRTK/Materials/BoundingBox/BoundingBoxHandleBlueGrabbed.wemt) </summary>
-                    public static readonly Guid BoundingBoxHandleBlueGrabbed = new Guid("7c6dfc11-0f01-4d22-bfc9-bc5ca4fae227");
-
-                    /// <summary> Asset Path (MRTK/Materials/BoundingBox/BoundingBoxVisual.wemt) </summary>
-                    public static readonly Guid BoundingBoxVisual = new Guid("76254053-dba8-4ecd-8ffd-2989ae519c06");
-
-                    /// <summary> Asset Path (MRTK/Materials/BoundingBox/BoundingBoxVisualGrabbed.wemt) </summary>
-                    public static readonly Guid BoundingBoxVisualGrabbed = new Guid("0852af68-ed44-4dd5-bebb-05c15449d498");
-
-                    /// <summary> Asset Path (MRTK/Materials/BoundingBox/BoundingBoxWireframe.wemt) </summary>
-                    public static readonly Guid BoundingBoxWireframe = new Guid("d04c6b19-b181-4798-8052-73388883abfe");
-                }
-
-                public sealed class Buttons
-                {
-                    /// <summary> Asset Path (XRV/Materials/Buttons/ButtonPrimary.wemt) </summary>
-                    public static readonly Guid ButtonPrimary = new Guid("ce1f6bc9-39ac-4a0a-a913-07963f7342f5");
-                }
-            }
-
-            public sealed class Prefabs
-            {
-                /// <summary> Asset Path (MRTK/Prefabs/BoundingBox_FaceScaleHandle.weprefab.weprf) </summary>
-                public static readonly Guid BoundingBox_FaceScaleHandle_weprefab = new Guid("caa9ea87-b38e-4677-86fb-87ef1cb99838");
-
-                /// <summary> Asset Path (MRTK/Prefabs/BoundingBox_RotateHandle.weprefab.weprf) </summary>
-                public static readonly Guid BoundingBox_RotateHandle_weprefab = new Guid("5e18a808-fd7d-49f9-8187-d9256af252c7");
-
-                /// <summary> Asset Path (MRTK/Prefabs/BoundingBox_ScaleHandle.weprefab.weprf) </summary>
-                public static readonly Guid BoundingBox_ScaleHandle_weprefab = new Guid("ae0e37ce-4928-42ef-970e-a4b1e547f4ea");
-            }
-        }
+            /// <summary> Asset Path (XRV/Prefabs/RepositoriesWindow.weprefab.weprf) </summary>
+            public static readonly Guid RepositoriesWindow_weprefab = new Guid("4c5fc907-319d-470e-a8c1-a240df618171");
+        }      
     }
 }

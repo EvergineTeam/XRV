@@ -1,7 +1,7 @@
 !Evergine.Framework.Assets.AssetSources.Entities.SceneModel,Evergine.Framework
 Items:
   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-    Name: button
+    Name: textButton
     Tag: null
     IsEnabled: true
     IsStatic: false
@@ -29,7 +29,7 @@ Items:
         Offset:
           X: 0.0
           Y: 0.0
-          Z: -0.00800000038
+          Z: 0.00800000038
         OrientationOffset:
           W: 1.0
           X: 0.0
@@ -110,7 +110,7 @@ Items:
             Offset:
               X: 0.0
               Y: 0.0
-              Z: -0.0120000001
+              Z: 0.0120000001
             OrientationOffset:
               W: 1.0
               X: 0.0
@@ -158,10 +158,10 @@ Items:
                     Id: a7f638e3-282e-46aa-95eb-6eee0499a300
                     IsEnabled: true
                     LocalOrientation:
-                      W: -4.37113883E-08
-                      X: -0.0
-                      Y: 1.0
-                      Z: 0.0
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: -0.0
                     LocalPosition:
                       X: 0.0
                       Y: 0.0
@@ -217,7 +217,7 @@ Items:
                   W: 1.0
                   X: 0.0
                   Y: 0.0
-                  Z: 0.0
+                  Z: -0.0
                 LocalPosition:
                   X: 0.0
                   Y: 0.0
@@ -231,6 +231,7 @@ Items:
                 AsignedTo: DefaultMaterial
                 IsEnabled: true
                 Material: bf6e54f9-7274-48ac-84c1-ef10de8d51d7
+                UseCopy: false
               - !Evergine.Components.Graphics3D.MeshComponent,Evergine.Framework
                 Id: f2515c08-0736-4ad3-a44b-849f11efe6cb
                 IsEnabled: true
@@ -262,7 +263,7 @@ Items:
                 LocalPosition:
                   X: 0.0
                   Y: 0.0
-                  Z: 0.00300000003
+                  Z: -0.00300000003
                 LocalScale:
                   X: 1.0
                   Y: 1.0
@@ -272,19 +273,23 @@ Items:
                 AsignedTo: Default
                 IsEnabled: true
                 Material: 963fcfba-66ad-4ca7-ab91-f3c557357b5f
+                UseCopy: false
               - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                 Id: 90f8efde-83cf-43bc-8245-611904609556
                 Height: 0.0320000015
-                InitialU: 0.0
-                InitialV: 0.0
                 IsEnabled: true
-                PlaneNormal: ZNegative
+                Origin:
+                  X: 0.5
+                  Y: 0.5
+                PlaneNormal: ZPositive
                 TwoSides: false
+                UMirror: false
+                UOffset: 0.0
                 UTile: 1.0
-                UVHorizontalFlip: false
-                UVVerticalFlip: false
+                VMirror: false
+                VOffset: 0.0
+                VTile: 1.0
                 Width: 0.0700000003
-                YTile: 1.0
               - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                 Id: 768798a7-66b9-42be-9b54-1476b24a184a
                 DebugBoundingbox: true

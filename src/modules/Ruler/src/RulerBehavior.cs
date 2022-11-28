@@ -9,6 +9,8 @@ using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 using System.Collections.Generic;
+using Xrv.Core;
+using Xrv.Core.Themes;
 
 namespace Xrv.Ruler
 {
@@ -72,6 +74,9 @@ namespace Xrv.Ruler
         /// Toggle for feet.
         /// </summary>
         protected ToggleButton feetToggle;
+
+        [BindService]
+        private XrvService xrvService = null;
 
         /// <summary>
         /// Measure units.
@@ -138,6 +143,24 @@ namespace Xrv.Ruler
                     new LinePointInfo() { Position = Vector3.Forward * 0.5f, Thickness = thickness, Color = Color.White },
                 };
                 this.line.Refresh();
+            }
+
+            if (this.xrvService?.ThemesSystem != null)
+            {
+                this.RefreshThemeDependantElements(this.xrvService.ThemesSystem.CurrentTheme);
+                this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDeactivated()
+        {
+            base.OnDeactivated();
+
+            if (this.xrvService?.ThemesSystem != null)
+            {
+                this.RefreshThemeDependantElements(this.xrvService.ThemesSystem.CurrentTheme);
+                this.xrvService.ThemesSystem.ThemeUpdated -= this.ThemesSystem_ThemeUpdated;
             }
         }
 
@@ -218,6 +241,53 @@ namespace Xrv.Ruler
 
             this.labelNumber.Text = measurement;
             this.labelUnits.Text = unit;
+        }
+
+        private void RefreshThemeDependantElements(Theme theme)
+        {
+            this.OnPrimaryColor3Updated(theme);
+            this.OnSecondaryColor1Updated(theme);
+        }
+
+        private void OnPrimaryColor3Updated(Theme theme)
+        {
+            if (this.line != null)
+            {
+                foreach (var point in this.line.LinePoints)
+                {
+                    point.Color = theme[ThemeColor.PrimaryColor3];
+                }
+
+                this.line.Refresh();
+            }
+
+            this.labelNumber.Color = theme[ThemeColor.PrimaryColor3];
+        }
+
+        private void OnSecondaryColor1Updated(Theme theme)
+        {
+            this.labelUnits.Color = theme[ThemeColor.SecondaryColor1];
+        }
+
+        private void ThemesSystem_ThemeUpdated(object sender, ThemeUpdatedEventArgs args)
+        {
+            if (args.IsNewThemeInstance)
+            {
+                this.RefreshThemeDependantElements(args.Theme);
+                return;
+            }
+
+            switch (args.UpdatedColor)
+            {
+                case ThemeColor.PrimaryColor3:
+                    this.OnPrimaryColor3Updated(args.Theme);
+                    break;
+                case ThemeColor.SecondaryColor1:
+                    this.OnSecondaryColor1Updated(args.Theme);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
