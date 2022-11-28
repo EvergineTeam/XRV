@@ -12,9 +12,57 @@ namespace Xrv.Painter
             public sealed class Icons
             {
                 /// <summary>
-                /// Asset Path (XRV/Icons/Painter.weprefab.weprf)
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Icons/Painter.weprefab.weprf)
                 /// </summary>
                 public static readonly Guid Painter = new Guid("b70dcd75-78ac-4abf-a2af-011c5ebd458e");
+            }
+
+            public sealed class Colors
+            {
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/BlueColor.wemt)
+                /// </summary>
+                public static readonly Guid BlueColor = new Guid("7434ac3b-5505-46dc-a6f2-e33bb013b517");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/BlueDarkColor.wemt)
+                /// </summary>
+                public static readonly Guid BlueDarkColor = new Guid("7435ac3b-5505-46dc-a6f2-e33bb013b517");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/GreenColor.wemt)
+                /// </summary>
+                public static readonly Guid GreenColor = new Guid("7436ac3b-5505-46dc-a6f2-e33bb013b517");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/OrangeColor.wemt)
+                /// </summary>
+                public static readonly Guid OrangeColor = new Guid("7437ac3b-5505-46dc-a6f2-e33bb013b517");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/PistachoColor.wemt)
+                /// </summary>
+                public static readonly Guid PistachoColor = new Guid("7438ac3b-5505-46dc-a6f2-e33bb013b517");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/PurpleColor.wemt)
+                /// </summary>
+                public static readonly Guid PurpleColor = new Guid("7633ac3b-5505-46dc-a6f2-e33bb013b417");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/RedColor.wemt)
+                /// </summary>
+                public static readonly Guid RedColor = new Guid("7439ac3b-5505-46dc-a6f2-e33bb013b517");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/WhiteColor.wemt)
+                /// </summary>
+                public static readonly Guid WhiteColor = new Guid("7533ac3b-5505-46dc-a6f2-e33bb013b517");
+
+                /// <summary>
+                /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/YellowColor.wemt)
+                /// </summary>
+                public static readonly Guid YellowColor = new Guid("7633ac3b-5505-46dc-a6f2-e33bb013b517");
             }
         }
 

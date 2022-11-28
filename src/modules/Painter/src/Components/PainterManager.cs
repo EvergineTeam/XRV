@@ -11,6 +11,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xrv.Painter.Enums;
 using Xrv.Painter.Models;
 
 namespace Xrv.Painter.Components
@@ -143,7 +144,7 @@ namespace Xrv.Painter.Components
         /// <summary>
         /// Gets or sets color.
         /// </summary>
-        public Color Color { get; set; }
+        public ColorEnum Color { get; set; }
 
         /// <summary>
         /// Gets or sets selected material.
@@ -166,7 +167,7 @@ namespace Xrv.Painter.Components
                 }
                 else if (last.Mode == PainterModes.Eraser)
                 {
-                    var line = this.CreateEntity();
+                    var line = this.CreateEntity(this.Color);
                     this.Owner.EntityManager.Add(line.entity);
                     line.mesh.LinePoints = last.Line;
                     line.mesh.RefreshMeshes();
@@ -223,23 +224,22 @@ namespace Xrv.Painter.Components
         /// <param name="position">Cursor position.</param>
         public void DoPaint(Vector3 position)
         {
+            var lInfo = new LineInfo()
+            {
+                Color = this.Color,
+                Position = position,
+                Thickness = this.GetThickNess(this.Thickness),
+                PainterThickness = this.thickness,
+            };
+
             if (this.pencilMesh == null)
             {
                 // Creates first point
-                var pencil = this.CreateEntity();
+                var pencil = this.CreateEntity(this.Color);
                 this.pencilMesh = pencil.mesh;
                 var line = pencil.entity;
 
                 this.Owner.EntityManager.Add(line);
-
-                this.pencilMesh.LinePoints.Add(new LinePointInfo()
-                {
-                    Color = this.Color,
-                    Position = position,
-                    Thickness = this.GetThickNess(this.Thickness),
-                });
-
-                this.pencilMesh.RefreshMeshes();
 
                 this.actions.Add(new PainterAction()
                 {
@@ -248,16 +248,9 @@ namespace Xrv.Painter.Components
                     Entity = line,
                 });
             }
-            else
-            {
-                this.pencilMesh.LinePoints.Add(new LinePointInfo()
-                {
-                    Color = this.Color,
-                    Position = position,
-                    Thickness = this.GetThickNess(this.Thickness),
-                });
-                this.pencilMesh.RefreshMeshes();
-            }
+
+            this.pencilMesh.LinePoints.Add(lInfo);
+            this.pencilMesh.RefreshMeshes();
         }
 
         /// <summary>
@@ -441,7 +434,7 @@ namespace Xrv.Painter.Components
             }
         }
 
-        private (Entity entity, PencilMesh mesh) CreateEntity()
+        private (Entity entity, PencilMesh mesh) CreateEntity(ColorEnum color)
         {
             var mesh = new PencilMesh()
             {
@@ -456,11 +449,47 @@ namespace Xrv.Painter.Components
                 .AddComponent(mesh)
                 .AddComponent(new MaterialComponent()
                 {
-                    Material = this.SelectedMaterial,
+                    Material = this.GetMaterialFromColor(color),
                 })
                 .AddComponent(new MeshRenderer());
 
             return (entity, mesh);
+        }
+
+        private Material GetMaterialFromColor(ColorEnum color)
+        {
+            var guid = PainterResourceIDs.Materials.Colors.WhiteColor;
+            switch (color)
+            {
+                case ColorEnum.Blue:
+                    guid = PainterResourceIDs.Materials.Colors.BlueColor;
+                    break;
+                case ColorEnum.BlueDark:
+                    guid = PainterResourceIDs.Materials.Colors.BlueDarkColor;
+                    break;
+                case ColorEnum.Green:
+                    guid = PainterResourceIDs.Materials.Colors.GreenColor;
+                    break;
+                case ColorEnum.Orange:
+                    guid = PainterResourceIDs.Materials.Colors.OrangeColor;
+                    break;
+                case ColorEnum.Pistacho:
+                    guid = PainterResourceIDs.Materials.Colors.PistachoColor;
+                    break;
+                case ColorEnum.Purple:
+                    guid = PainterResourceIDs.Materials.Colors.PurpleColor;
+                    break;
+                case ColorEnum.Red:
+                    guid = PainterResourceIDs.Materials.Colors.RedColor;
+                    break;
+                case ColorEnum.Yellow:
+                    guid = PainterResourceIDs.Materials.Colors.YellowColor;
+                    break;
+                default:
+                    break;
+            }
+
+            return this.assetsService.Load<Material>(guid);
         }
     }
 }

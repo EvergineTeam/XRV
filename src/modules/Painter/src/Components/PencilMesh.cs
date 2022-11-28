@@ -10,6 +10,7 @@ using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Xrv.Painter.Models;
 using LineVertexFormat = Evergine.Common.Graphics.VertexFormats.VertexPositionNormalTexture;
 
 namespace Xrv.Painter.Components
@@ -23,7 +24,7 @@ namespace Xrv.Painter.Components
         /// The line points list.
         /// </summary>
         [IgnoreEvergine]
-        public List<LinePointInfo> LinePoints = new List<LinePointInfo>();
+        public List<LineInfo> LinePoints = new List<LineInfo>();
 
         internal Mesh mesh;
 
@@ -204,7 +205,7 @@ namespace Xrv.Painter.Components
         {
             var forward = Vector3.Forward;
             var up = Vector3.Up;
-            LinePointInfo currentPoint;
+            LineInfo currentPoint;
             this.bblist.Clear();
 
             int nPoints = Math.Min(int.MaxValue, this.LinePoints.Count);
@@ -368,7 +369,7 @@ namespace Xrv.Painter.Components
             this.debugLineBatch?.DrawBoundingBox(this.boundingBox, Color.Orange);
         }
 
-        private unsafe void AddVertex(ref LinePointInfo info, ref Vector3 forward, ref LineVertexFormat* vertices)
+        private unsafe void AddVertex(ref LineInfo info, ref Vector3 forward, ref LineVertexFormat* vertices)
         {
             float halfThickness = info.Thickness * 0.5f;
             var pointCenter = info.Position;
