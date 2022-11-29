@@ -26,7 +26,7 @@ namespace Xrv.Painter.Components
         private Vector3 lastPosition;
         private TimeSpan current;
         private TimeSpan betweenUpdate = TimeSpan.Zero;
-        private float updateTime = 1f;
+        private float updateTime = 0.03f;
         private HoloGraphic pointerMaterial;
         private Transform3D pointerTransform;
         private XRHandedness hand;
@@ -70,6 +70,11 @@ namespace Xrv.Painter.Components
         /// Gets or sets min Alpha.
         /// </summary>
         public float MinAlpha { get; set; } = 0.5f;
+
+        /// <summary>
+        /// Gets or sets min Alpha.
+        /// </summary>
+        public float PositionDelta { get; set; } = 0.005f;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -143,7 +148,7 @@ namespace Xrv.Painter.Components
                     // Pinch dragg
                     if (this.current > this.betweenUpdate)
                     {
-                        if (Vector3.Distance(this.lastPosition, position) > 0.01f)
+                        if (Vector3.Distance(this.lastPosition, position) > this.PositionDelta)
                         {
                             this.DoAction(position);
                         }

@@ -436,15 +436,12 @@ namespace Xrv.Painter.Components
 
         private (Entity entity, PencilMesh mesh) CreateEntity(ColorEnum color)
         {
-            var mesh = new PencilMesh()
-            {
-                IsDebugMode = true,
-            };
+            var mesh = new PencilMesh(); // { IsDebugMode = true, };
 
             var entity = new Entity($"line_{Guid.NewGuid()}")
-            {
-                Tag = LINETAG,
-            }
+                    {
+                        Tag = LINETAG,
+                    }
                 .AddComponent(new Transform3D())
                 .AddComponent(mesh)
                 .AddComponent(new MaterialComponent()

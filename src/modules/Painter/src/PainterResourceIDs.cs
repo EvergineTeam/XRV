@@ -22,7 +22,7 @@ namespace Xrv.Painter
                 /// <summary>
                 /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/BlueColor.wemt)
                 /// </summary>
-                public static readonly Guid BlueColor = new Guid("7434ac3b-5505-46dc-a6f2-e33bb013b517");
+                public static readonly Guid BlueColor = new Guid("44b02c3a-8b97-4807-8968-5eebe8969a7a");
 
                 /// <summary>
                 /// Asset Path (src/modules/Painter/addon/Content/XRV/Materials/Colors/BlueDarkColor.wemt)

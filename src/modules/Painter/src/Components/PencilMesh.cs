@@ -3,7 +3,6 @@
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
-using Evergine.Components.Primitives;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
@@ -48,19 +47,25 @@ namespace Xrv.Painter.Components
         /// </summary>
         public bool IsDebugMode { get; set; } = false;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets or sets model.
+        /// </summary>
         [DontRenderProperty]
-        public override Model Model { get => base.Model; set => base.Model = value; }
-
-        /// <inheritdoc/>
-        [DontRenderProperty]
-        public override string ModelMeshName
+        public new Model Model
         {
-            get
+            get => this.modelLink.Value;
+            set
             {
-                return base.ModelMeshName;
+                this.modelLink.Value = value;
+                this.ThrowRefreshEvent();
             }
         }
+
+        /// <summary>
+        /// Gets model MeshName.
+        /// </summary>
+        [DontRenderProperty]
+        public new string ModelMeshName => this.modelMeshName;
 
         /// <summary>
         /// Gets the mesh bounding box.
@@ -195,7 +200,6 @@ namespace Xrv.Painter.Components
             }
 
             this.Model = new Model(this.modelMeshName, this.mesh);
-            this.ThrowRefreshEvent();
         }
 
         /// <summary>
