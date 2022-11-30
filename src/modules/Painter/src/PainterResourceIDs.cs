@@ -71,7 +71,7 @@ namespace Xrv.Painter
             /// <summary>
             /// Asset Path (XRV/Prefabs/Painter.weprefab.weprf)
             /// </summary>
-            public static readonly Guid Painter = new Guid("b89b0183-84d0-47f7-b073-15e969207193");
+            public static readonly Guid Painter = new Guid("e95ffbcf-a8e9-47f3-90a1-842e363d4c54");
 
             /// <summary>
             /// Asset Path (XRV/Prefabs/HelpPainer.weprefab.weprf)
