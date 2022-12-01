@@ -247,7 +247,7 @@ Items:
                     Id: 4bacd217-b8d6-4c07-96b6-6282c467000d
                     AsignedTo: Default
                     IsEnabled: true
-                    Material: 7434ac3b-5505-46dc-a6f2-e33bb013b517
+                    Material: null
                     UseCopy: false
                   - !Evergine.Framework.Physics3D.MeshCollider3D,Evergine.Framework
                     Id: 70c139c5-924b-45d1-b131-6873b0e53a2f
@@ -4172,16 +4172,21 @@ Items:
                   X: 1.0
                   Y: 1.0
                   Z: 1.0
+              - !Xrv.Painter.Components.ColorButtonComponent,Xrv.Painter
+                Id: 612c4945-b8a9-418d-8ee8-72c0f74d21fa
+                BackplateSelectedButtonMaterial: 7533ac3b-5505-46dc-a6f2-e33bb013b517
+                Color: Blue
+                IsEnabled: true
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButton,Evergine.MRTK
-                Id: 9b3e1b6b-f667-4ded-8416-491c1d33827a
+                Id: 1564c174-25bf-4705-bab3-c1faa5db1c37
                 IsEnabled: true
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleStateManager,Evergine.MRTK
-                Id: d07a7adc-2d00-4a7c-8bac-ade3b7dcdb7a
+                Id: 664fe6e7-0cb9-4e1c-bdd5-d5981a317f8c
                 DefaultComponentsAdded: true
                 InitialState: Off
                 IsEnabled: true
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
-                Id: ffbda092-b685-4cc0-bd03-41863fac9f2b
+                Id: 11cf796b-182d-4b77-9f72-b92a37565f52
                 AllowBackPlateNullMaterial: false
                 AllowIconNullMaterial: false
                 CreatesNewBackPlateMaterialInstance: false
@@ -4198,7 +4203,7 @@ Items:
                 TargetState: Off
                 Text: null
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
-                Id: 5cdeaa1e-a6a8-4a68-b235-79b3798423f5
+                Id: 9701d1ff-2aeb-49b0-9d4e-4fc4fde20ba7
                 AllowBackPlateNullMaterial: false
                 AllowIconNullMaterial: false
                 CreatesNewBackPlateMaterialInstance: false
@@ -4217,7 +4222,7 @@ Items:
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
-                Tag: PART_image_gallery_previous_pressable_button
+                Tag: PART_pressable_button
                 IsEnabled: true
                 IsStatic: false
                 Components:
@@ -4370,7 +4375,7 @@ Items:
                     Children:
                       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                         Name: FrontPlate
-                        Tag: null
+                        Tag: FrontPlate
                         IsEnabled: true
                         IsStatic: false
                         Components:
@@ -4394,7 +4399,7 @@ Items:
                             Id: 3aa62147-be0f-48ad-a484-0cff829015d5
                             AsignedTo: Default
                             IsEnabled: true
-                            Material: 7434ac3b-5505-46dc-a6f2-e33bb013b517
+                            Material: 7434ac3b-5505-46dc-aaf2-e33bb013b517
                             UseCopy: false
                           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                             Id: 3dc59a32-b01e-4666-a74a-cfc0fcc1d9a0
@@ -4519,10 +4524,15 @@ Items:
                   R: 255
                 TargetState: On
                 Text: null
+              - !Xrv.Painter.Components.ColorButtonComponent,Xrv.Painter
+                Id: 303c853e-0660-457f-9cbf-44c3ba432422
+                BackplateSelectedButtonMaterial: null
+                Color: BlueDark
+                IsEnabled: true
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
-                Tag: PART_image_gallery_previous_pressable_button
+                Tag: PART_pressable_button
                 IsEnabled: true
                 IsStatic: false
                 Components:
@@ -4625,7 +4635,7 @@ Items:
                         Id: 1f0039e9-50d7-4b8b-9d5f-66124742569d
                         AsignedTo: Default
                         IsEnabled: true
-                        Material: 7533ac3b-5505-46dc-a6f2-e33bb013b517
+                        Material: null
                         UseCopy: false
                       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                         Id: 71063a0b-85ae-4174-80f3-c20f02b611ab
@@ -4675,7 +4685,7 @@ Items:
                     Children:
                       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                         Name: FrontPlate
-                        Tag: null
+                        Tag: FrontPlate
                         IsEnabled: true
                         IsStatic: false
                         Components:
@@ -4824,10 +4834,15 @@ Items:
                   R: 255
                 TargetState: On
                 Text: null
+              - !Xrv.Painter.Components.ColorButtonComponent,Xrv.Painter
+                Id: 2ffa36c9-ba55-4385-ae1c-81d1282dde27
+                BackplateSelectedButtonMaterial: null
+                Color: Purple
+                IsEnabled: true
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
-                Tag: PART_image_gallery_previous_pressable_button
+                Tag: PART_pressable_button
                 IsEnabled: true
                 IsStatic: false
                 Components:
@@ -4930,7 +4945,7 @@ Items:
                         Id: bc671010-c05e-423f-a94e-9deee7ea8626
                         AsignedTo: Default
                         IsEnabled: true
-                        Material: 7533ac3b-5505-46dc-a6f2-e33bb013b517
+                        Material: null
                         UseCopy: false
                       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                         Id: 86fad608-8ca6-4519-8e7b-4df3ede4d35a
@@ -4980,7 +4995,7 @@ Items:
                     Children:
                       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                         Name: FrontPlate
-                        Tag: null
+                        Tag: FrontPlate
                         IsEnabled: true
                         IsStatic: false
                         Components:
@@ -5087,10 +5102,57 @@ Items:
                   X: 1.0
                   Y: 1.0
                   Z: 1.0
+              - !Xrv.Painter.Components.ColorButtonComponent,Xrv.Painter
+                Id: 3aabaa77-587f-4113-b163-9bc6be3f9856
+                BackplateSelectedButtonMaterial: null
+                Color: Red
+                IsEnabled: true
+              - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButton,Evergine.MRTK
+                Id: 3fcdeba0-a9a1-461a-8375-8d63ad0ae091
+                IsEnabled: true
+              - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleStateManager,Evergine.MRTK
+                Id: e0361094-8c8c-4d8d-b686-8986c7f7b0a7
+                DefaultComponentsAdded: true
+                InitialState: Off
+                IsEnabled: true
+              - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
+                Id: 20daa548-5b43-4b2f-ba27-93b1bedcc4f5
+                AllowBackPlateNullMaterial: false
+                AllowIconNullMaterial: false
+                CreatesNewBackPlateMaterialInstance: false
+                CreatesNewIconMaterialInstance: false
+                Font: null
+                Icon: null
+                IsEnabled: true
+                Plate: null
+                PrimaryColor:
+                  A: 255
+                  B: 255
+                  G: 255
+                  R: 255
+                TargetState: Off
+                Text: null
+              - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
+                Id: 7ab259fc-7a8b-4e20-ab96-e24a8ac1d9fa
+                AllowBackPlateNullMaterial: false
+                AllowIconNullMaterial: false
+                CreatesNewBackPlateMaterialInstance: false
+                CreatesNewIconMaterialInstance: false
+                Font: null
+                Icon: null
+                IsEnabled: false
+                Plate: null
+                PrimaryColor:
+                  A: 255
+                  B: 255
+                  G: 255
+                  R: 255
+                TargetState: On
+                Text: null
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
-                Tag: PART_image_gallery_previous_pressable_button
+                Tag: PART_pressable_button
                 IsEnabled: true
                 IsStatic: false
                 Components:
@@ -5193,7 +5255,7 @@ Items:
                         Id: a7f1d263-5be0-4d3a-b598-818ca912d849
                         AsignedTo: Default
                         IsEnabled: true
-                        Material: 7533ac3b-5505-46dc-a6f2-e33bb013b517
+                        Material: null
                         UseCopy: false
                       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
                         Id: ac4f8339-3c3e-4a34-9de0-02fddf574bb9
@@ -5243,7 +5305,7 @@ Items:
                     Children:
                       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                         Name: FrontPlate
-                        Tag: null
+                        Tag: FrontPlate
                         IsEnabled: true
                         IsStatic: false
                         Components:
@@ -5447,7 +5509,7 @@ Items:
                     Id: 7d09d211-fac2-497b-bcdf-2900cf1a43d5
                     AsignedTo: Default
                     IsEnabled: true
-                    Material: 7434ac3b-5505-46dc-a6f2-e33bb013b517
+                    Material: null
                     UseCopy: false
                   - !Evergine.Framework.Physics3D.MeshCollider3D,Evergine.Framework
                     Id: 407f25cd-1351-4d60-86b1-0fff1976db86
@@ -9231,6 +9293,12 @@ Items:
             Id: c65a30ad-f0c2-4c29-bf84-e5815aea06d4
         Id: 4a10b4fe-45eb-4feb-b908-acf4eecc1872
     Id: 9879880a-9cd3-4733-8a75-ca80ca38c499
+  - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
+    Id: 6d2b7591-0d4e-45d7-9b06-d8f7c5cde591
+    Source: e95ffbcf-a8e9-47f3-90a1-842e363d4c54
+    entityLinks: {}
+    modificationList: []
+    removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: cff06638-d601-44d2-9531-872b627c761f

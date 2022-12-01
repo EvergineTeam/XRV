@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xrv.Painter.Enums;
+using Xrv.Painter.Helpers;
 using Xrv.Painter.Models;
 
 namespace Xrv.Painter.Components
@@ -405,14 +406,14 @@ namespace Xrv.Painter.Components
                 var backPlate = item.Owner.FindChildrenByTag("PART_Plate", skipOwner: true).FirstOrDefault().FindComponent<MaterialComponent>();
                 var name = item.Owner.Parent.Name;
 
-                if (name == value.ToString())
-                {
-                    backPlate.Material = this.SelectedMaterial;
-                }
-                else
-                {
-                    backPlate.Material = null;
-                }
+                ////if (name == value.ToString())
+                ////{
+                ////    backPlate.Material = this.SelectedMaterial;
+                ////}
+                ////else
+                ////{
+                ////    backPlate.Material = null;
+                ////}
             }
         }
 
@@ -423,14 +424,14 @@ namespace Xrv.Painter.Components
                 var backPlate = item.Owner.FindChildrenByTag("PART_Plate", skipOwner: true).FirstOrDefault().FindComponent<MaterialComponent>();
                 var name = item.Owner.Parent.Name;
 
-                if (name == value.ToString())
-                {
-                    backPlate.Material = this.SelectedMaterial;
-                }
-                else
-                {
-                    backPlate.Material = null;
-                }
+                ////if (name == value.ToString())
+                ////{
+                ////    backPlate.Material = this.SelectedMaterial;
+                ////}
+                ////else
+                ////{
+                ////    backPlate.Material = null;
+                ////}
             }
         }
 
@@ -439,54 +440,18 @@ namespace Xrv.Painter.Components
             var mesh = new PencilMesh(); // { IsDebugMode = true, };
 
             var entity = new Entity($"line_{Guid.NewGuid()}")
-                    {
-                        Tag = LINETAG,
-                    }
+            {
+                Tag = LINETAG,
+            }
                 .AddComponent(new Transform3D())
                 .AddComponent(mesh)
                 .AddComponent(new MaterialComponent()
                 {
-                    Material = this.GetMaterialFromColor(color),
+                    Material = this.assetsService.Load<Material>(ColorHelper.GetMaterialFromColor(color)),
                 })
                 .AddComponent(new MeshRenderer());
 
             return (entity, mesh);
-        }
-
-        private Material GetMaterialFromColor(ColorEnum color)
-        {
-            var guid = PainterResourceIDs.Materials.Colors.WhiteColor;
-            switch (color)
-            {
-                case ColorEnum.Blue:
-                    guid = PainterResourceIDs.Materials.Colors.BlueColor;
-                    break;
-                case ColorEnum.BlueDark:
-                    guid = PainterResourceIDs.Materials.Colors.BlueDarkColor;
-                    break;
-                case ColorEnum.Green:
-                    guid = PainterResourceIDs.Materials.Colors.GreenColor;
-                    break;
-                case ColorEnum.Orange:
-                    guid = PainterResourceIDs.Materials.Colors.OrangeColor;
-                    break;
-                case ColorEnum.Pistacho:
-                    guid = PainterResourceIDs.Materials.Colors.PistachoColor;
-                    break;
-                case ColorEnum.Purple:
-                    guid = PainterResourceIDs.Materials.Colors.PurpleColor;
-                    break;
-                case ColorEnum.Red:
-                    guid = PainterResourceIDs.Materials.Colors.RedColor;
-                    break;
-                case ColorEnum.Yellow:
-                    guid = PainterResourceIDs.Materials.Colors.YellowColor;
-                    break;
-                default:
-                    break;
-            }
-
-            return this.assetsService.Load<Material>(guid);
         }
     }
 }
