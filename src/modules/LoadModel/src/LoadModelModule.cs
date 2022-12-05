@@ -189,7 +189,7 @@ namespace Xrv.LoadModel
 
             this.scene.Managers.EntityManager.Add(manipulatorEntity);
 
-            Entity modelEntity = null;
+            Entity root = null;
 
             await EvergineBackgroundTask.Run(async () =>
             {
@@ -220,17 +220,26 @@ namespace Xrv.LoadModel
                             }
 
                             // Instantiate model
-                            modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+                            var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+
+                            // Root Entity
+                            root = new Entity()
+                                        .AddComponent(new Transform3D());
+
+                            root.AddChild(modelEntity);
+
+                            // BoundingBox
+                            BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
+                            boundingBox.Transform(modelEntity.FindComponent<Transform3D>().WorldTransform);
 
                             // Normalizing size
                             if (this.NormalizedModelEnabled)
                             {
-                                modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
+                                root.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / boundingBox.HalfExtent.Length());
                             }
 
                             // Add additional components
-                            BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
-                            this.AddManipulatorComponents(modelEntity, boundingBox);
+                            this.AddManipulatorComponents(root, boundingBox);
                         }
                         else
                         {
@@ -240,9 +249,9 @@ namespace Xrv.LoadModel
                 }
             });
 
-            if (modelEntity != null)
+            if (root != null)
             {
-                loadModelBehavior.ModelEntity = modelEntity;
+                loadModelBehavior.ModelEntity = root;
             }
             else
             {
@@ -306,16 +315,16 @@ namespace Xrv.LoadModel
             }
         }
 
-        private void AddManipulatorComponents(Entity entity, BoundingBox boundingBox)
+        private void AddManipulatorComponents(Entity root, BoundingBox boundingBox)
         {
             // Add global bounding box
-            entity.AddComponent(new BoxCollider3D()
+            root.AddComponent(new BoxCollider3D()
             {
                 Size = boundingBox.HalfExtent * 2,
                 Offset = boundingBox.Center,
             });
-            entity.AddComponent(new StaticBody3D());
-            entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
+            root.AddComponent(new StaticBody3D());
+            root.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
             {
                 AutoCalculate = false,
                 ScaleHandleScale = 0.030f,
@@ -342,7 +351,7 @@ namespace Xrv.LoadModel
                 HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
             });
             ////entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
-            entity.AddComponent(new SimpleManipulationHandler()
+            root.AddComponent(new SimpleManipulationHandler()
             {
                 SmoothingActive = true,
                 SmoothingAmount = 0.001f,
