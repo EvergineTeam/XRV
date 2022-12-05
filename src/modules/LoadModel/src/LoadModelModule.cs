@@ -25,7 +25,9 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
 using Xrv.LoadModel.Effects;
+using Xrv.LoadModel.Importers;
 using Xrv.LoadModel.Importers.GLB;
+using Xrv.LoadModel.Importers.STL;
 using Xrv.LoadModel.Structs;
 using static glTFLoader.Schema.Material;
 using Window = Xrv.Core.UI.Windows.Window;
@@ -52,6 +54,8 @@ namespace Xrv.LoadModel
         private RenderLayerDescription opaqueLayer;
         private RenderLayerDescription alphaLayer;
 
+        private Dictionary<string, ModelRuntime> loaders;
+
         private Window window = null;
 
         /// <summary>
@@ -59,6 +63,13 @@ namespace Xrv.LoadModel
         /// </summary>
         public LoadModelModule()
         {
+            // 3D format supported.
+            this.loaders = new Dictionary<string, ModelRuntime>
+            {
+                { GLBRuntime.Instance.Extentsion, GLBRuntime.Instance },
+                { STLRuntime.Instance.Extentsion, STLRuntime.Instance },
+            };
+
             this.handMenuDesc = new MenuButtonDescription()
             {
                 IsToggle = false,
@@ -195,27 +206,36 @@ namespace Xrv.LoadModel
                     if (modelSelected != null)
                     {
                         var filePath = modelSelected[0];
-                        using (var stream = await repo.FileAccess.GetFileAsync(filePath))
-                        using (var memoryStream = new MemoryStream())
+                        var extension = Path.GetExtension(filePath);
+
+                        if (this.loaders.TryGetValue(extension, out var loaderRuntime))
                         {
-                            stream.CopyTo(memoryStream);
-                            memoryStream.Position = 0;
-                            var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
-                            model = await GLBRuntime.Instance.Read(memoryStream, materialAssignerFunc);
+                            using (var stream = await repo.FileAccess.GetFileAsync(filePath))
+                            using (var memoryStream = new MemoryStream())
+                            {
+                                stream.CopyTo(memoryStream);
+                                memoryStream.Position = 0;
+                                var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
+                                model = await loaderRuntime.Read(memoryStream, materialAssignerFunc);
+                            }
+
+                            // Instantiate model
+                            modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+
+                            // Normalizing size
+                            if (this.NormalizedModelEnabled)
+                            {
+                                modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
+                            }
+
+                            // Add additional components
+                            BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
+                            this.AddManipulatorComponents(modelEntity, boundingBox);
                         }
-
-                        // Instantiate model
-                        modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-
-                        // Normalizing size
-                        if (this.NormalizedModelEnabled)
+                        else
                         {
-                            modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
+                            throw new Exception($"3D format {extension} not supported.");
                         }
-
-                        // Add additional components
-                        BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
-                        this.AddManipulatorComponents(modelEntity, boundingBox);
                     }
                 }
             });
