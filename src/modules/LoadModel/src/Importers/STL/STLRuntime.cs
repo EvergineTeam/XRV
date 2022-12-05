@@ -4,15 +4,20 @@ using Evergine.Common.Graphics;
 using Evergine.Common.Graphics.VertexFormats;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Graphics.Effects;
+using Evergine.Framework.Graphics.Materials;
+using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Platform;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using static glTFLoader.Schema.Material;
 using Buffer = Evergine.Common.Graphics.Buffer;
 
 namespace Xrv.LoadModel.Importers.STL
@@ -27,6 +32,7 @@ namespace Xrv.LoadModel.Importers.STL
         /// Get the unique instance of the class (Singleton).
         /// </summary>
         public readonly static STLRuntime Instance = new STLRuntime();
+        private Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner;
 
         private const int EMPTY = 0;
         private const int SOLID = 1;
@@ -38,6 +44,7 @@ namespace Xrv.LoadModel.Importers.STL
         private const int ENDSOLID = 7;
 
         private GraphicsContext graphicsContext;
+        private AssetsService assetsService;
         private AssetsDirectory assetsDirectory;
 
         private STLRuntime()
@@ -51,8 +58,9 @@ namespace Xrv.LoadModel.Importers.STL
         /// Read a STL from file Path.
         /// </summary>
         /// <param name="filePath">FilePath.</param>
+        /// <param name="materialAssigner">Material assigner.</param>
         /// <returns>Model.</returns>
-        public async Task<Model> Read(string filePath)
+        public async Task<Model> Read(string filePath, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
             Model model = null;
 
@@ -68,7 +76,7 @@ namespace Xrv.LoadModel.Importers.STL
                     throw new ArgumentException("Invalid parameter. Stream must be readable");
                 }
 
-                model = await this.Read(stream);
+                model = await this.Read(stream, materialAssigner);
             }
 
             return model;
@@ -78,12 +86,14 @@ namespace Xrv.LoadModel.Importers.STL
         /// Read a STL from stream.
         /// </summary>
         /// <param name="stream">Stream.</param>
+        /// <param name="materialAssigner">Material Assigner function.</param>
         /// <returns>Model.</returns>
         public override async Task<Model> Read(Stream stream, Func<Color, Texture, SamplerState, glTFLoader.Schema.Material.AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
-            if (this.graphicsContext == null)
+            if (this.graphicsContext == null || this.assetsService == null)
             {
                 this.graphicsContext = Application.Current.Container.Resolve<GraphicsContext>();
+                this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             }
 
             Facet[] facets = null;
@@ -112,9 +122,20 @@ namespace Xrv.LoadModel.Importers.STL
                 ChildIndices = new int[0],
             };
 
+            Material material = null;
+            if (materialAssigner == null)
+            {
+                material = this.CreateEvergineMaterial();
+            }
+            else
+            {
+                material = materialAssigner(Color.White, null, null, glTFLoader.Schema.Material.AlphaModeEnum.OPAQUE, 1, 0, false);
+            }
+
+            this.assetsService.RegisterInstance<Material>(material);
             var materialCollection = new List<(string, Guid)>()
             {
-                ("Default", LoadModelResourceIDs.Effects.SolidEffect),
+                ("Default", material.Id),
             };
 
             var model = new Model()
@@ -385,6 +406,22 @@ namespace Xrv.LoadModel.Importers.STL
                 Meshes = new List<Mesh> { mesh },
                 BoundingBox = new BoundingBox(min, max),
             };
+        }
+
+        private Material CreateEvergineMaterial()
+        {
+            var effect = this.assetsService.Load<Effect>(DefaultResourcesIDs.StandardEffectID);
+            var layer = this.assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.OpaqueRenderLayerID);
+            StandardMaterial material = new StandardMaterial(effect)
+            {
+                LightingEnabled = true,
+                IBLEnabled = true,
+                BaseColor = Color.White,
+                Alpha = 1.0f,
+                LayerDescription = layer,
+            };
+
+            return material.Material;
         }
     }
 }
