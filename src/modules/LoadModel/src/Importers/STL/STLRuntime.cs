@@ -88,7 +88,7 @@ namespace Xrv.LoadModel.Importers.STL
         /// <param name="stream">Stream.</param>
         /// <param name="materialAssigner">Material Assigner function.</param>
         /// <returns>Model.</returns>
-        public override async Task<Model> Read(Stream stream, Func<Color, Texture, SamplerState, glTFLoader.Schema.Material.AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
+        public override async Task<Model> Read(Stream stream, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
             if (this.graphicsContext == null || this.assetsService == null)
             {
@@ -99,16 +99,14 @@ namespace Xrv.LoadModel.Importers.STL
             Facet[] facets = null;
 
             // Read STL data
-            ////if (this.IsBinary(stream))
-            ////{
-            ////Debug.WriteLine("Binary STL file");
-            facets = this.ImportBinary(stream);
-            ////}
-            ////else
-            ////{
-            ////Debug.WriteLine("ASCII STL file");
-            ////facets = this.ImportAscii(stream);
-            ////}
+            if (this.IsBinary(stream))
+            {
+                facets = this.ImportBinary(stream);
+            }
+            else
+            {
+                facets = this.ImportAscii(stream);
+            }
 
             // Generate meshes
             var meshContainer = await this.ImportHardNormals(facets);
@@ -129,7 +127,7 @@ namespace Xrv.LoadModel.Importers.STL
             }
             else
             {
-                material = materialAssigner(Color.White, null, null, glTFLoader.Schema.Material.AlphaModeEnum.OPAQUE, 1, 0, false);
+                material = materialAssigner(Color.White, null, null, AlphaModeEnum.OPAQUE, 1, 0, false);
             }
 
             this.assetsService.RegisterInstance<Material>(material);
@@ -155,33 +153,27 @@ namespace Xrv.LoadModel.Importers.STL
         {
             bool isBinary = false;
 
-            using (BufferedStream bs0 = new BufferedStream(stream))
+            byte[] header = new byte[80];
+
+            stream.Read(header, 0, header.Length);
+
+            for (int i = 0; i < header.Length; i++)
             {
-                for (long i = 0; i < 80; i++)
+                if (header[i] == 0x0)
                 {
-                    var readByte = bs0.ReadByte();
-                    if (readByte == 0x0)
-                    {
-                        isBinary = true;
-                        break;
-                    }
-                }
-
-                if (!isBinary)
-                {
-                    bs0.Position = 0;
-
-                    var byteArray = new byte[6];
-
-                    for (var i = 0; i < 6; i++)
-                    {
-                        byteArray[i] = (byte)bs0.ReadByte();
-                    }
-
-                    var text = Encoding.UTF8.GetString(byteArray);
-                    isBinary = text != "solid ";
+                    isBinary = true;
+                    break;
                 }
             }
+
+            if (!isBinary)
+            {
+                Span<byte> headerText = header;
+                var text = Encoding.UTF8.GetString(headerText.Slice(0, 6).ToArray());
+                isBinary = text != "solid ";
+            }
+
+            stream.Position = 0;
 
             return isBinary;
         }
