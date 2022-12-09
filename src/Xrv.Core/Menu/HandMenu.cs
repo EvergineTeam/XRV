@@ -16,6 +16,7 @@ using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Xrv.Core.Extensions;
+using Xrv.Core.Modules;
 using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.Menu
@@ -142,6 +143,25 @@ namespace Xrv.Core.Menu
         public bool IsDetached
         {
             get => this.isDetached;
+        }
+
+        /// <summary>
+        /// Gets button entity that is associated with a given module.
+        /// </summary>
+        /// <param name="module">Module instance.</param>
+        /// <returns>Button entity.</returns>
+        public Entity GetModuleButtonEntity(Module module)
+        {
+            foreach (var buttonEntity in this.instantiatedButtons.Values)
+            {
+                var moduleActivation = buttonEntity.FindComponent<ActivateModuleOnButtonPress>();
+                if (moduleActivation?.Module == module)
+                {
+                    return buttonEntity;
+                }
+            }
+
+            return null;
         }
 
         /// <inheritdoc/>

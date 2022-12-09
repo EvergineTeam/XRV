@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Xrv.Core.Messaging;
+using Xrv.Core.Networking.Properties.Session;
 
 namespace Xrv.Core.Networking
 {
@@ -11,6 +12,7 @@ namespace Xrv.Core.Networking
     {
         private readonly PubSub pubSub;
         private SessionStatus status;
+        private SessionDataSynchronization sessionDataSync;
 
         internal SessionInfo(PubSub pubSub)
         {
@@ -43,5 +45,7 @@ namespace Xrv.Core.Networking
                 }
             }
         }
+
+        internal void SetData(SessionDataSynchronization sessionDataSync) => this.sessionDataSync = sessionDataSync;
     }
 }

@@ -1,9 +1,13 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Framework;
+using Evergine.Framework.Graphics;
+using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Mathematics;
 using Evergine.Networking.Client;
+using Evergine.Networking.Components;
 using Evergine.Networking.Server;
 using Lidgren.Network;
 using System;
@@ -11,6 +15,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Xrv.Core.Networking.Messaging;
+using Xrv.Core.Networking.Properties.KeyRequest;
+using Xrv.Core.Networking.Properties.Session;
 using Xrv.Core.Services.QR;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.Utils;
@@ -23,20 +30,33 @@ namespace Xrv.Core.Networking
     public class NetworkSystem
     {
         private readonly XrvService xrvService;
+        private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
         private readonly SessionInfo session;
         private TabItem settingsItem;
         private bool networkingAvailable;
         private NetworkConfiguration configuration;
+        private Entity worldCenterEntity;
+        private SessionDataSynchronization sessionDataSync;
+        private SessionDataUpdateManager sessionDataUpdater;
+
+        private MatchmakingServerService server;
+        private MatchmakingClientService client;
+        private ProtocolOrchestatorService orchestator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkSystem"/> class.
         /// </summary>
         /// <param name="xrvService">XRV service.</param>
+        /// <param name="entityManager">Entity manager.</param>
         /// <param name="assetsService">Assets service.</param>
-        public NetworkSystem(XrvService xrvService, AssetsService assetsService)
+        public NetworkSystem(
+            XrvService xrvService,
+            EntityManager entityManager,
+            AssetsService assetsService)
         {
             this.xrvService = xrvService;
+            this.entityManager = entityManager;
             this.assetsService = assetsService;
             this.session = new SessionInfo(xrvService.PubSub);
         }
@@ -54,7 +74,7 @@ namespace Xrv.Core.Networking
                     this.configuration = value;
 
                     this.UnsubscribeClientEvents();
-                    this.Client = new NetworkClient(this.Configuration);
+                    this.Client = new NetworkClient(this.client, this.Configuration);
                     this.SubscribeClientEvents();
                 }
             }
@@ -100,13 +120,31 @@ namespace Xrv.Core.Networking
             }
         }
 
+        internal IKeyStore KeyStore { get; private set; }
+
+        internal SessionDataUpdateManager SessionDataUpdateManager { get => this.sessionDataUpdater; }
+
+        internal IClientServerMessagingImpl ClientServerMessaging { get; set; }
+
+        /// <summary>
+        /// Adds an entity as child of world-center. To properly share
+        /// entities in a networking session, they should be placed here.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        public void AddNetworkingEntity(Entity entity) =>
+            this.worldCenterEntity.AddChild(entity);
+
         internal void RegisterServices()
         {
             if (!Application.Current.IsEditor)
             {
                 var container = Application.Current.Container;
-                container.RegisterInstance(new MatchmakingServerService());
-                container.RegisterInstance(new MatchmakingClientService());
+                this.server = new MatchmakingServerService();
+                this.client = new MatchmakingClientService();
+                container.RegisterInstance(this.server);
+                container.RegisterInstance(this.client);
+                this.InitializeKeyRequestProtocol(container);
+                this.InitializeUpdateSessionDataProtocol();
             }
         }
 
@@ -114,11 +152,23 @@ namespace Xrv.Core.Networking
         {
             this.AddOrRemoveSettingItem();
             this.FixDefaultNetworkInterface();
+
+            this.sessionDataSync = new SessionDataSynchronization();
+            this.sessionDataUpdater = new SessionDataUpdateManager();
+            this.EnableSessionDataSync(false);
+            this.session.SetData(this.sessionDataSync);
+
+            this.worldCenterEntity = new Entity("Networking-WorldCenter")
+                .AddComponent(new Transform3D())
+                .AddComponent(new NetworkRoomProvider())
+                .AddComponent(this.sessionDataSync)
+                .AddComponent(this.sessionDataUpdater);
+            this.entityManager.Add(this.worldCenterEntity);
         }
 
         internal async Task<bool> StartSessionAsync(string serverName)
         {
-            this.Server = new NetworkServer(this.Configuration);
+            this.Server = new NetworkServer(this.server, this.Configuration);
             await this.Server.StartAsync(serverName).ConfigureAwait(false);
             this.Session.CurrentUserIsHost = this.Server.IsStarted;
             if (this.Session.CurrentUserIsHost)
@@ -165,13 +215,17 @@ namespace Xrv.Core.Networking
 
             this.Session.Status = SessionStatus.Joined;
 
+            // Move world-center entity as child of QR scanning marker
+            this.MoveWorldCenterEntity(scanningFlow, true);
+            this.EnableSessionDataSync(true);
+
             return true;
         }
 
-        internal async Task LeaveSessionAsync()
+        internal Task LeaveSessionAsync()
         {
             this.Client.Disconnect();
-            await this.ClearSessionStatusAsync().ConfigureAwait(false);
+            return Task.CompletedTask;
         }
 
         private void SubscribeClientEvents()
@@ -202,6 +256,8 @@ namespace Xrv.Core.Networking
             this.session.Host = null;
             this.session.Status = SessionStatus.Disconnected;
 
+            this.EnableSessionDataSync(false);
+
             var scanningFlow = this.xrvService.Services.QrScanningFlow;
             scanningFlow.Marker.IsEnabled = false;
 
@@ -213,6 +269,9 @@ namespace Xrv.Core.Networking
             {
                 await this.Server.StopAsync().ConfigureAwait(false);
             }
+
+            this.MoveWorldCenterEntity(scanningFlow, false);
+            this.KeyStore.Clear();
 
             this.Server = null;
         }
@@ -247,6 +306,65 @@ namespace Xrv.Core.Networking
             {
                 await this.ClearSessionStatusAsync();
             }
+        }
+
+        private void MoveWorldCenterEntity(QrScanningFlow scanningFlow, bool markerAsRoot)
+        {
+            var worldCenterTransform = this.worldCenterEntity.FindComponent<Transform3D>();
+            worldCenterTransform.LocalTransform = Matrix4x4.CreateFromTRS(Vector3.Zero, Vector3.Zero, new Vector3(1, 1, 1));
+
+            if (this.worldCenterEntity.Parent != null)
+            {
+                this.worldCenterEntity.Parent.DetachChild(this.worldCenterEntity);
+            }
+            else
+            {
+                this.entityManager.Detach(this.worldCenterEntity);
+            }
+
+            if (markerAsRoot)
+            {
+                scanningFlow.Marker.AddChild(this.worldCenterEntity);
+            }
+            else
+            {
+                this.entityManager.Add(this.worldCenterEntity);
+            }
+        }
+
+        private void InitializeKeyRequestProtocol(Container container)
+        {
+            // TODO: refactoring everything related with keys and session data to a separated class
+            var clientServerMessaging = new ClientServerMessagingImpl(this.server, this.client);
+            this.orchestator = new ProtocolOrchestatorService(clientServerMessaging);
+            this.orchestator.RegisterProtocolInstantiator(
+                KeyRequestProtocol.ProtocolName,
+                () => new KeyRequestProtocol(this));
+
+            clientServerMessaging.IncomingMessageCallback = this.orchestator.HandleIncomingMessage; // TODO review this cycle reference :s
+            clientServerMessaging.Orchestator = this.orchestator; // TODO review this cycle reference :s
+            var keyStore = new KeyStore();
+            keyStore.ReserveKeysForCore(new byte[] { default, SessionDataSynchronization.NetworkingKey });
+
+            container.RegisterInstance(clientServerMessaging);
+            container.RegisterInstance(this.orchestator);
+            container.RegisterInstance(keyStore);
+
+            this.KeyStore = keyStore;
+            this.ClientServerMessaging = clientServerMessaging;
+        }
+
+        private void InitializeUpdateSessionDataProtocol()
+        {
+            this.orchestator.RegisterProtocolInstantiator(
+                UpdateSessionDataProtocol.ProtocolName,
+                () => new UpdateSessionDataProtocol(this, this.SessionDataUpdateManager));
+        }
+
+        private void EnableSessionDataSync(bool enabled)
+        {
+            this.sessionDataSync.IsEnabled = enabled;
+            this.sessionDataUpdater.IsEnabled = enabled;
         }
 
         private void FixDefaultNetworkInterface()

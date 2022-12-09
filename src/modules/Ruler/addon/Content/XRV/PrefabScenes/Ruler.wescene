@@ -232,6 +232,11 @@ Items:
         Settings: null
         Units: Meters
         UpdateOrder: 0.5
+      - !Xrv.Ruler.Networking.RulerKeysAssignation,Xrv.Ruler
+        Id: 7ae85ee6-a245-4d96-90b9-04ef2a8827ed
+        Filter: Room
+        IsEnabled: true
+        NumberOfRequiredKeys: 2
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Handle1
@@ -320,6 +325,12 @@ Items:
           - !Xrv.Ruler.RulerHandlerBehavior,Xrv.Ruler
             Id: 84cd67b6-5452-4eb4-b929-0c272f12e35f
             IsEnabled: true
+          - !Xrv.Core.Networking.Properties.TransformSynchronization,Xrv.Core
+            Id: de20344b-b7e9-4a28-baad-748a1ca7d149
+            IsEnabled: true
+            PropertyKey: 0
+            PropertyKeyByte: 0
+            ProviderFilter: Room
         Children: []
         Id: fe9c6b37-690b-451d-ba34-f8f683bf7091
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -409,6 +420,12 @@ Items:
           - !Xrv.Ruler.RulerHandlerBehavior,Xrv.Ruler
             Id: 4c11f613-56f4-4d7e-8c77-0b689c1c2f9b
             IsEnabled: true
+          - !Xrv.Core.Networking.Properties.TransformSynchronization,Xrv.Core
+            Id: 20f9c3bd-fef4-46db-9705-aadb7b5c0072
+            IsEnabled: true
+            PropertyKey: 0
+            PropertyKeyByte: 0
+            ProviderFilter: Room
         Children: []
         Id: 1ee8cb55-6f8b-4610-abc2-4043018a759a
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

@@ -239,11 +239,17 @@ namespace Xrv.Core.Services.QR
 
             this.qrMarkerEntityPivot.IsEnabled = true;
             var transform = this.qrMarkerEntityPivot.FindComponent<Transform3D>();
-            transform.WorldTransform = args.Pose;
+
+            // Vector.One? look comment below
+            transform.WorldTransform = Matrix4x4.CreateFromTRS(args.Pose.Translation, args.Pose.Orientation, Vector3.One);
             transform = this.qrMarkerEntity.FindComponent<Transform3D>();
             var qrLocalPosition = transform.LocalPosition;
             this.FixUpCodeOrigin(ref qrLocalPosition);
-            transform.LocalPosition = qrLocalPosition;
+
+            // apply scale separately to avoid all qrMarkerEntityPivot to be scaled (we are
+            // only interested in qrMarkerEntity, that should fit real QR size.
+            transform.LocalPosition = qrLocalPosition * pose.Scale.X;
+            transform.Scale = pose.Scale;
 
             var qrMarker = this.qrMarkerEntity.FindComponent<QrMarker>();
             qrMarker.IsValidMarker = args.IsValidResult;
