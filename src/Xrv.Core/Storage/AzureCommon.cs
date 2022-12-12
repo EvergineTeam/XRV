@@ -1,4 +1,6 @@
-﻿using Azure;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
+using Azure;
 using System;
 
 namespace Xrv.Core.Storage
