@@ -54,9 +54,8 @@ namespace Xrv.LoadModel
         private RenderLayerDescription opaqueLayer;
         private RenderLayerDescription alphaLayer;
 
-        private Dictionary<string, ModelRuntime> loaders;
-
         private Window window = null;
+        private Dictionary<string, ModelRuntime> loaders;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelModule"/> class.
@@ -94,6 +93,18 @@ namespace Xrv.LoadModel
         /// Gets or sets the model repository list.
         /// </summary>
         public Repository[] Repositories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the DataSource collection.
+        /// Ej(extension, ModelRuntime instance).
+        ///    { GLBRuntime.Instance.Extentsion, GLBRuntime.Instance }.
+        ///    { STLRuntime.Instance.Extentsion, STLRuntime.Instance }.
+        /// </summary>
+        public Dictionary<string, ModelRuntime> Loaders
+        {
+            get => this.loaders;
+            set => this.loaders = value;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the model will be normalized to standard size or
