@@ -33,7 +33,6 @@ namespace Xrv.LoadModel.Importers.STL
         /// Get the unique instance of the class (Singleton).
         /// </summary>
         public readonly static STLRuntime Instance = new STLRuntime();
-        private Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner;
 
         private const int EMPTY = 0;
         private const int SOLID = 1;
