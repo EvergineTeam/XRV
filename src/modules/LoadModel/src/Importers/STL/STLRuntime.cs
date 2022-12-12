@@ -12,6 +12,7 @@ using Evergine.Mathematics;
 using Evergine.Platform;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -335,9 +336,9 @@ namespace Xrv.LoadModel.Importers.STL
             string[] split = str.Trim().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
             Vector3 v = new Vector3();
 
-            float.TryParse(split[0], out float x);
-            float.TryParse(split[1], out float y);
-            float.TryParse(split[2], out float z);
+            float.TryParse(split[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float x);
+            float.TryParse(split[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float y);
+            float.TryParse(split[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float z);
 
             // Coordinate Space Left trasnform
             v.X = -y;
