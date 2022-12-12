@@ -184,7 +184,7 @@ namespace Xrv.Core
             // Voice commands
             this.voiceSystem.Load();
 
-            this.Networking = new NetworkSystem(this, this.assetsService);
+            this.Networking = new NetworkSystem(this, scene.Managers.EntityManager, this.assetsService);
             this.Networking.RegisterServices();
             this.Networking.Load();
 

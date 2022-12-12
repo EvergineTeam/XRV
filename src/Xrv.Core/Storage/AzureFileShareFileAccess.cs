@@ -162,17 +162,8 @@ namespace Xrv.Core.Storage
         /// <inheritdoc/>
         protected override async Task<bool> InternalExistsDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            bool exists = false;
-
-            try
-            {
-                ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
-                exists = await directory.ExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            catch
-            {
-                // empty catch, as SDK throws an exception if directory does not exist
-            }
+            ShareDirectoryClient directory = this.CreateDirectoryClient(relativePath);
+            bool exists = await directory.ExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return exists;
         }
@@ -182,18 +173,10 @@ namespace Xrv.Core.Storage
         {
             string directoryPath = Path.GetDirectoryName(relativePath);
             string fileName = Path.GetFileName(relativePath);
-            bool exists = false;
 
-            try
-            {
-                ShareDirectoryClient directory = this.CreateDirectoryClient(directoryPath);
-                ShareFileClient file = directory.GetFileClient(fileName);
-                exists = await file.ExistsAsync(cancellationToken: cancellationToken);
-            }
-            catch
-            {
-                // empty catch, as SDK throws an exception if directory does not exist
-            }
+            ShareDirectoryClient directory = this.CreateDirectoryClient(directoryPath);
+            ShareFileClient file = directory.GetFileClient(fileName);
+            bool exists = await file.ExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return exists;
         }
@@ -233,6 +216,10 @@ namespace Xrv.Core.Storage
 
             return ConvertToFileItem(relativePath, properties);
         }
+
+        /// <inheritdoc/>
+        protected override bool InternalEvaluateCacheUsageOnException(Exception exception) =>
+            AzureCommon.EvaluateCacheUsageOnException(exception);
 
         private async Task<IEnumerable<ShareFileItem>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
         {

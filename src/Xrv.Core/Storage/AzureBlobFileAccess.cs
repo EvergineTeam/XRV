@@ -210,22 +210,8 @@ namespace Xrv.Core.Storage
         }
 
         /// <inheritdoc/>
-        protected override bool InternalEvaluateCacheUsageOnException(Exception exception)
-        {
-            RequestFailedException requestFailedException = null;
-            if (exception is AggregateException aggregateException && aggregateException.InnerException is RequestFailedException innerException)
-            {
-                requestFailedException = innerException;
-            }
-            else if (exception is RequestFailedException failedException)
-            {
-                requestFailedException = failedException;
-            }
-
-            // ErrorCode is null for scenarios where there is no internet connection, but
-            // also if account name is not properly set.
-            return requestFailedException != null && requestFailedException.ErrorCode == null;
-        }
+        protected override bool InternalEvaluateCacheUsageOnException(Exception exception) =>
+            AzureCommon.EvaluateCacheUsageOnException(exception);
 
         private async Task<IEnumerable<BlobHierarchyItem>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
         {

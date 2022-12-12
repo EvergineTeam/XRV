@@ -23,8 +23,9 @@ namespace Xrv.Core.Networking
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkClient"/> class.
         /// </summary>
+        /// <param name="client">Matchmaking client.</param>
         /// <param name="configuration">Network configuration.</param>
-        public NetworkClient(NetworkConfiguration configuration)
+        public NetworkClient(MatchmakingClientService client, NetworkConfiguration configuration)
         {
             if (configuration == null)
             {
@@ -32,13 +33,11 @@ namespace Xrv.Core.Networking
             }
 
             this.configuration = configuration;
-            this.client = new MatchmakingClientService
-            {
-                ApplicationIdentifier = configuration.ApplicationIdentifier,
-                ClientApplicationVersion = configuration.ClientApplicationVersion,
-                PingInterval = configuration.PingInterval,
-                ConnectionTimeout = configuration.ConnectionTimeout,
-            };
+            this.client = client;
+            this.client.ApplicationIdentifier = configuration.ApplicationIdentifier;
+            this.client.ClientApplicationVersion = configuration.ClientApplicationVersion;
+            this.client.PingInterval = configuration.PingInterval;
+            this.client.ConnectionTimeout = configuration.ConnectionTimeout;
         }
 
         /// <summary>
