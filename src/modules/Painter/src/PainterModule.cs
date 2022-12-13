@@ -73,7 +73,7 @@ namespace Xrv.Painter
             this.xrv = Application.Current.Container.Resolve<XrvService>();
 
             // Painter
-            var painterSize = new Vector2(0.175f, 0.15f);
+            var painterSize = new Vector2(0.214f, 0.173f);
             this.painterWindow = this.xrv.WindowSystem.CreateWindow(async (config) =>
             {
                 config.Title = "Paint";
