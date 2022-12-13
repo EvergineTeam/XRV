@@ -4,7 +4,9 @@ using Evergine.Common.Attributes;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System.Diagnostics;
 using Xrv.Painter.Enums;
@@ -23,14 +25,11 @@ namespace Xrv.Painter.Components
         [BindService]
         protected AssetsService assetsService;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "FrontPlate")]
-        private MaterialComponent frontPlateMaterialComponent = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Plate")]
-        private MaterialComponent backPlateMaterialComponent = null;
-
         [BindComponent]
         private ToggleButton toggleButton = null;
+
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner)]
+        private PressableButton pressableButton = null;
 
         //[BindComponent(source: BindComponentSource.Scene)]
         private PainterManager painterManager = null;
@@ -41,28 +40,12 @@ namespace Xrv.Painter.Components
         [RenderProperty(Tooltip = "The color of the button and the color that it enables")]
         public ColorEnum Color { get; set; }
 
-        /// <summary>
-        /// Gets or sets the color of the backplate of the selected button.
-        /// </summary>
-        [RenderProperty(Tooltip = "The color of the backplate of the selected button")]
-        public Material BackplateSelectedButtonMaterial { get; set; }
-
         /// <inheritdoc/>
         protected override bool OnAttached()
         {
             if (!base.OnAttached())
             {
                 return false;
-            }
-
-            if (this.frontPlateMaterialComponent != null)
-            {
-                this.frontPlateMaterialComponent.Material = this.assetsService.Load<Material>(ColorHelper.GetMaterialFromColor(this.Color));
-            }
-
-            if (this.backPlateMaterialComponent != null)
-            {
-                this.backPlateMaterialComponent.Material = this.BackplateSelectedButtonMaterial;
             }
 
             this.painterManager = this.Owner.FindComponentInParents<PainterManager>();
@@ -75,6 +58,7 @@ namespace Xrv.Painter.Components
         {
             base.OnActivated();
             this.toggleButton.Toggled += this.ToggleButtonToggled;
+            this.pressableButton.ButtonPressed += this.PressableButtonButtonPressed;
         }
 
         /// <inheritdoc/>
@@ -82,6 +66,12 @@ namespace Xrv.Painter.Components
         {
             base.OnDeactivated();
             this.toggleButton.Toggled -= this.ToggleButtonToggled;
+            this.pressableButton.ButtonPressed -= this.PressableButtonButtonPressed;
+        }
+
+        private void PressableButtonButtonPressed(object sender, System.EventArgs e)
+        {
+            Debug.WriteLine("Pressed");
         }
 
         private void ToggleButtonToggled(object sender, System.EventArgs e)
