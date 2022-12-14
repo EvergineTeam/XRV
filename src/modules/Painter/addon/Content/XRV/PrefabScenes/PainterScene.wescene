@@ -66,6 +66,27 @@ Items:
         Name: IsEnabled
         Target: 3cd44ae3-4c75-4c0c-bd57-65a440dc5d60
         TypedValue: false
+      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[System.Collections.Generic.Dictionary%25602[[System.String,System.Private.CoreLib],[System.Object,System.Private.CoreLib]],System.Private.CoreLib]],Evergine.Framework
+        Name: Properties
+        Target: b73bbbb5-ff93-43aa-b6e2-3d45095dd393
+        TypedValue:
+          Color: Blue
+          Id: 2621298d-f90a-40c7-9163-058a5c09092b
+          IsEnabled: true
+          Mode: Painter
+          SelectedMaterial: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+          Thickness: Medium
+      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[System.Collections.Generic.Dictionary%25602[[System.String,System.Private.CoreLib],[System.Object,System.Private.CoreLib]],System.Private.CoreLib]],Evergine.Framework
+        Name: Properties
+        Target: 5073eb42-06e2-4850-9a0d-8a1fda14ca52
+        TypedValue:
+          Hand: RightHand
+          Id: b5ad3519-a9fc-4023-a996-fa368c10f3b0
+          IsEnabled: true
+          MinAlpha: 0.20000000300000001
+          PositionDelta: 0.0049999998899999997
+          UpdateOrder: 0.5
+          UpdateTime: 0.30000001199999998
     removedComponentList: []
   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
     Name: Painternew
@@ -89,21 +110,29 @@ Items:
           X: 1.0
           Y: 1.0
           Z: 1.0
-      - !Xrv.Painter.Components.PainterManager,Xrv.Painter
-        Id: 905b4e1f-3f31-488a-8dc9-8a0f45988eda
-        Color: Blue
+      - !Evergine.Framework.ErrorComponent,Evergine.Framework
+        Id: e1b4b10d-7609-4b8c-91c6-67676d376c00
         IsEnabled: true
-        Mode: Painter
-        SelectedMaterial: 7433ac3b-5505-46dc-a6f2-e33bb013b519
-        Thickness: Medium
-      - !Xrv.Painter.Components.PainterCursor,Xrv.Painter
-        Id: 9ad57148-868e-43d5-90bc-997581737acc
-        Hand: RightHand
+        OldType: '!Xrv.Painter.Components.PainterManager,Xrv.Painter'
+        Properties:
+          Color: Blue
+          Id: 905b4e1f-3f31-488a-8dc9-8a0f45988eda
+          IsEnabled: true
+          Mode: Painter
+          SelectedMaterial: 7433ac3b-5505-46dc-a6f2-e33bb013b519
+          Thickness: Medium
+      - !Evergine.Framework.ErrorComponent,Evergine.Framework
+        Id: ada34027-0b9c-41ad-9c98-210738ca96ce
         IsEnabled: true
-        MinAlpha: 0.200000003
-        PositionDelta: 0.00499999989
-        UpdateOrder: 0.5
-        UpdateTime: 0.300000012
+        OldType: '!Xrv.Painter.Components.PainterCursor,Xrv.Painter'
+        Properties:
+          Hand: RightHand
+          Id: 9ad57148-868e-43d5-90bc-997581737acc
+          IsEnabled: true
+          MinAlpha: 0.200000003
+          PositionDelta: 0.00499999989
+          UpdateOrder: 0.5
+          UpdateTime: 0.300000012
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: WheelContainer
@@ -670,6 +699,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Hand
                             VerticalAlignment: Center
                             Wrapping: true
@@ -1136,6 +1166,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Painter
                             VerticalAlignment: Center
                             Wrapping: true
@@ -1602,6 +1633,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Eraser
                             VerticalAlignment: Center
                             Wrapping: true
@@ -2097,6 +2129,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Thin
                             VerticalAlignment: Center
                             Wrapping: true
@@ -2563,6 +2596,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Medium
                             VerticalAlignment: Center
                             Wrapping: true
@@ -3029,6 +3063,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Thick
                             VerticalAlignment: Center
                             Wrapping: true
@@ -3493,6 +3528,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Undo
                             VerticalAlignment: Center
                             Wrapping: true
@@ -3933,6 +3969,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Clear
                             VerticalAlignment: Center
                             Wrapping: true
@@ -4106,21 +4143,6 @@ Items:
           X: 1.0
           Y: 1.0
           Z: 1.0
-      - !Xrv.Painter.Components.PainterManager,Xrv.Painter
-        Id: d3ae2e7c-7b47-41f6-bc41-101373fdb408
-        Color: Blue
-        IsEnabled: true
-        Mode: Painter
-        SelectedMaterial: 7433ac3b-5505-46dc-a6f2-e33bb013b519
-        Thickness: Medium
-      - !Xrv.Painter.Components.PainterCursor,Xrv.Painter
-        Id: 08b71307-896b-4b67-b04a-ecd5b1d97762
-        Hand: RightHand
-        IsEnabled: true
-        MinAlpha: 0.200000003
-        PositionDelta: 0.00499999989
-        UpdateOrder: 0.5
-        UpdateTime: 0.300000012
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: Color
@@ -4477,6 +4499,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -5006,6 +5029,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -5535,6 +5559,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -6064,6 +6089,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -6593,6 +6619,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -7122,6 +7149,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -7651,6 +7679,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -8180,6 +8209,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -8393,9 +8423,9 @@ Items:
                 IsEnabled: true
                 LocalOrientation:
                   W: 1.0
-                  X: -2.63602224E-08
-                  Y: -2.96028801E-08
-                  Z: -7.80338526E-16
+                  X: 0.0
+                  Y: 0.0
+                  Z: 0.0
                 LocalPosition:
                   X: 0.000191008672
                   Y: 0.00267453119
@@ -8468,9 +8498,9 @@ Items:
                     IsEnabled: true
                     LocalOrientation:
                       W: 1.0
-                      X: -8.87435458E-10
-                      Y: 7.21858573E-09
-                      Z: 6.40602912E-18
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
                     LocalPosition:
                       X: 0.0
                       Y: 0.000369301066
@@ -8709,6 +8739,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: null
                             VerticalAlignment: Center
                             Wrapping: true
@@ -9257,6 +9288,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -9723,6 +9755,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -10189,6 +10222,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -10684,6 +10718,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -11150,6 +11185,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -11616,6 +11652,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -12080,6 +12117,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -12520,6 +12558,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: 
                             VerticalAlignment: Center
                             Wrapping: true
@@ -12936,6 +12975,12 @@ Items:
             Id: 9f269ecf-12ed-48c4-98b2-25a869126ba1
         Id: 233606a2-f58d-475f-a292-b57805429feb
     Id: 9879880a-9cd3-4733-8a75-ca80ca38c499
+  - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
+    Id: efd65137-d1c0-4ad5-827e-c77cc7917391
+    Source: e95ffbcf-a8e9-47f3-90a1-842e363d4c54
+    entityLinks: {}
+    modificationList: []
+    removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: cff06638-d601-44d2-9531-872b627c761f

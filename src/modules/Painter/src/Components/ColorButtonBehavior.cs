@@ -1,18 +1,12 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Common.Attributes;
-using Evergine.Components.Graphics3D;
 using Evergine.Framework;
-using Evergine.Framework.Graphics;
-using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
-using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
-using System.Diagnostics;
 using Xrv.Core.UI.Buttons;
 using Xrv.Painter.Enums;
-using Xrv.Painter.Helpers;
 
 namespace Xrv.Painter.Components
 {
@@ -34,28 +28,13 @@ namespace Xrv.Painter.Components
         private XrvPressableButtonLookAndFeel lookAndFeel = null;
 
         [BindEntity(isRequired: false, source: BindEntitySource.ChildrenSkipOwner, tag: "Hover", isRecursive: false)]
-        private Entity hoverEntity;
-
-        private PainterManager painterManager = null;
+        private readonly Entity hoverEntity;
 
         /// <summary>
         /// Gets or sets the color of the button.
         /// </summary>
         [RenderProperty(Tooltip = "The color that the button sets in the painter")]
         public ColorEnum Color { get; set; }
-
-        /// <inheritdoc/>
-        protected override bool OnAttached()
-        {
-            if (!base.OnAttached())
-            {
-                return false;
-            }
-
-            this.painterManager = this.Owner.FindComponentInParents<PainterManager>();
-
-            return true;
-        }
 
         /// <inheritdoc/>
         protected override void OnActivated()
@@ -71,19 +50,7 @@ namespace Xrv.Painter.Components
             this.toggleButton.Toggled -= this.ToggleButtonToggled;
         }
 
-        private void ToggleButtonToggled(object sender, System.EventArgs e)
-        {
-            this.SetSelected(this.toggleButton.IsOn);
-        }
-
-        private void SetSelected(bool isOn)
-        {
-            if (isOn)
-            {
-                this.painterManager.Color = this.Color;
-            }
-        }
-
+        /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             if (this.lookAndFeel != null)
@@ -94,7 +61,8 @@ namespace Xrv.Painter.Components
                     {
                         this.hoverEntity.IsEnabled = true;
                     }
-                } else
+                }
+                else
                 {
                     if (this.hoverEntity != null && this.hoverEntity.IsEnabled)
                     {
@@ -103,5 +71,16 @@ namespace Xrv.Painter.Components
                 }
             }
         }
+
+        private void ToggleButtonToggled(object sender, System.EventArgs e)
+        {
+            // TODO: Set color in painter
+            ////this.SetSelected(this.toggleButton.IsOn);
+        }
+
+        ////private void SetSelected(bool isOn)
+        ////{
+        ////
+        ////}
     }
 }
