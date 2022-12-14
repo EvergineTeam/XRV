@@ -82,7 +82,7 @@ namespace Xrv.Painter
                 config.FrontPlateOffsets = Vector2.Zero;
                 config.DisplayLogo = false;
 
-                await EvergineBackgroundTask.Run(async () =>
+                await EvergineBackgroundTask.Run(() =>
                 {
                     var content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
 

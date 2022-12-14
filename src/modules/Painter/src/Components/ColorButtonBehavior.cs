@@ -21,14 +21,14 @@ namespace Xrv.Painter.Components
         [BindService]
         protected AssetsService assetsService;
 
+        [BindEntity(isRequired: false, source: BindEntitySource.ChildrenSkipOwner, tag: "Hover", isRecursive: false)]
+        private readonly Entity hoverEntity = null;
+
         [BindComponent]
         private ToggleButton toggleButton = null;
 
         [BindComponent(isRequired: false)]
         private XrvPressableButtonLookAndFeel lookAndFeel = null;
-
-        [BindEntity(isRequired: false, source: BindEntitySource.ChildrenSkipOwner, tag: "Hover", isRecursive: false)]
-        private readonly Entity hoverEntity;
 
         /// <summary>
         /// Gets or sets the color of the button.
