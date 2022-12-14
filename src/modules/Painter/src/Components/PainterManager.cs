@@ -121,7 +121,6 @@ namespace Xrv.Painter.Components
                 if (this.IsAttached)
                 {
                     this.OnModeChanged?.Invoke(this, value);
-                    this.SetVisualMode(value);
                 }
             }
         }
@@ -135,10 +134,6 @@ namespace Xrv.Painter.Components
             set
             {
                 this.thickness = value;
-                if (this.IsAttached)
-                {
-                    this.SetVisualThickness(value);
-                }
             }
         }
 
@@ -396,42 +391,6 @@ namespace Xrv.Painter.Components
                 {
                     this.ClearAll();
                 }
-            }
-        }
-
-        private void SetVisualMode(PainterModes value)
-        {
-            foreach (var item in this.modeButtons)
-            {
-                var backPlate = item.Owner.FindChildrenByTag("PART_Plate", skipOwner: true).FirstOrDefault().FindComponent<MaterialComponent>();
-                var name = item.Owner.Parent.Name;
-
-                ////if (name == value.ToString())
-                ////{
-                ////    backPlate.Material = this.SelectedMaterial;
-                ////}
-                ////else
-                ////{
-                ////    backPlate.Material = null;
-                ////}
-            }
-        }
-
-        private void SetVisualThickness(PainterThickness value)
-        {
-            foreach (var item in this.thicknessButtons)
-            {
-                var backPlate = item.Owner.FindChildrenByTag("PART_Plate", skipOwner: true).FirstOrDefault().FindComponent<MaterialComponent>();
-                var name = item.Owner.Parent.Name;
-
-                ////if (name == value.ToString())
-                ////{
-                ////    backPlate.Material = this.SelectedMaterial;
-                ////}
-                ////else
-                ////{
-                ////    backPlate.Material = null;
-                ////}
             }
         }
 

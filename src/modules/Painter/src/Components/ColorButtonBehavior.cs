@@ -8,7 +8,9 @@ using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
+using System;
 using System.Diagnostics;
+using Xrv.Core.UI.Buttons;
 using Xrv.Painter.Enums;
 using Xrv.Painter.Helpers;
 
@@ -17,7 +19,7 @@ namespace Xrv.Painter.Components
     /// <summary>
     /// Component of a pressable button which changes the color of the painter.
     /// </summary>
-    public class ColorButtonComponent : Component
+    public class ColorButtonBehavior : Behavior
     {
         /// <summary>
         /// Assets service.
@@ -28,16 +30,18 @@ namespace Xrv.Painter.Components
         [BindComponent]
         private ToggleButton toggleButton = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner)]
-        private PressableButton pressableButton = null;
+        [BindComponent(isRequired: false)]
+        private XrvPressableButtonLookAndFeel lookAndFeel = null;
 
-        //[BindComponent(source: BindComponentSource.Scene)]
+        [BindEntity(isRequired: false, source: BindEntitySource.ChildrenSkipOwner, tag: "Hover", isRecursive: false)]
+        private Entity hoverEntity;
+
         private PainterManager painterManager = null;
 
         /// <summary>
         /// Gets or sets the color of the button.
         /// </summary>
-        [RenderProperty(Tooltip = "The color of the button and the color that it enables")]
+        [RenderProperty(Tooltip = "The color that the button sets in the painter")]
         public ColorEnum Color { get; set; }
 
         /// <inheritdoc/>
@@ -58,7 +62,6 @@ namespace Xrv.Painter.Components
         {
             base.OnActivated();
             this.toggleButton.Toggled += this.ToggleButtonToggled;
-            this.pressableButton.ButtonPressed += this.PressableButtonButtonPressed;
         }
 
         /// <inheritdoc/>
@@ -66,12 +69,6 @@ namespace Xrv.Painter.Components
         {
             base.OnDeactivated();
             this.toggleButton.Toggled -= this.ToggleButtonToggled;
-            this.pressableButton.ButtonPressed -= this.PressableButtonButtonPressed;
-        }
-
-        private void PressableButtonButtonPressed(object sender, System.EventArgs e)
-        {
-            Debug.WriteLine("Pressed");
         }
 
         private void ToggleButtonToggled(object sender, System.EventArgs e)
@@ -85,22 +82,26 @@ namespace Xrv.Painter.Components
             {
                 this.painterManager.Color = this.Color;
             }
-            ////if (isOn)
-            ////{
-            ////    this.backPlateMaterialComponent.Material = this.BackplateSelectedButtonMaterial;
-            ////} else
-            ////{
-            ////    this.backPlateMaterialComponent.Material = this.ColorButtonMaterial;
-            ////}
-            if (isOn)
-            {
-                Debug.WriteLine(this.Color);
-            }
-            else
-            {
-                Debug.WriteLine("OFF");
-            }
+        }
 
+        protected override void Update(TimeSpan gameTime)
+        {
+            if (this.lookAndFeel != null)
+            {
+                if (this.lookAndFeel.IsDetected)
+                {
+                    if (this.hoverEntity != null && !this.hoverEntity.IsEnabled)
+                    {
+                        this.hoverEntity.IsEnabled = true;
+                    }
+                } else
+                {
+                    if (this.hoverEntity != null && this.hoverEntity.IsEnabled)
+                    {
+                        this.hoverEntity.IsEnabled = false;
+                    }
+                }
+            }
         }
     }
 }
