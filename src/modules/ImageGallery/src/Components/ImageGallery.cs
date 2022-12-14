@@ -297,7 +297,7 @@ namespace Xrv.ImageGallery.Components
                         RawImageLoader.CopyImageToArrayPool(image, out _, out data);
                     }
 
-                    this.graphicsContext.UpdateTextureData(this.imageTexture, data);
+                    await EvergineForegroundTask.Run(() => this.graphicsContext.UpdateTextureData(this.imageTexture, data));
                 }
 
                 this.spinnerEntity.IsEnabled = false;

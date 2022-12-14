@@ -60,10 +60,16 @@ namespace Xrv.Core.Messaging
         /// <returns>Message instance.</returns>
         protected abstract TMessage GetPublishData(bool isOn);
 
+        /// <summary>
+        /// Notifies toggle button state change.
+        /// </summary>
+        /// <param name="isOn">Toggle button state.</param>
+        protected void NotifyChange(bool isOn) => this.xrvService.PubSub.Publish(this.GetPublishData(isOn));
+
         private void StateChangedEvent(object sender, EventArgs e)
         {
             bool isOn = this.toggleStateManager != null ? this.toggleStateManager.CurrentState.Value == ToggleState.On : true;
-            this.xrvService.PubSub.Publish(this.GetPublishData(isOn));
+            this.NotifyChange(isOn);
         }
     }
 }

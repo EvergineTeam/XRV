@@ -30,7 +30,7 @@ namespace Xrv.LoadModel.Importers.GLB
     /// <summary>
     /// GLB files loader in runtime.
     /// </summary>
-    public class GLBRuntime
+    public class GLBRuntime : ModelRuntime
     {
         /// <summary>
         /// Single instance (Singleton).
@@ -62,6 +62,9 @@ namespace Xrv.LoadModel.Importers.GLB
         private GLBRuntime()
         {
         }
+
+        /// <inheritdoc/>
+        public override string Extentsion => ".glb";
 
         /// <summary>
         /// Read a glb file and return a model asset.
@@ -97,7 +100,7 @@ namespace Xrv.LoadModel.Importers.GLB
         /// <param name="stream">Seeked stream.</param>
         /// <param name="materialAssigner">Material assigner.</param>
         /// <returns>Model asset.</returns>
-        public async Task<Model> Read(Stream stream, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
+        public override async Task<Model> Read(Stream stream, Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> materialAssigner = null)
         {
             this.materialAssigner = materialAssigner;
 

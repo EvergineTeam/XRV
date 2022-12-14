@@ -25,7 +25,9 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
 using Xrv.LoadModel.Effects;
+using Xrv.LoadModel.Importers;
 using Xrv.LoadModel.Importers.GLB;
+using Xrv.LoadModel.Importers.STL;
 using Xrv.LoadModel.Structs;
 using static glTFLoader.Schema.Material;
 using Window = Xrv.Core.UI.Windows.Window;
@@ -53,12 +55,20 @@ namespace Xrv.LoadModel
         private RenderLayerDescription alphaLayer;
 
         private Window window = null;
+        private Dictionary<string, ModelRuntime> loaders;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelModule"/> class.
         /// </summary>
         public LoadModelModule()
         {
+            // 3D format supported.
+            this.loaders = new Dictionary<string, ModelRuntime>
+            {
+                { GLBRuntime.Instance.Extentsion, GLBRuntime.Instance },
+                { STLRuntime.Instance.Extentsion, STLRuntime.Instance },
+            };
+
             this.handMenuDesc = new MenuButtonDescription()
             {
                 IsToggle = false,
@@ -83,6 +93,18 @@ namespace Xrv.LoadModel
         /// Gets or sets the model repository list.
         /// </summary>
         public Repository[] Repositories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the DataSource collection.
+        /// Ej(extension, ModelRuntime instance).
+        ///    { GLBRuntime.Instance.Extentsion, GLBRuntime.Instance }.
+        ///    { STLRuntime.Instance.Extentsion, STLRuntime.Instance }.
+        /// </summary>
+        public Dictionary<string, ModelRuntime> Loaders
+        {
+            get => this.loaders;
+            set => this.loaders = value;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the model will be normalized to standard size or
@@ -178,7 +200,7 @@ namespace Xrv.LoadModel
 
             this.scene.Managers.EntityManager.Add(manipulatorEntity);
 
-            Entity modelEntity = null;
+            Entity root = null;
 
             await EvergineBackgroundTask.Run(async () =>
             {
@@ -195,34 +217,52 @@ namespace Xrv.LoadModel
                     if (modelSelected != null)
                     {
                         var filePath = modelSelected[0];
-                        using (var stream = await repo.FileAccess.GetFileAsync(filePath))
-                        using (var memoryStream = new MemoryStream())
+                        var extension = Path.GetExtension(filePath);
+
+                        if (this.loaders.TryGetValue(extension, out var loaderRuntime))
                         {
-                            stream.CopyTo(memoryStream);
-                            memoryStream.Position = 0;
-                            var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
-                            model = await GLBRuntime.Instance.Read(memoryStream, materialAssignerFunc);
+                            using (var stream = await repo.FileAccess.GetFileAsync(filePath))
+                            using (var memoryStream = new MemoryStream())
+                            {
+                                stream.CopyTo(memoryStream);
+                                memoryStream.Position = 0;
+                                var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
+                                model = await loaderRuntime.Read(memoryStream, materialAssignerFunc);
+                            }
+
+                            // Instantiate model
+                            var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+
+                            // Root Entity
+                            root = new Entity()
+                                        .AddComponent(new Transform3D());
+
+                            root.AddChild(modelEntity);
+
+                            // BoundingBox
+                            BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
+                            boundingBox.Transform(modelEntity.FindComponent<Transform3D>().WorldTransform);
+
+                            // Normalizing size
+                            if (this.NormalizedModelEnabled)
+                            {
+                                root.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / boundingBox.HalfExtent.Length());
+                            }
+
+                            // Add additional components
+                            this.AddManipulatorComponents(root, boundingBox);
                         }
-
-                        // Instantiate model
-                        modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-
-                        // Normalizing size
-                        if (this.NormalizedModelEnabled)
+                        else
                         {
-                            modelEntity.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / model.BoundingBox.Value.HalfExtent.Length());
+                            throw new Exception($"3D format {extension} not supported.");
                         }
-
-                        // Add additional components
-                        BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
-                        this.AddManipulatorComponents(modelEntity, boundingBox);
                     }
                 }
             });
 
-            if (modelEntity != null)
+            if (root != null)
             {
-                loadModelBehavior.ModelEntity = modelEntity;
+                loadModelBehavior.ModelEntity = root;
             }
             else
             {
@@ -286,16 +326,16 @@ namespace Xrv.LoadModel
             }
         }
 
-        private void AddManipulatorComponents(Entity entity, BoundingBox boundingBox)
+        private void AddManipulatorComponents(Entity root, BoundingBox boundingBox)
         {
             // Add global bounding box
-            entity.AddComponent(new BoxCollider3D()
+            root.AddComponent(new BoxCollider3D()
             {
                 Size = boundingBox.HalfExtent * 2,
                 Offset = boundingBox.Center,
             });
-            entity.AddComponent(new StaticBody3D());
-            entity.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
+            root.AddComponent(new StaticBody3D());
+            root.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
             {
                 AutoCalculate = false,
                 ScaleHandleScale = 0.030f,
@@ -322,7 +362,7 @@ namespace Xrv.LoadModel
                 HandleFocusedMaterial = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.BoundingBox.BoundingBoxHandleBlueFocused),
             });
             ////entity.AddComponent(new MinScaleConstraint() { MinimumScale = Vector3.One * 0.1f });
-            entity.AddComponent(new SimpleManipulationHandler()
+            root.AddComponent(new SimpleManipulationHandler()
             {
                 SmoothingActive = true,
                 SmoothingAmount = 0.001f,

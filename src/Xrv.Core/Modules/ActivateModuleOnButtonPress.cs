@@ -10,6 +10,8 @@ namespace Xrv.Core.Modules
         [IgnoreEvergine]
         public Module Module { get; set; }
 
+        internal void SetModuleActivationState(bool isOn) => this.NotifyChange(isOn);
+
         protected override ActivateModuleMessage GetPublishData(bool isOn) =>
             new ActivateModuleMessage
             {
