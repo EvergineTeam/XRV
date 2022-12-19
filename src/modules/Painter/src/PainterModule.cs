@@ -26,7 +26,6 @@ namespace Xrv.Painter
         private AssetsService assetsService;
         private XrvService xrv;
         private Window painterWindow;
-        private IEnumerable<string> voiceCommands;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PainterModule"/> class.
@@ -37,9 +36,8 @@ namespace Xrv.Painter
             {
                 IconOff = PainterResourceIDs.Materials.Icons.Painter,
                 IconOn = PainterResourceIDs.Materials.Icons.Painter,
-                IsToggle = true,
-                TextOn = "Hide",
-                TextOff = "Show",
+                IsToggle = false,
+                TextOn = "Paint",
             };
 
             this.help = new TabItem()
@@ -47,8 +45,6 @@ namespace Xrv.Painter
                 Name = "Painter",
                 Contents = this.HelpContent,
             };
-
-            this.voiceCommands = new List<string>() { "paint", "hand", "erase", "thin", "thick", "medium" };
         }
 
         /// <inheritdoc/>
@@ -64,7 +60,7 @@ namespace Xrv.Painter
         public override TabItem Settings => null;
 
         /// <inheritdoc/>
-        public override IEnumerable<string> VoiceCommands => this.voiceCommands;
+        public override IEnumerable<string> VoiceCommands => null;
 
         /// <inheritdoc/>
         public override void Initialize(Scene scene)
