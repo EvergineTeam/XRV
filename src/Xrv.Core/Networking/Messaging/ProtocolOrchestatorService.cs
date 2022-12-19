@@ -15,8 +15,8 @@ namespace Xrv.Core.Networking.Messaging
         private readonly ConcurrentDictionary<Guid, NetworkingProtocol> selfProtocols;
         private readonly ConcurrentDictionary<Guid, ClientServerProtocolEntry> peerProtocols;
         private readonly Dictionary<string, Func<NetworkingProtocol>> protocolInstantiators;
-
         private readonly List<ClientServerProtocolEntry> entriesToCheckAlive;
+
         private ClientServerProtocolEntry entryBeingUpdated;
         private TimeSpan currentCheckAliveProtocolsDelay;
 
@@ -99,7 +99,6 @@ namespace Xrv.Core.Networking.Messaging
                     this.lifecycle.SendLifecycleMessageToClient(
                         this.entryBeingUpdated.CorrelationId,
                         LifecycleMessageType.AreYouStillAlive,
-                        false,
                         this.entryBeingUpdated.Sender.Id);
                 }
 
@@ -130,20 +129,20 @@ namespace Xrv.Core.Networking.Messaging
             switch (message.LifecycleType)
             {
                 case LifecycleMessageType.StartProtocol:
-                    this.HandleProtocolStart(message.CorrelationId, message, receivedAsServer);
+                    this.HandleProtocolStart(message.CorrelationId, message);
                     break;
                 case LifecycleMessageType.StartProtocolDenied:
                 case LifecycleMessageType.StartProtocolAccepted:
                     this.HandleProtocolStartResponse(message.CorrelationId, message);
                     break;
                 case LifecycleMessageType.AreYouStillAlive:
-                    this.HandleAreYouStillAlive(message.CorrelationId, message, receivedAsServer);
+                    this.HandleAreYouStillAlive(message.CorrelationId, message);
                     break;
                 case LifecycleMessageType.ImStillAlive:
                     this.HandleImStillAlive(message.CorrelationId, message);
                     break;
                 case LifecycleMessageType.Talking:
-                    this.HandleTalking(message.CorrelationId, message, receivedAsServer);
+                    this.HandleTalking(message.CorrelationId, message);
                     break;
                 case LifecycleMessageType.EndProtocol:
                     this.HandleProtocolEnd(message.CorrelationId, message);
@@ -151,7 +150,7 @@ namespace Xrv.Core.Networking.Messaging
             }
         }
 
-        private void HandleProtocolStart(Guid correlationId, IIncomingMessage message, bool receivedAsServer)
+        private void HandleProtocolStart(Guid correlationId, IIncomingMessage message)
         {
             var request = new StartProtocolRequestMessage();
             message.To(request);
@@ -163,7 +162,7 @@ namespace Xrv.Core.Networking.Messaging
                 {
                     ErrorCode = ProtocolError.DuplicatedCorrelationId,
                 };
-                this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolDenied, receivedAsServer, message.Sender.Id, deniedMessage.WriteTo);
+                this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolDenied, message.Sender.Id, deniedMessage.WriteTo);
                 System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received protocol start message for an already started protocol: {correlationId}. {LifecycleMessageType.StartProtocolDenied} signal sent.");
 
                 return;
@@ -176,7 +175,7 @@ namespace Xrv.Core.Networking.Messaging
                 {
                     ErrorCode = ProtocolError.MissingProtocolInstantiator,
                 };
-                this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolDenied, receivedAsServer, message.Sender.Id, deniedMessage.WriteTo);
+                this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolDenied, message.Sender.Id, deniedMessage.WriteTo);
                 System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Protocol instantiator not found for class name: {request.ProtocolName}. {LifecycleMessageType.StartProtocolDenied} signal sent.");
 
                 return;
@@ -193,7 +192,6 @@ namespace Xrv.Core.Networking.Messaging
                 protocolInstance.CorrelationId = correlationId;
                 protocolInstance.ProtocolStarter = new ProtocolStarter(protocolInstance, this.lifecycle)
                 {
-                    ActAsServer = receivedAsServer,
                     TargetClientId = message.Sender.Id,
                 };
                 protocolInstance.Ended += this.Protocol_Ended;
@@ -212,7 +210,7 @@ namespace Xrv.Core.Networking.Messaging
             System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Protocol {protocolInstance.Name} ({correlationId}) added to internal table.");
 
             var successMessage = new StartProtocolResponseMessage();
-            this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolAccepted, receivedAsServer, entry.Sender.Id, successMessage.WriteTo);
+            this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolAccepted, entry.Sender.Id, successMessage.WriteTo);
             System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] {LifecycleMessageType.StartProtocolAccepted} signal sent to {entry.Sender.Id} for {protocolInstance.Name} ({correlationId})");
         }
 
@@ -235,7 +233,7 @@ namespace Xrv.Core.Networking.Messaging
             protocol.ProtocolStarter.OnProtocolStartResponse(response);
         }
 
-        private void HandleAreYouStillAlive(Guid correlationId, IIncomingMessage message, bool receivedAsServer)
+        private void HandleAreYouStillAlive(Guid correlationId, IIncomingMessage message)
         {
             // Check that sender is related with correlationId
             NetworkingProtocol protocol;
@@ -246,7 +244,7 @@ namespace Xrv.Core.Networking.Messaging
             }
 
             // Send back ImStillAlive command
-            this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.ImStillAlive, receivedAsServer, message.Sender.Id);
+            this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.ImStillAlive, message.Sender.Id);
             System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] {LifecycleMessageType.ImStillAlive} signal sent to {message.Sender.Id} for {protocol.Name} ({correlationId})");
         }
 
@@ -270,36 +268,40 @@ namespace Xrv.Core.Networking.Messaging
             entry.LastAliveDate = DateTime.UtcNow;
         }
 
-        private void HandleTalking(Guid correlationId, IIncomingMessage message, bool receivedAsServer)
+        private void HandleTalking(Guid correlationId, IIncomingMessage message)
         {
-            // Check that sender is related with correlationId
-            ClientServerProtocolEntry entry;
-            if (!this.peerProtocols.TryGetValue(correlationId, out entry))
+            NetworkingProtocol protocol;
+
+            if (!this.selfProtocols.TryGetValue(correlationId, out protocol))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.Talking} message, but not found correlation: {correlationId}");
-                return;
+                // Check that sender is related with correlationId
+                ClientServerProtocolEntry entry;
+
+                if (!this.peerProtocols.TryGetValue(correlationId, out entry))
+                {
+                    System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.Talking} message, but not found correlation: {correlationId}");
+                    return;
+                }
+
+                if (entry.Sender.Id != message.Sender.Id)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.Talking} message, but not from expected sender: {message.Sender.Id} ({entry.Sender.Id} expected)");
+                    return;
+                }
+
+                protocol = entry.Protocol;
+
+                // Update last alive date
+                entry.LastAliveDate = DateTime.UtcNow;
             }
 
-            if (entry.Sender.Id != message.Sender.Id)
+            if (protocol != null)
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.Talking} message, but not from expected sender: {message.Sender.Id} ({entry.Sender.Id} expected)");
-                return;
-            }
+                // Delegate in protocol
+                INetworkingMessageConverter protocolMessageInstance = protocol.InternalCreateMessageInstance(message);
+                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Delegating in protocol logic {protocol.Name} ({correlationId})");
 
-            // Update last alive date
-            entry.LastAliveDate = DateTime.UtcNow;
-
-            // Delegate in protocol
-            INetworkingMessageConverter protocolMessageInstance = entry.Protocol.InternalCreateMessageInstance(message);
-            System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Delegating in protocol logic {entry.Protocol.Name} ({correlationId})");
-
-            if (receivedAsServer)
-            {
-                entry.Protocol.InternalMessageReceivedAsServer(protocolMessageInstance, message.Sender.Id);
-            }
-            else
-            {
-                entry.Protocol.InternalMessageReceivedAsClient(protocolMessageInstance, message.Sender.Id);
+                protocol.InternalMessageReceived(protocolMessageInstance, message.Sender.Id);
             }
         }
 

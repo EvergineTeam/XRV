@@ -32,7 +32,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             this.correlationIdsToFilter[CoreKeyCorrelation] = NetworkPropertyProviderFilter.Room;
         }
 
-        public TimeSpan KeyReservationTime { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan KeyReservationTime { get; set; } = TimeSpan.FromSeconds(5);
 
         public override void Update(TimeSpan gameTime)
         {

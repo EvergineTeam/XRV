@@ -2,26 +2,30 @@
 
 using Evergine.Networking.Connection.Messages;
 using Lidgren.Network;
-using Xrv.Core.Networking.Messaging;
 
 namespace Xrv.Core.Networking.Properties.Session
 {
-    internal class UpdateSessionGroupDataRequestMessage : INetworkingMessageConverter
+    internal class UpdateSessionGroupDataRequestMessage : UpdateSessionDataRequestMessage
     {
-        public UpdateSessionDataMessageType Type { get; set; }
+        public UpdateSessionGroupDataRequestMessage()
+        {
+            this.Type = UpdateSessionDataMessageType.UpdateGroupData;
+        }
 
         public SessionDataGroup Data { get; set; }
 
-        public void ReadFrom(IncomingMessage message)
+        public override void ReadFrom(IncomingMessage message)
         {
+            base.ReadFrom(message);
+
             var data = new SessionDataGroup();
             data.Read((NetBuffer)message.InnerMessage);
             this.Data = data;
         }
 
-        public void WriteTo(OutgoingMessage message)
+        public override void WriteTo(OutgoingMessage message)
         {
-            message.Write((byte)this.Type);
+            base.WriteTo(message);
             this.Data.Write((NetBuffer)message.InnerMessage);
         }
     }

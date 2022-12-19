@@ -91,6 +91,7 @@ namespace Xrv.Core.Help
                 IconOn = CoreResourcesIDs.Materials.Icons.Help,
                 TextOn = "Help",
                 VoiceCommandOn = VoiceCommands.ShowHelp,
+                Order = int.MaxValue,
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
             this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);

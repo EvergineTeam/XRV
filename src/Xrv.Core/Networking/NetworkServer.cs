@@ -45,13 +45,6 @@ namespace Xrv.Core.Networking
         /// </summary>
         public bool IsStarted { get; private set; }
 
-        /// <summary>
-        /// Gets network configuration.
-        /// </summary>
-        public NetworkConfiguration Configuration { get => this.configuration; }
-
-        internal MatchmakingServerService Service { get => this.server; }
-
         internal SessionHostInfo Host { get; private set; }
 
         /// <summary>

@@ -16,6 +16,11 @@ namespace Xrv.Core.Networking.Messaging
         /// </summary>
         protected readonly IClientServerMessaging ClientServer;
 
+        /// <summary>
+        /// Target client identifier.
+        /// </summary>
+        protected int? TargetClientId;
+
         private readonly ILifecycleMessaging lifecycle;
 
         /// <summary>
@@ -43,11 +48,8 @@ namespace Xrv.Core.Networking.Messaging
 
         internal virtual ProtocolStarter ProtocolStarter { get; set; }
 
-        internal virtual void InternalMessageReceivedAsServer(INetworkingMessageConverter message, int senderId) =>
-            this.OnMessageReceivedAsServer(message, senderId);
-
-        internal virtual void InternalMessageReceivedAsClient(INetworkingMessageConverter message, int senderId) =>
-            this.OnMessageReceivedAsClient(message, senderId);
+        internal virtual void InternalMessageReceived(INetworkingMessageConverter message, int senderId) =>
+            this.OnMessageReceived(message, senderId);
 
         internal Task InternalStartProtocolAsync() => this.StartProtocolAsync();
 
@@ -90,6 +92,7 @@ namespace Xrv.Core.Networking.Messaging
                 this.ProtocolStarter = new ProtocolStarter(this, this.lifecycle);
             }
 
+            this.ProtocolStarter.TargetClientId = this.TargetClientId;
             this.ClientServer.RegisterSelfProtocol(this);
 
             System.Diagnostics.Debug.WriteLine($"[{nameof(NetworkingProtocol)}][Start] Starting protocol {this.Name} with correlation: {this.CorrelationId}");
@@ -110,7 +113,6 @@ namespace Xrv.Core.Networking.Messaging
                 this.lifecycle.SendLifecycleMessageToClient(
                     this.CorrelationId,
                     LifecycleMessageType.EndProtocol,
-                    false,
                     this.ProtocolStarter.TargetClientId.Value,
                     beforeSending);
             }
@@ -126,18 +128,11 @@ namespace Xrv.Core.Networking.Messaging
         }
 
         /// <summary>
-        /// Invoked when a message is received as server.
+        /// Invoked when a message is received.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="senderId">Sender identifier.</param>
-        protected abstract void OnMessageReceivedAsServer(INetworkingMessageConverter message, int senderId);
-
-        /// <summary>
-        /// Invoked when a message is received as client.
-        /// </summary>
-        /// <param name="message">Message.</param>
-        /// <param name="senderId">Sender identifier.</param>
-        protected abstract void OnMessageReceivedAsClient(INetworkingMessageConverter message, int senderId);
+        protected abstract void OnMessageReceived(INetworkingMessageConverter message, int senderId);
 
         /// <summary>
         /// Creates a protocol-specific message instance.

@@ -4,6 +4,7 @@ namespace Xrv.Core.Networking.Properties.Session
 {
     internal enum UpdateSessionDataMessageType
     {
+        UpdateGlobalData,
         UpdateGroupData,
     }
 }

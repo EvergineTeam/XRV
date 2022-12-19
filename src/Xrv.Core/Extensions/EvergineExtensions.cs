@@ -35,5 +35,27 @@ namespace Xrv.Core.Extensions
                 entity.RemoveChild(entity.ChildEntities.ElementAt(0));
             }
         }
+
+        /// <summary>
+        /// Checks if a component has already been added to an entity. If
+        /// not, it adds it to the entity.
+        /// </summary>
+        /// <typeparam name="TComponent">Component type.</typeparam>
+        /// <param name="entity">Target entity.</param>
+        /// <param name="component">Component instance.</param>
+        /// <param name="isExactType">Whether to match the exact type.</param>
+        /// <param name="tag">Filter entities by this tag.</param>
+        public static void AddComponentIfNotExists<TComponent>(
+            this Entity entity,
+            TComponent component,
+            bool isExactType = true,
+            string tag = null)
+             where TComponent : Component
+        {
+            if (entity.FindComponent<TComponent>(isExactType, tag) == null)
+            {
+                entity.AddComponent(component);
+            }
+        }
     }
 }

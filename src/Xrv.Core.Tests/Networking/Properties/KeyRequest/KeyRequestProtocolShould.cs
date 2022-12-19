@@ -1,9 +1,12 @@
 ﻿using Evergine.Framework.Managers;
 using Evergine.Framework.Services;
+using Evergine.Networking;
+using Evergine.Networking.Client;
 using Evergine.Networking.Components;
 using Moq;
 using System;
 using System.Threading.Tasks;
+using Xrv.Core.Messaging;
 using Xrv.Core.Networking;
 using Xrv.Core.Networking.Messaging;
 using Xrv.Core.Networking.Properties.KeyRequest;
@@ -19,6 +22,7 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
         private readonly Mock<IKeyStore> keyStore;
         private readonly Mock<IClientServerMessagingImpl> clientServerImpl;
         private readonly Mock<ProtocolStarter> protocolStarter;
+        private readonly TestSession session;
 
         public KeyRequestProtocolShould()
         {
@@ -28,9 +32,13 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
                 new Mock<AssetsService>().Object);
             this.keyStore = new Mock<IKeyStore>();
             this.clientServerImpl = new Mock<IClientServerMessagingImpl>();
+            this.session = new TestSession
+            {
+                IsHost = true,
+            };
 
             this.networking.Object.ClientServerMessaging = this.clientServerImpl.Object;
-            this.networking.Object.Session.CurrentUserIsHost = true;
+            this.networking.Object.Session = this.session;
 
             this.protocol = new KeyRequestProtocol(this.networking.Object, this.keyStore.Object);
             this.protocolStarter = new Mock<ProtocolStarter>(this.protocol, this.clientServerImpl.Object);
@@ -56,16 +64,15 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
                 ProviderType = NetworkPropertyProviderFilter.Room,
                 Type = RequestKeyMessageType.ClientRequestKeys,
             };
-            this.networking.Object.Session.CurrentUserIsHost = false;
-            this.protocol.InternalMessageReceivedAsServer(request, 1);
+            this.session.IsHost = false;
+            this.protocol.InternalMessageReceived(request, 1);
 
             this.clientServerImpl
                 .Verify(
                     server => server.SendProtocolMessageToClient(
                         It.IsAny<NetworkingProtocol>(),
                         It.IsAny<INetworkingMessageConverter>(),
-                        It.IsAny<int>(),
-                        It.IsAny<bool>()),
+                        It.IsAny<int>()),
                     Times.Never());
         }
 
@@ -78,13 +85,13 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             {
                 await Task.Delay(50);
                 var message = new AssignedKeysMessage();
-                this.protocol.InternalMessageReceivedAsClient(message, 1);
+                this.protocol.InternalMessageReceived(message, 1);
 
                 var confirmation = new RequestKeyProtocolMessage
                 {
                     Type = RequestKeyMessageType.ServerConfirmsKeysConfirmation,
                 };
-                this.protocol.InternalMessageReceivedAsClient(confirmation, 1);
+                this.protocol.InternalMessageReceived(confirmation, 1);
             });
 
             await this.protocol.RequestSetOfKeysAsync(NumberOfKeys, NetworkPropertyProviderFilter.Room);
@@ -118,7 +125,7 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             _ = Task.Run(async () =>
             {
                 await Task.Delay(50);
-                this.protocol.InternalMessageReceivedAsClient(message, 1);
+                this.protocol.InternalMessageReceived(message, 1);
             });
 
             Exception exception = null;
@@ -144,7 +151,7 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
                 ProviderType = NetworkPropertyProviderFilter.Room,
             };
 
-            this.protocol.InternalMessageReceivedAsServer(message, 1);
+            this.protocol.InternalMessageReceived(message, 1);
             this.keyStore
                 .Verify(store => store.ReserveKeys(
                     NumberOfKeys, 
@@ -164,13 +171,13 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             _ = Task.Run(async () =>
             {
                 await Task.Delay(50);
-                this.protocol.InternalMessageReceivedAsClient(message, 1);
+                this.protocol.InternalMessageReceived(message, 1);
 
                 var confirmation = new RequestKeyProtocolMessage
                 {
                     Type = RequestKeyMessageType.ServerConfirmsKeysConfirmation,
                 };
-                this.protocol.InternalMessageReceivedAsClient(confirmation, 1);
+                this.protocol.InternalMessageReceived(confirmation, 1);
             });
 
             var keys = await this.protocol.RequestSetOfKeysAsync((byte)message.Keys.Length, NetworkPropertyProviderFilter.Room);
@@ -184,7 +191,7 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             {
                 Keys = new byte[] { 0x01, 0x04 },
             };
-            this.protocol.InternalMessageReceivedAsClient(message, 1);
+            this.protocol.InternalMessageReceived(message, 1);
             this.clientServerImpl
                 .Verify(
                     server => server.SendProtocolMessageToServer(
@@ -205,7 +212,7 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             _ = Task.Run(async () =>
             {
                 await Task.Delay(50);
-                this.protocol.InternalMessageReceivedAsClient(message, 1);
+                this.protocol.InternalMessageReceived(message, 1);
             });
 
             Exception exception = null;
@@ -228,7 +235,7 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             {
                 Type = RequestKeyMessageType.ClientConfirmsKeysReservation,
             };
-            this.protocol.InternalMessageReceivedAsServer(message, 1);
+            this.protocol.InternalMessageReceived(message, 1);
             this.keyStore
                 .Verify(store => store.ConfirmKeys(this.protocol.CorrelationId, It.IsAny<int>()));
         }
@@ -240,9 +247,21 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             {
                 Type = RequestKeyMessageType.ClientCancelsKeysReservation,
             };
-            this.protocol.InternalMessageReceivedAsServer(message, 1);
+            this.protocol.InternalMessageReceived(message, 1);
             this.keyStore
                 .Verify(store => store.FreeKeys(this.protocol.CorrelationId, It.IsAny<int>()));
+        }
+
+        private class TestSession : SessionInfo
+        {
+            internal TestSession()
+                : base(null, null)
+            {
+            }
+
+            public override bool CurrentUserIsHost => this.IsHost;
+
+            public bool IsHost { get; set; }
         }
     }
 }

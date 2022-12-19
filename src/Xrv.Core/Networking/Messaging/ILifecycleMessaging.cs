@@ -23,9 +23,8 @@ namespace Xrv.Core.Networking.Messaging
         /// </summary>
         /// <param name="correlationId">Protocol correlation identifier.</param>
         /// <param name="type">Message type.</param>
-        /// <param name="useServerRole">Send message as server.</param>
         /// <param name="targetClientId">Destination client identifier.</param>
         /// <param name="beforeSending">Write to output buffer before sending.</param>
-        void SendLifecycleMessageToClient(Guid correlationId, LifecycleMessageType type, bool useServerRole, int targetClientId, Action<OutgoingMessage> beforeSending = null);
+        void SendLifecycleMessageToClient(Guid correlationId, LifecycleMessageType type, int targetClientId, Action<OutgoingMessage> beforeSending = null);
     }
 }

@@ -85,7 +85,7 @@ namespace Xrv.Core.UI.Cursors
                 detected = this.CheckCursorIsDetected(item.cursor, item.transform);
             }
 
-            if (!detected)
+            if (!detected && this.collider3D.IsEnabled)
             {
                 this.detectedCursorIndex = -1;
                 for (int i = 0; i < this.cursors.Length; i++)

@@ -110,61 +110,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
         }
 
         /// <inheritdoc/>
-        protected override void OnMessageReceivedAsServer(INetworkingMessageConverter message, int senderId)
-        {
-            // Ignore messages if current device is not session host (server)
-            if (this.networking.Session?.CurrentUserIsHost != true)
-            {
-                return;
-            }
-
-            this.OnMessageReceivedImpl(message, senderId);
-        }
-
-        /// <inheritdoc/>
-        protected override void OnMessageReceivedAsClient(INetworkingMessageConverter message, int senderId) =>
-            this.OnMessageReceivedImpl(message, senderId);
-
-        private void HandleKeysRequest(RequestNumberOfKeysMessage numberOfKeysRequest, int senderId)
-        {
-            bool succeeded = false;
-
-            try
-            {
-                var registeredKeys = this.keyStore.ReserveKeys(
-                    numberOfKeysRequest.NumberOfKeys,
-                    this.CorrelationId,
-                    senderId,
-                    numberOfKeysRequest.ProviderType);
-                this.AssignedKeys = registeredKeys.Select(key => key.Key).ToArray();
-                succeeded = true;
-            }
-            catch (FullKeyStoreException fksException)
-            {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Exception reserving session keys: {fksException}: {this.CorrelationId}");
-            }
-
-            RequestKeyProtocolMessage response;
-            if (succeeded)
-            {
-                response = new AssignedKeysMessage
-                {
-                    Keys = this.AssignedKeys,
-                };
-            }
-            else
-            {
-                response = new RequestKeyProtocolMessage()
-                {
-                    Type = RequestKeyMessageType.ServerRejectsKeysRequest,
-                };
-            }
-
-            this.ClientServer.SendProtocolMessageToClient(this, response, senderId, true);
-            System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Sent {response.Type} message to client {senderId}: {this.CorrelationId}");
-        }
-
-        private void OnMessageReceivedImpl(INetworkingMessageConverter message, int senderId)
+        protected override void OnMessageReceived(INetworkingMessageConverter message, int senderId)
         {
             if (message is RequestNumberOfKeysMessage keysRequest)
             {
@@ -201,7 +147,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
                         {
                             Type = RequestKeyMessageType.ServerConfirmsKeysConfirmation,
                         };
-                        this.ClientServer.SendProtocolMessageToClient(this, confirmation, senderId, true);
+                        this.ClientServer.SendProtocolMessageToClient(this, confirmation, senderId);
                         break;
                     case RequestKeyMessageType.ServerConfirmsKeysConfirmation:
                         this.protocolCompletionTcs?.TrySetResult(this.AssignedKeys);
@@ -211,6 +157,52 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
                         break;
                 }
             }
+        }
+
+        private void HandleKeysRequest(RequestNumberOfKeysMessage numberOfKeysRequest, int senderId)
+        {
+            bool currentIsHost = this.networking.Session?.CurrentUserIsHost ?? false;
+            if (!currentIsHost)
+            {
+                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Skip keys request: this is not a server: {this.CorrelationId}");
+                return;
+            }
+
+            bool succeeded = false;
+
+            try
+            {
+                var registeredKeys = this.keyStore.ReserveKeys(
+                    numberOfKeysRequest.NumberOfKeys,
+                    this.CorrelationId,
+                    senderId,
+                    numberOfKeysRequest.ProviderType);
+                this.AssignedKeys = registeredKeys.Select(key => key.Key).ToArray();
+                succeeded = true;
+            }
+            catch (FullKeyStoreException fksException)
+            {
+                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Exception reserving session keys: {fksException}: {this.CorrelationId}");
+            }
+
+            RequestKeyProtocolMessage response;
+            if (succeeded)
+            {
+                response = new AssignedKeysMessage
+                {
+                    Keys = this.AssignedKeys,
+                };
+            }
+            else
+            {
+                response = new RequestKeyProtocolMessage()
+                {
+                    Type = RequestKeyMessageType.ServerRejectsKeysRequest,
+                };
+            }
+
+            this.ClientServer.SendProtocolMessageToClient(this, response, senderId);
+            System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Sent {response.Type} message to client {senderId}: {this.CorrelationId}");
         }
 
         private async Task<byte[]> InternalRequestSetOfKeysAsync(byte numberOfKeys, NetworkPropertyProviderFilter provider, CancellationToken cancellation = default)

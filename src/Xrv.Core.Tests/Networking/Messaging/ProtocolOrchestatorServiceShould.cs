@@ -2,11 +2,11 @@
 using Evergine.Framework.Services;
 using Evergine.Networking.Client;
 using Evergine.Networking.Connection.Messages;
-using Evergine.Networking.Server;
 using Moq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Xrv.Core.Messaging;
 using Xrv.Core.Networking;
 using Xrv.Core.Networking.Messaging;
 using Xunit;
@@ -39,7 +39,6 @@ namespace Xrv.Core.Tests.Networking.Messaging
                 .Verify(sender => sender.SendLifecycleMessageToClient(
                     protocolInstance1.Object.CorrelationId,
                     LifecycleMessageType.StartProtocolDenied,
-                    It.IsAny<bool>(),
                     this.endpoint1.Peer.Object.Id,
                     It.IsAny<Action<OutgoingMessage>>()),
                     Times.Once);
@@ -59,7 +58,6 @@ namespace Xrv.Core.Tests.Networking.Messaging
                 .Verify(sender => sender.SendLifecycleMessageToClient(
                     protocolInstance1.Object.CorrelationId,
                     LifecycleMessageType.StartProtocolAccepted,
-                    It.IsAny<bool>(),
                     this.endpoint1.Peer.Object.Id,
                     It.IsAny<Action<OutgoingMessage>>()),
                     Times.Once);
@@ -67,7 +65,6 @@ namespace Xrv.Core.Tests.Networking.Messaging
                 .Verify(sender => sender.SendLifecycleMessageToClient(
                     protocolInstance1.Object.CorrelationId,
                     LifecycleMessageType.StartProtocolDenied,
-                    It.IsAny<bool>(),
                     this.endpoint1.Peer.Object.Id,
                     It.IsAny<Action<OutgoingMessage>>()),
                     Times.Once);
@@ -86,7 +83,6 @@ namespace Xrv.Core.Tests.Networking.Messaging
                 .Verify(server => server.SendLifecycleMessageToClient(
                     It.IsAny<Guid>(),
                     It.IsAny<LifecycleMessageType>(),
-                    It.IsAny<bool>(),
                     It.IsAny<int>(),
                     It.IsAny<Action<OutgoingMessage>>()));
         }
@@ -134,7 +130,6 @@ namespace Xrv.Core.Tests.Networking.Messaging
                 .Verify(sender => sender.SendLifecycleMessageToClient(
                     protocolInstance1.Object.CorrelationId,
                     LifecycleMessageType.AreYouStillAlive,
-                    It.IsAny<bool>(),
                     this.endpoint1.Peer.Object.Id,
                     It.IsAny<Action<OutgoingMessage>>()),
                     Times.Once);
@@ -153,7 +148,6 @@ namespace Xrv.Core.Tests.Networking.Messaging
                 .Verify(sender => sender.SendLifecycleMessageToClient(
                     protocolInstance1.Object.CorrelationId,
                     LifecycleMessageType.ImStillAlive,
-                    It.IsAny<bool>(),
                     this.endpoint2.Peer.Object.Id,
                     It.IsAny<Action<OutgoingMessage>>()),
                     Times.Once);
@@ -175,7 +169,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
             this.endpoint2.SimulateTalking(protocolInstance1.Object, this.endpoint1);
 
             protocolInstance1
-                .Verify(p => p.InternalMessageReceivedAsServer(
+                .Verify(p => p.InternalMessageReceived(
                     It.IsAny<INetworkingMessageConverter>(),
                     this.endpoint1.Peer.Object.Id));
         }

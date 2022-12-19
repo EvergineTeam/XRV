@@ -36,30 +36,59 @@ namespace Xrv.Core.Networking.Properties.Session
                 return Task.CompletedTask;
             });
 
+        public Task UpdateDataAsync(string propertyName, object propertyValue) =>
+            this.ExecuteAsync(() =>
+            {
+                var request = new UpdateGlobalSessionDataRequestMessage
+                {
+                    PropertyName = propertyName,
+                    PropertyValue = propertyValue,
+                };
+
+                this.ClientServer.SendProtocolMessageToServer(this, request);
+                return Task.CompletedTask;
+            });
+
         protected override INetworkingMessageConverter CreateMessageInstance(IIncomingMessage message)
         {
-            var request = new UpdateSessionGroupDataRequestMessage
+            UpdateSessionDataRequestMessage instance = null;
+            var messageTypeAsEnum = (UpdateSessionDataMessageType)message.Type;
+            switch (messageTypeAsEnum)
             {
-                Type = UpdateSessionDataMessageType.UpdateGroupData,
-            };
-            message.To(request);
-
-            return request;
-        }
-
-        protected override void OnMessageReceivedAsServer(INetworkingMessageConverter message, int senderId) =>
-            this.OnMessageReceivedAsClient(message, senderId);
-
-        protected override void OnMessageReceivedAsClient(INetworkingMessageConverter message, int senderId)
-        {
-            var groupUpdateMessage = message as UpdateSessionGroupDataRequestMessage;
-            if (groupUpdateMessage == null)
-            {
-                return;
+                case UpdateSessionDataMessageType.UpdateGlobalData:
+                    instance = new UpdateGlobalSessionDataRequestMessage();
+                    break;
+                case UpdateSessionDataMessageType.UpdateGroupData:
+                    instance = new UpdateSessionGroupDataRequestMessage();
+                    break;
             }
 
-            System.Diagnostics.Debug.WriteLine($"[{nameof(UpdateSessionDataProtocol)}] Received session data update for group {groupUpdateMessage.Data.GroupName}");
-            this.updateManager.UpdateSession(groupUpdateMessage.Data);
+            message.To(instance);
+            return instance;
+        }
+
+        protected override void OnMessageReceived(INetworkingMessageConverter message, int senderId)
+        {
+            if (message is UpdateGlobalSessionDataRequestMessage globalMessage)
+            {
+                this.HandleGlobalMessage(globalMessage);
+            }
+            else if (message is UpdateSessionGroupDataRequestMessage groupMessage)
+            {
+                this.HandleGroupMessage(groupMessage);
+            }
+        }
+
+        private void HandleGlobalMessage(UpdateGlobalSessionDataRequestMessage globalMessage)
+        {
+            System.Diagnostics.Debug.WriteLine($"[{nameof(UpdateSessionDataProtocol)}] Received global session data update for property {globalMessage.PropertyName}");
+            this.updateManager.UpdateSession(globalMessage.PropertyName, globalMessage.PropertyValue);
+        }
+
+        private void HandleGroupMessage(UpdateSessionGroupDataRequestMessage groupMessage)
+        {
+            System.Diagnostics.Debug.WriteLine($"[{nameof(UpdateSessionDataProtocol)}] Received session data update for group {groupMessage.Data.GroupName}");
+            this.updateManager.UpdateSession(groupMessage.Data);
         }
     }
 }

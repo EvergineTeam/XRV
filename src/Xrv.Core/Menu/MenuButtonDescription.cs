@@ -62,5 +62,10 @@ namespace Xrv.Core.Menu
         /// toggle buttons. Has no effect in standard buttons.
         /// </summary>
         public string VoiceCommandOff { get; set; }
+
+        /// <summary>
+        /// Gets or sets button order within the hand menu.
+        /// </summary>
+        public int Order { get; set; }
     }
 }
