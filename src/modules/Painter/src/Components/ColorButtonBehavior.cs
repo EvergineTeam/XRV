@@ -37,20 +37,6 @@ namespace Xrv.Painter.Components
         public ColorEnum Color { get; set; }
 
         /// <inheritdoc/>
-        protected override void OnActivated()
-        {
-            base.OnActivated();
-            this.toggleButton.Toggled += this.ToggleButtonToggled;
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDeactivated()
-        {
-            base.OnDeactivated();
-            this.toggleButton.Toggled -= this.ToggleButtonToggled;
-        }
-
-        /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             if (this.lookAndFeel != null)
@@ -71,16 +57,5 @@ namespace Xrv.Painter.Components
                 }
             }
         }
-
-        private void ToggleButtonToggled(object sender, System.EventArgs e)
-        {
-            // TODO: Set color in painter
-            ////this.SetSelected(this.toggleButton.IsOn);
-        }
-
-        ////private void SetSelected(bool isOn)
-        ////{
-        ////
-        ////}
     }
 }
