@@ -10,6 +10,7 @@ using Xrv.Core.Storage.Cache;
 using Xrv.ImageGallery;
 using Xrv.LoadModel;
 using Xrv.LoadModel.Structs;
+using Xrv.Painter;
 using Xrv.Ruler;
 using Xrv.StreamingViewer;
 using Random = Evergine.Framework.Services.Random;
@@ -69,7 +70,9 @@ namespace XrvSamples
 	                SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
 	                //SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
 	                //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
-	            }); 
+	            })
+	            .AddModule(new PainterModule());
+	            
 
             this.Container.RegisterInstance(xrv);
         }
