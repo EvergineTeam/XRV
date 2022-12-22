@@ -1,13 +1,20 @@
-﻿using Evergine.Framework.Graphics;
+﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xrv.Painter.Enums;
 
 namespace Xrv.Painter.Helpers
 {
+    /// <summary>
+    /// Color Helper class. Gets material from color enum.
+    /// </summary>
     public static class ColorHelper
     {
+        /// <summary>
+        /// Gets material from color enum.
+        /// </summary>
+        /// <returns>Guid of the material color.</returns>
+        /// <param name="color">Color enum.</param>
         public static Guid GetMaterialFromColor(ColorEnum color)
         {
             var guid = PainterResourceIDs.Materials.Colors.WhiteColor;

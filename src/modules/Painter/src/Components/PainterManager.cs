@@ -1,8 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
-using Evergine.Components.Primitives;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
@@ -69,8 +67,6 @@ namespace Xrv.Painter.Components
     /// </summary>
     public class PainterManager : Component
     {
-        private const string LINETAG = "linetag";
-
         /// <summary>
         /// Assets service.
         /// </summary>
@@ -94,6 +90,8 @@ namespace Xrv.Painter.Components
         /// </summary>
         [BindEntity(source: BindEntitySource.Children, tag: "Commands")]
         protected Entity commandsEntity;
+
+        private const string LINETAG = "linetag";
 
         private List<PainterAction> actions = new List<PainterAction>();
 

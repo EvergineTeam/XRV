@@ -23,7 +23,7 @@ namespace Xrv.Painter.Components
         /// The line points list.
         /// </summary>
         [IgnoreEvergine]
-        public List<LineInfo> LinePoints = new List<LineInfo>();
+        public List<LineInfo> LinePoints = new ();
 
         internal Mesh mesh;
 
