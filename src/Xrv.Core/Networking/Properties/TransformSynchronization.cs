@@ -112,9 +112,8 @@ namespace Xrv.Core.Networking.Properties
 
         private void UpdatePropertyValue()
         {
-            // TODO we should consider user with session control is
             var session = this.xrvService.Networking.Session;
-            if (this.IsReady && this.HasInitializedKey() && session.CurrentUserIsHost)
+            if (this.IsReady && this.HasInitializedKey() && session.CurrentUserIsPresenter)
             {
                 this.PropertyValue = this.transform.LocalTransform;
             }

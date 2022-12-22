@@ -11,6 +11,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Xrv.Core.Extensions;
 using Xrv.Core.Modules;
+using Xrv.Core.Networking.ControlRequest;
 using Xrv.Core.UI.Buttons;
 using Xrv.Core.VoiceCommands;
 
@@ -112,13 +113,17 @@ namespace Xrv.Core.Menu
 
         private void AssociateActivationPublishers(MenuButtonDescription description, Entity button)
         {
+            button.AddComponent(new VisuallyEnabledController());
+
             var associatedModule = this.xrvService.GetModuleForHandButton(description);
             if (associatedModule != null)
             {
-                button.AddComponent(new ActivateModuleOnButtonPress
-                {
-                    Module = associatedModule,
-                });
+                button
+                    .AddComponent(new ActivateModuleOnButtonPress
+                    {
+                        Module = associatedModule,
+                    })
+                    .AddComponent(new ButtonEnabledStateByControlStatus());
             }
             else
             {

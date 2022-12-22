@@ -50,6 +50,11 @@ namespace Xrv.Core.Networking
         /// </summary>
         public bool IsConnected { get => this.client?.IsConnected ?? false; }
 
+        /// <summary>
+        /// Gets current client identifier.
+        /// </summary>
+        public int ClientId { get => this.client?.LocalPlayer?.Id ?? -1; }
+
         internal MatchmakingClientService InternalClient { get => this.client; }
 
         internal async Task<bool> ConnectAsync(SessionHostInfo host)

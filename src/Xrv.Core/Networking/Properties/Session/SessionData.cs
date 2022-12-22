@@ -22,6 +22,11 @@ namespace Xrv.Core.Networking.Properties.Session
         }
 
         /// <summary>
+        /// Gets session presenter client identifier.
+        /// </summary>
+        public int PresenterId { get; internal set; }
+
+        /// <summary>
         /// Tries to obtain session data for a given group.
         /// </summary>
         /// <typeparam name="TValue">Data type.</typeparam>
@@ -45,6 +50,8 @@ namespace Xrv.Core.Networking.Properties.Session
         /// <inheritdoc/>
         void INetworkSerializable.Read(NetBuffer buffer)
         {
+            this.PresenterId = buffer.ReadInt32();
+
             this.groups.Clear();
             int numberOfGroups = buffer.ReadInt32();
             for (int i = 0; i < numberOfGroups; i++)
@@ -58,6 +65,8 @@ namespace Xrv.Core.Networking.Properties.Session
         /// <inheritdoc/>
         void INetworkSerializable.Write(NetBuffer buffer)
         {
+            buffer.Write(this.PresenterId);
+
             buffer.Write(this.groups.Count);
             foreach (var kvp in this.groups)
             {

@@ -11,15 +11,20 @@ namespace Xrv.Core.Networking.Properties.Session
         [BindComponent]
         private SessionDataSynchronization synchronization = null;
 
-        private ConcurrentQueue<SessionDataGroup> updateQueue;
+        private ConcurrentQueue<IUpdateAction> updateQueue;
         private bool isDirty;
 
         public SessionDataUpdateManager()
         {
-            this.updateQueue = new ConcurrentQueue<SessionDataGroup>();
+            this.updateQueue = new ConcurrentQueue<IUpdateAction>();
         }
 
-        public void UpdateSession(SessionDataGroup update) => this.updateQueue.Enqueue(update);
+        public bool IsReady { get => this.IsAttached && (this.synchronization?.IsReady ?? false); }
+
+        public void UpdateSession(string propertyName, object propertyValue)
+            => this.updateQueue.Enqueue(new UpdateGlobalAction(propertyName, propertyValue));
+
+        public void UpdateSession(SessionDataGroup update) => this.updateQueue.Enqueue(new UpdateGroupAction(update));
 
         protected override void Update(TimeSpan gameTime)
         {
@@ -29,16 +34,18 @@ namespace Xrv.Core.Networking.Properties.Session
             }
 
             System.Diagnostics.Debug.WriteLine($"[{nameof(SessionDataUpdateManager)}] Detected {this.updateQueue.Count} enqueued updates");
+
+            var sessionData = this.synchronization.PropertyValue;
             while (this.updateQueue.TryDequeue(out var update))
             {
-                var sessionData = this.synchronization.Data;
-                sessionData.SetGroupData(update);
+                update.Update(sessionData);
                 this.isDirty = true;
             }
 
             if (this.isDirty)
             {
                 System.Diagnostics.Debug.WriteLine($"[{nameof(SessionDataUpdateManager)}] Forcing synchronization");
+                this.synchronization.PropertyValue = sessionData;
                 this.synchronization.ForceSync();
             }
 

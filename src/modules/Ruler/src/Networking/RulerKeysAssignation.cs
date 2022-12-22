@@ -27,6 +27,7 @@ namespace Xrv.Ruler.Networking
         /// <param name="keys">Keys to be assigned.</param>
         public void SetKeys(byte[] keys)
         {
+            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerKeysAssignation)}] Handle keys: {keys[0]}, {keys[1]}");
             this.handle1Sync.PropertyKeyByte = keys[0];
             this.handle2Sync.PropertyKeyByte = keys[1];
         }
@@ -41,7 +42,7 @@ namespace Xrv.Ruler.Networking
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerKeysAssignation)}] Got result of {keys.Length} keys");
+            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerKeysAssignation)}] Got result of {keys.Length} keys: {keys[0]}, {keys[1]}");
             this.SetKeys(keys);
             this.session?.UpdateData(data =>
             {

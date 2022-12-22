@@ -34,21 +34,16 @@ namespace Xrv.Core.Networking.Messaging
 
         public void UnregisterSelfProtocol(NetworkingProtocol protocol) => this.Orchestator.UnregisterSelfProtocol(protocol);
 
-        public void SendLifecycleMessageToClient(Guid correlationId, LifecycleMessageType type, bool useServerRole, int targetClientId, Action<OutgoingMessage> beforeSending = null)
+        public void SendLifecycleMessageToClient(Guid correlationId, LifecycleMessageType type, int targetClientId, Action<OutgoingMessage> beforeSending = null)
         {
-            OutgoingMessage message = useServerRole ? this.server.CreateMessage() : this.client.CreateMessage();
+            bool iAmMasterClient = this.client.LocalPlayer.IsMasterClient;
+            OutgoingMessage message = iAmMasterClient ? this.server.CreateMessage() : this.client.CreateMessage();
             this.InitializeOutgoingMessage(message, correlationId, type);
             beforeSending?.Invoke(message);
 
-            if (this.client.LocalPlayer.IsMasterClient && targetClientId == 0)
+            if (targetClientId == 0)
             {
                 this.client.SendToServer(message, DeliveryMethod.ReliableOrdered);
-            }
-            else if (useServerRole)
-            {
-                // TODO: remove useServerRole?
-                var receiver = this.server.AllConnectedPlayers.FirstOrDefault(client => client.Id == targetClientId);
-                this.server.SendToClient(message, receiver.Endpoint, DeliveryMethod.ReliableOrdered);
             }
             else
             {
@@ -65,9 +60,9 @@ namespace Xrv.Core.Networking.Messaging
             this.client.SendToServer(message, DeliveryMethod.ReliableOrdered);
         }
 
-        public void SendProtocolMessageToClient(NetworkingProtocol protocol, INetworkingMessageConverter message, int clientId, bool useServerRole)
+        public void SendProtocolMessageToClient(NetworkingProtocol protocol, INetworkingMessageConverter message, int clientId)
         {
-            this.SendLifecycleMessageToClient(protocol.CorrelationId, LifecycleMessageType.Talking, useServerRole, clientId, message.WriteTo);
+            this.SendLifecycleMessageToClient(protocol.CorrelationId, LifecycleMessageType.Talking, clientId, message.WriteTo);
         }
 
         public void SendProtocolMessageToServer(NetworkingProtocol protocol, INetworkingMessageConverter message)

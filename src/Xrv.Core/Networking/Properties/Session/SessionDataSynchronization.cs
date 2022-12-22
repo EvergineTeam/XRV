@@ -19,8 +19,6 @@ namespace Xrv.Core.Networking.Properties.Session
             this.ProviderFilter = NetworkPropertyProviderFilter.Room;
         }
 
-        public SessionData Data { get; private set; }
-
         internal void ForceSync() => this.UpdatePropertyValue();
 
         protected override void OnPropertyReadyToSet()
@@ -30,8 +28,7 @@ namespace Xrv.Core.Networking.Properties.Session
             var session = this.xrvService.Networking.Session;
             if (session.CurrentUserIsHost)
             {
-                this.Data = new SessionData();
-                this.PropertyValue = this.Data;
+                this.PropertyValue = new SessionData();
             }
             else
             {
@@ -49,10 +46,12 @@ namespace Xrv.Core.Networking.Properties.Session
         private void UpdatePropertyValue()
         {
             var session = this.xrvService.Networking.Session;
-            if (this.IsReady && this.HasInitializedKey() && session.CurrentUserIsHost)
+            if (this.IsReady && this.HasInitializedKey() && session.CurrentUserIsPresenter)
             {
-                this.PropertyValue = this.Data;
+                Workarounds.ForceRefresh(this);
             }
+
+            this.NotifySessionDataChange();
         }
 
         private void NotifySessionDataChange() =>

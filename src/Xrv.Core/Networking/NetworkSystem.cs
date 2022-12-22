@@ -5,6 +5,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Networking.Client;
 using Evergine.Networking.Components;
@@ -15,6 +16,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Xrv.Core.Extensions;
+using Xrv.Core.Menu;
+using Xrv.Core.Networking.ControlRequest;
 using Xrv.Core.Networking.Messaging;
 using Xrv.Core.Networking.Properties.KeyRequest;
 using Xrv.Core.Networking.Properties.Session;
@@ -32,17 +36,16 @@ namespace Xrv.Core.Networking
         private readonly XrvService xrvService;
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
-        private readonly SessionInfo session;
         private TabItem settingsItem;
         private bool networkingAvailable;
         private NetworkConfiguration configuration;
         private Entity worldCenterEntity;
         private SessionDataSynchronization sessionDataSync;
         private SessionDataUpdateManager sessionDataUpdater;
-
         private MatchmakingServerService server;
         private MatchmakingClientService client;
         private ProtocolOrchestatorService orchestator;
+        private MenuButtonDescription controlRequestButtonDescription;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkSystem"/> class.
@@ -58,7 +61,12 @@ namespace Xrv.Core.Networking
             this.xrvService = xrvService;
             this.entityManager = entityManager;
             this.assetsService = assetsService;
-            this.session = new SessionInfo(xrvService.PubSub);
+            this.controlRequestButtonDescription = new MenuButtonDescription
+            {
+                TextOn = "Request control",
+                IconOn = CoreResourcesIDs.Materials.Icons.ControlRequest,
+                Order = int.MaxValue - 2,
+            };
         }
 
         /// <summary>
@@ -93,7 +101,7 @@ namespace Xrv.Core.Networking
         /// <summary>
         /// Gets current session information.
         /// </summary>
-        public SessionInfo Session { get => this.session; }
+        public SessionInfo Session { get; internal set; }
 
         /// <summary>
         /// Gets or sets port override value.
@@ -141,10 +149,13 @@ namespace Xrv.Core.Networking
                 var container = Application.Current.Container;
                 this.server = new MatchmakingServerService();
                 this.client = new MatchmakingClientService();
+                this.Session = new SessionInfo(this.client, this.xrvService.PubSub);
+
                 container.RegisterInstance(this.server);
                 container.RegisterInstance(this.client);
                 this.InitializeKeyRequestProtocol(container);
                 this.InitializeUpdateSessionDataProtocol();
+                this.InitializeControlRequestProtocol();
             }
         }
 
@@ -156,22 +167,23 @@ namespace Xrv.Core.Networking
             this.sessionDataSync = new SessionDataSynchronization();
             this.sessionDataUpdater = new SessionDataUpdateManager();
             this.EnableSessionDataSync(false);
-            this.session.SetData(this.sessionDataSync);
+            this.Session.SetData(this.sessionDataSync);
 
             this.worldCenterEntity = new Entity("Networking-WorldCenter")
                 .AddComponent(new Transform3D())
                 .AddComponent(new NetworkRoomProvider())
                 .AddComponent(this.sessionDataSync)
-                .AddComponent(this.sessionDataUpdater);
+                .AddComponent(this.sessionDataUpdater)
+                .AddComponent(new SessionPresenterObserver());
             this.entityManager.Add(this.worldCenterEntity);
+            this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
         }
 
         internal async Task<bool> StartSessionAsync(string serverName)
         {
             this.Server = new NetworkServer(this.server, this.Configuration);
             await this.Server.StartAsync(serverName).ConfigureAwait(false);
-            this.Session.CurrentUserIsHost = this.Server.IsStarted;
-            if (this.Session.CurrentUserIsHost)
+            if (this.Server.IsStarted)
             {
                 await this.ConnectToSessionAsync(this.Server.Host).ConfigureAwait(false);
             }
@@ -215,6 +227,11 @@ namespace Xrv.Core.Networking
 
             this.Session.Status = SessionStatus.Joined;
 
+            var handMenu = this.xrvService.HandMenu;
+            handMenu.ButtonDescriptions.Add(this.controlRequestButtonDescription);
+            var controlRequestButton = handMenu.GetButtonEntity(this.controlRequestButtonDescription);
+            controlRequestButton.AddComponentIfNotExists(new HandMenuButtonStateUpdater());
+
             // Move world-center entity as child of QR scanning marker
             this.MoveWorldCenterEntity(scanningFlow, true);
             this.EnableSessionDataSync(true);
@@ -253,8 +270,11 @@ namespace Xrv.Core.Networking
 
         private async Task ClearSessionStatusAsync()
         {
-            this.session.Host = null;
-            this.session.Status = SessionStatus.Disconnected;
+            this.Session.Host = null;
+            this.Session.Status = SessionStatus.Disconnected;
+
+            var handMenu = this.xrvService.HandMenu;
+            handMenu.ButtonDescriptions.Remove(this.controlRequestButtonDescription);
 
             this.EnableSessionDataSync(false);
 
@@ -304,7 +324,14 @@ namespace Xrv.Core.Networking
 
             if (state == ClientStates.Disconnected)
             {
-                await this.ClearSessionStatusAsync();
+                await this.ClearSessionStatusAsync()
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsFaulted)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error clearing session: {t.Exception}");
+                        }
+                    });
             }
         }
 
@@ -313,23 +340,26 @@ namespace Xrv.Core.Networking
             var worldCenterTransform = this.worldCenterEntity.FindComponent<Transform3D>();
             worldCenterTransform.LocalTransform = Matrix4x4.CreateFromTRS(Vector3.Zero, Vector3.Zero, new Vector3(1, 1, 1));
 
-            if (this.worldCenterEntity.Parent != null)
+            _ = EvergineForegroundTask.Run(() =>
             {
-                this.worldCenterEntity.Parent.DetachChild(this.worldCenterEntity);
-            }
-            else
-            {
-                this.entityManager.Detach(this.worldCenterEntity);
-            }
+                if (this.worldCenterEntity.Parent != null)
+                {
+                    this.worldCenterEntity.Parent.DetachChild(this.worldCenterEntity);
+                }
+                else
+                {
+                    this.entityManager.Detach(this.worldCenterEntity);
+                }
 
-            if (markerAsRoot)
-            {
-                scanningFlow.Marker.AddChild(this.worldCenterEntity);
-            }
-            else
-            {
-                this.entityManager.Add(this.worldCenterEntity);
-            }
+                if (markerAsRoot)
+                {
+                    scanningFlow.Marker.AddChild(this.worldCenterEntity);
+                }
+                else
+                {
+                    this.entityManager.Add(this.worldCenterEntity);
+                }
+            });
         }
 
         private void InitializeKeyRequestProtocol(Container container)
@@ -361,10 +391,74 @@ namespace Xrv.Core.Networking
                 () => new UpdateSessionDataProtocol(this, this.SessionDataUpdateManager));
         }
 
+        private void InitializeControlRequestProtocol()
+        {
+            this.orchestator.RegisterProtocolInstantiator(
+                ControlRequestProtocol.ProtocolName,
+                () => new ControlRequestProtocol(this, this.xrvService.WindowSystem, this.SessionDataUpdateManager));
+        }
+
         private void EnableSessionDataSync(bool enabled)
         {
             this.sessionDataSync.IsEnabled = enabled;
             this.sessionDataUpdater.IsEnabled = enabled;
+        }
+
+        private async void OnHandMenuButtonPressed(HandMenuActionMessage message)
+        {
+            if (message.Description == this.controlRequestButtonDescription)
+            {
+                if (this.Session.CurrentUserIsHost)
+                {
+                    await this.TakeControlAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    await this.TryRequestControlAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        private async Task TakeControlAsync()
+        {
+            try
+            {
+                var requestProtocol = new ControlRequestProtocol(
+                    this,
+                    this.xrvService.WindowSystem,
+                    this.sessionDataUpdater);
+                await requestProtocol.TakeControlAsync().ConfigureAwait(false);
+                Debug.WriteLine($"Control took");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Take control error: {ex}");
+            }
+        }
+
+        private async Task TryRequestControlAsync()
+        {
+            // avoid requesting control to yourself
+            var sessionData = this.Session.Data;
+            if (sessionData == null || sessionData.PresenterId == this.Client.ClientId)
+            {
+                return;
+            }
+
+            try
+            {
+                var requestProtocol = new ControlRequestProtocol(
+                    this,
+                    this.xrvService.WindowSystem,
+                    this.sessionDataUpdater);
+                bool accepted = await requestProtocol.RequestControlAsync()
+                    .ConfigureAwait(false);
+                System.Diagnostics.Debug.WriteLine($"Control request result: {accepted}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Control request error: {ex}");
+            }
         }
 
         private void FixDefaultNetworkInterface()

@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -32,6 +33,7 @@ namespace Xrv.Core.Menu
 
         private readonly ObservableCollection<MenuButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
+        private readonly ButtonsIterator buttonsIterator;
 
         private IWorkAction appearAnimation;
         private IWorkAction extendedAnimation;
@@ -96,6 +98,7 @@ namespace Xrv.Core.Menu
         {
             this.buttonDescriptions = new ObservableCollection<MenuButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
+            this.buttonsIterator = new ButtonsIterator(this.buttonDescriptions, this.instantiatedButtons);
         }
 
         /// <summary>
@@ -146,13 +149,29 @@ namespace Xrv.Core.Menu
         }
 
         /// <summary>
+        /// Retrieves entity that holds a button.
+        /// </summary>
+        /// <param name="descriptor">Search button descriptor.</param>
+        /// <returns>Button entity.</returns>
+        /// <exception cref="ArgumentException">Raised when matching descriptor is not found.</exception>
+        public Entity GetButtonEntity(MenuButtonDescription descriptor)
+        {
+            if (!this.instantiatedButtons.ContainsKey(descriptor.Id))
+            {
+                throw new ArgumentException($"No button match for given descriptor", nameof(descriptor));
+            }
+
+            return this.instantiatedButtons[descriptor.Id];
+        }
+
+        /// <summary>
         /// Gets button entity that is associated with a given module.
         /// </summary>
         /// <param name="module">Module instance.</param>
         /// <returns>Button entity.</returns>
         public Entity GetModuleButtonEntity(Module module)
         {
-            foreach (var buttonEntity in this.instantiatedButtons.Values)
+            foreach (var buttonEntity in this.buttonsIterator)
             {
                 var moduleActivation = buttonEntity.FindComponent<ActivateModuleOnButtonPress>();
                 if (moduleActivation?.Module == module)
@@ -368,7 +387,7 @@ namespace Xrv.Core.Menu
             // Buttons animation
             int i = 0;
 
-            foreach (var button in this.instantiatedButtons.Values.Reverse())
+            foreach (var button in this.buttonsIterator)
             {
                 var buttonTransform = button.FindComponent<Transform3D>();
                 buttonTransform.LocalPosition = Vector3.Lerp(
@@ -401,6 +420,28 @@ namespace Xrv.Core.Menu
             this.tagAlong.IsEnabled = followEnabled;
             this.manipulationHandler.IsEnabled = !followEnabled;
             Workarounds.ChangeToggleButtonState(this.followButtonToggle.Owner, followEnabled);
+        }
+
+        internal class ButtonsIterator : IEnumerable<Entity>
+        {
+            private readonly IEnumerable<MenuButtonDescription> descriptors;
+            private readonly Dictionary<Guid, Entity> instances;
+
+            public ButtonsIterator(IEnumerable<MenuButtonDescription> descriptors, Dictionary<Guid, Entity> instances)
+            {
+                this.descriptors = descriptors;
+                this.instances = instances;
+            }
+
+            public IEnumerator<Entity> GetEnumerator()
+            {
+                foreach (var descriptor in this.descriptors.OrderBy(d => d.Order))
+                {
+                    yield return this.instances[descriptor.Id];
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
         }
 
         internal static class VoiceCommands

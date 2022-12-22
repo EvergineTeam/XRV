@@ -84,6 +84,7 @@ namespace Xrv.Core.Settings
                 IconOn = CoreResourcesIDs.Materials.Icons.Settings,
                 TextOn = "Settings",
                 VoiceCommandOn = VoiceCommands.ShowSettings,
+                Order = int.MaxValue - 1,
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
             this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);

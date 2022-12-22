@@ -14,6 +14,8 @@ namespace Xrv.Core
                 public static Guid Help = new Guid("c67d466a-5391-4f19-94ce-23f88c0a028d");
 
                 public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
+
+                public static Guid ControlRequest = new Guid("15b023eb-a334-44b2-8cc1-d0d2ccae5b3c");
             }
 
             public static Guid PrimaryColor1 = new Guid("7433ac3b-5505-46dc-a6f2-e33bb013b519");

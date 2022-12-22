@@ -33,7 +33,6 @@ namespace Xrv.Core.Networking.Messaging
         /// <param name="protocol">Protocol instance.</param>
         /// <param name="message">Protocol message.</param>
         /// <param name="clientId">Target client identifier.</param>
-        /// <param name="useServerRole">Indicate if message should be sent as server.</param>
-        void SendProtocolMessageToClient(NetworkingProtocol protocol, INetworkingMessageConverter message, int clientId, bool useServerRole);
+        void SendProtocolMessageToClient(NetworkingProtocol protocol, INetworkingMessageConverter message, int clientId);
     }
 }

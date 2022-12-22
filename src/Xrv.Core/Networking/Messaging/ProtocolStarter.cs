@@ -20,8 +20,6 @@ namespace Xrv.Core.Networking.Messaging
             this.lifecycle = lifecycle;
         }
 
-        public bool ActAsServer { get; set; } = false;
-
         public int? TargetClientId { get; set; }
 
         public bool SendToServer { get => !this.TargetClientId.HasValue; }
@@ -46,7 +44,7 @@ namespace Xrv.Core.Networking.Messaging
             }
             else
             {
-                this.lifecycle.SendLifecycleMessageToClient(this.protocol.CorrelationId, LifecycleMessageType.StartProtocol, false, this.TargetClientId.Value, writeFunc);
+                this.lifecycle.SendLifecycleMessageToClient(this.protocol.CorrelationId, LifecycleMessageType.StartProtocol, this.TargetClientId.Value, writeFunc);
             }
 
             if (await Task.WhenAny(this.startLifecycleCompletion.Task, Task.Delay(this.StartTimeout)).ConfigureAwait(false) != this.startLifecycleCompletion.Task)

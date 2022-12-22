@@ -165,6 +165,7 @@ namespace Xrv.Core.Services.QR
             }
 
             this.SubscribeEvents();
+            this.watcherService.ClearQRCodes();
             this.qrScannerEntity.IsEnabled = true;
             this.qrMarkerEntityPivot.IsEnabled = false;
 
@@ -182,7 +183,6 @@ namespace Xrv.Core.Services.QR
         {
             this.UnsubscribeEvents();
             this.qrScannerEntity.IsEnabled = false;
-            this.watcherService.ClearQRCodes();
 
             var qrMarker = this.qrMarkerEntity.FindComponent<QrMarker>();
             if (qrMarker?.IsValidMarker != true)
