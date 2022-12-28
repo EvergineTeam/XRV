@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Framework;
+using Evergine.Framework.Threading;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking.Properties.Session;
 
@@ -23,8 +24,11 @@ namespace Xrv.Ruler.Networking
             System.Diagnostics.Debug.WriteLine($"[{nameof(RulerSessionSynchronization)}] handle2 key: {data.Handle2PropertyKey}");
             this.moduleActivationSync.PropertyKeyByte = data.VisibilityPropertyKey;
 
-            var rulerKeys = this.Managers.EntityManager.FindFirstComponentOfType<RulerKeysAssignation>();
-            rulerKeys?.SetKeys(new byte[] { data.Handle1PropertyKey, data.Handle2PropertyKey });
+            _ = EvergineForegroundTask.Run(() =>
+            {
+                var rulerKeys = this.Managers.EntityManager.FindFirstComponentOfType<RulerKeysAssignation>();
+                rulerKeys?.SetKeys(new byte[] { data.Handle1PropertyKey, data.Handle2PropertyKey });
+            });
         }
 
         protected override void OnSessionDisconnection()

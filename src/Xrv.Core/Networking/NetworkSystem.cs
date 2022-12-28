@@ -233,7 +233,7 @@ namespace Xrv.Core.Networking
             controlRequestButton.AddComponentIfNotExists(new HandMenuButtonStateUpdater());
 
             // Move world-center entity as child of QR scanning marker
-            this.MoveWorldCenterEntity(scanningFlow, true);
+            await this.MoveWorldCenterEntityAsync(scanningFlow, true).ConfigureAwait(false);
             this.EnableSessionDataSync(true);
 
             return true;
@@ -290,7 +290,7 @@ namespace Xrv.Core.Networking
                 await this.Server.StopAsync().ConfigureAwait(false);
             }
 
-            this.MoveWorldCenterEntity(scanningFlow, false);
+            await this.MoveWorldCenterEntityAsync(scanningFlow, false).ConfigureAwait(false);
             this.KeyStore.Clear();
 
             this.Server = null;
@@ -335,22 +335,26 @@ namespace Xrv.Core.Networking
             }
         }
 
-        private void MoveWorldCenterEntity(QrScanningFlow scanningFlow, bool markerAsRoot)
+        private async Task MoveWorldCenterEntityAsync(QrScanningFlow scanningFlow, bool markerAsRoot)
         {
             var worldCenterTransform = this.worldCenterEntity.FindComponent<Transform3D>();
             worldCenterTransform.LocalTransform = Matrix4x4.CreateFromTRS(Vector3.Zero, Vector3.Zero, new Vector3(1, 1, 1));
 
-            _ = EvergineForegroundTask.Run(() =>
-            {
-                if (this.worldCenterEntity.Parent != null)
+            await EvergineForegroundTask.Run(
+                () =>
                 {
-                    this.worldCenterEntity.Parent.DetachChild(this.worldCenterEntity);
-                }
-                else
-                {
-                    this.entityManager.Detach(this.worldCenterEntity);
-                }
+                    if (this.worldCenterEntity.Parent != null)
+                    {
+                        this.worldCenterEntity.Parent.DetachChild(this.worldCenterEntity);
+                    }
+                    else
+                    {
+                        this.entityManager.Detach(this.worldCenterEntity);
+                    }
+                }).ConfigureEvergineAwait(EvergineTaskContinueOn.Background);
 
+            await EvergineForegroundTask.Run(() =>
+            {
                 if (markerAsRoot)
                 {
                     scanningFlow.Marker.AddChild(this.worldCenterEntity);

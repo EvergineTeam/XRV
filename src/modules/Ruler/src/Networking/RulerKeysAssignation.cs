@@ -37,8 +37,8 @@ namespace Xrv.Ruler.Networking
         {
             if (keys == null)
             {
-                this.handle1Sync.ResetKey();
-                this.handle2Sync.ResetKey();
+                this.handle1Sync?.ResetKey();
+                this.handle2Sync?.ResetKey();
                 return;
             }
 
