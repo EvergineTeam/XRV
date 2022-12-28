@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Networking.Connection.Messages;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -21,14 +22,16 @@ namespace Xrv.Core.Networking.Messaging
         /// </summary>
         protected int? TargetClientId;
 
+        private readonly ILogger logger;
         private readonly ILifecycleMessaging lifecycle;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkingProtocol"/> class.
         /// </summary>
         /// <param name="network">Network system.</param>
-        protected NetworkingProtocol(NetworkSystem network)
+        protected NetworkingProtocol(NetworkSystem network, ILogger logger)
         {
+            this.logger = logger;
             this.ClientServer = network.ClientServerMessaging;
             this.lifecycle = network.ClientServerMessaging;
         }
@@ -48,8 +51,14 @@ namespace Xrv.Core.Networking.Messaging
 
         internal virtual ProtocolStarter ProtocolStarter { get; set; }
 
-        internal virtual void InternalMessageReceived(INetworkingMessageConverter message, int senderId) =>
-            this.OnMessageReceived(message, senderId);
+        internal virtual void InternalMessageReceived(INetworkingMessageConverter message, int senderId)
+        {
+            using (this.logger?.BeginScope("{ProtocolName}", this.Name))
+            using (this.logger?.BeginScope("{CorrelationId}", this.CorrelationId))
+            {
+                this.OnMessageReceived(message, senderId);
+            }
+        }
 
         internal Task InternalStartProtocolAsync() => this.StartProtocolAsync();
 
@@ -66,18 +75,22 @@ namespace Xrv.Core.Networking.Messaging
         /// <returns>A task.</returns>
         protected async Task ExecuteAsync(Func<Task> logic)
         {
-            try
+            using (this.logger?.BeginScope("{ProtocolName}", this.Name))
+            using (this.logger?.BeginScope("{CorrelationId}", this.CorrelationId))
             {
-                await this.StartProtocolAsync().ConfigureAwait(false);
-                await logic.Invoke().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                this.EndProtocol();
+                try
+                {
+                    await this.StartProtocolAsync().ConfigureAwait(false);
+                    await logic.Invoke().ConfigureAwait(false);
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    this.EndProtocol();
+                }
             }
         }
 
@@ -87,16 +100,19 @@ namespace Xrv.Core.Networking.Messaging
         /// <returns>A task.</returns>
         protected Task StartProtocolAsync()
         {
-            if (this.ProtocolStarter == null)
+            using (this.logger?.BeginScope("Protocol start"))
             {
-                this.ProtocolStarter = new ProtocolStarter(this, this.lifecycle);
+                if (this.ProtocolStarter == null)
+                {
+                    this.ProtocolStarter = new ProtocolStarter(this, this.lifecycle);
+                }
+
+                this.ProtocolStarter.TargetClientId = this.TargetClientId;
+                this.ClientServer.RegisterSelfProtocol(this);
+
+                this.logger?.LogDebug($"Starting protocol {this.Name} with correlation: {this.CorrelationId}");
+                return this.ProtocolStarter.StartAsync();
             }
-
-            this.ProtocolStarter.TargetClientId = this.TargetClientId;
-            this.ClientServer.RegisterSelfProtocol(this);
-
-            System.Diagnostics.Debug.WriteLine($"[{nameof(NetworkingProtocol)}][Start] Starting protocol {this.Name} with correlation: {this.CorrelationId}");
-            return this.ProtocolStarter.StartAsync();
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using Evergine.Framework.Services;
 using Evergine.Networking;
 using Evergine.Networking.Client;
 using Evergine.Networking.Components;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Threading.Tasks;
@@ -29,7 +30,8 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             this.networking = new Mock<NetworkSystem>(
                 new Mock<XrvService>().Object,
                 new Mock<EntityManager>().Object,
-                new Mock<AssetsService>().Object);
+                new Mock<AssetsService>().Object,
+                new Mock<ILogger>().Object);
             this.keyStore = new Mock<IKeyStore>();
             this.clientServerImpl = new Mock<IClientServerMessagingImpl>();
             this.session = new TestSession
@@ -40,7 +42,7 @@ namespace Xrv.Core.Tests.Networking.Properties.KeyRequest
             this.networking.Object.ClientServerMessaging = this.clientServerImpl.Object;
             this.networking.Object.Session = this.session;
 
-            this.protocol = new KeyRequestProtocol(this.networking.Object, this.keyStore.Object);
+            this.protocol = new KeyRequestProtocol(this.networking.Object, this.keyStore.Object, new Mock<ILogger>().Object);
             this.protocolStarter = new Mock<ProtocolStarter>(this.protocol, this.clientServerImpl.Object);
             this.protocol.ProtocolStarter = this.protocolStarter.Object;
         }

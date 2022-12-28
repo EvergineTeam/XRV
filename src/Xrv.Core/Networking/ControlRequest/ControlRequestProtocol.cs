@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Xrv.Core.Networking.Messaging;
@@ -16,6 +17,7 @@ namespace Xrv.Core.Networking.ControlRequest
         private readonly NetworkSystem network;
         private readonly WindowsSystem windows;
         private readonly SessionDataUpdateManager updateManager;
+        private readonly ILogger logger;
 
         private int? currentControlRequesterId;
         private TaskCompletionSource<bool> controlRequestTcs;
@@ -23,12 +25,14 @@ namespace Xrv.Core.Networking.ControlRequest
         public ControlRequestProtocol(
             NetworkSystem network,
             WindowsSystem windows,
-            SessionDataUpdateManager updateManager)
-            : base(network)
+            SessionDataUpdateManager updateManager,
+            ILogger logger)
+            : base(network, logger)
         {
             this.network = network;
             this.windows = windows;
             this.updateManager = updateManager;
+            this.logger = logger;
         }
 
         public override string Name => ProtocolName;
@@ -40,31 +44,37 @@ namespace Xrv.Core.Networking.ControlRequest
 
         public async Task<bool> RequestControlAsync()
         {
-            bool granted = false;
-
-            var sessionData = this.network.Session.Data;
-            this.TargetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
-
-            await this.ExecuteAsync(async () =>
+            using (this.logger?.BeginScope("Requesting session control"))
             {
-                granted = await this.InternalRequestControlAsync();
-            });
+                bool granted = false;
 
-            return granted;
+                var sessionData = this.network.Session.Data;
+                this.TargetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
+
+                await this.ExecuteAsync(async () =>
+                {
+                    granted = await this.InternalRequestControlAsync();
+                });
+
+                return granted;
+            }
         }
 
         public async Task TakeControlAsync()
         {
-            var sessionData = this.network.Session.Data;
-            var currentPresenterId = sessionData.PresenterId;
-            var myClientId = this.network.Client.ClientId;
-
-            if (currentPresenterId != myClientId)
+            using (this.logger?.BeginScope("Taking session control"))
             {
-                this.TargetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
+                var sessionData = this.network.Session.Data;
+                var currentPresenterId = sessionData.PresenterId;
+                var myClientId = this.network.Client.ClientId;
 
-                await this.ExecuteAsync(this.InternalTakeControlAsync).ConfigureAwait(false);
-                await this.UpdatePresenterAsync(this.network.Client.ClientId).ConfigureAwait(false);
+                if (currentPresenterId != myClientId)
+                {
+                    this.TargetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
+
+                    await this.ExecuteAsync(this.InternalTakeControlAsync).ConfigureAwait(false);
+                    await this.UpdatePresenterAsync(this.network.Client.ClientId).ConfigureAwait(false);
+                }
             }
         }
 
@@ -166,25 +176,32 @@ namespace Xrv.Core.Networking.ControlRequest
 
         private void ControlRequestConfirmation_Closed(object sender, EventArgs args)
         {
-            if (sender is ConfirmDialog confirmDialog)
+            var confirmDialog = sender as ConfirmDialog;
+            if (confirmDialog == null)
             {
-                confirmDialog.Closed -= this.ControlRequestConfirmation_Closed;
+                return;
+            }
 
+            confirmDialog.Closed -= this.ControlRequestConfirmation_Closed;
+
+            using (this.logger?.BeginScope("Control request protocol"))
+            using (this.logger?.BeginScope("Confirmation dialog"))
+            {
                 if (confirmDialog.Result == ConfirmDialog.AcceptKey)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(ControlRequestProtocol)}] Control request accepted, updating session data");
+                    this.logger?.LogInformation($"Control request accepted, updating session data");
                     _ = this.UpdatePresenterAsync(this.currentControlRequesterId.Value)
                         .ContinueWith(t =>
                         {
                             if (t.IsFaulted)
                             {
-                                System.Diagnostics.Debug.WriteLine($"[{nameof(ControlRequestProtocol)}] Error changing presenter: {t.Exception}");
+                                this.logger?.LogError(t.Exception, "Error changing presenter");
                             }
                         });
                 }
 
                 bool acceptedRequest = confirmDialog.Result == ConfirmDialog.AcceptKey;
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ControlRequestProtocol)}] Sending control request response: {acceptedRequest}");
+                this.logger?.LogDebug($"Sending control request response: {acceptedRequest}");
 
                 var confirmation = new ControlRequestResultMessage
                 {
@@ -196,7 +213,7 @@ namespace Xrv.Core.Networking.ControlRequest
 
         private Task UpdatePresenterAsync(int newPresenterId)
         {
-            var updateSessionProtocol = new UpdateSessionDataProtocol(this.network, this.updateManager);
+            var updateSessionProtocol = new UpdateSessionDataProtocol(this.network, this.updateManager, this.logger);
             return updateSessionProtocol.UpdateDataAsync(nameof(SessionData.PresenterId), newPresenterId);
         }
 

@@ -3,6 +3,7 @@
 using Evergine.Framework;
 using Evergine.Framework.XR.QR;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace Xrv.Core.Services.QR
 
         private PressableButton closeButton;
         private CancellationTokenSource scanCts;
+        private ILogger logger;
 
         /// <summary>
         /// Cancels current scanning flow.
@@ -40,6 +42,8 @@ namespace Xrv.Core.Services.QR
             bool attached = base.OnAttached();
             if (attached)
             {
+                this.logger = this.xrvService.Services.Logging;
+
                 var buttonContainer = this.Owner.FindChildrenByTag("PART_qrscanner_close", isRecursive: true).First();
                 this.closeButton = buttonContainer.FindComponentInChildren<PressableButton>();
             }
@@ -83,22 +87,25 @@ namespace Xrv.Core.Services.QR
 
         private async Task StartScanningAsync(CancellationToken cancellationToken = default)
         {
-            try
+            using (this.logger?.BeginScope("Starting QR scanning"))
             {
-                bool granted = await this.EnsurePermissionsGrantedAsync();
-                if (granted)
+                try
                 {
-                    await this.watcher.StartQRWatchingAsync(cancellationToken).ConfigureAwait(false);
-                    this.watcher.ClearQRCodes();
+                    bool granted = await this.EnsurePermissionsGrantedAsync();
+                    if (granted)
+                    {
+                        await this.watcher.StartQRWatchingAsync(cancellationToken).ConfigureAwait(false);
+                        this.watcher.ClearQRCodes();
+                    }
+                    else
+                    {
+                        this.logger?.LogWarning("Could not grant access to camera and QR scanner");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("Could not grant access to camera and QR scanner");
+                    this.logger?.LogError(ex, "Error scanning QR code");
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
             }
         }
 

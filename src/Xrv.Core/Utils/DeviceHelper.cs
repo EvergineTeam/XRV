@@ -1,8 +1,9 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-#if UWP
+using Evergine.Platform;
 using System;
-#endif
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Xrv.Core.Utils
@@ -12,6 +13,20 @@ namespace Xrv.Core.Utils
     /// </summary>
     public static class DeviceHelper
     {
+        public static string GetLocalApplicationFolderPath()
+        {
+            if (DeviceInfo.PlatformType == Evergine.Common.PlatformType.Windows
+                &&
+                Assembly.GetEntryAssembly() is Assembly entryAssembly)
+            {
+                return Path.GetDirectoryName(entryAssembly.Location);
+            }
+            else
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            }
+        }
+
         /// <summary>
         /// Evaluates if current device is a HoloLens.
         /// </summary>

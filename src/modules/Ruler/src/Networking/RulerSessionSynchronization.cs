@@ -2,6 +2,8 @@
 
 using Evergine.Framework;
 using Evergine.Framework.Threading;
+using Microsoft.Extensions.Logging;
+using Xrv.Core;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking.Properties.Session;
 
@@ -9,26 +11,45 @@ namespace Xrv.Ruler.Networking
 {
     internal class RulerSessionSynchronization : DataGroupSynchronization<RulerSessionData>
     {
+        [BindService]
+        private XrvService xrvService = null;
+
         [BindComponent]
         private ModuleActivationSync moduleActivationSync = null;
+
+        private ILogger logger;
 
         public override string GroupName => nameof(RulerModule);
 
         public override RulerSessionData CreateInitialInstance() => new RulerSessionData();
 
+        protected override bool OnAttached()
+        {
+            bool attached = base.OnAttached();
+            if (attached)
+            {
+                this.logger = this.xrvService.Services.Logging;
+            }
+
+            return attached;
+        }
+
         protected override void OnDataSynchronized(RulerSessionData data)
         {
-            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerSessionSynchronization)}] Detected update in session data");
-            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerSessionSynchronization)}] visibility key: {data.VisibilityPropertyKey}");
-            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerSessionSynchronization)}] handle1 key: {data.Handle1PropertyKey}");
-            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerSessionSynchronization)}] handle2 key: {data.Handle2PropertyKey}");
-            this.moduleActivationSync.PropertyKeyByte = data.VisibilityPropertyKey;
-
-            _ = EvergineForegroundTask.Run(() =>
+            using (this.logger?.BeginScope("Ruler session synchronization"))
             {
-                var rulerKeys = this.Managers.EntityManager.FindFirstComponentOfType<RulerKeysAssignation>();
-                rulerKeys?.SetKeys(new byte[] { data.Handle1PropertyKey, data.Handle2PropertyKey });
-            });
+                this.logger?.LogDebug($"Detected update in session data");
+                this.logger?.LogDebug($"Visibility key: {data.VisibilityPropertyKey}");
+                this.logger?.LogDebug($"Handle1 key: {data.Handle1PropertyKey}");
+                this.logger?.LogDebug($"Handle2 key: {data.Handle2PropertyKey}");
+                this.moduleActivationSync.PropertyKeyByte = data.VisibilityPropertyKey;
+
+                _ = EvergineForegroundTask.Run(() =>
+                {
+                    var rulerKeys = this.Managers.EntityManager.FindFirstComponentOfType<RulerKeysAssignation>();
+                    rulerKeys?.SetKeys(new byte[] { data.Handle1PropertyKey, data.Handle2PropertyKey });
+                });
+            }
         }
 
         protected override void OnSessionDisconnection()

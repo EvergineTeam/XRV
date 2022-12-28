@@ -11,7 +11,6 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
-using Xrv.Painter.Components;
 
 namespace Xrv.Painter
 {

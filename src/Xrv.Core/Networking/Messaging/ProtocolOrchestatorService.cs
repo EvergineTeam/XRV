@@ -1,6 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Framework;
 using Evergine.Framework.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,8 +19,12 @@ namespace Xrv.Core.Networking.Messaging
         private readonly Dictionary<string, Func<NetworkingProtocol>> protocolInstantiators;
         private readonly List<ClientServerProtocolEntry> entriesToCheckAlive;
 
+        [BindService]
+        private XrvService xrvService = null;
+
         private ClientServerProtocolEntry entryBeingUpdated;
         private TimeSpan currentCheckAliveProtocolsDelay;
+        private ILogger logger;
 
         internal ProtocolOrchestatorService(ILifecycleMessaging lifecycle)
         {
@@ -66,88 +72,66 @@ namespace Xrv.Core.Networking.Messaging
             }
 
             this.currentCheckAliveProtocolsDelay = TimeSpan.Zero;
-            _ = Task.Run(() =>
-            {
-                // Remove previously entries detected as required to be check as alive
-                // that are still with a too old alive date
-                var lastValidAliveDate = DateTime.UtcNow - this.CheckAliveProtocolsDelay;
-
-                for (int i = 0; i < this.entriesToCheckAlive.Count; i++)
-                {
-                    this.entryBeingUpdated = this.entriesToCheckAlive[i];
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Update] Checking candidate to be removed: {this.entryBeingUpdated.CorrelationId}");
-
-                    if (this.entryBeingUpdated.LastAliveDate < lastValidAliveDate)
+            _ = Task.Run(this.UpdateProtocolEntries)
+                    .ContinueWith(t =>
                     {
-                        System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Update] Removing: {this.entryBeingUpdated.CorrelationId}");
-                        this.peerProtocols.TryRemove(this.entryBeingUpdated.CorrelationId, out _);
-                    }
-                }
-
-                this.entriesToCheckAlive.Clear();
-
-                // Update entries to be checked on next iteration
-                this.entriesToCheckAlive.AddRange(
-                    this.peerProtocols
-                        .Where(entry => entry.Value.LastAliveDate < lastValidAliveDate)
-                        .Select(entry => entry.Value));
-
-                for (int i = 0; i < this.entriesToCheckAlive.Count; i++)
-                {
-                    this.entryBeingUpdated = this.entriesToCheckAlive[i];
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Update] Requesting alive echo for {this.entryBeingUpdated.CorrelationId}");
-                    this.lifecycle.SendLifecycleMessageToClient(
-                        this.entryBeingUpdated.CorrelationId,
-                        LifecycleMessageType.AreYouStillAlive,
-                        this.entryBeingUpdated.Sender.Id);
-                }
-
-                if (this.entriesToCheckAlive.Any())
-                {
-                    this.StillAliveSent?.Invoke(this, EventArgs.Empty);
-                }
-            })
-            .ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Update] Error checking alive entries: {t.Exception}");
-                }
-            });
+                        if (t.IsFaulted)
+                        {
+                            this.logger.LogError($"Error checking protocol orchestator alive entries: {t.Exception}");
+                        }
+                    });
         }
 
         internal void HandleIncomingMessage(IIncomingMessage message, bool receivedAsServer)
         {
-            if (!message.IsProtocol)
+            using (this.logger?.BeginScope("Protocol orchestator"))
+            using (this.logger?.BeginScope("Incomming message"))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Not a protocol message, skip network message");
-                return;
+                if (!message.IsProtocol)
+                {
+                    this.logger?.LogWarning($"Not a protocol message, skip network message");
+                    return;
+                }
+
+                using (this.logger?.BeginScope("{CorrelationId}", message.CorrelationId))
+                {
+                    this.logger?.LogDebug($"Received message {message.LifecycleType}");
+
+                    switch (message.LifecycleType)
+                    {
+                        case LifecycleMessageType.StartProtocol:
+                            this.HandleProtocolStart(message.CorrelationId, message);
+                            break;
+                        case LifecycleMessageType.StartProtocolDenied:
+                        case LifecycleMessageType.StartProtocolAccepted:
+                            this.HandleProtocolStartResponse(message.CorrelationId, message);
+                            break;
+                        case LifecycleMessageType.AreYouStillAlive:
+                            this.HandleAreYouStillAlive(message.CorrelationId, message);
+                            break;
+                        case LifecycleMessageType.ImStillAlive:
+                            this.HandleImStillAlive(message.CorrelationId, message);
+                            break;
+                        case LifecycleMessageType.Talking:
+                            this.HandleTalking(message.CorrelationId, message);
+                            break;
+                        case LifecycleMessageType.EndProtocol:
+                            this.HandleProtocolEnd(message.CorrelationId, message);
+                            break;
+                    }
+                }
+            }
+        }
+
+        protected override bool OnAttached()
+        {
+            bool attached = base.OnAttached();
+            if (attached)
+            {
+                this.logger = this.xrvService.Services.Logging;
             }
 
-            System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received message {message.LifecycleType} with correlation {message.CorrelationId}");
-
-            switch (message.LifecycleType)
-            {
-                case LifecycleMessageType.StartProtocol:
-                    this.HandleProtocolStart(message.CorrelationId, message);
-                    break;
-                case LifecycleMessageType.StartProtocolDenied:
-                case LifecycleMessageType.StartProtocolAccepted:
-                    this.HandleProtocolStartResponse(message.CorrelationId, message);
-                    break;
-                case LifecycleMessageType.AreYouStillAlive:
-                    this.HandleAreYouStillAlive(message.CorrelationId, message);
-                    break;
-                case LifecycleMessageType.ImStillAlive:
-                    this.HandleImStillAlive(message.CorrelationId, message);
-                    break;
-                case LifecycleMessageType.Talking:
-                    this.HandleTalking(message.CorrelationId, message);
-                    break;
-                case LifecycleMessageType.EndProtocol:
-                    this.HandleProtocolEnd(message.CorrelationId, message);
-                    break;
-            }
+            return attached;
         }
 
         private void HandleProtocolStart(Guid correlationId, IIncomingMessage message)
@@ -163,7 +147,7 @@ namespace Xrv.Core.Networking.Messaging
                     ErrorCode = ProtocolError.DuplicatedCorrelationId,
                 };
                 this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolDenied, message.Sender.Id, deniedMessage.WriteTo);
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received protocol start message for an already started protocol: {correlationId}. {LifecycleMessageType.StartProtocolDenied} signal sent.");
+                this.logger?.LogWarning($"Received protocol start message for an already started protocol. {LifecycleMessageType.StartProtocolDenied} signal sent.");
 
                 return;
             }
@@ -176,7 +160,7 @@ namespace Xrv.Core.Networking.Messaging
                     ErrorCode = ProtocolError.MissingProtocolInstantiator,
                 };
                 this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolDenied, message.Sender.Id, deniedMessage.WriteTo);
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Protocol instantiator not found for class name: {request.ProtocolName}. {LifecycleMessageType.StartProtocolDenied} signal sent.");
+                this.logger?.LogWarning($"Protocol instantiator not found for class name: {request.ProtocolName}. {LifecycleMessageType.StartProtocolDenied} signal sent.");
 
                 return;
             }
@@ -207,11 +191,11 @@ namespace Xrv.Core.Networking.Messaging
             };
 
             this.peerProtocols[correlationId] = entry;
-            System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Protocol {protocolInstance.Name} ({correlationId}) added to internal table.");
+            this.logger?.LogDebug($"Protocol {protocolInstance.Name} added to internal table.");
 
             var successMessage = new StartProtocolResponseMessage();
             this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.StartProtocolAccepted, entry.Sender.Id, successMessage.WriteTo);
-            System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] {LifecycleMessageType.StartProtocolAccepted} signal sent to {entry.Sender.Id} for {protocolInstance.Name} ({correlationId})");
+            this.logger?.LogDebug($"{LifecycleMessageType.StartProtocolAccepted} signal sent to {entry.Sender.Id} for {protocolInstance.Name}");
         }
 
         private void HandleProtocolStartResponse(Guid correlationId, IIncomingMessage message)
@@ -219,7 +203,7 @@ namespace Xrv.Core.Networking.Messaging
             NetworkingProtocol protocol;
             if (!this.selfProtocols.TryGetValue(correlationId, out protocol))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received protocol start response message, but not found correlation: {correlationId}. Skip message.");
+                this.logger?.LogWarning("Received protocol start response message, but not found correlation. Skip message.");
                 return;
             }
 
@@ -229,7 +213,7 @@ namespace Xrv.Core.Networking.Messaging
             };
             message.To(response);
 
-            System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Delegating response message {protocol.Name} ({correlationId}) to {nameof(ProtocolStarter)}");
+            this.logger?.LogDebug($"Delegating response message {protocol.Name} to {nameof(ProtocolStarter)}");
             protocol.ProtocolStarter.OnProtocolStartResponse(response);
         }
 
@@ -239,13 +223,13 @@ namespace Xrv.Core.Networking.Messaging
             NetworkingProtocol protocol;
             if (!this.selfProtocols.TryGetValue(correlationId, out protocol))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.AreYouStillAlive} message, but not found correlation: {correlationId}");
+                this.logger?.LogWarning($"Received {LifecycleMessageType.AreYouStillAlive} message, but not found correlation");
                 return;
             }
 
             // Send back ImStillAlive command
             this.lifecycle.SendLifecycleMessageToClient(correlationId, LifecycleMessageType.ImStillAlive, message.Sender.Id);
-            System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] {LifecycleMessageType.ImStillAlive} signal sent to {message.Sender.Id} for {protocol.Name} ({correlationId})");
+            this.logger?.LogDebug($"{LifecycleMessageType.ImStillAlive} signal sent to {message.Sender.Id} for {protocol.Name}");
         }
 
         private void HandleImStillAlive(Guid correlationId, IIncomingMessage message)
@@ -254,13 +238,13 @@ namespace Xrv.Core.Networking.Messaging
             ClientServerProtocolEntry entry;
             if (!this.peerProtocols.TryGetValue(correlationId, out entry))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.ImStillAlive} message, but not found correlation: {correlationId}");
+                this.logger?.LogWarning($"Received {LifecycleMessageType.ImStillAlive} message, but not found correlation");
                 return;
             }
 
             if (entry.Sender.Id != message.Sender.Id)
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.ImStillAlive} message, but not from expected sender: {message.Sender.Id} ({entry.Sender.Id} expected)");
+                this.logger?.LogWarning($"Received {LifecycleMessageType.ImStillAlive} message, but not from expected sender: {message.Sender.Id} ({entry.Sender.Id} expected)");
                 return;
             }
 
@@ -279,13 +263,13 @@ namespace Xrv.Core.Networking.Messaging
 
                 if (!this.peerProtocols.TryGetValue(correlationId, out entry))
                 {
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.Talking} message, but not found correlation: {correlationId}");
+                    this.logger?.LogWarning($"Received {LifecycleMessageType.Talking} message, but not found correlation");
                     return;
                 }
 
                 if (entry.Sender.Id != message.Sender.Id)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.Talking} message, but not from expected sender: {message.Sender.Id} ({entry.Sender.Id} expected)");
+                    this.logger?.LogWarning($"Received {LifecycleMessageType.Talking} message, but not from expected sender: {message.Sender.Id} ({entry.Sender.Id} expected)");
                     return;
                 }
 
@@ -299,7 +283,7 @@ namespace Xrv.Core.Networking.Messaging
             {
                 // Delegate in protocol
                 INetworkingMessageConverter protocolMessageInstance = protocol.InternalCreateMessageInstance(message);
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Delegating in protocol logic {protocol.Name} ({correlationId})");
+                this.logger?.LogDebug($"Delegating in protocol logic {protocol.Name}");
 
                 protocol.InternalMessageReceived(protocolMessageInstance, message.Sender.Id);
             }
@@ -312,7 +296,7 @@ namespace Xrv.Core.Networking.Messaging
 
             if (!isAnyPeerProtocol && !isAnySelfProtocol)
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(ProtocolOrchestatorService)}][Messages] Received {LifecycleMessageType.EndProtocol} message for an unknown protocol: {correlationId}");
+                this.logger?.LogWarning($"Received {LifecycleMessageType.EndProtocol} message for an unknown protocol");
                 return;
             }
 
@@ -334,6 +318,52 @@ namespace Xrv.Core.Networking.Messaging
                 if (this.peerProtocols.ContainsKey(protocol.CorrelationId))
                 {
                     this.peerProtocols.TryRemove(protocol.CorrelationId, out var _);
+                }
+            }
+        }
+
+        private void UpdateProtocolEntries()
+        {
+            using (this.logger?.BeginScope("Protocol orchestator"))
+            using (this.logger?.BeginScope("Updating protocol entries"))
+            {
+                // Remove previously entries detected as required to be check as alive
+                // that are still with a too old alive date
+                var lastValidAliveDate = DateTime.UtcNow - this.CheckAliveProtocolsDelay;
+
+                for (int i = 0; i < this.entriesToCheckAlive.Count; i++)
+                {
+                    this.entryBeingUpdated = this.entriesToCheckAlive[i];
+                    this.logger?.LogDebug($"Checking candidate to be removed: {this.entryBeingUpdated.CorrelationId}");
+
+                    if (this.entryBeingUpdated.LastAliveDate < lastValidAliveDate)
+                    {
+                        this.logger?.LogDebug($"Removing: {this.entryBeingUpdated.CorrelationId}");
+                        this.peerProtocols.TryRemove(this.entryBeingUpdated.CorrelationId, out _);
+                    }
+                }
+
+                this.entriesToCheckAlive.Clear();
+
+                // Update entries to be checked on next iteration
+                this.entriesToCheckAlive.AddRange(
+                    this.peerProtocols
+                        .Where(entry => entry.Value.LastAliveDate < lastValidAliveDate)
+                        .Select(entry => entry.Value));
+
+                for (int i = 0; i < this.entriesToCheckAlive.Count; i++)
+                {
+                    this.entryBeingUpdated = this.entriesToCheckAlive[i];
+                    this.logger?.LogDebug($"Requesting alive echo for {this.entryBeingUpdated.CorrelationId}");
+                    this.lifecycle.SendLifecycleMessageToClient(
+                        this.entryBeingUpdated.CorrelationId,
+                        LifecycleMessageType.AreYouStillAlive,
+                        this.entryBeingUpdated.Sender.Id);
+                }
+
+                if (this.entriesToCheckAlive.Any())
+                {
+                    this.StillAliveSent?.Invoke(this, EventArgs.Empty);
                 }
             }
         }

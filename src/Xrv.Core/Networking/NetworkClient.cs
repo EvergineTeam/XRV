@@ -3,8 +3,8 @@
 using Evergine.Networking;
 using Evergine.Networking.Client;
 using Evergine.Networking.Messages;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Xrv.Core.Networking
@@ -18,6 +18,7 @@ namespace Xrv.Core.Networking
 
         private readonly NetworkConfiguration configuration;
         private readonly MatchmakingClientService client;
+        private readonly ILogger logger;
         private SessionHostInfo serverHost;
 
         /// <summary>
@@ -25,7 +26,11 @@ namespace Xrv.Core.Networking
         /// </summary>
         /// <param name="client">Matchmaking client.</param>
         /// <param name="configuration">Network configuration.</param>
-        public NetworkClient(MatchmakingClientService client, NetworkConfiguration configuration)
+        /// <param name="logger">Logger.</param>
+        public NetworkClient(
+            MatchmakingClientService client,
+            NetworkConfiguration configuration,
+            ILogger logger)
         {
             if (configuration == null)
             {
@@ -34,6 +39,8 @@ namespace Xrv.Core.Networking
 
             this.configuration = configuration;
             this.client = client;
+            this.logger = logger;
+
             this.client.ApplicationIdentifier = configuration.ApplicationIdentifier;
             this.client.ClientApplicationVersion = configuration.ClientApplicationVersion;
             this.client.PingInterval = configuration.PingInterval;
@@ -59,10 +66,15 @@ namespace Xrv.Core.Networking
 
         internal async Task<bool> ConnectAsync(SessionHostInfo host)
         {
-            Debug.WriteLine($"Connecting to server at {host.Endpoint}");
-            bool connected = await this.client.ConnectAsync(host.Endpoint).ConfigureAwait(false);
-            Debug.WriteLine($"Client connection attempt: {(connected ? "suceeded" : "failed")}");
-            this.serverHost = host;
+            bool connected = false;
+
+            using (this.logger?.BeginScope("Client connection"))
+            {
+                this.logger?.LogInformation($"Connecting to server at {host.Endpoint}");
+                connected = await this.client.ConnectAsync(host.Endpoint).ConfigureAwait(false);
+                this.logger?.LogInformation($"Client connection attempt: {(connected ? "suceeded" : "failed")}");
+                this.serverHost = host;
+            }
 
             return connected;
         }
@@ -74,23 +86,28 @@ namespace Xrv.Core.Networking
                 return false;
             }
 
-            Debug.WriteLine("Joining room");
+            bool joined = false;
 
-            var options = new RoomOptions
+            using (this.logger?.BeginScope("Client joining session"))
             {
-                RoomName = DefaultRoomName,
-            };
-            EnterRoomResultCodes joinResult = await this.client.JoinOrCreateRoomAsync(options).ConfigureAwait(false);
-            var joined = joinResult == EnterRoomResultCodes.Succeed;
-            Debug.WriteLine($"Join result: {joined}");
+                this.logger?.LogDebug("Joining room");
 
-            if (joined)
-            {
-                Debug.WriteLine($"Joining room '{options.RoomName}' succeeded");
-            }
-            else
-            {
-                Debug.WriteLine($"Joining room '{options.RoomName}' failed");
+                var options = new RoomOptions
+                {
+                    RoomName = DefaultRoomName,
+                };
+                EnterRoomResultCodes joinResult = await this.client.JoinOrCreateRoomAsync(options).ConfigureAwait(false);
+                joined = joinResult == EnterRoomResultCodes.Succeed;
+                this.logger?.LogDebug($"Join result: {joined}");
+
+                if (joined)
+                {
+                    this.logger?.LogDebug($"Joining room '{options.RoomName}' succeeded");
+                }
+                else
+                {
+                    this.logger?.LogDebug($"Joining room '{options.RoomName}' failed");
+                }
             }
 
             return joined;
@@ -103,9 +120,12 @@ namespace Xrv.Core.Networking
                 return;
             }
 
-            Debug.WriteLine($"Disconnecting from host {this.serverHost}");
-            this.client.Disconnect();
-            this.serverHost = null;
+            using (this.logger?.BeginScope("Client disconnecting from server"))
+            {
+                this.logger?.LogInformation($"Disconnecting from host {this.serverHost}");
+                this.client.Disconnect();
+                this.serverHost = null;
+            }
         }
     }
 }

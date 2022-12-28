@@ -2,6 +2,7 @@
 
 using Evergine.Framework;
 using Evergine.Networking.Components;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
         private KeyRequestProtocol keyRequestProtocol;
         private CancellationTokenSource protocolStartCts;
         private NetworkSystem networking;
+        private ILogger logger;
         private PubSub pubSub;
         private Guid subscription;
 
@@ -62,6 +64,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             if (attached)
             {
                 this.networking = this.xrvService.Networking;
+                this.logger = this.xrvService.Services.Logging;
                 this.pubSub = this.xrvService.PubSub;
                 this.subscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
             }
@@ -85,6 +88,14 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             {
                 this.CheckAndStartKeyRequest();
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDeactivated()
+        {
+            base.OnDeactivated();
+            this.protocolStartCts?.Cancel();
+            this.protocolStartCts = null;
         }
 
         /// <summary>
@@ -118,39 +129,42 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
 
         private async Task StartKeysRequestAsync(CancellationToken cancellationToken)
         {
-            if (this.inProgress || this.HasAssignedKeys)
+            if (this.inProgress || this.HasAssignedKeys || cancellationToken.IsCancellationRequested)
             {
                 return;
             }
 
-            this.inProgress = true;
+            using (this.logger?.BeginScope("Request keys assignation"))
+            {
+                this.inProgress = true;
 
-            try
-            {
-                await this.WaitForSessionDataSynchronizationAsync(cancellationToken);
-                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    await this.WaitForSessionDataSynchronizationAsync(cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                this.keyRequestProtocol = new KeyRequestProtocol(this.xrvService.Networking);
-                this.AssignedKeys = await this.keyRequestProtocol.RequestSetOfKeysAsync(
-                    this.NumberOfRequiredKeys,
-                    this.Filter,
-                    cancellationToken).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            catch (Exception exception)
-            {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeysAssignation)}] Key assignation failed: {exception}");
-            }
-            finally
-            {
-                this.inProgress = false;
-            }
+                    this.keyRequestProtocol = new KeyRequestProtocol(this.xrvService.Networking, this.logger);
+                    this.AssignedKeys = await this.keyRequestProtocol.RequestSetOfKeysAsync(
+                        this.NumberOfRequiredKeys,
+                        this.Filter,
+                        cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, "Key assignation failed");
+                }
+                finally
+                {
+                    this.inProgress = false;
+                }
 
-            if (this.HasAssignedKeys && !cancellationToken.IsCancellationRequested)
-            {
-                this.OnKeysAssigned(this.AssignedKeys);
+                if (this.HasAssignedKeys && !cancellationToken.IsCancellationRequested)
+                {
+                    this.OnKeysAssigned(this.AssignedKeys);
+                }
             }
         }
 
@@ -160,17 +174,20 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             var sessionDataUpdater = this.networking.SessionDataUpdateManager;
             var attemptCount = 1;
 
-            while (attemptCount <= MaxAttempts && !sessionDataUpdater.IsReady)
+            using (this.logger?.BeginScope("Waiting for session data to be synchronized"))
             {
-                attemptCount++;
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeysAssignation)}] Delay keys request: session data not still synchronized");
-                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
-                cancellationToken.ThrowIfCancellationRequested();
-            }
+                while (attemptCount <= MaxAttempts && !sessionDataUpdater.IsReady)
+                {
+                    attemptCount++;
+                    this.logger?.LogDebug($"Delay keys request: session data not still synchronized");
+                    await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
 
-            if (!sessionDataUpdater.IsReady)
-            {
-                throw new InvalidOperationException($"[{nameof(KeysAssignation)}] Key assignation could not be performed: sesion data not ready");
+                if (!sessionDataUpdater.IsReady)
+                {
+                    throw new InvalidOperationException("Key assignation could not be performed: sesion data not ready");
+                }
             }
         }
     }

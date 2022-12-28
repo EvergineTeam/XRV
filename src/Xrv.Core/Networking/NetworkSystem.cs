@@ -11,8 +11,8 @@ using Evergine.Networking.Client;
 using Evergine.Networking.Components;
 using Evergine.Networking.Server;
 using Lidgren.Network;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -36,6 +36,8 @@ namespace Xrv.Core.Networking
         private readonly XrvService xrvService;
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
+        private readonly ILogger logger;
+
         private TabItem settingsItem;
         private bool networkingAvailable;
         private NetworkConfiguration configuration;
@@ -56,11 +58,14 @@ namespace Xrv.Core.Networking
         public NetworkSystem(
             XrvService xrvService,
             EntityManager entityManager,
-            AssetsService assetsService)
+            AssetsService assetsService,
+            ILogger logger)
         {
             this.xrvService = xrvService;
             this.entityManager = entityManager;
             this.assetsService = assetsService;
+            this.logger = logger;
+
             this.controlRequestButtonDescription = new MenuButtonDescription
             {
                 TextOn = "Request control",
@@ -82,7 +87,7 @@ namespace Xrv.Core.Networking
                     this.configuration = value;
 
                     this.UnsubscribeClientEvents();
-                    this.Client = new NetworkClient(this.client, this.Configuration);
+                    this.Client = new NetworkClient(this.client, this.Configuration, this.logger);
                     this.SubscribeClientEvents();
                 }
             }
@@ -181,7 +186,7 @@ namespace Xrv.Core.Networking
 
         internal async Task<bool> StartSessionAsync(string serverName)
         {
-            this.Server = new NetworkServer(this.server, this.Configuration);
+            this.Server = new NetworkServer(this.server, this.Configuration, this.logger);
             await this.Server.StartAsync(serverName).ConfigureAwait(false);
             if (this.Server.IsStarted)
             {
@@ -320,18 +325,21 @@ namespace Xrv.Core.Networking
 
         private async void InternalClient_ClientStateChanged(object sender, ClientStates state)
         {
-            Debug.WriteLine($"Client state changed to {state}");
-
-            if (state == ClientStates.Disconnected)
+            using (this.logger?.BeginScope("Network client state change"))
             {
-                await this.ClearSessionStatusAsync()
-                    .ContinueWith(t =>
-                    {
-                        if (t.IsFaulted)
+                this.logger?.LogDebug($"Client state changed to {state}");
+
+                if (state == ClientStates.Disconnected)
+                {
+                    await this.ClearSessionStatusAsync()
+                        .ContinueWith(t =>
                         {
-                            System.Diagnostics.Debug.WriteLine($"Error clearing session: {t.Exception}");
-                        }
-                    });
+                            if (t.IsFaulted)
+                            {
+                                this.logger?.LogError(t.Exception, "Error clearing session");
+                            }
+                        });
+                }
             }
         }
 
@@ -373,7 +381,7 @@ namespace Xrv.Core.Networking
             this.orchestator = new ProtocolOrchestatorService(clientServerMessaging);
             this.orchestator.RegisterProtocolInstantiator(
                 KeyRequestProtocol.ProtocolName,
-                () => new KeyRequestProtocol(this));
+                () => new KeyRequestProtocol(this, this.logger));
 
             clientServerMessaging.IncomingMessageCallback = this.orchestator.HandleIncomingMessage; // TODO review this cycle reference :s
             clientServerMessaging.Orchestator = this.orchestator; // TODO review this cycle reference :s
@@ -392,14 +400,14 @@ namespace Xrv.Core.Networking
         {
             this.orchestator.RegisterProtocolInstantiator(
                 UpdateSessionDataProtocol.ProtocolName,
-                () => new UpdateSessionDataProtocol(this, this.SessionDataUpdateManager));
+                () => new UpdateSessionDataProtocol(this, this.SessionDataUpdateManager, this.logger));
         }
 
         private void InitializeControlRequestProtocol()
         {
             this.orchestator.RegisterProtocolInstantiator(
                 ControlRequestProtocol.ProtocolName,
-                () => new ControlRequestProtocol(this, this.xrvService.WindowSystem, this.SessionDataUpdateManager));
+                () => new ControlRequestProtocol(this, this.xrvService.WindowSystem, this.SessionDataUpdateManager, this.logger));
         }
 
         private void EnableSessionDataSync(bool enabled)
@@ -412,31 +420,38 @@ namespace Xrv.Core.Networking
         {
             if (message.Description == this.controlRequestButtonDescription)
             {
-                if (this.Session.CurrentUserIsHost)
+                using (this.logger?.BeginScope("Session control request button press"))
                 {
-                    await this.TakeControlAsync().ConfigureAwait(false);
-                }
-                else
-                {
-                    await this.TryRequestControlAsync().ConfigureAwait(false);
+                    if (this.Session.CurrentUserIsHost)
+                    {
+                        await this.TakeControlAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await this.TryRequestControlAsync().ConfigureAwait(false);
+                    }
                 }
             }
         }
 
         private async Task TakeControlAsync()
         {
-            try
+            using (this.logger?.BeginScope("Taking session control"))
             {
-                var requestProtocol = new ControlRequestProtocol(
-                    this,
-                    this.xrvService.WindowSystem,
-                    this.sessionDataUpdater);
-                await requestProtocol.TakeControlAsync().ConfigureAwait(false);
-                Debug.WriteLine($"Control took");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Take control error: {ex}");
+                try
+                {
+                    var requestProtocol = new ControlRequestProtocol(
+                        this,
+                        this.xrvService.WindowSystem,
+                        this.sessionDataUpdater,
+                        this.logger);
+                    await requestProtocol.TakeControlAsync().ConfigureAwait(false);
+                    this.logger?.LogDebug($"Control took");
+                }
+                catch (Exception ex)
+                {
+                    this.logger?.LogError(ex, "Take control error");
+                }
             }
         }
 
@@ -454,14 +469,15 @@ namespace Xrv.Core.Networking
                 var requestProtocol = new ControlRequestProtocol(
                     this,
                     this.xrvService.WindowSystem,
-                    this.sessionDataUpdater);
+                    this.sessionDataUpdater,
+                    this.logger);
                 bool accepted = await requestProtocol.RequestControlAsync()
                     .ConfigureAwait(false);
-                System.Diagnostics.Debug.WriteLine($"Control request result: {accepted}");
+                this.logger?.LogDebug($"Control request result: {accepted}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Control request error: {ex}");
+                this.logger?.LogError(ex, "Control request error");
             }
         }
 

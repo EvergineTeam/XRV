@@ -4,9 +4,9 @@ using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Networking.Client;
 using Evergine.Networking.Connection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +21,7 @@ namespace Xrv.Core.Networking
         [BindService]
         private XrvService xrvService = null;
 
+        private ILogger logger = null;
         private CancellationTokenSource scanningCts;
 
         /// <summary>
@@ -60,6 +61,17 @@ namespace Xrv.Core.Networking
             this.scanningCts = null;
         }
 
+        protected override bool OnAttached()
+        {
+            bool isAttached = base.OnAttached();
+            if (isAttached)
+            {
+                this.logger = this.xrvService.Services.Logging;
+            }
+
+            return isAttached;
+        }
+
         /// <inheritdoc/>
         protected override void OnActivated()
         {
@@ -85,24 +97,27 @@ namespace Xrv.Core.Networking
                 return;
             }
 
-            do
+            using (this.logger?.BeginScope("Session scanning"))
             {
-                Debug.WriteLine("Servers discovering attempt...");
+                do
+                {
+                    this.logger?.LogDebug("Servers discovering attempt...");
 
-                var sessions = new HashSet<SessionHostInfo>();
-                var handler = new EventHandler<HostDiscoveredEventArgs>((sender, e) =>
-                sessions.Add(new SessionHostInfo(e.ServerName, e.Host)));
-                internalClient.ServerDiscovered += handler;
-                internalClient.DiscoverServers(scanningPort);
+                    var sessions = new HashSet<SessionHostInfo>();
+                    var handler = new EventHandler<HostDiscoveredEventArgs>((sender, e) =>
+                    sessions.Add(new SessionHostInfo(e.ServerName, e.Host)));
+                    internalClient.ServerDiscovered += handler;
+                    internalClient.DiscoverServers(scanningPort);
 
-                Debug.WriteLine($"Waiting discovering results for {configuration.ServerScanInterval.TotalSeconds} seconds");
-                await Task.Delay(configuration.ServerScanInterval);
-                internalClient.ServerDiscovered -= handler;
+                    this.logger?.LogDebug($"Waiting discovering results for {configuration.ServerScanInterval.TotalSeconds} seconds");
+                    await Task.Delay(configuration.ServerScanInterval);
+                    internalClient.ServerDiscovered -= handler;
 
-                this.AvailableSessions = sessions;
-                this.ScanningResultsUpdated?.Invoke(this, EventArgs.Empty);
+                    this.AvailableSessions = sessions;
+                    this.ScanningResultsUpdated?.Invoke(this, EventArgs.Empty);
+                }
+                while (!cancellationToken.IsCancellationRequested && !internalClient.IsConnected);
             }
-            while (!cancellationToken.IsCancellationRequested && !internalClient.IsConnected);
         }
     }
 }

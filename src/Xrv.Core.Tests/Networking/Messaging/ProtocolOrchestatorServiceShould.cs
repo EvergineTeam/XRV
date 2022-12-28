@@ -2,6 +2,7 @@
 using Evergine.Framework.Services;
 using Evergine.Networking.Client;
 using Evergine.Networking.Connection.Messages;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         public void NotStartAProtocolForMissingRegistration()
         {
             const string ProtocolName = "Protocol1";
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
 
             // we are registering protocol for endpoint1, but not for endpoint2, so this last
             // may return a protocol deny message
@@ -48,7 +49,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         public void SkipProcessingDuplicatedCorrelationId()
         {
             const string ProtocolName = "Protocol1";
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
             this.endpoint1.Orchestator.RegisterProtocolInstantiator(ProtocolName, () => protocolInstance1.Object);
             this.endpoint2.Orchestator.RegisterProtocolInstantiator(ProtocolName, () => protocolInstance1.Object);
             this.endpoint1.SimulateProtocolStart(ProtocolName, protocolInstance1.Object, this.endpoint2);
@@ -74,7 +75,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         public void SkipProcessingOfMessagesNotMarkedAsProtocol()
         {
             const string ProtocolName = "Protocol1";
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
             this.endpoint1.Orchestator.RegisterProtocolInstantiator(ProtocolName, () => protocolInstance1.Object);
             this.endpoint1.IsProtocolMessage = false;
 
@@ -91,7 +92,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         public void InvokeProtocolLifecycleEventsOnStartResponse()
         {
             const string ProtocolName = "Protocol1";
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
             var protocolStarter = new Mock<ProtocolStarter>(protocolInstance1.Object, this.endpoint1.Lifecycle.Object);
             protocolInstance1
                 .Setup(p => p.ProtocolStarter)
@@ -108,7 +109,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         public async Task RequestForAliveEchoWhenCheckTimeIsReached()
         {
             const string ProtocolName = "Protocol1";
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
             this.endpoint1.Orchestator.RegisterProtocolInstantiator(ProtocolName, () => protocolInstance1.Object);
             this.endpoint2.Orchestator.RegisterProtocolInstantiator(ProtocolName, () => protocolInstance1.Object);
             this.endpoint1.SimulateProtocolStart(ProtocolName, protocolInstance1.Object, this.endpoint2);
@@ -139,7 +140,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         public void SendBackAnAliveMessageWhenRequested()
         {
             const string ProtocolName = "Protocol1";
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
             this.endpoint1.Orchestator.RegisterProtocolInstantiator(ProtocolName, () => protocolInstance1.Object);
             this.endpoint1.SimulateProtocolStart(ProtocolName, protocolInstance1.Object, this.endpoint2);
             this.endpoint1.SimulateAreYouStillAliveRequest(protocolInstance1.Object, this.endpoint2);
@@ -158,7 +159,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         {
             const string ProtocolName = "Protocol1";
             var messageConverter = new Mock<INetworkingMessageConverter>();
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
             protocolInstance1
                 .Setup(p => p.InternalCreateMessageInstance(It.IsAny<IIncomingMessage>()))
                 .Returns(messageConverter.Object);
@@ -179,7 +180,7 @@ namespace Xrv.Core.Tests.Networking.Messaging
         {
             const string ProtocolName = "Protocol1";
             var messageConverter = new Mock<INetworkingMessageConverter>();
-            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object);
+            var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
             var protocolStarter = new Mock<ProtocolStarter>(protocolInstance1.Object, this.endpoint1.Lifecycle.Object);
             protocolInstance1
                 .Setup(p => p.ProtocolStarter)
@@ -209,7 +210,8 @@ namespace Xrv.Core.Tests.Networking.Messaging
                 this.networkSystem = new Mock<NetworkSystem>(
                     new Mock<XrvService>().Object,
                     new Mock<EntityManager>().Object,
-                    new Mock<AssetsService>().Object);
+                    new Mock<AssetsService>().Object,
+                    new Mock<ILogger>().Object);
 
                 var clientServer = new Mock<IClientServerMessagingImpl>();
                 this.networkSystem.Object.ClientServerMessaging = clientServer.Object;
