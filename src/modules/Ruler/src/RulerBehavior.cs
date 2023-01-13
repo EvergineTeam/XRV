@@ -145,6 +145,8 @@ namespace Xrv.Ruler
                 this.line.Refresh();
             }
 
+            this.Reset();
+
             if (this.xrvService?.ThemesSystem != null)
             {
                 this.RefreshThemeDependantElements(this.xrvService.ThemesSystem.CurrentTheme);

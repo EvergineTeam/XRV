@@ -3,9 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Networking.Components;
+using Microsoft.Extensions.Logging;
 using Xrv.Core.Extensions;
 
 namespace Xrv.Core.Networking.Properties.KeyRequest
@@ -17,8 +19,14 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
 
         private readonly object lockObject = new object();
         private readonly List<byte> keysToFlush;
+
+        [BindService]
+        private XrvService xrvService = null;
+
         private TimeSpan lastFlushTime;
         private HashSet<byte> coreKeys;
+        private ILogger logger;
+
         private static Guid CoreKeyCorrelation = Guid.Empty;
 
         public KeyStore()
@@ -49,95 +57,107 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             int reservedByClientId,
             NetworkPropertyProviderFilter filter)
         {
-            lock (this.lockObject)
+            using (this.logger?.BeginScope("Networking key store"))
+            using (this.logger?.BeginScope("Keys reservation"))
             {
-                var dictionary = this.GetDictionaryByFilter(filter);
-                var available = byte.MaxValue - dictionary.Count;
-                if (available < numberOfKeys)
+                lock (this.lockObject)
                 {
-                    throw new FullKeyStoreException($"There are not available keys for {filter}");
-                }
-
-                var reservedKeys = new KeyRegister[numberOfKeys];
-                int currentIndex = 0;
-
-                for (byte currentKey = 0x00; currentKey < byte.MaxValue; currentKey++)
-                {
-                    if (!dictionary.ContainsKey(currentKey))
+                    var dictionary = this.GetDictionaryByFilter(filter);
+                    var available = byte.MaxValue - dictionary.Count;
+                    if (available < numberOfKeys)
                     {
-                        var register = new KeyRegister
+                        throw new FullKeyStoreException($"There are not available keys for {filter}");
+                    }
+
+                    var reservedKeys = new KeyRegister[numberOfKeys];
+                    int currentIndex = 0;
+
+                    for (byte currentKey = 0x00; currentKey < byte.MaxValue; currentKey++)
+                    {
+                        if (!dictionary.ContainsKey(currentKey))
                         {
-                            Key = currentKey,
-                            CorrelationId = correlationId,
-                            ReservedByClientId = reservedByClientId,
-                            ExpiresOn = DateTime.UtcNow.Add(this.KeyReservationTime),
-                        };
-                        reservedKeys[currentIndex++] = register;
-                        dictionary[currentKey] = register;
-                        System.Diagnostics.Debug.WriteLine($"[{nameof(KeyStore)}][Reservation] Reserved key {register.Key} for correlation {register.CorrelationId}");
+                            var register = new KeyRegister
+                            {
+                                Key = currentKey,
+                                CorrelationId = correlationId,
+                                ReservedByClientId = reservedByClientId,
+                                ExpiresOn = DateTime.UtcNow.Add(this.KeyReservationTime),
+                            };
+                            reservedKeys[currentIndex++] = register;
+                            dictionary[currentKey] = register;
+                            this.logger?.LogDebug($"Reserved key {register.Key} for correlation {register.CorrelationId}");
+                        }
+
+                        if (currentIndex == numberOfKeys)
+                        {
+                            break;
+                        }
                     }
 
-                    if (currentIndex == numberOfKeys)
-                    {
-                        break;
-                    }
+                    this.correlationIdsToFilter[correlationId] = filter;
+
+                    return reservedKeys;
                 }
-
-                this.correlationIdsToFilter[correlationId] = filter;
-
-                return reservedKeys;
             }
         }
 
         public void ConfirmKeys(Guid correlationId, int reservedByClientId)
         {
-            lock (this.lockObject)
+            using (this.logger?.BeginScope("Networking key store"))
+            using (this.logger?.BeginScope("Keys confirmation"))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyStore)}][Confirmation] Request received for correlation {correlationId}");
-
-                var dictionary = this.GetDictionaryByCorrelationId(correlationId);
-                var targetEntries = dictionary.Values.Where(v => v.CorrelationId == correlationId);
-                bool anyEntry = targetEntries.Any();
-                if (!targetEntries.Any())
+                lock (this.lockObject)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(KeyStore)}][Confirmation] Not succeeded: no entries found for correlation {correlationId}");
-                    throw new KeysToConfirmNotAvailableException();
+                    this.logger?.LogDebug($"Request received for correlation {correlationId}");
+
+                    var dictionary = this.GetDictionaryByCorrelationId(correlationId);
+                    var targetEntries = dictionary.Values.Where(v => v.CorrelationId == correlationId);
+                    bool anyEntry = targetEntries.Any();
+                    if (!targetEntries.Any())
+                    {
+                        this.logger?.LogWarning($"Not succeeded: no entries found for correlation {correlationId}");
+                        throw new KeysToConfirmNotAvailableException();
+                    }
+
+                    var confirmedInTime = targetEntries.All(entry =>
+                        entry.ReservedByClientId == reservedByClientId
+                        &&
+                        entry.ExpiresOn >= DateTime.UtcNow);
+
+                    if (!confirmedInTime)
+                    {
+                        this.logger?.LogWarning($"Not succeeded: some of the keys reservation time expired for correlation {correlationId}");
+                        throw new KeysToConfirmNotAvailableException();
+                    }
+
+                    foreach (var entry in targetEntries)
+                    {
+                        entry.ExpiresOn = null;
+                    }
+
+                    this.logger?.LogDebug($"Succeeded for correlation {correlationId}");
                 }
-
-                var confirmedInTime = targetEntries.All(entry =>
-                    entry.ReservedByClientId == reservedByClientId
-                    &&
-                    entry.ExpiresOn >= DateTime.UtcNow);
-
-                if (!confirmedInTime)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[{nameof(KeyStore)}][Confirmation] Not succeeded: some of the keys reservation time expired for correlation {correlationId}");
-                    throw new KeysToConfirmNotAvailableException();
-                }
-
-                foreach (var entry in targetEntries)
-                {
-                    entry.ExpiresOn = null;
-                }
-
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyStore)}][Confirmation] Succeeded for correlation {correlationId}");
             }
         }
 
         public void FreeKeys(Guid correlationId, int reservedByClientId)
         {
-            lock (this.lockObject)
+            using (this.logger?.BeginScope("Networking key store"))
+            using (this.logger?.BeginScope("Releasing keys"))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyStore)}][Free] Request received for correlation {correlationId}");
-
-                var dictionary = this.GetDictionaryByCorrelationId(correlationId);
-                var targetEntries = dictionary.Values.Where(v => v.CorrelationId == correlationId && v.ReservedByClientId == reservedByClientId);
-                foreach (var entry in targetEntries)
+                lock (this.lockObject)
                 {
-                    dictionary.Remove(entry.Key);
-                }
+                    this.logger?.LogDebug($"Request received for correlation {correlationId}");
 
-                this.correlationIdsToFilter.Remove(correlationId);
+                    var dictionary = this.GetDictionaryByCorrelationId(correlationId);
+                    var targetEntries = dictionary.Values.Where(v => v.CorrelationId == correlationId && v.ReservedByClientId == reservedByClientId);
+                    foreach (var entry in targetEntries)
+                    {
+                        dictionary.Remove(entry.Key);
+                    }
+
+                    this.correlationIdsToFilter.Remove(correlationId);
+                }
             }
         }
 
@@ -213,6 +233,17 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
         {
             var filter = this.correlationIdsToFilter[correlationId];
             return this.GetDictionaryByFilter(filter);
+        }
+
+        protected override bool OnAttached()
+        {
+            bool attached = base.OnAttached();
+            if (attached)
+            {
+                this.logger = this.xrvService.Services.Logging;
+            }
+
+            return attached;
         }
 
         private void FlushDictionary(Dictionary<byte, KeyRegister> dictionary)

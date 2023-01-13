@@ -2,6 +2,7 @@
 
 using Evergine.Framework;
 using Evergine.Networking;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using Xrv.Core.Messaging;
@@ -20,6 +21,7 @@ namespace Xrv.Core.Networking.Properties.Session
         [BindService]
         private XrvService xrvService = null;
 
+        private ILogger logger;
         private PubSub pubSub;
         private Guid sessionStatusToken;
         private Guid sessionSyncToken;
@@ -57,6 +59,7 @@ namespace Xrv.Core.Networking.Properties.Session
             bool attached = base.OnAttached();
             if (attached)
             {
+                this.logger = this.xrvService.Services.Logging;
                 this.pubSub = this.xrvService.PubSub;
                 this.sessionStatusToken = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
                 this.sessionSyncToken = this.pubSub.Subscribe<SessionDataSynchronizedMessage>(this.OnSessionDataSynchronized);
@@ -85,7 +88,7 @@ namespace Xrv.Core.Networking.Properties.Session
 
             if (this.isDirty)
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(DataGroupSynchronization<TData>)}] Detected changes for group {this.GroupName}: requesting update");
+                this.logger?.LogDebug($"Session group sync: detected changes for group {this.GroupName}. Requesting update");
                 this.RequestDataUpdate();
             }
 
@@ -105,10 +108,10 @@ namespace Xrv.Core.Networking.Properties.Session
 
         private void OnSessionDataSynchronized(SessionDataSynchronizedMessage message)
         {
-            System.Diagnostics.Debug.WriteLine($"[{nameof(DataGroupSynchronization<TData>)}] Session data synchronized: updating data for {this.GroupName}");
+            this.logger?.LogDebug($"Session group sync message received. Updating data for {this.GroupName}");
 
             var sessionData = message.Data;
-            if (sessionData.TryGetGroupData<TData>(this.GroupName, out TData data))
+            if (sessionData.TryGetGroupData(this.GroupName, out TData data))
             {
                 this.data = data;
                 this.OnDataSynchronized(data);
@@ -122,7 +125,7 @@ namespace Xrv.Core.Networking.Properties.Session
             var networking = this.xrvService.Networking;
             if (this.IsEnabled && networking.Session.CurrentUserIsHost)
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(DataGroupSynchronization<TData>)}] Initializing data group {this.GroupName}");
+                this.logger?.LogDebug($"Session group sync: initializing data group {this.GroupName}");
                 this.data = this.CreateInitialInstance();
                 this.RequestDataUpdate();
             }
@@ -135,13 +138,13 @@ namespace Xrv.Core.Networking.Properties.Session
         private void RequestDataUpdate()
         {
             var networking = this.xrvService.Networking;
-            var protocol = new UpdateSessionDataProtocol(networking, networking.SessionDataUpdateManager);
+            var protocol = new UpdateSessionDataProtocol(networking, networking.SessionDataUpdateManager, this.logger);
             _ = protocol.UpdateDataAsync(this.GroupName, this.data)
                 .ContinueWith(t =>
                 {
                     if (t.IsFaulted)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Error synchronizing group {this.GroupName} data: {t.Exception}");
+                        this.logger?.LogError(t.Exception, $"Error synchronizing group {this.GroupName} data");
                     }
                 });
         }

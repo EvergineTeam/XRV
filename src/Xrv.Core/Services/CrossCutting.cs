@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Microsoft.Extensions.Logging;
 using Xrv.Core.Services.QR;
 
 namespace Xrv.Core.Services
@@ -9,6 +10,8 @@ namespace Xrv.Core.Services
     /// </summary>
     public class CrossCutting
     {
+        public ILogger Logging { get; internal set; }
+
         /// <summary>
         /// Gets scanning workflow for QR codes.
         /// </summary>

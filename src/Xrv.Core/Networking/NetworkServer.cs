@@ -1,11 +1,11 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Evergine.Networking;
 using Evergine.Networking.Server;
+using Microsoft.Extensions.Logging;
 
 namespace Xrv.Core.Networking
 {
@@ -16,6 +16,7 @@ namespace Xrv.Core.Networking
     {
         private readonly NetworkConfiguration configuration;
         private readonly MatchmakingServerService server;
+        private readonly ILogger logger;
         private readonly SemaphoreSlim livingStatusSemaphore;
 
         /// <summary>
@@ -23,7 +24,11 @@ namespace Xrv.Core.Networking
         /// </summary>
         /// <param name="server">Matchmaking server.</param>
         /// <param name="configuration">Network configuration.</param>
-        public NetworkServer(MatchmakingServerService server, NetworkConfiguration configuration)
+        /// <param name="logger">Logger.</param>
+        public NetworkServer(
+            MatchmakingServerService server,
+            NetworkConfiguration configuration,
+            ILogger logger)
         {
             if (configuration == null)
             {
@@ -32,6 +37,8 @@ namespace Xrv.Core.Networking
 
             this.configuration = configuration;
             this.server = server;
+            this.logger = logger;
+
             this.server.ApplicationIdentifier = configuration.ApplicationIdentifier;
             this.server.ClientApplicationVersion = configuration.ClientApplicationVersion;
             this.server.PingInterval = configuration.PingInterval;
@@ -61,21 +68,24 @@ namespace Xrv.Core.Networking
                 return;
             }
 
-            try
+            using (this.logger?.BeginScope("Starting server"))
             {
-                Debug.WriteLine($"Initializing network server with name '{serverName}'");
-                this.server.ServerName = serverName;
+                try
+                {
+                    this.logger?.LogInformation($"Initializing network server with name '{serverName}'");
+                    this.server.ServerName = serverName;
 
-                await this.server.StartAsync(this.configuration.Port).ConfigureAwait(false);
-                Debug.WriteLine($"Started server at port {this.configuration.Port}");
-                this.IsStarted = true;
-                this.Host = new SessionHostInfo(
-                    serverName,
-                    new NetworkEndpoint("127.0.0.1", this.configuration.Port));
-            }
-            finally
-            {
-                this.livingStatusSemaphore.Release();
+                    await this.server.StartAsync(this.configuration.Port).ConfigureAwait(false);
+                    this.logger?.LogInformation($"Started server at port {this.configuration.Port}");
+                    this.IsStarted = true;
+                    this.Host = new SessionHostInfo(
+                        serverName,
+                        new NetworkEndpoint("127.0.0.1", this.configuration.Port));
+                }
+                finally
+                {
+                    this.livingStatusSemaphore.Release();
+                }
             }
         }
 
@@ -92,15 +102,18 @@ namespace Xrv.Core.Networking
                 return;
             }
 
-            try
+            using (this.logger?.BeginScope("Stopping server"))
             {
-                Debug.WriteLine("Shutting down network server");
-                await this.server.ShutdownAsync().ConfigureAwait(false);
-                this.IsStarted = false;
-            }
-            finally
-            {
-                this.livingStatusSemaphore.Release();
+                try
+                {
+                    this.logger?.LogInformation("Shutting down network server");
+                    await this.server.ShutdownAsync().ConfigureAwait(false);
+                    this.IsStarted = false;
+                }
+                finally
+                {
+                    this.livingStatusSemaphore.Release();
+                }
             }
         }
     }

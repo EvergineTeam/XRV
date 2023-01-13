@@ -8,6 +8,7 @@ using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Platform;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking;
 using Xrv.Core.Services;
+using Xrv.Core.Services.Logging;
 using Xrv.Core.Services.QR;
 using Xrv.Core.Settings;
 using Xrv.Core.Themes;
@@ -36,6 +38,8 @@ namespace Xrv.Core
     {
         private readonly Dictionary<Type, Module> modules;
         private readonly VoiceCommandsSystem voiceSystem = null;
+        private ILogger logger;
+
         private Entity handTutorialRootEntity;
 
         [BindService]
@@ -57,6 +61,9 @@ namespace Xrv.Core
             });
             this.voiceSystem = new VoiceCommandsSystem();
             this.voiceSystem.RegisterService();
+
+            var crossCutting = new CrossCutting();
+            this.Services = crossCutting;
         }
 
         /// <summary>
@@ -125,6 +132,7 @@ namespace Xrv.Core
             }
 
             this.modules.Add(type, module);
+            this.logger?.LogDebug($"Registered {module.Name} module");
 
             return this;
         }
@@ -152,88 +160,117 @@ namespace Xrv.Core
         public void Initialize(Scene scene)
         {
             // Services
-            this.Services = new CrossCutting();
             this.Services.QrScanningFlow = new QrScanningFlow(
                 scene.Managers.EntityManager,
                 scene.Managers.RenderManager,
                 this.assetsService);
 
-            // Themes
-            this.ThemesSystem = new ThemesSystem(this.assetsService, this.graphicsContext);
-            this.ThemesSystem.Load();
-
-            // Clear camera background
-            var camera = scene.Managers.EntityManager.FindComponentsOfType<Camera3D>().First();
-            camera.BackgroundColor = Color.Transparent;
-
-            // Register services and managers
-            this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
-            this.WindowSystem.Load();
-
-            // Hand menu initialization
-            var handMenuManager = new HandMenuManager(scene.Managers.EntityManager, this.assetsService);
-            this.HandMenu = handMenuManager.Initialize();
-
-            // Add controls and systems
-            TabControl.Builder = new TabControlBuilder(this, this.assetsService);
-            this.Help = new HelpSystem(this, scene.Managers.EntityManager);
-            this.Help.Load();
-            this.Settings = new SettingsSystem(this, this.assetsService, scene.Managers.EntityManager);
-            this.Settings.Load();
-
-            // Voice commands
-            this.voiceSystem.Load();
-
-            this.Networking = new NetworkSystem(this, scene.Managers.EntityManager, this.assetsService);
-            this.Networking.RegisterServices();
-            this.Networking.Load();
-
-            foreach (var module in this.modules.Values)
+            using (this.logger?.BeginScope("XRV initialization"))
             {
-                // Adding hand menu button for module, if any
-                if (module.HandMenuButton != null)
-                {
-                    this.HandMenu.ButtonDescriptions.Add(module.HandMenuButton);
-                }
+                // Themes
+                this.logger?.LogDebug("Loading theme system");
+                this.ThemesSystem = new ThemesSystem(this.assetsService, this.graphicsContext);
+                this.ThemesSystem.Load();
 
-                // Adding setting data
-                if (module.Help != null)
-                {
-                    this.Help.AddTabItem(module.Help);
-                }
+                // Clear camera background
+                var camera = scene.Managers.EntityManager.FindComponentsOfType<Camera3D>().First();
+                camera.BackgroundColor = Color.Transparent;
 
-                // Adding setting data
-                if (module.Settings != null)
-                {
-                    this.Settings.AddTabItem(module.Settings);
-                }
+                // Register services and managers
+                this.logger?.LogDebug("Loading windows system");
+                this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
+                this.WindowSystem.Load();
+
+                // Hand menu initialization
+                this.logger?.LogDebug("Loading hand menu manager");
+                var handMenuManager = new HandMenuManager(scene.Managers.EntityManager, this.assetsService);
+                this.HandMenu = handMenuManager.Initialize();
+
+                // Add controls and systems
+                TabControl.Builder = new TabControlBuilder(this, this.assetsService);
+
+                this.logger?.LogDebug("Loading help system");
+                this.Help = new HelpSystem(this, scene.Managers.EntityManager);
+                this.Help.Load();
+
+                this.logger?.LogDebug("Loading settings system");
+                this.Settings = new SettingsSystem(this, this.assetsService, scene.Managers.EntityManager);
+                this.Settings.Load();
 
                 // Voice commands
-                var voiceCommands = module.VoiceCommands;
-                if (voiceCommands?.Any() == true)
+                this.logger?.LogDebug("Loading voice system");
+                this.voiceSystem.Load();
+
+                this.logger?.LogDebug("Loading networking system");
+                this.Networking = new NetworkSystem(this, scene.Managers.EntityManager, this.assetsService, this.logger);
+                this.Networking.RegisterServices();
+                this.Networking.Load();
+
+                foreach (var module in this.modules.Values)
                 {
-                    this.voiceSystem.RegisterCommands(voiceCommands);
+                    using (this.logger?.BeginScope("Module {ModuleName} initialization", module.Name))
+                    {
+                        // Adding hand menu button for module, if any
+                        if (module.HandMenuButton != null)
+                        {
+                            this.logger?.LogDebug($"Adding hand menu button");
+                            this.HandMenu.ButtonDescriptions.Add(module.HandMenuButton);
+                        }
+
+                        // Adding setting data
+                        if (module.Help != null)
+                        {
+                            this.logger?.LogDebug($"Adding help entry");
+                            this.Help.AddTabItem(module.Help);
+                        }
+
+                        // Adding setting data
+                        if (module.Settings != null)
+                        {
+                            this.logger?.LogDebug($"Adding settings entry");
+                            this.Settings.AddTabItem(module.Settings);
+                        }
+
+                        // Voice commands
+                        var voiceCommands = module.VoiceCommands;
+                        if (voiceCommands?.Any() == true)
+                        {
+                            this.logger?.LogDebug($"Registering voice commands");
+                            this.voiceSystem.RegisterCommands(voiceCommands);
+                        }
+
+                        // Modules initialization
+                        this.logger?.LogDebug($"Initializing module");
+                        module.Initialize(scene);
+                    }
                 }
 
-                // Modules initialization
-                module.Initialize(scene);
-            }
+                // Initialize voice commands (after collecting keywords)
+                this.logger?.LogDebug($"Initializing voice system");
+                this.voiceSystem.Initialize();
 
-            // Initialize voice commands (after collecting keywords)
-            this.voiceSystem.Initialize();
-
-            // Add Hand tutorial to the scene
-            if (this.HandTutorialEnabled)
-            {
-                scene.Started += async (s, e) =>
+                // Add Hand tutorial to the scene
+                if (this.HandTutorialEnabled)
                 {
-                    await Task.Delay(1000);
-                    await EvergineBackgroundTask.Run(() =>
+                    scene.Started += async (s, e) =>
                     {
-                        this.CreateHandTutorial(scene);
-                    });
-                };
+                        await Task.Delay(1000);
+                        await EvergineBackgroundTask.Run(() =>
+                        {
+                            this.CreateHandTutorial(scene);
+                        });
+                    };
+                }
             }
+        }
+
+        public XrvService WithLogging(LoggingConfiguration configuration)
+        {
+            this.logger = new SerilogService(configuration);
+            this.Services.Logging = this.logger;
+            Application.Current.Container.RegisterInstance(this.logger);
+
+            return this;
         }
 
         internal Module GetModuleForHandButton(MenuButtonDescription definition)

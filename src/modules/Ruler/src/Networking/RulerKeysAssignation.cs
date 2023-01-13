@@ -1,6 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Framework;
+using Microsoft.Extensions.Logging;
+using Xrv.Core;
 using Xrv.Core.Networking.Extensions;
 using Xrv.Core.Networking.Properties;
 using Xrv.Core.Networking.Properties.KeyRequest;
@@ -12,6 +14,9 @@ namespace Xrv.Ruler.Networking
     /// </summary>
     public class RulerKeysAssignation : KeysAssignation
     {
+        [BindService]
+        private XrvService xrvService = null;
+
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle1")]
         private TransformSynchronization handle1Sync = null;
 
@@ -21,15 +26,28 @@ namespace Xrv.Ruler.Networking
         [BindComponent(source: BindComponentSource.Scene, isRequired: false)]
         private RulerSessionSynchronization session = null;
 
+        private ILogger logger;
+
         /// <summary>
         /// Explicitily assign keys to handles.
         /// </summary>
         /// <param name="keys">Keys to be assigned.</param>
         public void SetKeys(byte[] keys)
         {
-            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerKeysAssignation)}] Handle keys: {keys[0]}, {keys[1]}");
+            this.logger?.LogDebug($"Ruler keys established: {keys[0]}, {keys[1]}");
             this.handle1Sync.PropertyKeyByte = keys[0];
             this.handle2Sync.PropertyKeyByte = keys[1];
+        }
+
+        protected override bool OnAttached()
+        {
+            bool attached = base.OnAttached();
+            if (attached)
+            {
+                this.logger = this.xrvService.Services.Logging;
+            }
+
+            return attached;
         }
 
         /// <inheritdoc/>
@@ -37,12 +55,12 @@ namespace Xrv.Ruler.Networking
         {
             if (keys == null)
             {
-                this.handle1Sync.ResetKey();
-                this.handle2Sync.ResetKey();
+                this.handle1Sync?.ResetKey();
+                this.handle2Sync?.ResetKey();
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine($"[{nameof(RulerKeysAssignation)}] Got result of {keys.Length} keys: {keys[0]}, {keys[1]}");
+            this.logger?.LogDebug($"Ruler keys assigned. Result of {keys.Length} keys: {keys[0]}, {keys[1]}");
             this.SetKeys(keys);
             this.session?.UpdateData(data =>
             {

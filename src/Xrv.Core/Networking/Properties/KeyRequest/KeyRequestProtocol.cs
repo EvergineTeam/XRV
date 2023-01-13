@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Networking.Components;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading;
@@ -19,18 +20,21 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
         internal const string ProtocolName = "KeyRequest";
         private readonly NetworkSystem networking;
         private readonly IKeyStore keyStore;
+        private readonly ILogger logger;
+
         private TaskCompletionSource<byte[]> protocolCompletionTcs;
 
-        internal KeyRequestProtocol(NetworkSystem networking)
-            : this(networking, networking.KeyStore)
+        internal KeyRequestProtocol(NetworkSystem networking, ILogger logger)
+            : this(networking, networking.KeyStore, logger)
         {
         }
 
-        internal KeyRequestProtocol(NetworkSystem networking, IKeyStore keyStore)
-            : base(networking)
+        internal KeyRequestProtocol(NetworkSystem networking, IKeyStore keyStore, ILogger logger)
+            : base(networking, logger)
         {
             this.networking = networking;
             this.keyStore = keyStore ?? networking.KeyStore;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -73,16 +77,19 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
                 throw new ArgumentOutOfRangeException(nameof(numberOfKeys), "Number of requested keys should be at least 1");
             }
 
-            System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Start] Requesting networking keys with correlation: {this.CorrelationId}");
-            cancellationToken.Register(() => this.EndProtocol());
-
-            byte[] keys = null;
-            await this.ExecuteAsync(async () =>
+            using (this.logger?.BeginScope("Requesting networking keys"))
             {
-                keys = await this.InternalRequestSetOfKeysAsync(numberOfKeys, provider, cancellationToken).ConfigureAwait(false);
-            }).ConfigureAwait(false);
+                this.logger?.LogDebug($"Requesting networking keys");
+                cancellationToken.Register(() => this.EndProtocol());
 
-            return keys;
+                byte[] keys = null;
+                await this.ExecuteAsync(async () =>
+                {
+                    keys = await this.InternalRequestSetOfKeysAsync(numberOfKeys, provider, cancellationToken).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+
+                return keys;
+            }
         }
 
         /// <inheritdoc/>
@@ -112,49 +119,52 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
         /// <inheritdoc/>
         protected override void OnMessageReceived(INetworkingMessageConverter message, int senderId)
         {
-            if (message is RequestNumberOfKeysMessage keysRequest)
+            using (this.logger?.BeginScope("Message reception"))
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Received a request of {keysRequest.NumberOfKeys} from sender {senderId}: {this.CorrelationId}");
-                this.HandleKeysRequest(keysRequest, senderId);
-            }
-            else if (message is AssignedKeysMessage assignedKeysMessage)
-            {
-                this.AssignedKeys = assignedKeysMessage.Keys;
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Received {assignedKeysMessage.Type} message with {this.AssignedKeys?.Length} keys: {this.CorrelationId}");
-
-                var confirmation = new RequestKeyProtocolMessage
+                if (message is RequestNumberOfKeysMessage keysRequest)
                 {
-                    Type = RequestKeyMessageType.ClientConfirmsKeysReservation,
-                };
-                this.ClientServer.SendProtocolMessageToServer(this, confirmation);
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Sent {confirmation.Type} message to client {senderId}: {this.CorrelationId}");
-            }
-            else if (message is RequestKeyProtocolMessage standardMessage)
-            {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Received {standardMessage.Type} message: {this.CorrelationId}");
-
-                switch (standardMessage.Type)
+                    this.logger?.LogDebug($"Received a request of {keysRequest.NumberOfKeys} from sender {senderId}");
+                    this.HandleKeysRequest(keysRequest, senderId);
+                }
+                else if (message is AssignedKeysMessage assignedKeysMessage)
                 {
-                    case RequestKeyMessageType.ServerRejectsKeysRequest:
-                        this.protocolCompletionTcs?.TrySetException(new FullKeyStoreException());
-                        break;
-                    case RequestKeyMessageType.ServerRejectsKeysConfirmation:
-                        this.protocolCompletionTcs?.TrySetException(new KeysReservationTimeExpiredException());
-                        break;
-                    case RequestKeyMessageType.ClientConfirmsKeysReservation:
-                        this.keyStore.ConfirmKeys(this.CorrelationId, senderId);
-                        var confirmation = new RequestKeyProtocolMessage
-                        {
-                            Type = RequestKeyMessageType.ServerConfirmsKeysConfirmation,
-                        };
-                        this.ClientServer.SendProtocolMessageToClient(this, confirmation, senderId);
-                        break;
-                    case RequestKeyMessageType.ServerConfirmsKeysConfirmation:
-                        this.protocolCompletionTcs?.TrySetResult(this.AssignedKeys);
-                        break;
-                    case RequestKeyMessageType.ClientCancelsKeysReservation:
-                        this.keyStore.FreeKeys(this.CorrelationId, senderId);
-                        break;
+                    this.AssignedKeys = assignedKeysMessage.Keys;
+                    this.logger?.LogDebug($"Received {assignedKeysMessage.Type} message with {this.AssignedKeys?.Length} keys");
+
+                    var confirmation = new RequestKeyProtocolMessage
+                    {
+                        Type = RequestKeyMessageType.ClientConfirmsKeysReservation,
+                    };
+                    this.ClientServer.SendProtocolMessageToServer(this, confirmation);
+                    this.logger?.LogDebug($"Sent {confirmation.Type} message to client {senderId}");
+                }
+                else if (message is RequestKeyProtocolMessage standardMessage)
+                {
+                    this.logger?.LogDebug($"Received {standardMessage.Type} message");
+
+                    switch (standardMessage.Type)
+                    {
+                        case RequestKeyMessageType.ServerRejectsKeysRequest:
+                            this.protocolCompletionTcs?.TrySetException(new FullKeyStoreException());
+                            break;
+                        case RequestKeyMessageType.ServerRejectsKeysConfirmation:
+                            this.protocolCompletionTcs?.TrySetException(new KeysReservationTimeExpiredException());
+                            break;
+                        case RequestKeyMessageType.ClientConfirmsKeysReservation:
+                            this.keyStore.ConfirmKeys(this.CorrelationId, senderId);
+                            var confirmation = new RequestKeyProtocolMessage
+                            {
+                                Type = RequestKeyMessageType.ServerConfirmsKeysConfirmation,
+                            };
+                            this.ClientServer.SendProtocolMessageToClient(this, confirmation, senderId);
+                            break;
+                        case RequestKeyMessageType.ServerConfirmsKeysConfirmation:
+                            this.protocolCompletionTcs?.TrySetResult(this.AssignedKeys);
+                            break;
+                        case RequestKeyMessageType.ClientCancelsKeysReservation:
+                            this.keyStore.FreeKeys(this.CorrelationId, senderId);
+                            break;
+                    }
                 }
             }
         }
@@ -164,7 +174,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             bool currentIsHost = this.networking.Session?.CurrentUserIsHost ?? false;
             if (!currentIsHost)
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Skip keys request: this is not a server: {this.CorrelationId}");
+                this.logger?.LogWarning($"Skip keys request: this is not a server");
                 return;
             }
 
@@ -182,7 +192,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             }
             catch (FullKeyStoreException fksException)
             {
-                System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Exception reserving session keys: {fksException}: {this.CorrelationId}");
+                this.logger?.LogError(fksException, $"Error reserving session keys");
             }
 
             RequestKeyProtocolMessage response;
@@ -202,7 +212,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             }
 
             this.ClientServer.SendProtocolMessageToClient(this, response, senderId);
-            System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Sent {response.Type} message to client {senderId}: {this.CorrelationId}");
+            this.logger?.LogDebug($"Sent {response.Type} message to client {senderId}");
         }
 
         private async Task<byte[]> InternalRequestSetOfKeysAsync(byte numberOfKeys, NetworkPropertyProviderFilter provider, CancellationToken cancellation = default)
@@ -222,7 +232,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             };
 
             this.ClientServer.SendProtocolMessageToServer(this, requestMessage);
-            System.Diagnostics.Debug.WriteLine($"[{nameof(KeyRequestProtocol)}][Messages] Sent {requestMessage.Type} message: {this.CorrelationId}");
+            this.logger?.LogDebug($"Sent {requestMessage.Type} message");
 
             if (await Task.WhenAny(this.protocolCompletionTcs.Task, Task.Delay(this.ProtocolTimeout)).ConfigureAwait(false) != this.protocolCompletionTcs.Task)
             {

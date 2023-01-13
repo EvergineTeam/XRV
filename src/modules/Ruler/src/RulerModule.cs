@@ -115,11 +115,6 @@ namespace Xrv.Ruler
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            if (turnOn)
-            {
-                this.rulerBehavior.Reset();
-            }
-
             this.rulerEntity.IsEnabled = turnOn;
         }
 

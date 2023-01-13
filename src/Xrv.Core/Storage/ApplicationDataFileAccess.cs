@@ -1,13 +1,12 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Platform;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Xrv.Core.Utils;
 using IOFileAccess = System.IO.FileAccess;
 
 namespace Xrv.Core.Storage
@@ -26,18 +25,7 @@ namespace Xrv.Core.Storage
         /// </summary>
         public ApplicationDataFileAccess()
         {
-            if (DeviceInfo.PlatformType == Evergine.Common.PlatformType.Windows
-                &&
-                Assembly.GetEntryAssembly() is Assembly entryAssembly)
-            {
-                this.rootPath = Path.GetDirectoryName(entryAssembly.Location);
-            }
-            else
-            {
-                this.rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            }
-
-            this.basePath = this.rootPath;
+            this.basePath = this.rootPath = DeviceHelper.GetLocalApplicationFolderPath();
         }
 
         /// <inheritdoc/>

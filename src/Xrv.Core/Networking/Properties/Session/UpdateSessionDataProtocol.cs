@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Networking;
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Xrv.Core.Networking.Messaging;
 
@@ -11,30 +12,40 @@ namespace Xrv.Core.Networking.Properties.Session
         internal const string ProtocolName = "UpdateSessionData";
 
         private readonly SessionDataUpdateManager updateManager;
+        private readonly ILogger logger;
 
-        public UpdateSessionDataProtocol(NetworkSystem networking, SessionDataUpdateManager updateManager)
-            : base(networking)
+        public UpdateSessionDataProtocol(
+            NetworkSystem networking,
+            SessionDataUpdateManager updateManager,
+            ILogger logger)
+            : base(networking, logger)
         {
             this.updateManager = updateManager;
+            this.logger = logger;
         }
 
         public override string Name => ProtocolName;
 
-        public Task UpdateDataAsync(string groupName, INetworkSerializable data) =>
-            this.ExecuteAsync(() =>
+        public Task UpdateDataAsync(string groupName, INetworkSerializable data)
+        {
+            using (this.logger?.BeginScope("Update session data"))
             {
-                var request = new UpdateSessionGroupDataRequestMessage
+                return this.ExecuteAsync(() =>
                 {
-                    Data = new SessionDataGroup
+                    var request = new UpdateSessionGroupDataRequestMessage
                     {
-                        GroupName = groupName,
-                        GroupData = data,
-                    },
-                };
+                        Data = new SessionDataGroup
+                        {
+                            GroupName = groupName,
+                            GroupData = data,
+                        },
+                    };
 
-                this.ClientServer.SendProtocolMessageToServer(this, request);
-                return Task.CompletedTask;
-            });
+                    this.ClientServer.SendProtocolMessageToServer(this, request);
+                    return Task.CompletedTask;
+                });
+            }
+        }
 
         public Task UpdateDataAsync(string propertyName, object propertyValue) =>
             this.ExecuteAsync(() =>
@@ -81,13 +92,13 @@ namespace Xrv.Core.Networking.Properties.Session
 
         private void HandleGlobalMessage(UpdateGlobalSessionDataRequestMessage globalMessage)
         {
-            System.Diagnostics.Debug.WriteLine($"[{nameof(UpdateSessionDataProtocol)}] Received global session data update for property {globalMessage.PropertyName}");
+            this.logger?.LogDebug($"Received global session data update for property {globalMessage.PropertyName}");
             this.updateManager.UpdateSession(globalMessage.PropertyName, globalMessage.PropertyValue);
         }
 
         private void HandleGroupMessage(UpdateSessionGroupDataRequestMessage groupMessage)
         {
-            System.Diagnostics.Debug.WriteLine($"[{nameof(UpdateSessionDataProtocol)}] Received session data update for group {groupMessage.Data.GroupName}");
+            this.logger?.LogDebug($"Received session data update for group {groupMessage.Data.GroupName}");
             this.updateManager.UpdateSession(groupMessage.Data);
         }
     }

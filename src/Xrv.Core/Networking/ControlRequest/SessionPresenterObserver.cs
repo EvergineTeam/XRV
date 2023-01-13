@@ -50,7 +50,7 @@ namespace Xrv.Core.Networking.ControlRequest
 
         private void OnSessionDataChanged(SessionDataSynchronizedMessage message)
         {
-            if (this.lastPresenterId != message.Data.PresenterId)
+            if (message.Data != null && this.lastPresenterId != message.Data.PresenterId)
             {
                 this.lastPresenterId = message.Data.PresenterId;
 

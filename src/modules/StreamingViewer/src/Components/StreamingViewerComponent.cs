@@ -7,12 +7,13 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Xrv.Core;
 using Xrv.Core.UI.Windows;
 using Xrv.StreamingViewer.Helpers;
 using Application = Evergine.Framework.Application;
@@ -25,6 +26,9 @@ namespace Xrv.StreamingViewer.Components
     /// </summary>
     public class StreamingViewerComponent : Component
     {
+        [BindService]
+        private readonly XrvService xrvService = null;
+
         [BindService]
         private readonly GraphicsContext graphicsContext = null;
 
@@ -50,6 +54,8 @@ namespace Xrv.StreamingViewer.Components
         private byte[] textureBuffer;
         private bool stop;
 
+        private ILogger logger;
+
         private const float PixelsInAMeter = 2000f;
         private const float BottomMarginForLogo = 0.05f;
 
@@ -57,6 +63,17 @@ namespace Xrv.StreamingViewer.Components
         /// Gets or sets the URL of the source of the streaming.
         /// </summary>
         public string SourceURL { get; set; }
+
+        protected override bool OnAttached()
+        {
+            bool attached = base.OnAttached();
+            if (attached)
+            {
+                this.logger = this.xrvService.Services.Logging;
+            }
+
+            return attached;
+        }
 
         /// <inheritdoc/>
         protected override void OnActivated()
@@ -140,8 +157,7 @@ namespace Xrv.StreamingViewer.Components
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Connection error");
-                        Debug.WriteLine(ex);
+                        this.logger?.LogError(ex, "Streaming connection error");
                         this.connectionErrorTextEntity.IsEnabled = true;
                         this.spinnerEntity.IsEnabled = false;
                     }
@@ -222,26 +238,10 @@ namespace Xrv.StreamingViewer.Components
                     });
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.WriteLine(e);
+                this.logger?.LogError(ex, "Streaming texture set error");
             }
         }
-
-        // For Debug only. Transform stream to plain text
-        ////private void ReadStream(Stream stream)
-        ////{
-        ////    int streamByte;
-        ////    var streamText = string.Empty;
-        ////    int i = 0;
-        ////    while (i < 1000)
-        ////    {
-        ////        streamByte = stream.ReadByte();
-        ////        streamText += (char)streamByte;
-        ////        i++;
-        ////    }
-
-        ////    Debug.WriteLine(streamText);
-        ////}
     }
 }

@@ -3,8 +3,8 @@
 using Evergine.Components.Fonts;
 using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using Xrv.Core.UI.Dialogs;
 using WindowsSystem = Xrv.Core.UI.Windows.WindowsSystem;
@@ -19,6 +19,7 @@ namespace Xrv.Core.Networking.Settings
         [BindService]
         private XrvService xrvService = null;
 
+        private ILogger logger;
         private Text3DMesh joinedStateText = null;
         private PressableButton endSessionButton = null;
         private NetworkSystem networking = null;
@@ -40,6 +41,7 @@ namespace Xrv.Core.Networking.Settings
                     .FindComponentInChildren<PressableButton>();
 
                 this.Owner.IsEnabled = Application.Current.IsEditor;
+                this.logger = this.xrvService.Services.Logging;
                 this.networking = this.xrvService.Networking;
                 this.windows = this.xrvService.WindowSystem;
             }
@@ -120,7 +122,7 @@ namespace Xrv.Core.Networking.Settings
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                this.logger?.LogError(ex, "Error leaving session");
                 this.windows.ShowAlertDialog("Error leaving session", ex.Message, "OK");
             }
         }
