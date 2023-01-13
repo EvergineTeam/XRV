@@ -235,54 +235,24 @@ namespace Xrv.Painter.Components
                 case XRHandedness.Undefined:
                     break;
                 case XRHandedness.LeftHand:
-                    if (this.leftPencilMesh == null)
-                    {
-                        this.leftPencilMesh = this.initializeFirstPointInLine();
-                    }
+                    this.leftPencilMesh ??= this.initializeFirstPointInLine();
 
-                    this.addNewPointToLine(leftPencilMesh, lInfo);
+                    this.addNewPointToLine(this.leftPencilMesh, lInfo);
                     break;
                 case XRHandedness.RightHand:
-                    if (this.rightPencilMesh == null)
-                    {
-                        this.rightPencilMesh = this.initializeFirstPointInLine();
-                    }
+                    this.rightPencilMesh ??= this.initializeFirstPointInLine();
 
-                    this.addNewPointToLine(rightPencilMesh, lInfo);
+                    this.addNewPointToLine(this.rightPencilMesh, lInfo);
                     break;
                 default:
                     break;
             }
         }
 
-        private void addNewPointToLine(PencilMesh pencilMesh, LineInfo newLine)
-        {
-            pencilMesh.LinePoints.Add(newLine);
-            pencilMesh.RefreshMeshes();
-        }
-
-        private PencilMesh initializeFirstPointInLine()
-        {
-            // Creates first point
-            var pencil = this.CreateEntity(this.Color);
-            var pencilMesh = pencil.mesh;
-            var line = pencil.entity;
-
-            this.Owner.EntityManager.Add(line);
-
-            this.actions.Add(new PainterAction()
-            {
-                Mode = this.Mode,
-                Line = pencilMesh.LinePoints,
-                Entity = line,
-            });
-
-            return pencilMesh;
-        }
-
         /// <summary>
         /// End painting.
         /// </summary>
+        /// <param name="hand">Hand drawing.</param>
         public void EndPaint(XRHandedness hand)
         {
             switch (hand)
@@ -359,6 +329,31 @@ namespace Xrv.Painter.Components
             {
                 button.ButtonReleased -= this.CommandsButtonsButtonsButton_ButtonReleased;
             }
+        }
+
+        private void addNewPointToLine(PencilMesh pencilMesh, LineInfo newLine)
+        {
+            pencilMesh.LinePoints.Add(newLine);
+            pencilMesh.RefreshMeshes();
+        }
+
+        private PencilMesh initializeFirstPointInLine()
+        {
+            // Creates first point
+            var pencil = this.CreateEntity(this.Color);
+            var pencilMesh = pencil.mesh;
+            var line = pencil.entity;
+
+            this.Owner.EntityManager.Add(line);
+
+            this.actions.Add(new PainterAction()
+            {
+                Mode = this.Mode,
+                Line = pencilMesh.LinePoints,
+                Entity = line,
+            });
+
+            return pencilMesh;
         }
 
         private Entity FindCollision(BoundingSphere bounding)
