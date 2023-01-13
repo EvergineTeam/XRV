@@ -4,6 +4,7 @@ using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
+using Evergine.Framework.XR;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
@@ -95,7 +96,8 @@ namespace Xrv.Painter.Components
 
         private List<PainterAction> actions = new List<PainterAction>();
 
-        private PencilMesh pencilMesh;
+        private PencilMesh leftPencilMesh;
+        private PencilMesh rightPencilMesh;
         private IEnumerable<PressableButton> modeButtons;
         private IEnumerable<PressableButton> thicknessButtons;
         private IEnumerable<PressableButton> commandsButtons;
@@ -216,7 +218,8 @@ namespace Xrv.Painter.Components
         /// Do paint.
         /// </summary>
         /// <param name="position">Cursor position.</param>
-        public void DoPaint(Vector3 position)
+        /// <param name="hand">Hand drawing.</param>
+        public void DoPaint(Vector3 position, XRHandedness hand)
         {
             var lInfo = new LineInfo()
             {
@@ -224,35 +227,77 @@ namespace Xrv.Painter.Components
                 Position = position,
                 Thickness = this.GetThickNess(this.Thickness),
                 PainterThickness = this.thickness,
+                Hand = hand,
             };
 
-            if (this.pencilMesh == null)
+            switch (hand)
             {
-                // Creates first point
-                var pencil = this.CreateEntity(this.Color);
-                this.pencilMesh = pencil.mesh;
-                var line = pencil.entity;
+                case XRHandedness.Undefined:
+                    break;
+                case XRHandedness.LeftHand:
+                    if (this.leftPencilMesh == null)
+                    {
+                        this.leftPencilMesh = this.initializeFirstPointInLine();
+                    }
 
-                this.Owner.EntityManager.Add(line);
+                    this.addNewPointToLine(leftPencilMesh, lInfo);
+                    break;
+                case XRHandedness.RightHand:
+                    if (this.rightPencilMesh == null)
+                    {
+                        this.rightPencilMesh = this.initializeFirstPointInLine();
+                    }
 
-                this.actions.Add(new PainterAction()
-                {
-                    Mode = this.Mode,
-                    Line = this.pencilMesh.LinePoints,
-                    Entity = line,
-                });
+                    this.addNewPointToLine(rightPencilMesh, lInfo);
+                    break;
+                default:
+                    break;
             }
+        }
 
-            this.pencilMesh.LinePoints.Add(lInfo);
-            this.pencilMesh.RefreshMeshes();
+        private void addNewPointToLine(PencilMesh pencilMesh, LineInfo newLine)
+        {
+            pencilMesh.LinePoints.Add(newLine);
+            pencilMesh.RefreshMeshes();
+        }
+
+        private PencilMesh initializeFirstPointInLine()
+        {
+            // Creates first point
+            var pencil = this.CreateEntity(this.Color);
+            var pencilMesh = pencil.mesh;
+            var line = pencil.entity;
+
+            this.Owner.EntityManager.Add(line);
+
+            this.actions.Add(new PainterAction()
+            {
+                Mode = this.Mode,
+                Line = pencilMesh.LinePoints,
+                Entity = line,
+            });
+
+            return pencilMesh;
         }
 
         /// <summary>
         /// End painting.
         /// </summary>
-        public void EndPaint()
+        public void EndPaint(XRHandedness hand)
         {
-            this.pencilMesh = null;
+            switch (hand)
+            {
+                case XRHandedness.Undefined:
+                    break;
+                case XRHandedness.LeftHand:
+                    this.leftPencilMesh = null;
+                    break;
+                case XRHandedness.RightHand:
+                    this.rightPencilMesh = null;
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <inheritdoc/>

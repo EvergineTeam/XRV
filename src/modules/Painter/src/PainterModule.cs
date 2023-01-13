@@ -83,11 +83,15 @@ namespace Xrv.Painter
                     var content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
                     var cursor = content.FindComponent<PainterCursor>();
                     cursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
+                    var leftCursor = content.FindComponent<PainterCursorHand>();
+                    leftCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
                     config.Content = content;
                     await EvergineForegroundTask.Run(() =>
                     {
                         scene.Managers.EntityManager.Add(cursor.Pointer);
+                        scene.Managers.EntityManager.Add(leftCursor.Pointer);
                         cursor.Pointer.IsEnabled = false;
+                        leftCursor.Pointer.IsEnabled = false;
                     });
                 });
             });

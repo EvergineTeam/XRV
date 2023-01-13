@@ -161,7 +161,7 @@ namespace Xrv.Painter.Components
                     // Pinch up
                     if (this.manager.Mode == PainterModes.Painter)
                     {
-                        this.manager.EndPaint();
+                        this.manager.EndPaint(this.hand);
                     }
 
                     this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
@@ -186,7 +186,7 @@ namespace Xrv.Painter.Components
             var mode = this.manager.Mode;
             if (mode == PainterModes.Painter)
             {
-                this.manager.DoPaint(position);
+                this.manager.DoPaint(position, this.hand);
             }
             else if (mode == PainterModes.Eraser)
             {

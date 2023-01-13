@@ -1,4 +1,5 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
+using Evergine.Framework.XR;
 using Evergine.Mathematics;
 using Xrv.Painter.Components;
 using Xrv.Painter.Enums;
@@ -29,5 +30,10 @@ namespace Xrv.Painter.Models
         /// Gets or sets PainterThickness.
         /// </summary>
         public PainterThickness PainterThickness { get; set; }
+
+        /// <summary>
+        /// Gets or sets Hand.
+        /// </summary>
+        public XRHandedness Hand { get; set; }
     }
 }
