@@ -19,44 +19,22 @@ namespace Xrv.Painter
     /// </summary>
     public class PainterModule : Module
     {
-        private MenuButtonDescription handMenuDesc;
-        private TabItem help;
         private Entity painterHelp;
         private AssetsService assetsService;
         private XrvService xrv;
         private Window painterWindow;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PainterModule"/> class.
-        /// </summary>
-        public PainterModule()
-        {
-            this.handMenuDesc = new MenuButtonDescription()
-            {
-                IconOff = PainterResourceIDs.Materials.Icons.Painter,
-                IconOn = PainterResourceIDs.Materials.Icons.Painter,
-                IsToggle = false,
-                TextOn = "Paint",
-            };
-
-            this.help = new TabItem()
-            {
-                Name = "Painter",
-                Contents = this.HelpContent,
-            };
-        }
-
         /// <inheritdoc/>
         public override string Name => "Painter";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
+        public override MenuButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Help => this.help;
+        public override TabItem Help { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Settings => null;
+        public override TabItem Settings { get; protected set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -67,11 +45,26 @@ namespace Xrv.Painter
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
 
+            // Menu and help entries
+            this.HandMenuButton = new MenuButtonDescription()
+            {
+                IconOff = PainterResourceIDs.Materials.Icons.Painter,
+                IconOn = PainterResourceIDs.Materials.Icons.Painter,
+                IsToggle = false,
+                TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
+            };
+
+            this.Help = new TabItem()
+            {
+                Name = () => this.xrv.Localization.GetString(() => Resources.Strings.Help_Tab_Name),
+                Contents = this.HelpContent,
+            };
+
             // Painter
             var painterSize = new Vector2(0.214f, 0.173f);
             this.painterWindow = this.xrv.WindowSystem.CreateWindow(async (config) =>
             {
-                config.Title = "Paint";
+                config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
                 config.Size = painterSize;
                 config.FrontPlateSize = painterSize;
                 config.FrontPlateOffsets = Vector2.Zero;

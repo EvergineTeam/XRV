@@ -5,6 +5,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using System.Linq;
+using Xrv.Core.Localization;
 
 namespace Xrv.Core.UI.Tabs
 {
@@ -23,9 +24,12 @@ namespace Xrv.Core.UI.Tabs
             var button = prefab.Instantiate();
             button.AddComponent(new StandardButtonConfigurator
             {
-                Text = item.Name,
                 Icon = null,
                 AllowBackPlateNullMaterial = true,
+            });
+            button.AddComponent(new ButtonLocalization
+            {
+                LocalizationFunc = item.Name,
             });
 
             var cage = button.FindChildrenByTag("PART_text_button_cage", true).First();

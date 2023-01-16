@@ -119,6 +119,7 @@ Root:
               Size:
                 X: 1.0
                 Y: 0.0149999997
+              Softness: 0.75
               Text: Scanning...
               VerticalAlignment: Top
               Wrapping: true
@@ -130,6 +131,11 @@ Root:
               IsEnabled: true
               OrderBias: 0
               RenderFlags: CastShadows
+            - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+              Id: 42295ef0-9063-4f17-9d30-965364ce9279
+              DictionaryKey: Services.QR.HubTitle
+              DictionaryName: Xrv.Core.Resources.Strings
+              IsEnabled: true
           Children: []
           Id: 7bfcdb6f-c9f3-4539-875a-b15e15b7cbf9
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -169,7 +175,7 @@ Root:
                 B: 255
                 G: 255
                 R: 255
-              Text: '  Close'
+              Text: Close
             - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
               Id: 09392b08-5c79-4c29-bfda-3b041b86d4b9
               IsEnabled: true
@@ -192,6 +198,11 @@ Root:
               IsEnabled: true
               TextPositionOffset: 0.0
               UpdateOrder: 0.5
+            - !Xrv.Core.Localization.ButtonLocalization,Xrv.Core
+              Id: 69206df8-adfc-4dce-a4b2-1e4c73963ced
+              DictionaryKey: Window.Button.Close
+              DictionaryName: Xrv.Core.Resources.Strings
+              IsEnabled: true
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -445,7 +456,8 @@ Root:
                           Size:
                             X: 0.0320000015
                             Y: 0.00800000038
-                          Text: '  Close'
+                          Softness: 0.75
+                          Text: Close
                           VerticalAlignment: Center
                           Wrapping: true
                         - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components

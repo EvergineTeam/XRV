@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Xrv.Core.Localization;
 using Xrv.Core.Networking.Messaging;
 using Xrv.Core.Networking.Properties.Session;
 using Xrv.Core.UI.Dialogs;
@@ -17,6 +18,7 @@ namespace Xrv.Core.Networking.ControlRequest
         private readonly NetworkSystem network;
         private readonly WindowsSystem windows;
         private readonly SessionDataUpdateManager updateManager;
+        private readonly LocalizationService localization;
         private readonly ILogger logger;
 
         private int? currentControlRequesterId;
@@ -26,12 +28,14 @@ namespace Xrv.Core.Networking.ControlRequest
             NetworkSystem network,
             WindowsSystem windows,
             SessionDataUpdateManager updateManager,
+            LocalizationService localization,
             ILogger logger)
             : base(network, logger)
         {
             this.network = network;
             this.windows = windows;
             this.updateManager = updateManager;
+            this.localization = localization;
             this.logger = logger;
         }
 
@@ -167,10 +171,10 @@ namespace Xrv.Core.Networking.ControlRequest
             // option asynchronously.
             this.currentControlRequesterId = senderId;
             var dialog = this.windows.ShowConfirmDialog(
-                "Control request",
-                "Someone has requested to take control.\nDo you agree?",
-                "No",
-                "Yes");
+                this.localization.GetString(() => Resources.Strings.Sessions_Control_RequestDialogTitle),
+                this.localization.GetString(() => Resources.Strings.Sessions_Control_RequestDialogMessage),
+                this.localization.GetString(() => Resources.Strings.Global_No),
+                this.localization.GetString(() => Resources.Strings.Global_Yes));
             dialog.Closed += this.ControlRequestConfirmation_Closed;
         }
 
@@ -219,8 +223,8 @@ namespace Xrv.Core.Networking.ControlRequest
 
         private void HandleControlTakenFromHost() =>
             this.windows.ShowAlertDialog(
-                "Control lost",
-                "Session host has taken session control",
-                "OK");
+                this.localization.GetString(() => Resources.Strings.Sessions_Control_LostDialogTitle),
+                this.localization.GetString(() => Resources.Strings.Sessions_Control_LostDialogMessage),
+                this.localization.GetString(() => Resources.Strings.Global_Ok));
     }
 }

@@ -17,12 +17,14 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Xrv.Core.Extensions;
+using Xrv.Core.Localization;
 using Xrv.Core.Menu;
 using Xrv.Core.Networking.ControlRequest;
 using Xrv.Core.Networking.Messaging;
 using Xrv.Core.Networking.Properties.KeyRequest;
 using Xrv.Core.Networking.Properties.Session;
 using Xrv.Core.Services.QR;
+using Xrv.Core.Settings;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.Utils;
 
@@ -36,6 +38,7 @@ namespace Xrv.Core.Networking
         private readonly XrvService xrvService;
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
+        private readonly LocalizationService localization;
         private readonly ILogger logger;
 
         private TabItem settingsItem;
@@ -55,6 +58,7 @@ namespace Xrv.Core.Networking
         /// <param name="xrvService">XRV service.</param>
         /// <param name="entityManager">Entity manager.</param>
         /// <param name="assetsService">Assets service.</param>
+        /// <param name="logger">Logger.</param>
         public NetworkSystem(
             XrvService xrvService,
             EntityManager entityManager,
@@ -64,11 +68,12 @@ namespace Xrv.Core.Networking
             this.xrvService = xrvService;
             this.entityManager = entityManager;
             this.assetsService = assetsService;
+            this.localization = xrvService.Localization;
             this.logger = logger;
 
             this.controlRequestButtonDescription = new MenuButtonDescription
             {
-                TextOn = "Request control",
+                TextOn = () => this.localization.GetString(() => Resources.Strings.Networking_Menu_RequestControl),
                 IconOn = CoreResourcesIDs.Materials.Icons.ControlRequest,
                 Order = int.MaxValue - 2,
             };
@@ -304,14 +309,14 @@ namespace Xrv.Core.Networking
         private void AddOrRemoveSettingItem()
         {
             var settings = this.xrvService.Settings;
-            var general = settings.Window.Tabs.First(tab => tab.Name == "General");
+            var general = settings.Window.Tabs.First(tab => tab.Data as string == SettingsSystem.GeneralTabData);
 
             if (this.networkingAvailable)
             {
                 this.settingsItem = new TabItem
                 {
                     Order = general.Order + 1,
-                    Name = "Sessions",
+                    Name = () => this.localization.GetString(() => Resources.Strings.Settings_Tab_Sessions),
                     Contents = () => this.GetSessionSettingsEntity(),
                 };
                 settings.AddTabItem(this.settingsItem);
@@ -407,7 +412,7 @@ namespace Xrv.Core.Networking
         {
             this.orchestator.RegisterProtocolInstantiator(
                 ControlRequestProtocol.ProtocolName,
-                () => new ControlRequestProtocol(this, this.xrvService.WindowSystem, this.SessionDataUpdateManager, this.logger));
+                () => new ControlRequestProtocol(this, this.xrvService.WindowSystem, this.SessionDataUpdateManager, this.xrvService.Localization, this.logger));
         }
 
         private void EnableSessionDataSync(bool enabled)
@@ -444,6 +449,7 @@ namespace Xrv.Core.Networking
                         this,
                         this.xrvService.WindowSystem,
                         this.sessionDataUpdater,
+                        this.xrvService.Localization,
                         this.logger);
                     await requestProtocol.TakeControlAsync().ConfigureAwait(false);
                     this.logger?.LogDebug($"Control took");
@@ -470,6 +476,7 @@ namespace Xrv.Core.Networking
                     this,
                     this.xrvService.WindowSystem,
                     this.sessionDataUpdater,
+                    this.xrvService.Localization,
                     this.logger);
                 bool accepted = await requestProtocol.RequestControlAsync()
                     .ConfigureAwait(false);

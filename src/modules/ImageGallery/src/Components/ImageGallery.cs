@@ -13,6 +13,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 using Evergine.Platform;
 using SixLabors.ImageSharp.PixelFormats;
+using Xrv.Core.Localization;
 using Xrv.Core.Storage;
 using Xrv.Core.UI.Windows;
 using Xrv.ImageGallery.Helpers;
@@ -26,6 +27,9 @@ namespace Xrv.ImageGallery.Components
     {
         [BindService]
         private readonly GraphicsContext graphicsContext = null;
+
+        [BindService]
+        private readonly LocalizationService localization = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_next_pressable_button")]
         private readonly PressableButton nextButton = null;
@@ -254,7 +258,15 @@ namespace Xrv.ImageGallery.Components
             this.LoadRawJPG(this.images[this.ImageIndex].Name);
             if (!Application.Current.IsEditor && this.windowConfigurator != null)
             {
-                this.windowConfigurator.Title = $"{this.Name} {this.ImageIndex + 1} of {this.images.Count}";
+                this.windowConfigurator.LocalizedTitle = () =>
+                {
+                    var title = string.Format(
+                        this.localization.GetString(() => Resources.Strings.Window_Title),
+                        this.Name,
+                        this.ImageIndex + 1,
+                        this.images.Count);
+                    return title;
+                };
             }
 
             if (this.ShowNavigationButtons)

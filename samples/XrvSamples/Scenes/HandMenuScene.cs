@@ -107,7 +107,7 @@ namespace XrvSamples.Scenes
             this.handMenu.ButtonDescriptions.Add(new MenuButtonDescription
             {
                 IsToggle = isToggle,
-                TextOn = $"{(isToggle ? "T_" : string.Empty)}{DateTime.Now.Millisecond}",
+                TextOn = () => $"{(isToggle ? "T_" : string.Empty)}{DateTime.Now.Millisecond}",
                 IconOn = counter++ % 2 == 0
                     ? EvergineContent.Materials.Icons.Lambda
                     : EvergineContent.Materials.Icons.Pi,

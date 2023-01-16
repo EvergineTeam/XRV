@@ -54,7 +54,7 @@ namespace XrvSamples.Scenes
                 .WithSize(new Vector2(0.315f, 0.2f))
                 .AddItem(new TabItem
                 {
-                    Name = "Repositories",
+                    Name = () => "Repositories",
                     Contents = () => this.CreateText(0),
                 })
                 .Build();
@@ -77,7 +77,7 @@ namespace XrvSamples.Scenes
             var count = this.tabControl.Items.Count;
             this.tabControl.Items.Add(new TabItem
             {
-                Name = $"Item #{count}",
+                Name = () => $"Item #{count}",
                 Data = count,
                 Contents = () => this.CreateText(count),
             });

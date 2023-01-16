@@ -64,6 +64,7 @@ Root:
           Size:
             X: 0.159999996
             Y: 0.0300000496
+          Softness: 0.75
           Text: Message text goes here! Message text goes here! Message text goes here! Message text goes here!
           VerticalAlignment: Center
           Wrapping: true
@@ -75,6 +76,11 @@ Root:
           IsEnabled: true
           OrderBias: 0
           RenderFlags: CastShadows
+        - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+          Id: 87cd63c1-0be5-41f8-8d8e-9c2ce2b4bf84
+          DictionaryKey: null
+          DictionaryName: null
+          IsEnabled: true
       Children: []
       Id: c1172cd4-273a-45bc-9d20-7e87dca36a4f
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

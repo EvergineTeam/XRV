@@ -4,6 +4,7 @@ using Evergine.Framework;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Xrv.Core.Localization;
 using Xrv.Core.Menu;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
@@ -17,6 +18,8 @@ namespace Xrv.Core.Help
     {
         private readonly EntityManager entityManager;
         private readonly XrvService xrvService;
+        private readonly LocalizationService localization;
+
         private MenuButtonDescription handMenuButtonDescription;
 
         private Entity generalHelp;
@@ -31,6 +34,7 @@ namespace Xrv.Core.Help
         {
             this.xrvService = xrvService;
             this.entityManager = entityManager;
+            this.localization = xrvService.Localization;
         }
 
         /// <summary>
@@ -61,21 +65,21 @@ namespace Xrv.Core.Help
             var owner = TabbedWindow.Create(this.xrvService);
             var configurator = owner.FindComponent<WindowConfigurator>();
             var window = owner.FindComponent<TabbedWindow>();
-            configurator.Title = "Help";
+            configurator.LocalizedTitle = () => this.localization.GetString(() => Resources.Strings.Help_Title);
 
             owner.IsEnabled = false;
             this.entityManager.Add(owner);
 
             window.Tabs.Add(new TabItem
             {
-                Name = "General",
+                Name = () => this.localization.GetString(() => Resources.Strings.Help_Tab_General),
                 Order = int.MinValue,
                 Contents = this.GeneralHelp,
             });
 
             window.Tabs.Add(new TabItem
             {
-                Name = "About",
+                Name = () => this.localization.GetString(() => Resources.Strings.Help_Tab_About),
                 Order = int.MaxValue,
                 Contents = this.AboutHelp,
             });
@@ -89,7 +93,7 @@ namespace Xrv.Core.Help
             {
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Help,
-                TextOn = "Help",
+                TextOn = () => this.localization.GetString(() => Resources.Strings.Help_Title),
                 VoiceCommandOn = VoiceCommands.ShowHelp,
                 Order = int.MaxValue,
             };

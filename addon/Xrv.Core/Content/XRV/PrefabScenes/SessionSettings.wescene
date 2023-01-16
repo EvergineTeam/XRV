@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 0399a7eb-cca6-43ed-8f67-5c9fed29b699
         Aperture: 1.0
-        AspectRatio: 1.85806453
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -168,7 +167,7 @@ Items:
         Id: 11791bc9-7652-4ac2-924a-b27486ff7bd3
         AsignedTo: Default
         IsEnabled: true
-        Material: 2b5f9186-e5fa-4c48-8a4d-aca89c696e5e
+        Material: f37a6d09-a7b9-43a3-b810-cafff03f0a8f
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: 1ca79cc7-d039-4c9f-9a90-9bdf6a7880ba
@@ -520,6 +519,7 @@ Items:
                 Size:
                   X: 0.150000006
                   Y: 0.0500000007
+                Softness: 0.75
                 Text: Create Session
                 VerticalAlignment: Center
                 Wrapping: true
@@ -531,6 +531,11 @@ Items:
                 IsEnabled: true
                 OrderBias: 0
                 RenderFlags: CastShadows
+              - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+                Id: 12081e9f-60da-4b9f-b94c-8b4712cbec13
+                DictionaryKey: Settings.Sessions.Create.Label
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
             Children: []
             Id: 7d09714a-473b-4286-972a-a1eaa7d7ed1e
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -650,7 +655,8 @@ Items:
                         Size:
                           X: 0.129999995
                           Y: 0.0500000007
-                        Text: 'Session #E17910'
+                        Softness: 0.75
+                        Text: 'Session #123456'
                         VerticalAlignment: Center
                         Wrapping: true
                       - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -678,7 +684,7 @@ Items:
                   W: 1.0
                   X: 0.0
                   Y: 0.0
-                  Z: -0.0
+                  Z: 0.0
                 LocalPosition:
                   X: 0.075000003
                   Y: 0.043504782
@@ -752,6 +758,11 @@ Items:
                   G: 28
                   R: 4
                 Text: Create
+              - !Xrv.Core.Localization.ButtonLocalization,Xrv.Core
+                Id: 55266504-e4d5-4583-ad9a-50a9ad90c9db
+                DictionaryKey: Settings.Sessions.Create.ButtonText
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: CompressableButtonVisuals
@@ -842,7 +853,7 @@ Items:
                               W: 1.0
                               X: 0.0
                               Y: 0.0
-                              Z: -0.0
+                              Z: 0.0
                             LocalPosition:
                               X: 0.0
                               Y: 0.0
@@ -871,6 +882,7 @@ Items:
                             Size:
                               X: 0.0700000003
                               Y: 0.0199999996
+                            Softness: 0.75
                             Text: Create
                             VerticalAlignment: Center
                             Wrapping: true
@@ -1077,6 +1089,7 @@ Items:
                 Size:
                   X: 0.150000006
                   Y: 0.0500000007
+                Softness: 0.75
                 Text: Join Session
                 VerticalAlignment: Center
                 Wrapping: true
@@ -1088,6 +1101,11 @@ Items:
                 IsEnabled: true
                 OrderBias: 0
                 RenderFlags: CastShadows
+              - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+                Id: 6f7a9570-042f-472b-82f2-0155636a6509
+                DictionaryKey: Settings.Sessions.Join.Label
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
             Children: []
             Id: 021b0cd5-f468-4269-8798-585aa0abb3dc
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -1207,6 +1225,7 @@ Items:
                         Size:
                           X: 0.129999995
                           Y: 0.0500000007
+                        Softness: 0.75
                         Text: Select a session
                         VerticalAlignment: Center
                         Wrapping: true
@@ -1218,6 +1237,11 @@ Items:
                         IsEnabled: true
                         OrderBias: 0
                         RenderFlags: CastShadows
+                      - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+                        Id: 9556acc2-b6b9-41d7-82c6-d566b4c2ea90
+                        DictionaryKey: Settings.Sessions.Join.SelectorPlaceholder
+                        DictionaryName: Xrv.Core.Resources.Strings
+                        IsEnabled: true
                     Children: []
                     Id: f80ef1d7-f602-4c51-b21c-a7cc7180f003
                 Id: 1f3002ac-9111-4e7a-ab66-bc79b06df2d4
@@ -1235,7 +1259,7 @@ Items:
                   W: 1.0
                   X: 0.0
                   Y: 0.0
-                  Z: -0.0
+                  Z: 0.0
                 LocalPosition:
                   X: 0.075000003
                   Y: -0.0309999995
@@ -1309,6 +1333,11 @@ Items:
                   G: 28
                   R: 4
                 Text: Connect
+              - !Xrv.Core.Localization.ButtonLocalization,Xrv.Core
+                Id: 78c79e6b-261c-4b3a-99be-aad5ff1b7e6c
+                DictionaryKey: Settings.Sessions.Join.ButtonText
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: CompressableButtonVisuals
@@ -1399,7 +1428,7 @@ Items:
                               W: 1.0
                               X: 0.0
                               Y: 0.0
-                              Z: -0.0
+                              Z: 0.0
                             LocalPosition:
                               X: 0.0
                               Y: 0.0
@@ -1428,6 +1457,7 @@ Items:
                             Size:
                               X: 0.0700000003
                               Y: 0.0199999996
+                            Softness: 0.75
                             Text: Connect
                             VerticalAlignment: Center
                             Wrapping: true
@@ -1608,6 +1638,7 @@ Items:
                 Size:
                   X: 0.150000006
                   Y: 0.0500000007
+                Softness: 0.75
                 Text: Creating Session...
                 VerticalAlignment: Center
                 Wrapping: true
@@ -1751,6 +1782,7 @@ Items:
                 Size:
                   X: 0.150000006
                   Y: 0.0500000007
+                Softness: 0.75
                 Text: You have created and joined SESSIONNAME
                 VerticalAlignment: Center
                 Wrapping: true
@@ -1777,7 +1809,7 @@ Items:
                   W: 1.0
                   X: 0.0
                   Y: 0.0
-                  Z: -0.0
+                  Z: 0.0
                 LocalPosition:
                   X: -0.0644536838
                   Y: 0.043504782
@@ -1850,7 +1882,12 @@ Items:
                   B: 44
                   G: 28
                   R: 4
-                Text: End session
+                Text: End Session
+              - !Xrv.Core.Localization.ButtonLocalization,Xrv.Core
+                Id: 4d823ca1-9c91-4710-9875-bd32b882e458
+                DictionaryKey: Settings.Sessions.End.ButtonText
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: CompressableButtonVisuals
@@ -1941,7 +1978,7 @@ Items:
                               W: 1.0
                               X: 0.0
                               Y: 0.0
-                              Z: -0.0
+                              Z: 0.0
                             LocalPosition:
                               X: 0.0
                               Y: 0.0
@@ -1970,7 +2007,8 @@ Items:
                             Size:
                               X: 0.0700000003
                               Y: 0.0199999996
-                            Text: End session
+                            Softness: 0.75
+                            Text: End Session
                             VerticalAlignment: Center
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components

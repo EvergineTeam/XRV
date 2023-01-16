@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xrv.Core.HandTutorial;
 using Xrv.Core.Help;
+using Xrv.Core.Localization;
 using Xrv.Core.Menu;
 using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
@@ -37,7 +38,7 @@ namespace Xrv.Core
     public class XrvService : Service
     {
         private readonly Dictionary<Type, Module> modules;
-        private readonly VoiceCommandsSystem voiceSystem = null;
+        private readonly VoiceCommandsSystem voiceSystem;
         private ILogger logger;
 
         private Entity handTutorialRootEntity;
@@ -62,6 +63,12 @@ namespace Xrv.Core
             this.voiceSystem = new VoiceCommandsSystem();
             this.voiceSystem.RegisterService();
 
+            this.Localization = new LocalizationService();
+            if (Application.Current?.IsEditor == false)
+            {
+                Application.Current.Container.RegisterInstance(this.Localization);
+            }
+
             var crossCutting = new CrossCutting();
             this.Services = crossCutting;
         }
@@ -75,6 +82,11 @@ namespace Xrv.Core
         /// Gets access to help system.
         /// </summary>
         public HelpSystem Help { get; private set; }
+
+        /// <summary>
+        /// Gets localization service.
+        /// </summary>
+        public LocalizationService Localization { get; private set; }
 
         /// <summary>
         /// Gets access to network system.
@@ -210,6 +222,10 @@ namespace Xrv.Core
                 {
                     using (this.logger?.BeginScope("Module {ModuleName} initialization", module.Name))
                     {
+                        // Modules initialization
+                        this.logger?.LogDebug($"Initializing module");
+                        module.Initialize(scene);
+
                         // Adding hand menu button for module, if any
                         if (module.HandMenuButton != null)
                         {
@@ -238,10 +254,6 @@ namespace Xrv.Core
                             this.logger?.LogDebug($"Registering voice commands");
                             this.voiceSystem.RegisterCommands(voiceCommands);
                         }
-
-                        // Modules initialization
-                        this.logger?.LogDebug($"Initializing module");
-                        module.Initialize(scene);
                     }
                 }
 
@@ -264,6 +276,11 @@ namespace Xrv.Core
             }
         }
 
+        /// <summary>
+        /// Provides logging capabilities to the framework.
+        /// </summary>
+        /// <param name="configuration">Logging configuration.</param>
+        /// <returns>XRV service instance.</returns>
         public XrvService WithLogging(LoggingConfiguration configuration)
         {
             this.logger = new SerilogService(configuration);

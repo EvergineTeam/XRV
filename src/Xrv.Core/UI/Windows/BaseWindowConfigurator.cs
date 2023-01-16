@@ -1,12 +1,15 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Attributes;
 using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Physics3D;
 using Evergine.Mathematics;
+using System;
 using System.Linq;
+using Xrv.Core.Localization;
 using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Windows
@@ -53,6 +56,12 @@ namespace Xrv.Core.UI.Windows
         protected Text3DMesh titleMesh;
 
         /// <summary>
+        /// Title text mesh.
+        /// </summary>
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_text")]
+        protected Text3dLocalization titleLocalization;
+
+        /// <summary>
         /// Title text container transform.
         /// </summary>
         [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_text_container")]
@@ -75,6 +84,7 @@ namespace Xrv.Core.UI.Windows
 
         private Vector2 frontPlateSize;
         private string title;
+        private Func<string> localizedTitle;
         private Entity logoEntity;
         private Entity contentEntity;
         private Entity content;
@@ -111,6 +121,27 @@ namespace Xrv.Core.UI.Windows
                 if (this.IsAttached)
                 {
                     this.UpdateTitle();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a function to retrieve localized window title.
+        /// </summary>
+        [IgnoreEvergine]
+        public Func<string> LocalizedTitle
+        {
+            get => this.titleLocalization != null ? this.titleLocalization.LocalizationFunc : this.localizedTitle;
+
+            set
+            {
+                if (this.titleLocalization != null)
+                {
+                    this.titleLocalization.LocalizationFunc = value;
+                }
+                else
+                {
+                    this.localizedTitle = value;
                 }
             }
         }
@@ -249,6 +280,12 @@ namespace Xrv.Core.UI.Windows
             {
                 this.contentEntity = this.Owner.FindChildrenByTag("PART_window_content", isRecursive: true).First();
                 this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
+
+                if (this.localizedTitle != null && this.titleLocalization != null)
+                {
+                    this.titleLocalization.LocalizationFunc = this.localizedTitle;
+                    this.localizedTitle = null;
+                }
             }
 
             return attached;

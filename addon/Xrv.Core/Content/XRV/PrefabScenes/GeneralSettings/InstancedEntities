@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 53d59347-43c1-4401-836b-7ca030bfa4b0
         Aperture: 1.0
-        AspectRatio: -1.0
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -168,7 +167,7 @@ Items:
         Id: 3d052f64-2a91-42a6-8495-39516393e559
         AsignedTo: Default
         IsEnabled: true
-        Material: d6bde177-9c8f-4e33-9da4-10d366250a4a
+        Material: 16fdc757-fab2-4cd3-acf6-459fc4f7cb16
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: 2ba20ef5-1120-414d-a019-6b2942a43eee
@@ -322,7 +321,8 @@ Items:
             Size:
               X: 0.230000019
               Y: 0.170000017
-            Text: Measure Units
+            Softness: 0.75
+            Text: Voice recognition status
             VerticalAlignment: Top
             Wrapping: true
           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -333,6 +333,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+            Id: e630e4a9-efbb-4d44-abc0-eced76af5715
+            DictionaryKey: Settings.General.Voice.Title
+            DictionaryName: Xrv.Core.Resources.Strings
+            IsEnabled: true
         Children: []
         Id: bfbf48dc-4f61-46e8-bead-934cff897621
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -348,7 +353,7 @@ Items:
               W: 1.0
               X: 0.0
               Y: 0.0
-              Z: -0.0
+              Z: 0.0
             LocalPosition:
               X: -0.0790295452
               Y: 0.0524761602
@@ -451,6 +456,18 @@ Items:
           - !Xrv.Core.VoiceCommands.EnableOrDisableVoiceService,Xrv.Core
             Id: e52bd2c8-45e4-4129-af76-d66e4a14ddcd
             IsEnabled: true
+          - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+            Id: dda97f03-c019-4fc5-b2e5-4bad47ec15fe
+            DictionaryKey: Settings.General.VoiceOff
+            DictionaryName: Xrv.Core.Resources.Strings
+            IsEnabled: true
+            TargetState: Off
+          - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+            Id: f61d2f9d-0b25-4dc2-8d87-45d1f37b9fb4
+            DictionaryKey: Settings.General.VoiceOff
+            DictionaryName: Xrv.Core.Resources.Strings
+            IsEnabled: true
+            TargetState: On
         Children:
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: CompressableButtonVisuals
@@ -541,7 +558,7 @@ Items:
                           W: 1.0
                           X: 0.0
                           Y: 0.0
-                          Z: -0.0
+                          Z: 0.0
                         LocalPosition:
                           X: 0.0
                           Y: 0.0
@@ -570,6 +587,7 @@ Items:
                         Size:
                           X: 0.0700000003
                           Y: 0.0199999996
+                        Softness: 0.75
                         Text: Voice Off
                         VerticalAlignment: Center
                         Wrapping: true

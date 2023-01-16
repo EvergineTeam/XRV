@@ -243,6 +243,18 @@ Items:
                 IsEnabled: true
                 TextPositionOffset: 0.0
                 UpdateOrder: 0.5
+              - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+                Id: 0ecb0f4f-1320-4f60-a0fa-e2d7dbb7d144
+                DictionaryKey: Menu.Follow
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
+                TargetState: Off
+              - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+                Id: 89ffe6ba-5f5c-413c-96d3-09923fa0fe48
+                DictionaryKey: Menu.Pin
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
+                TargetState: On
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
@@ -496,6 +508,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Follow
                             VerticalAlignment: Center
                             Wrapping: true
@@ -714,6 +727,18 @@ Items:
                 IsEnabled: true
                 TextPositionOffset: 0.0
                 UpdateOrder: 0.5
+              - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+                Id: 47fe752b-b97c-4bb1-a9f5-09cb9ee8d08f
+                DictionaryKey: Menu.Detach
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
+                TargetState: Off
+              - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+                Id: 6a9afceb-c44e-4f6b-9921-9697daf27c15
+                DictionaryKey: Menu.Close
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
+                TargetState: On
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
@@ -967,6 +992,7 @@ Items:
                             Size:
                               X: 0.0320000015
                               Y: 0.00800000038
+                            Softness: 0.75
                             Text: Detach
                             VerticalAlignment: Center
                             Wrapping: true
@@ -1158,6 +1184,7 @@ Items:
                 Size:
                   X: 1.0
                   Y: 0.0149999997
+                Softness: 0.75
                 Text: Menu
                 VerticalAlignment: Top
                 Wrapping: true
@@ -1169,6 +1196,11 @@ Items:
                 IsEnabled: true
                 OrderBias: 0
                 RenderFlags: CastShadows
+              - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+                Id: f1626d83-e2f8-4885-86c3-292f1a1118d0
+                DictionaryKey: Menu.Title
+                DictionaryName: Xrv.Core.Resources.Strings
+                IsEnabled: true
             Children: []
             Id: b539ca53-0907-4bfd-8135-ae87b5936cb0
         Id: fd064738-75e8-47d4-aaa7-18c2a5386320

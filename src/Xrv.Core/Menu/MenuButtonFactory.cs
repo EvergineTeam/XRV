@@ -10,6 +10,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Xrv.Core.Extensions;
+using Xrv.Core.Localization;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking.ControlRequest;
 using Xrv.Core.UI.Buttons;
@@ -51,9 +52,12 @@ namespace Xrv.Core.Menu
             button.Flags = HideFlags.DontSave | HideFlags.DontShow;
             button.AddComponent(new StandardButtonConfigurator
             {
-                Text = description.TextOn,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
                 AllowBackPlateNullMaterial = true,
+            });
+            button.AddComponent(new ButtonLocalization
+            {
+                LocalizationFunc = description.TextOn,
             });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn))
@@ -81,8 +85,12 @@ namespace Xrv.Core.Menu
             button.AddComponent(new ToggleButtonConfigurator
             {
                 TargetState = ToggleState.Off,
-                Text = description.TextOff,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff),
+            });
+            button.AddComponent(new ToggleButtonLocalization
+            {
+                TargetState = ToggleState.Off,
+                LocalizationFunc = description.TextOff,
             });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn)
@@ -99,9 +107,13 @@ namespace Xrv.Core.Menu
             button.AddComponent(new ToggleButtonConfigurator
             {
                 TargetState = ToggleState.On,
-                Text = description.TextOn,
                 Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
                 AllowBackPlateNullMaterial = true,
+            });
+            button.AddComponent(new ToggleButtonLocalization
+            {
+                TargetState = ToggleState.On,
+                LocalizationFunc = description.TextOn,
             });
 
             this.AssociateActivationPublishers(description, button);

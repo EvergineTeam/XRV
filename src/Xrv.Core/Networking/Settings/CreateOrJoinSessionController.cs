@@ -85,7 +85,9 @@ namespace Xrv.Core.Networking.Settings
         }
 
         private string CreateRandomSessionName() =>
-            $"Session #{Guid.NewGuid().ToString().Substring(0, 6).ToUpper()}";
+            string.Format(
+                this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Create_SessionName),
+                Guid.NewGuid().ToString().Substring(0, 6).ToUpper());
 
         private async void CreateSessionButton_ButtonReleased(object sender, EventArgs e)
         {
@@ -100,9 +102,9 @@ namespace Xrv.Core.Networking.Settings
             {
                 Trace.TraceError(ex.Message);
                 this.xrvService.WindowSystem.ShowAlertDialog(
-                    "Could not start session",
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Create_Error),
                     ex.Message,
-                    "OK");
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
             }
         }
 
@@ -124,25 +126,26 @@ namespace Xrv.Core.Networking.Settings
             {
                 Trace.TraceError(ex.Message);
                 this.xrvService.WindowSystem.ShowAlertDialog(
-                    "Could not join session",
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_Error),
                     ex.Message,
-                    "OK");
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
             }
 
             if (!succeeded)
             {
                 Trace.TraceError("Could not join session");
                 this.xrvService.WindowSystem.ShowAlertDialog(
-                    "Could not join session",
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_Error),
                     string.Empty,
-                    "OK");
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
             }
         }
 
         private void SessionScanner_ScanningResultsUpdated(object sender, EventArgs e)
         {
             this.selectedHost = this.sessionScanner.AvailableSessions.FirstOrDefault();
-            this.selectedSessionText.Text = this.selectedHost?.Name ?? "No session found";
+            this.selectedSessionText.Text = this.selectedHost?.Name
+                ?? this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_NoSessionsFound);
         }
     }
 }

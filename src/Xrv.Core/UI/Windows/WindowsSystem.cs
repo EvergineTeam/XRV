@@ -81,14 +81,25 @@ namespace Xrv.Core.UI.Windows
         /// <param name="text">Dialog text message.</param>
         /// <param name="acceptText">Accept button text.</param>
         /// <returns><see cref="AlertDialog"/> component.</returns>
-        public AlertDialog ShowAlertDialog(string title, string text, string acceptText)
+        public AlertDialog ShowAlertDialog(string title, string text, string acceptText) =>
+            this.ShowAlertDialog(() => title, () => text, () => acceptText);
+
+        /// <summary>
+        /// Shows an alert dialog.
+        /// </summary>
+        /// <param name="title">Dialog title.</param>
+        /// <param name="text">Dialog text message.</param>
+        /// <param name="acceptText">Accept button text.</param>
+        /// <returns><see cref="AlertDialog"/> component.</returns>
+        public AlertDialog ShowAlertDialog(Func<string> title, Func<string> text, Func<string> acceptText)
         {
             bool anyOpened = this.CloseAllDialogs();
 
             var configurator = this.alertDialog.Configurator as DialogConfigurator;
-            configurator.Title = title;
-            configurator.Text = text;
-            this.alertDialog.AcceptOption.Configuration.Text = acceptText;
+
+            configurator.LocalizedTitle = title;
+            configurator.LocalizedText = text;
+            this.alertDialog.AcceptOption.Configuration.LocalizedText = acceptText;
             this.OpenDialogWithDelayIfRequired(this.alertDialog, anyOpened);
 
             return this.alertDialog;
@@ -102,15 +113,26 @@ namespace Xrv.Core.UI.Windows
         /// <param name="cancelText">Cancel button text.</param>
         /// <param name="acceptText">Accept button text.</param>
         /// <returns><see cref="ConfirmDialog"/> component.</returns>
-        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText)
+        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText) =>
+            this.ShowConfirmDialog(() => title, () => text, () => cancelText, () => acceptText);
+
+        /// <summary>
+        /// Shows a confirmation dialog.
+        /// </summary>
+        /// <param name="title">Dialog title.</param>
+        /// <param name="text">Dialog text message.</param>
+        /// <param name="cancelText">Cancel button text.</param>
+        /// <param name="acceptText">Accept button text.</param>
+        /// <returns><see cref="ConfirmDialog"/> component.</returns>
+        public ConfirmDialog ShowConfirmDialog(Func<string> title, Func<string> text, Func<string> cancelText, Func<string> acceptText)
         {
             bool anyOpened = this.CloseAllDialogs();
 
             var configurator = this.confirmDialog.Configurator as DialogConfigurator;
-            configurator.Title = title;
-            configurator.Text = text;
-            this.confirmDialog.CancelOption.Configuration.Text = cancelText;
-            this.confirmDialog.AcceptOption.Configuration.Text = acceptText;
+            configurator.LocalizedTitle = title;
+            configurator.LocalizedText = text;
+            this.confirmDialog.CancelOption.Configuration.LocalizedText = cancelText;
+            this.confirmDialog.AcceptOption.Configuration.LocalizedText = acceptText;
             this.OpenDialogWithDelayIfRequired(this.confirmDialog, anyOpened);
 
             return this.confirmDialog;
@@ -193,7 +215,7 @@ namespace Xrv.Core.UI.Windows
             var dialogConfigurator = new DialogConfigurator
             {
                 Title = title,
-                Text = text,
+                LocalizedText = () => text,
             };
             var owner = this.BuildWindow(dialog, dialogConfigurator);
             dialog.AllowPin = false;
