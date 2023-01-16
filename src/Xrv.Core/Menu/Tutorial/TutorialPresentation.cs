@@ -27,7 +27,7 @@ namespace Xrv.Core.Menu.Tutorial
         {
             base.Start();
 
-            if (this.menu.TutorialEnabled)
+            if (this.menu.DisplayTutorial)
             {
                 _ = this.CreateHandTutorialAsync();
             }
