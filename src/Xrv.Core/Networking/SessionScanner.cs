@@ -61,6 +61,7 @@ namespace Xrv.Core.Networking
             this.scanningCts = null;
         }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool isAttached = base.OnAttached();

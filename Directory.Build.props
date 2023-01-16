@@ -7,6 +7,10 @@
 	<PropertyGroup>
 	    <LangVersion>latest</LangVersion>
 		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\stylecop.ruleset</CodeAnalysisRuleSet>
+		
+		<!-- Fix some rules not being checked by MSBuild 
+		https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/1721 -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 	
 	<ItemGroup>

@@ -79,8 +79,6 @@ namespace Xrv.Core.Localization
             }
         }
 
-        public HashSet<CultureInfo> AvailableCultures { get => this.availableCultures; }
-
         internal static Assembly[] SearchAssemblies { get; private set; }
 
         /// <summary>
@@ -124,6 +122,12 @@ namespace Xrv.Core.Localization
             return entry ?? NotFoundString;
         }
 
+        /// <summary>
+        /// Gets a localized string from a expression.
+        /// </summary>
+        /// <typeparam name="TDictionary">Dictionary type.</typeparam>
+        /// <param name="expr">Property selector expression.</param>
+        /// <returns>Localized string.</returns>
         public string GetString<TDictionary>(Expression<Func<TDictionary>> expr)
             where TDictionary : class
         {

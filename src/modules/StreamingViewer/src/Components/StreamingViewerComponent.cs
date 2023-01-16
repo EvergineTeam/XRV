@@ -64,6 +64,7 @@ namespace Xrv.StreamingViewer.Components
         /// </summary>
         public string SourceURL { get; set; }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();

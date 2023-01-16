@@ -35,7 +35,7 @@ namespace Xrv.Core
         }
 
         /// <summary>
-        /// Forces networking property refresh (so, it's synchronized in rest of clients)
+        /// Forces networking property refresh (so, it's synchronized in rest of clients).
         /// </summary>
         /// <typeparam name="K">The type of the property key.Must be System.Byte or System.Enum.</typeparam>
         /// <typeparam name="V">The type of the property value.</typeparam>

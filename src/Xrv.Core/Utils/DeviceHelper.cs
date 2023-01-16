@@ -13,6 +13,10 @@ namespace Xrv.Core.Utils
     /// </summary>
     public static class DeviceHelper
     {
+        /// <summary>
+        /// Gets platform application folder path.
+        /// </summary>
+        /// <returns>Application folder path.</returns>
         public static string GetLocalApplicationFolderPath()
         {
             if (DeviceInfo.PlatformType == Evergine.Common.PlatformType.Windows

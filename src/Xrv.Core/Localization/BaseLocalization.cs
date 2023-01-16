@@ -81,6 +81,7 @@ namespace Xrv.Core.Localization
             }
         }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -93,6 +94,7 @@ namespace Xrv.Core.Localization
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnDetach()
         {
             base.OnDetach();
