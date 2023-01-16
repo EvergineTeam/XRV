@@ -149,6 +149,11 @@ namespace Xrv.Core.Menu
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the hand tutorial will be shown.
+        /// </summary>
+        public bool TutorialEnabled { get; set; } = true;
+
+        /// <summary>
         /// Retrieves entity that holds a button.
         /// </summary>
         /// <param name="descriptor">Search button descriptor.</param>

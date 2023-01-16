@@ -4,7 +4,7 @@ using Evergine.Components.Animation;
 using Evergine.Framework;
 using System;
 
-namespace Xrv.Core.HandTutorial
+namespace Xrv.Core.Menu.Tutorial
 {
     /// <summary>
     /// Execute a ping pong animation.

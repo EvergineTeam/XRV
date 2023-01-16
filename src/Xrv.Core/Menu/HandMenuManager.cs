@@ -7,6 +7,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features;
+using Xrv.Core.Menu.Tutorial;
 
 namespace Xrv.Core.Menu
 {
@@ -58,7 +59,8 @@ namespace Xrv.Core.Menu
                     SmoothTime = 0.06f,
                     Target = palmMenuAnchorTransform,
                 })
-                .AddComponent(handMenu);
+                .AddComponent(handMenu)
+                .AddComponent(new TutorialPresentation());
 
             menuRoot.AddChild(this.menuEntity);
 
