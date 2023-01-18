@@ -26,7 +26,7 @@ namespace Xrv.Core.UI.Tabs
         /// <summary>
         /// Gets or sets tab name.
         /// </summary>
-        public string Name { get; set; }
+        public Func<string> Name { get; set; }
 
         /// <summary>
         /// Gets or sets tab data.

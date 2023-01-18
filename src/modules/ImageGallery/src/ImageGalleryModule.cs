@@ -20,33 +20,10 @@ namespace Xrv.ImageGallery
     /// </summary>
     public class ImageGalleryModule : Module
     {
-        private readonly MenuButtonDescription handMenuDescription;
-        private readonly TabItem settings = null;
-        private TabItem help = null;
         private AssetsService assetsService;
         private XrvService xrv;
         private Entity imageGalleryHelp;
-        private Window window = null;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageGalleryModule"/> class.
-        /// Image Gallery module for navigating between different images.
-        /// </summary>
-        public ImageGalleryModule()
-        {
-            this.handMenuDescription = new MenuButtonDescription()
-            {
-                IconOn = ImageGalleryResourceIDs.Materials.Icons.ImageGallery,
-                IsToggle = false,
-                TextOn = "Image Gallery",
-            };
-
-            this.help = new TabItem()
-            {
-                Name = "Image Gallery",
-                Contents = this.HelpContent,
-            };
-        }
+        private Window window;
 
         /// <summary>
         /// Gets or sets the width of the images listed in the gallery.
@@ -67,13 +44,13 @@ namespace Xrv.ImageGallery
         public override string Name => "Image Gallery";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton => this.handMenuDescription;
+        public override MenuButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Help => this.help;
+        public override TabItem Help { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Settings => this.settings;
+        public override TabItem Settings { get; protected set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -83,6 +60,20 @@ namespace Xrv.ImageGallery
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
+
+            // Hand menu and help entries
+            this.HandMenuButton = new MenuButtonDescription()
+            {
+                IconOn = ImageGalleryResourceIDs.Materials.Icons.ImageGallery,
+                IsToggle = false,
+                TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
+            };
+
+            this.Help = new TabItem()
+            {
+                Name = () => this.xrv.Localization.GetString(() => Resources.Strings.Help_Tab_Name),
+                Contents = this.HelpContent,
+            };
 
             // Loading and setting Gallery Asset
             var gallery = this.assetsService.Load<Prefab>(ImageGalleryResourceIDs.Prefabs.Gallery).Instantiate();
@@ -99,7 +90,7 @@ namespace Xrv.ImageGallery
             galleryImageFrame.Height = size.Y;
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
 
-            // Setting Window
+            // Gallery Window
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
                 config.Title = this.Name;

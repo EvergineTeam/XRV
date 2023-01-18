@@ -27,8 +27,6 @@ namespace Xrv.AudioNote
     {
         private AssetsService assetsService;
         private XrvService xrv;
-        private MenuButtonDescription handMenuDesc;
-        private TabItem help;
         private Entity audioNoteHelp;
         private Window window;
         private Scene scene;
@@ -42,19 +40,6 @@ namespace Xrv.AudioNote
         /// </summary>
         public AudioNoteModule()
         {
-            this.handMenuDesc = new MenuButtonDescription()
-            {
-                IconOn = AudioNoteResourceIDs.Materials.Icons.AudioNote,
-                IsToggle = false,
-                TextOn = "Audio Note",
-            };
-
-            this.help = new TabItem()
-            {
-                Name = "Audio Note",
-                Contents = this.HelpContent,
-            };
-
             Application.Current.Container.RegisterInstance(new PlaybackService());
             Application.Current.Container.RegisterInstance(new RecordingService());
         }
@@ -63,13 +48,13 @@ namespace Xrv.AudioNote
         public override string Name => "AudioNote";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
+        public override MenuButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Help => this.help;
+        public override TabItem Help { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Settings => null;
+        public override TabItem Settings { get; protected set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -95,6 +80,19 @@ namespace Xrv.AudioNote
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
+
+            this.HandMenuButton = new MenuButtonDescription()
+            {
+                IconOn = AudioNoteResourceIDs.Materials.Icons.AudioNote,
+                IsToggle = false,
+                TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
+            };
+
+            this.Help = new TabItem()
+            {
+                Name = () => this.xrv.Localization.GetString(() => Resources.Strings.Help_Tab_Name),
+                Contents = this.HelpContent,
+            };
 
             this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
             this.window.Closed += this.Window_Closed;
@@ -231,7 +229,7 @@ namespace Xrv.AudioNote
             var audioNoteSize = new Vector2(0.18f, 0.04f);
             var window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
-                config.Title = "Audio Note";
+                config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
                 config.Size = audioNoteSize;
                 config.FrontPlateSize = audioNoteSize;
                 config.FrontPlateOffsets = Vector2.Zero;

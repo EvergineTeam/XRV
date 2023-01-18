@@ -132,8 +132,8 @@ namespace Xrv.LoadModel
                     IsToggle = true,
                     IconOn = LoadModelResourceIDs.Materials.Icons.locked,
                     IconOff = LoadModelResourceIDs.Materials.Icons.locked,
-                    TextOn = "Unlock",
-                    TextOff = "Lock",
+                    TextOn = () => this.xrvService.Localization.GetString(() => Resources.Strings.Lock),
+                    TextOff = () => this.xrvService.Localization.GetString(() => Resources.Strings.Unlock),
                 };
                 this.buttonDescriptions.Add(this.lockButtonDesc);
 
@@ -142,7 +142,7 @@ namespace Xrv.LoadModel
                 {
                     IsToggle = false,
                     IconOn = LoadModelResourceIDs.Materials.Icons.reset,
-                    TextOn = "Reset",
+                    TextOn = () => this.xrvService.Localization.GetString(() => Resources.Strings.Reset),
                 };
                 this.buttonDescriptions.Add(this.resetButtonDesc);
 
@@ -151,7 +151,7 @@ namespace Xrv.LoadModel
                 {
                     IsToggle = false,
                     IconOn = LoadModelResourceIDs.Materials.Icons.delete,
-                    TextOn = "Delete",
+                    TextOn = () => this.xrvService.Localization.GetString(() => Resources.Strings.Delete),
                 };
                 this.buttonDescriptions.Add(this.deleteButtonDesc);
 

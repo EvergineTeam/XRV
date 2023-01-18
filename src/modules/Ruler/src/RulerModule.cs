@@ -20,55 +20,23 @@ namespace Xrv.Ruler
     {
         private XrvService xrvService;
         private AssetsService assetsService;
-        private MenuButtonDescription handMenuDesc;
-        private TabItem settings;
-        private TabItem help;
 
         private Entity rulerEntity;
         private RulerBehavior rulerBehavior;
         private Entity rulerHelp;
         private Entity rulerSettings;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RulerModule"/> class.
-        /// </summary>
-        public RulerModule()
-        {
-            this.handMenuDesc = new MenuButtonDescription()
-            {
-                IconOff = RulerResourceIDs.Materials.Icons.Measure,
-                IconOn = RulerResourceIDs.Materials.Icons.Measure,
-                IsToggle = true,
-                TextOn = "Hide",
-                TextOff = "Show",
-                VoiceCommandOff = VoiceCommandsEntries.ShowRuler,
-                VoiceCommandOn = VoiceCommandsEntries.HideRuler,
-            };
-
-            this.settings = new TabItem()
-            {
-                Name = "Ruler",
-                Contents = this.SettingContent,
-            };
-
-            this.help = new TabItem()
-            {
-                Name = "Ruler",
-                Contents = this.HelpContent,
-            };
-        }
-
         /// <inheritdoc/>
         public override string Name => "Ruler";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
+        public override MenuButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Help => this.help;
+        public override TabItem Help { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Settings => this.settings;
+        public override TabItem Settings { get; protected set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => new[]
@@ -82,6 +50,30 @@ namespace Xrv.Ruler
         {
             this.xrvService = Application.Current.Container.Resolve<XrvService>();
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
+
+            // Menu, settings and help entries
+            this.HandMenuButton = new MenuButtonDescription()
+            {
+                IconOff = RulerResourceIDs.Materials.Icons.Measure,
+                IconOn = RulerResourceIDs.Materials.Icons.Measure,
+                IsToggle = true,
+                TextOn = () => this.xrvService.Localization.GetString(() => Resources.Strings.Menu_Hide),
+                TextOff = () => this.xrvService.Localization.GetString(() => Resources.Strings.Menu_Show),
+                VoiceCommandOff = VoiceCommandsEntries.ShowRuler,
+                VoiceCommandOn = VoiceCommandsEntries.HideRuler,
+            };
+
+            this.Settings = new TabItem()
+            {
+                Name = () => this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Tab_Name),
+                Contents = this.SettingContent,
+            };
+
+            this.Help = new TabItem()
+            {
+                Name = () => this.xrvService.Localization.GetString(() => Resources.Strings.Help_Tab_Name),
+                Contents = this.HelpContent,
+            };
 
             // Ruler
             var rulerPrefab = this.assetsService.Load<Prefab>(RulerResourceIDs.Prefabs.Ruler_weprefab);

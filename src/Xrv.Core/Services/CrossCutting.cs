@@ -10,6 +10,9 @@ namespace Xrv.Core.Services
     /// </summary>
     public class CrossCutting
     {
+        /// <summary>
+        /// Gets application logger.
+        /// </summary>
         public ILogger Logging { get; internal set; }
 
         /// <summary>

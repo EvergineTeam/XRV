@@ -18,19 +18,19 @@ namespace Xrv.Core.Modules
         public abstract string Name { get; }
 
         /// <summary>
-        /// Gets module hand menu button description. If null, no button is added at all.
+        /// Gets or sets module hand menu button description. If null, no button is added at all.
         /// </summary>
-        public abstract MenuButtonDescription HandMenuButton { get; }
+        public abstract MenuButtonDescription HandMenuButton { get; protected set; }
 
         /// <summary>
-        /// Gets help section item. If null, no item is added at all.
+        /// Gets or sets help section item. If null, no item is added at all.
         /// </summary>
-        public abstract TabItem Help { get; }
+        public abstract TabItem Help { get; protected set; }
 
         /// <summary>
-        /// Gets settings section item. If null, no item is added at all.
+        /// Gets or sets settings section item. If null, no item is added at all.
         /// </summary>
-        public abstract TabItem Settings { get; }
+        public abstract TabItem Settings { get; protected set; }
 
         /// <summary>
         /// Gets voice commands to be registered within the module.

@@ -43,13 +43,13 @@ namespace Xrv.Core.Menu
         /// Gets or sets text for standard button; or for On state in
         /// toggle buttons.
         /// </summary>
-        public string TextOn { get; set; }
+        public Func<string> TextOn { get; set; }
 
         /// <summary>
         /// Gets or sets text for icon for Off state in
         /// toggle buttons. Has no effect in standard buttons.
         /// </summary>
-        public string TextOff { get; set; }
+        public Func<string> TextOff { get; set; }
 
         /// <summary>
         /// Gets or sets voice command for standard button; or for On state in

@@ -15,6 +15,8 @@ namespace Xrv.Core.Settings
     /// </summary>
     public class SettingsSystem
     {
+        internal const string GeneralTabData = "General";
+
         private readonly XrvService xrvService;
         private readonly AssetsService assetsService;
         private readonly EntityManager entityManager;
@@ -62,14 +64,15 @@ namespace Xrv.Core.Settings
             var owner = TabbedWindow.Create(this.xrvService);
             var configurator = owner.FindComponent<WindowConfigurator>();
             var window = owner.FindComponent<TabbedWindow>();
-            configurator.Title = "Settings";
+            configurator.LocalizedTitle = () => this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Title);
 
             owner.IsEnabled = false;
             this.entityManager.Add(owner);
 
             window.Tabs.Add(new TabItem
             {
-                Name = "General",
+                Name = () => this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Tab_General),
+                Data = GeneralTabData,
                 Contents = () => this.GetGeneralSettingsEntity(),
             });
 
@@ -82,7 +85,7 @@ namespace Xrv.Core.Settings
             {
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Settings,
-                TextOn = "Settings",
+                TextOn = () => this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Menu),
                 VoiceCommandOn = VoiceCommands.ShowSettings,
                 Order = int.MaxValue - 1,
             };

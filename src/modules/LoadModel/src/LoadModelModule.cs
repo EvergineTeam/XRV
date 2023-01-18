@@ -44,7 +44,6 @@ namespace Xrv.LoadModel
         private Scene scene;
         private Prefab manipulatorPrefab;
         private Prefab repositoryWindow;
-        private MenuButtonDescription handMenuDesc;
 
         private ListView repositoriesListView;
         private ListView modelsListView;
@@ -68,26 +67,19 @@ namespace Xrv.LoadModel
                 { GLBRuntime.Instance.Extentsion, GLBRuntime.Instance },
                 { STLRuntime.Instance.Extentsion, STLRuntime.Instance },
             };
-
-            this.handMenuDesc = new MenuButtonDescription()
-            {
-                IsToggle = false,
-                IconOn = LoadModelResourceIDs.Materials.Icons.addModel,
-                TextOn = "Add Model",
-            };
         }
 
         /// <inheritdoc/>
         public override string Name => "LoadModel";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton => this.handMenuDesc;
+        public override MenuButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Help => null;
+        public override TabItem Help { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Settings => null;
+        public override TabItem Settings { get; protected set; }
 
         /// <summary>
         /// Gets or sets the model repository list.
@@ -132,6 +124,13 @@ namespace Xrv.LoadModel
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
 
+            this.HandMenuButton = new MenuButtonDescription()
+            {
+                IsToggle = false,
+                IconOn = LoadModelResourceIDs.Materials.Icons.addModel,
+                TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
+            };
+
             this.manipulatorPrefab = this.assetsService.Load<Prefab>(LoadModelResourceIDs.Prefabs.Manipulator_weprefab);
             this.repositoryWindow = this.assetsService.Load<Prefab>(LoadModelResourceIDs.Prefabs.RepositoriesWindow_weprefab);
             var repositoryWindowEntity = this.repositoryWindow.Instantiate();
@@ -165,7 +164,7 @@ namespace Xrv.LoadModel
 
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
-                config.Title = "Load model from repository";
+                config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
                 config.Content = repositoryWindowEntity;
                 config.DisplayFrontPlate = false;
                 config.Size = new Vector2(0.3f, 0.22f);

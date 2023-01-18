@@ -63,8 +63,12 @@ namespace Xrv.Core.Networking.Settings
             {
                 var session = this.xrvService.Networking.Session;
                 this.joinedStateText.Text = session.CurrentUserIsHost
-                    ? $"You have created and joined {session.Host.Name}"
-                    : $"You have joined {session.Host.Name}";
+                    ? string.Format(
+                        this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joined_StatusTextAsServer),
+                        session.Host.Name)
+                    : string.Format(
+                        this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joined_StatusTextAsClient),
+                        session.Host.Name);
             }
         }
 
@@ -85,18 +89,18 @@ namespace Xrv.Core.Networking.Settings
             if (this.networking.Session.CurrentUserIsHost)
             {
                 dialog = this.windows.ShowConfirmDialog(
-                    "End session?",
-                    "If you end the session, it will finish for anyone connected",
-                    "Cancel",
-                    "Accept");
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_EndSessionConfirmationTitle),
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_EndSessionConfirmationMessage),
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Cancel),
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Accept));
             }
             else
             {
                 dialog = this.windows.ShowConfirmDialog(
-                    "Leave session?",
-                    "You can join again to the session, if it is still available",
-                    "Cancel",
-                    "Accept");
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_LeaveSessionConfirmationTitle),
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_LeaveSessionConfirmationMessage),
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Cancel),
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Accept));
             }
 
             dialog.Closed += this.Dialog_Closed;
@@ -123,7 +127,10 @@ namespace Xrv.Core.Networking.Settings
             catch (Exception ex)
             {
                 this.logger?.LogError(ex, "Error leaving session");
-                this.windows.ShowAlertDialog("Error leaving session", ex.Message, "OK");
+                this.windows.ShowAlertDialog(
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_Error),
+                    ex.Message,
+                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
             }
         }
     }

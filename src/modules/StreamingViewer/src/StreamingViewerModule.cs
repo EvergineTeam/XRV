@@ -20,27 +20,10 @@ namespace Xrv.StreamingViewer
     /// </summary>
     public class StreamingViewerModule : Module
     {
-        private readonly TabItem settings = null;
-        private readonly TabItem help = null;
-        private readonly MenuButtonDescription handMenuDescription;
         private AssetsService assetsService;
         private XrvService xrv;
         private Scene scene;
         private Window window = null;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamingViewerModule"/> class.
-        /// Image Gallery module for navigating between different images.
-        /// </summary>
-        public StreamingViewerModule()
-        {
-            this.handMenuDescription = new MenuButtonDescription()
-            {
-                IconOn = StreamingViewerResourceIDs.Materials.Icons.StreamingViewer,
-                IsToggle = false,
-                TextOn = "Streaming Viewer",
-            };
-        }
 
         /// <summary>
         /// Gets or sets the URL of the source of the streaming.
@@ -61,13 +44,13 @@ namespace Xrv.StreamingViewer
         public override string Name => "Streaming Viewer";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton => this.handMenuDescription;
+        public override MenuButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Help => this.help;
+        public override TabItem Help { get; protected set; }
 
         /// <inheritdoc/>
-        public override TabItem Settings => this.settings;
+        public override TabItem Settings { get; protected set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -78,6 +61,14 @@ namespace Xrv.StreamingViewer
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
             this.scene = scene;
+
+            this.HandMenuButton = new MenuButtonDescription()
+            {
+                IconOn = StreamingViewerResourceIDs.Materials.Icons.StreamingViewer,
+                IsToggle = false,
+                TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
+            };
+
             var streamingViewerPrefab = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingViewer_weprefab).Instantiate();
             var streamingViewerComponent = streamingViewerPrefab.FindComponent<StreamingViewerComponent>();
             streamingViewerComponent.SourceURL = this.SourceURL;
@@ -87,7 +78,7 @@ namespace Xrv.StreamingViewer
 
             this.window = this.xrv.WindowSystem.CreateWindow((config) =>
             {
-                config.Title = this.Name;
+                config.LocalizedTitle = () => Resources.Strings.Window_Title;
                 config.Size = size;
                 config.FrontPlateSize = size;
                 config.FrontPlateOffsets = Vector2.Zero;

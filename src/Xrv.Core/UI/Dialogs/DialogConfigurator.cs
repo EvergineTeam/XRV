@@ -1,6 +1,9 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Attributes;
 using Evergine.Components.Fonts;
+using System;
+using Xrv.Core.Localization;
 using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.UI.Dialogs
@@ -10,21 +13,30 @@ namespace Xrv.Core.UI.Dialogs
     /// </summary>
     public class DialogConfigurator : BaseWindowConfigurator
     {
-        private string text;
+        private Func<string> localizedText;
         private Text3DMesh textMesh;
+        private Text3dLocalization textLocalization;
 
         /// <summary>
-        /// Gets or sets dialog text.
+        /// Gets or sets localized dialog message text.
         /// </summary>
-        public string Text
+        [IgnoreEvergine]
+        public Func<string> LocalizedText
         {
-            get => this.text;
+            get => this.textLocalization != null ? this.textLocalization.LocalizationFunc : this.localizedText;
             set
             {
-                this.text = value;
-                if (this.IsActivated)
+                if (this.textLocalization != null)
                 {
-                    this.UpdateText();
+                    this.textLocalization.LocalizationFunc = value;
+                }
+                else
+                {
+                    this.localizedText = value;
+                    if (this.IsActivated)
+                    {
+                        this.UpdateText();
+                    }
                 }
             }
         }
@@ -34,9 +46,10 @@ namespace Xrv.Core.UI.Dialogs
         {
             base.OnActivated();
             this.textMesh = this.Owner.FindComponentInChildren<Text3DMesh>(tag: "PART_base_dialog_text");
+            this.textLocalization = this.Owner.FindComponentInChildren<Text3dLocalization>(tag: "PART_base_dialog_text");
             this.UpdateText();
         }
 
-        private void UpdateText() => this.textMesh.Text = this.text;
+        private void UpdateText() => this.textMesh.Text = this.localizedText.Invoke();
     }
 }

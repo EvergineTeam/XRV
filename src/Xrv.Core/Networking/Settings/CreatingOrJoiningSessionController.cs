@@ -40,7 +40,9 @@ namespace Xrv.Core.Networking.Settings
             if (this.statusText != null)
             {
                 var session = this.xrvService.Networking.Session;
-                this.statusText.Text = session.CurrentUserIsHost ? "Creating Session..." : "Joining Session...";
+                this.statusText.Text = session.CurrentUserIsHost
+                    ? this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joining_CreationInProgress)
+                    : this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joining_JoinInProgress);
             }
         }
     }

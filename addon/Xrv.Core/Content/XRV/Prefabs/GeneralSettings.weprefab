@@ -64,7 +64,8 @@ Root:
           Size:
             X: 0.230000019
             Y: 0.170000017
-          Text: Measure Units
+          Softness: 0.75
+          Text: Voice recognition status
           VerticalAlignment: Top
           Wrapping: true
         - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -75,6 +76,11 @@ Root:
           IsEnabled: true
           OrderBias: 0
           RenderFlags: CastShadows
+        - !Xrv.Core.Localization.Text3dLocalization,Xrv.Core
+          Id: e630e4a9-efbb-4d44-abc0-eced76af5715
+          DictionaryKey: Settings.General.Voice.Title
+          DictionaryName: Xrv.Core.Resources.Strings
+          IsEnabled: true
       Children: []
       Id: bfbf48dc-4f61-46e8-bead-934cff897621
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -90,7 +96,7 @@ Root:
             W: 1.0
             X: 0.0
             Y: 0.0
-            Z: -0.0
+            Z: 0.0
           LocalPosition:
             X: -0.0790295452
             Y: 0.0524761602
@@ -193,6 +199,18 @@ Root:
         - !Xrv.Core.VoiceCommands.EnableOrDisableVoiceService,Xrv.Core
           Id: e52bd2c8-45e4-4129-af76-d66e4a14ddcd
           IsEnabled: true
+        - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+          Id: dda97f03-c019-4fc5-b2e5-4bad47ec15fe
+          DictionaryKey: Settings.General.VoiceOff
+          DictionaryName: Xrv.Core.Resources.Strings
+          IsEnabled: true
+          TargetState: Off
+        - !Xrv.Core.Localization.ToggleButtonLocalization,Xrv.Core
+          Id: f61d2f9d-0b25-4dc2-8d87-45d1f37b9fb4
+          DictionaryKey: Settings.General.VoiceOff
+          DictionaryName: Xrv.Core.Resources.Strings
+          IsEnabled: true
+          TargetState: On
       Children:
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
           Name: CompressableButtonVisuals
@@ -283,7 +301,7 @@ Root:
                         W: 1.0
                         X: 0.0
                         Y: 0.0
-                        Z: -0.0
+                        Z: 0.0
                       LocalPosition:
                         X: 0.0
                         Y: 0.0
@@ -312,6 +330,7 @@ Root:
                       Size:
                         X: 0.0700000003
                         Y: 0.0199999996
+                      Softness: 0.75
                       Text: Voice Off
                       VerticalAlignment: Center
                       Wrapping: true

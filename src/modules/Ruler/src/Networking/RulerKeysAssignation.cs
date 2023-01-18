@@ -39,6 +39,7 @@ namespace Xrv.Ruler.Networking
             this.handle2Sync.PropertyKeyByte = keys[1];
         }
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();

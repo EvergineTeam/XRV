@@ -29,6 +29,7 @@ namespace Xrv.Core.Networking.Messaging
         /// Initializes a new instance of the <see cref="NetworkingProtocol"/> class.
         /// </summary>
         /// <param name="network">Network system.</param>
+        /// <param name="logger">Logger.</param>
         protected NetworkingProtocol(NetworkSystem network, ILogger logger)
         {
             this.logger = logger;
