@@ -10,6 +10,8 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xrv.Core;
+using Xrv.Core.UI.Dialogs;
 using Xrv.Painter.Enums;
 using Xrv.Painter.Helpers;
 using Xrv.Painter.Models;
@@ -104,6 +106,8 @@ namespace Xrv.Painter.Components
         private PainterThickness thickness;
         private PainterModes mode;
 
+        private XrvService xrv;
+
         /// <summary>
         /// On mode changed.
         /// </summary>
@@ -186,12 +190,9 @@ namespace Xrv.Painter.Components
         /// </summary>
         public void ClearAll()
         {
-            this.actions.Clear();
-            var lines = this.Owner.EntityManager.FindAllByTag(LINETAG).ToList();
-            foreach (var item in lines)
-            {
-                this.Owner.EntityManager.Remove(item);
-            }
+            var confirmDelete = this.xrv.WindowSystem.ShowConfirmDialog("Delete all the drawing?", "This action can't be undone.", "No", "Yes");
+            confirmDelete.Open();
+            confirmDelete.Closed += this.ConfirmDeleteClosed;
         }
 
         /// <summary>
@@ -301,6 +302,8 @@ namespace Xrv.Painter.Components
             {
                 button.ButtonReleased += this.CommandsButtonsButtonsButton_ButtonReleased;
             }
+
+            this.xrv = Application.Current.Container.Resolve<XrvService>();
 
             return true;
         }
@@ -449,6 +452,27 @@ namespace Xrv.Painter.Components
                 .AddComponent(new MeshRenderer());
 
             return (entity, mesh);
+        }
+
+        private void ConfirmDeleteClosed(object sender, EventArgs e)
+        {
+            if (sender is Dialog dialog)
+            {
+                dialog.Closed -= this.ConfirmDeleteClosed;
+
+                var isAcceted = dialog.Result == ConfirmDialog.AcceptKey;
+                if (!isAcceted)
+                {
+                    return;
+                }
+
+                this.actions.Clear();
+                var lines = this.Owner.EntityManager.FindAllByTag(LINETAG).ToList();
+                foreach (var item in lines)
+                {
+                    this.Owner.EntityManager.Remove(item);
+                }
+            }
         }
     }
 }
