@@ -179,6 +179,7 @@ namespace Xrv.Painter.Components
 
         private void Manager_OnModeChanged(object sender, PainterModes e)
         {
+            this.Pointer.IsEnabled = e != PainterModes.Hand;
             this.pointerMaterial.Albedo = e == PainterModes.Painter ? Color.White : Color.Red;
         }
 
