@@ -380,9 +380,9 @@ namespace Xrv.Painter.Components
                 case PainterThickness.Thin:
                     return 0.001f;
                 case PainterThickness.Medium:
-                    return 0.005f;
+                    return 0.003f;
                 default:
-                    return 0.01f;
+                    return 0.006f;
             }
         }
 
