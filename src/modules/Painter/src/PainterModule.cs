@@ -81,16 +81,29 @@ namespace Xrv.Painter
                 await EvergineBackgroundTask.Run(async () =>
                 {
                     var content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
-                    var cursor = content.FindComponent<PainterCursor>();
-                    cursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
-                    var leftCursor = content.FindComponent<PainterCursorHand>();
+                    var painterCursors = content.FindComponents<PainterCursor>();
+                    PainterCursor rightCursor = null;
+                    PainterCursor leftCursor = null;
+                    foreach (var painterCursor in painterCursors)
+                    {
+                        if (painterCursor.Hand == Evergine.Framework.XR.XRHandedness.RightHand)
+                        {
+                            rightCursor = painterCursor;
+                        }
+                        else
+                        {
+                            leftCursor = painterCursor;
+                        }
+                    }
+
+                    rightCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
                     leftCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
                     config.Content = content;
                     await EvergineForegroundTask.Run(() =>
                     {
-                        scene.Managers.EntityManager.Add(cursor.Pointer);
+                        scene.Managers.EntityManager.Add(rightCursor.Pointer);
                         scene.Managers.EntityManager.Add(leftCursor.Pointer);
-                        cursor.Pointer.IsEnabled = false;
+                        rightCursor.Pointer.IsEnabled = false;
                         leftCursor.Pointer.IsEnabled = false;
                     });
                 });

@@ -17,6 +17,7 @@ namespace Xrv.Painter.Components
     /// <summary>
     /// Moves and update position for painter cursor.
     /// </summary>
+    [AllowMultipleInstances]
     public class PainterCursor : Behavior
     {
         [BindComponent]
