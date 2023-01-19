@@ -36,5 +36,10 @@ namespace Xrv.Core.Themes.Texts
         /// Primary2Size3 key.
         /// </summary>
         public const string XrvPrimary2Size3 = "Xrv.Primary2.Size3";
+
+        /// <summary>
+        /// Primary2Size3 key.
+        /// </summary>
+        public const string XrvPrimary2Size3Alt = "Xrv.Primary2.Size3.Alt";
     }
 }

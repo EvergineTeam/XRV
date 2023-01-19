@@ -49,6 +49,13 @@ namespace Xrv.Core.Themes.Texts
                 TextScale = 0.005f,
                 ThemeColor = ThemeColor.PrimaryColor3,
             };
+
+            registrations[DefaultTextStyles.XrvPrimary2Size3Alt] = new TextStyle
+            {
+                ThemeFont = ThemeFont.PrimaryFont2,
+                TextScale = 0.005f,
+                ThemeColor = ThemeColor.PrimaryColor1,
+            };
         }
     }
 }

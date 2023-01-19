@@ -79,6 +79,78 @@ namespace Xrv.Painter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear All.
+        /// </summary>
+        internal static string Paint_Action_Clear {
+            get {
+                return ResourceManager.GetString("Paint.Action.Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Undo Line.
+        /// </summary>
+        internal static string Paint_Action_Undo {
+            get {
+                return ResourceManager.GetString("Paint.Action.Undo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draw.
+        /// </summary>
+        internal static string Paint_Mode_Draw {
+            get {
+                return ResourceManager.GetString("Paint.Mode.Draw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Erase.
+        /// </summary>
+        internal static string Paint_Mode_Erase {
+            get {
+                return ResourceManager.GetString("Paint.Mode.Erase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manipulate.
+        /// </summary>
+        internal static string Paint_Mode_Manipulation {
+            get {
+                return ResourceManager.GetString("Paint.Mode.Manipulation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium.
+        /// </summary>
+        internal static string Paint_Thickness_Medium {
+            get {
+                return ResourceManager.GetString("Paint.Thickness.Medium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thick.
+        /// </summary>
+        internal static string Paint_Thickness_Thick {
+            get {
+                return ResourceManager.GetString("Paint.Thickness.Thick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thin.
+        /// </summary>
+        internal static string Paint_Thickness_Thin {
+            get {
+                return ResourceManager.GetString("Paint.Thickness.Thin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Painter.
         /// </summary>
         internal static string Window_Title {
