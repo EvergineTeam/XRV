@@ -74,6 +74,11 @@ namespace Xrv.Core.UI.Buttons
 
         private void UpdateIsVisuallyEnabled()
         {
+            if (!this.IsAttached)
+            {
+                return;
+            }
+
             this.boxCollider.IsEnabled = this.isVisuallyEnabled;
             this.pressableButton.IsEnabled = this.isVisuallyEnabled;
             this.iconHoloGraphic.Parameters_Alpha = this.isVisuallyEnabled ? 1f : 0.5f;

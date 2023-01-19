@@ -111,7 +111,7 @@ namespace Xrv.Painter.Components
             this.pointerMaterial.Albedo = mode == PainterModes.Painter ? Color.White : Color.Red;
             this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
 
-            this.manager.OnModeChanged += this.Manager_OnModeChanged;
+            this.manager.ModeChanged += this.Manager_ModeChanged;
             this.UpdateHandTracking(this.hand, true);
         }
 
@@ -126,7 +126,7 @@ namespace Xrv.Painter.Components
 
             this.Pointer.IsEnabled = false;
 
-            this.manager.OnModeChanged -= this.Manager_OnModeChanged;
+            this.manager.ModeChanged -= this.Manager_ModeChanged;
             this.UpdateHandTracking(this.hand, false);
         }
 
@@ -146,7 +146,7 @@ namespace Xrv.Painter.Components
                 }
                 else if (this.cursor.Pinch && this.cursor.PreviousPinch)
                 {
-                    // Pinch dragg
+                    // Pinch drag
                     if (this.current > this.betweenUpdate)
                     {
                         if (Vector3.Distance(this.lastPosition, position) > this.PositionDelta)
@@ -177,7 +177,7 @@ namespace Xrv.Painter.Components
             }
         }
 
-        private void Manager_OnModeChanged(object sender, PainterModes e)
+        private void Manager_ModeChanged(object sender, PainterModes e)
         {
             this.Pointer.IsEnabled = e != PainterModes.Hand;
             this.pointerMaterial.Albedo = e == PainterModes.Painter ? Color.White : Color.Red;

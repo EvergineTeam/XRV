@@ -9,8 +9,11 @@ using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using Xrv.Core;
+using Xrv.Core.UI.Buttons;
 using Xrv.Core.UI.Dialogs;
 using Xrv.Painter.Enums;
 using Xrv.Painter.Helpers;
@@ -74,6 +77,12 @@ namespace Xrv.Painter.Components
         /// Assets service.
         /// </summary>
         [BindService]
+        protected XrvService xrvService;
+
+        /// <summary>
+        /// Assets service.
+        /// </summary>
+        [BindService]
         protected AssetsService assetsService;
 
         /// <summary>
@@ -96,7 +105,7 @@ namespace Xrv.Painter.Components
 
         private const string LINETAG = "linetag";
 
-        private List<PainterAction> actions = new List<PainterAction>();
+        private readonly ObservableCollection<PainterAction> actions = new ObservableCollection<PainterAction>();
 
         private PencilMesh leftPencilMesh;
         private PencilMesh rightPencilMesh;
@@ -106,12 +115,10 @@ namespace Xrv.Painter.Components
         private PainterThickness thickness;
         private PainterModes mode;
 
-        private XrvService xrv;
-
         /// <summary>
         /// On mode changed.
         /// </summary>
-        public event EventHandler<PainterModes> OnModeChanged;
+        public event EventHandler<PainterModes> ModeChanged;
 
         /// <summary>
         /// Gets or sets mode.
@@ -124,7 +131,7 @@ namespace Xrv.Painter.Components
                 this.mode = value;
                 if (this.IsAttached)
                 {
-                    this.OnModeChanged?.Invoke(this, value);
+                    this.ModeChanged?.Invoke(this, value);
                 }
             }
         }
@@ -190,7 +197,7 @@ namespace Xrv.Painter.Components
         /// </summary>
         public void ClearAll()
         {
-            var confirmDelete = this.xrv.WindowSystem.ShowConfirmDialog("Delete all the drawing?", "This action can't be undone.", "No", "Yes");
+            var confirmDelete = this.xrvService.WindowSystem.ShowConfirmDialog("Delete all the drawing?", "This action can't be undone.", "No", "Yes");
             confirmDelete.Open();
             confirmDelete.Closed += this.ConfirmDeleteClosed;
         }
@@ -236,14 +243,14 @@ namespace Xrv.Painter.Components
                 case XRHandedness.Undefined:
                     break;
                 case XRHandedness.LeftHand:
-                    this.leftPencilMesh ??= this.initializeFirstPointInLine();
+                    this.leftPencilMesh ??= this.InitializeFirstPointInLine();
 
-                    this.addNewPointToLine(this.leftPencilMesh, lInfo);
+                    this.AddNewPointToLine(this.leftPencilMesh, lInfo);
                     break;
                 case XRHandedness.RightHand:
-                    this.rightPencilMesh ??= this.initializeFirstPointInLine();
+                    this.rightPencilMesh ??= this.InitializeFirstPointInLine();
 
-                    this.addNewPointToLine(this.rightPencilMesh, lInfo);
+                    this.AddNewPointToLine(this.rightPencilMesh, lInfo);
                     break;
                 default:
                     break;
@@ -303,8 +310,6 @@ namespace Xrv.Painter.Components
                 button.ButtonReleased += this.CommandsButtonsButtonsButton_ButtonReleased;
             }
 
-            this.xrv = Application.Current.Container.Resolve<XrvService>();
-
             return true;
         }
 
@@ -334,13 +339,29 @@ namespace Xrv.Painter.Components
             }
         }
 
-        private void addNewPointToLine(PencilMesh pencilMesh, LineInfo newLine)
+        /// <inheritdoc/>
+        protected override void OnActivated()
+        {
+            base.OnActivated();
+
+            this.actions.CollectionChanged += this.Actions_CollectionChanged;
+            this.OnNumberOfActionsChanged();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDeactivated()
+        {
+            base.OnDeactivated();
+            this.actions.CollectionChanged -= this.Actions_CollectionChanged;
+        }
+
+        private void AddNewPointToLine(PencilMesh pencilMesh, LineInfo newLine)
         {
             pencilMesh.LinePoints.Add(newLine);
             pencilMesh.RefreshMeshes();
         }
 
-        private PencilMesh initializeFirstPointInLine()
+        private PencilMesh InitializeFirstPointInLine()
         {
             // Creates first point
             var pencil = this.CreateEntity(this.Color);
@@ -474,5 +495,31 @@ namespace Xrv.Painter.Components
                 }
             }
         }
+
+        private void OnNumberOfActionsChanged()
+        {
+            bool hasAnyAction = this.actions.Any();
+
+            if (this.commandsButtons != null)
+            {
+                foreach (var button in this.commandsButtons)
+                {
+                    var enabledController = button.Owner.FindComponentInParents<VisuallyEnabledController>();
+                    enabledController.IsVisuallyEnabled = hasAnyAction;
+                }
+            }
+
+            var eraseController = this.modeButtons?
+                .Select(button => button.Owner.FindComponentInParents<VisuallyEnabledController>())
+                .Where(controller => controller != null)
+                .FirstOrDefault(controller => controller.Owner.Name == "Eraser");
+            if (eraseController != null)
+            {
+                eraseController.IsVisuallyEnabled = hasAnyAction;
+            }
+        }
+
+        private void Actions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
+            this.OnNumberOfActionsChanged();
     }
 }
