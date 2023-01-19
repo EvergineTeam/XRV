@@ -257,18 +257,18 @@ namespace Xrv.Ruler
             {
                 foreach (var point in this.line.LinePoints)
                 {
-                    point.Color = theme[ThemeColor.PrimaryColor3];
+                    point.Color = theme.PrimaryColor3;
                 }
 
                 this.line.Refresh();
             }
 
-            this.labelNumber.Color = theme[ThemeColor.PrimaryColor3];
+            this.labelNumber.Color = theme.PrimaryColor3;
         }
 
         private void OnSecondaryColor1Updated(Theme theme)
         {
-            this.labelUnits.Color = theme[ThemeColor.SecondaryColor1];
+            this.labelUnits.Color = theme.SecondaryColor1;
         }
 
         private void ThemesSystem_ThemeUpdated(object sender, ThemeUpdatedEventArgs args)

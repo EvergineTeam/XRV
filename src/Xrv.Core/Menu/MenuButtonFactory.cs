@@ -13,6 +13,7 @@ using Xrv.Core.Extensions;
 using Xrv.Core.Localization;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking.ControlRequest;
+using Xrv.Core.Themes.Texts;
 using Xrv.Core.UI.Buttons;
 using Xrv.Core.VoiceCommands;
 
@@ -50,15 +51,20 @@ namespace Xrv.Core.Menu
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
             button.Flags = HideFlags.DontSave | HideFlags.DontShow;
-            button.AddComponent(new StandardButtonConfigurator
-            {
-                Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
-                AllowBackPlateNullMaterial = true,
-            });
-            button.AddComponent(new ButtonLocalization
-            {
-                LocalizationFunc = description.TextOn,
-            });
+            button
+                .AddComponent(new StandardButtonConfigurator
+                {
+                    Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
+                    AllowBackPlateNullMaterial = true,
+                })
+                .AddComponent(new ButtonLocalization
+                {
+                    LocalizationFunc = description.TextOn,
+                })
+                .AddComponent(new ButtonTextStyle
+                {
+                    TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
+                });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn))
             {
@@ -81,17 +87,23 @@ namespace Xrv.Core.Menu
             var prefab = this.GetButtonPrefab();
             var button = prefab.Instantiate();
             button.Flags = HideFlags.DontSave | HideFlags.DontShow;
-            button.AddComponent(new ToggleButton());
-            button.AddComponent(new ToggleButtonConfigurator
-            {
-                TargetState = ToggleState.Off,
-                Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff),
-            });
-            button.AddComponent(new ToggleButtonLocalization
-            {
-                TargetState = ToggleState.Off,
-                LocalizationFunc = description.TextOff,
-            });
+            button
+                .AddComponent(new ToggleButton())
+                .AddComponent(new ToggleButtonConfigurator
+                {
+                    TargetState = ToggleState.Off,
+                    Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff),
+                })
+                .AddComponent(new ToggleButtonLocalization
+                {
+                    TargetState = ToggleState.Off,
+                    LocalizationFunc = description.TextOff,
+                })
+                .AddComponent(new ToggleButtonTextStyle
+                {
+                    TargetState = ToggleState.Off,
+                    TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
+                });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn)
                 || !string.IsNullOrEmpty(description.VoiceCommandOff))
@@ -104,17 +116,23 @@ namespace Xrv.Core.Menu
                 });
             }
 
-            button.AddComponent(new ToggleButtonConfigurator
-            {
-                TargetState = ToggleState.On,
-                Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
-                AllowBackPlateNullMaterial = true,
-            });
-            button.AddComponent(new ToggleButtonLocalization
-            {
-                TargetState = ToggleState.On,
-                LocalizationFunc = description.TextOn,
-            });
+            button
+                .AddComponent(new ToggleButtonConfigurator
+                {
+                    TargetState = ToggleState.On,
+                    Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
+                    AllowBackPlateNullMaterial = true,
+                })
+                .AddComponent(new ToggleButtonLocalization
+                {
+                    TargetState = ToggleState.On,
+                    LocalizationFunc = description.TextOn,
+                })
+                .AddComponent(new ToggleButtonTextStyle
+                {
+                    TargetState = ToggleState.On,
+                    TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
+                });
 
             this.AssociateActivationPublishers(description, button);
             var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);

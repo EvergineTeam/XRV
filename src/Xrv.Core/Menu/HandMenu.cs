@@ -18,6 +18,7 @@ using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Xrv.Core.Extensions;
 using Xrv.Core.Modules;
+using Xrv.Core.Themes.Texts;
 using Xrv.Core.UI.Windows;
 
 namespace Xrv.Core.Menu
@@ -388,7 +389,9 @@ namespace Xrv.Core.Menu
             this.followButtonTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidthOverTwo, 0, 0.003f), new Vector3(-ButtonWidthOverTwo + (ButtonWidth * (this.numberOfButtonsPerColumn - 1)), 0, 0.003f), animationProgress);
 
             this.textTransform.LocalPosition = Vector3.Lerp(new Vector3(-ButtonWidth * 2, 0, 0.003f), new Vector3(0.015f, 0, 0.003f), animationProgress);
-            this.text3DMesh.Color = Color.Lerp(Color.Transparent, Color.White, animationProgress);
+
+            var textColor = this.text3DMesh.Owner.FindComponent<Text3dStyle>()?.GetTextColor() ?? Color.White;
+            this.text3DMesh.Color = Color.Lerp(Color.Transparent, textColor, animationProgress);
 
             // Buttons animation
             int i = 0;

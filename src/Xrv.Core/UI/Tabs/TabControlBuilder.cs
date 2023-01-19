@@ -41,8 +41,8 @@ namespace Xrv.Core.UI.Tabs
             var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TabControl);
             this.entity = prefab.Instantiate();
             this.control = this.entity.FindComponentInChildren<TabControl>();
-            this.control.ActiveItemTextColor = theme[ThemeColor.PrimaryColor3];
-            this.control.InactiveItemTextColor = theme[ThemeColor.SecondaryColor1];
+            this.control.ActiveItemTextColor = theme.PrimaryColor3;
+            this.control.InactiveItemTextColor = theme.SecondaryColor1;
 
             return this;
         }

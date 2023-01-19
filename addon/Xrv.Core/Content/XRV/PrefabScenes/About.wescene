@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 85560e24-0fdf-4587-b2c9-9de00c36218d
         Aperture: 1.0
-        AspectRatio: 0.653409064
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -168,7 +167,8 @@ Items:
         Id: 7516ee47-2646-4e2e-aa4f-ad2b5b858287
         AsignedTo: Default
         IsEnabled: true
-        Material: 1defe721-f4d4-47a4-b773-e5b53be5224d
+        Material: a02b382c-cdd7-41bf-b289-4bff9a388505
+        UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: f3bb599f-f283-4a47-9334-46675575c57f
         Diameter: 1.0
@@ -230,19 +230,23 @@ Items:
         AsignedTo: Default
         IsEnabled: true
         Material: 117070d5-cccf-4b60-93c8-eddafd9b51d5
+        UseCopy: false
       - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
         Id: 7acfd457-83f4-4dfb-a50a-f8b933a70f69
         Height: 0.180000007
-        UOffset: 0.0
-        VOffset: 0.0
         IsEnabled: true
+        Origin:
+          X: 0.5
+          Y: 0.5
         PlaneNormal: ZPositive
         TwoSides: false
-        UTile: 1.0
         UMirror: false
+        UOffset: 0.0
+        UTile: 1.0
         VMirror: false
-        Width: 0.25
+        VOffset: 0.0
         VTile: 1.0
+        Width: 0.25
       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
         Id: b92f4061-2b3f-4232-b532-eb46d4254665
         DebugBoundingbox: true
@@ -305,7 +309,7 @@ Items:
               G: 28
               R: 4
             Ellipsis: true
-            Font: c3702a4c-8d61-4707-9616-af27fe506e90
+            Font: d1322288-d9e9-4b1e-b2fe-ca281f0388a2
             HorizontalAlignment: Left
             IsEnabled: true
             Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
@@ -317,6 +321,7 @@ Items:
             Size:
               X: 0.230000019
               Y: 0.010000037
+            Softness: 0.75
             Text: Version 1.0.0.1
             VerticalAlignment: Top
             Wrapping: true
@@ -328,6 +333,10 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+            Id: d5f427af-e19a-4177-bb12-d005a6274c86
+            IsEnabled: true
+            TextStyleKey: Xrv.Primary2.Size2
         Children: []
         Id: 396c65aa-e43c-4b17-9b2c-7f0fc1f546a2
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -368,10 +377,11 @@ Items:
             Origin:
               X: 0.5
               Y: 0.5
-            ScaleFactor: 0.00600000005
+            ScaleFactor: 0.00700000022
             Size:
               X: 0.230000019
               Y: 0.130000055
+            Softness: 0.75
             Text: Copyright @ Plain Concepts. S.L.U . All rights reserved /n/n Powered by Evergine.
             VerticalAlignment: Top
             Wrapping: true
@@ -383,6 +393,10 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+            Id: 08026d52-96c4-4a3a-aa5a-f746c4469764
+            IsEnabled: true
+            TextStyleKey: Xrv.Primary2.Size1
         Children: []
         Id: e6da3994-c6d6-40a7-a91f-3fabf7eb3b53
     Id: 21756e33-fa6e-40d0-9bc5-6d4e1b07c18c

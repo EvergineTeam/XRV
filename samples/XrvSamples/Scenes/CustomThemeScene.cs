@@ -17,14 +17,14 @@ namespace XrvSamples.Scenes
             xrv.Initialize(this);
 
             var theme = xrv.ThemesSystem.CurrentTheme;
-            theme[ThemeColor.PrimaryColor1] = Color.Red;
-            theme[ThemeColor.PrimaryColor2] = Color.Green;
-            theme[ThemeColor.PrimaryColor3] = Color.Yellow;
-            theme[ThemeColor.SecondaryColor1] = Color.DarkGreen;
-            theme[ThemeColor.SecondaryColor2] = Color.Purple;
-            theme[ThemeColor.SecondaryColor3] = Color.Pink;
-            theme[ThemeColor.SecondaryColor4] = Color.DarkGoldenrod;
-            theme[ThemeColor.SecondaryColor5] = Color.Orange;
+            theme.PrimaryColor1 = Color.Red;
+            theme.PrimaryColor2 = Color.Green;
+            theme.PrimaryColor3 = Color.Yellow;
+            theme.SecondaryColor1 = Color.DarkGreen;
+            theme.SecondaryColor2 = Color.Purple;
+            theme.SecondaryColor3 = Color.Pink;
+            theme.SecondaryColor4 = Color.DarkGoldenrod;
+            theme.SecondaryColor5 = Color.Orange;
         }
     }
 }

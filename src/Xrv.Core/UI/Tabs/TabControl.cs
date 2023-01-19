@@ -41,6 +41,9 @@ namespace Xrv.Core.UI.Tabs
         private Color activeItemTextColor;
 
         [BindService]
+        private XrvService xrvService = null;
+
+        [BindService]
         private AssetsService assetsService = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_tab_control_front_plate")]
@@ -140,6 +143,13 @@ namespace Xrv.Core.UI.Tabs
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether theme colors should be overriden.
+        /// When true, <see cref="ActiveItemTextColor"/> and <see cref="InactiveItemTextColor"/>
+        /// will be applied in this case.
+        /// </summary>
+        public bool OverrideThemeColors { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether content entity should be destroyed
@@ -377,11 +387,6 @@ namespace Xrv.Core.UI.Tabs
                 this.contentsContainer.AddChild(content);
             }
 
-            if (content.FindComponent<ApplyTheme>() == null)
-            {
-                content.AddComponent(new ApplyTheme());
-            }
-
             content.IsEnabled = true;
         }
 
@@ -417,9 +422,22 @@ namespace Xrv.Core.UI.Tabs
                 if (configurator != null)
                 {
                     bool isSelected = this.mappings.ContainsKey(child) ? this.mappings[child] == this.selectedItem : false;
-                    configurator.PrimaryColor = isSelected ? this.activeItemTextColor : this.inactiveItemTextColor;
+                    configurator.PrimaryColor = this.GetTextColor(isSelected);
                 }
             }
+        }
+
+        private Color GetTextColor(bool isSelected)
+        {
+            Color overridenColor = isSelected ? this.activeItemTextColor : this.inactiveItemTextColor;
+
+            var theme = this.xrvService.ThemesSystem?.CurrentTheme;
+            if (theme == null || this.OverrideThemeColors)
+            {
+                return overridenColor;
+            }
+
+            return isSelected ? theme.PrimaryColor3 : theme.SecondaryColor1;
         }
 
         private void PressableButton_ButtonReleased(object sender, EventArgs e)

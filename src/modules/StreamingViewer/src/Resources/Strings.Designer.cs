@@ -61,7 +61,7 @@ namespace Xrv.StreamingViewer.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Streaming Viewer.
+        ///   Looks up a localized string similar to Streaming.
         /// </summary>
         internal static string Menu {
             get {

@@ -60,7 +60,7 @@ Root:
           Origin:
             X: 0.5
             Y: 0.5
-          ScaleFactor: 0.00600000005
+          ScaleFactor: 0.00800000038
           Size:
             X: 0.230000019
             Y: 0.170000017
@@ -81,6 +81,10 @@ Root:
           DictionaryKey: Settings.General.Voice.Title
           DictionaryName: Xrv.Core.Resources.Strings
           IsEnabled: true
+        - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+          Id: 206a242f-e9e4-447f-ad8f-9db697db8574
+          IsEnabled: true
+          TextStyleKey: Xrv.Primary1.Size3
       Children: []
       Id: bfbf48dc-4f61-46e8-bead-934cff897621
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -179,6 +183,7 @@ Root:
             R: 255
           TargetState: Off
           Text: Voice Off
+          TextScale: 0.00600000005
         - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
           Id: 0ba4dc40-5b39-4a7b-8594-8fb7ed3311ff
           AllowBackPlateNullMaterial: false
@@ -195,7 +200,8 @@ Root:
             G: 255
             R: 255
           TargetState: On
-          Text: Voice On
+          Text: Voice Off
+          TextScale: 0.00600000005
         - !Xrv.Core.VoiceCommands.EnableOrDisableVoiceService,Xrv.Core
           Id: e52bd2c8-45e4-4129-af76-d66e4a14ddcd
           IsEnabled: true
@@ -211,6 +217,16 @@ Root:
           DictionaryName: Xrv.Core.Resources.Strings
           IsEnabled: true
           TargetState: On
+        - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+          Id: e89f5376-aa00-44ae-bae4-19f546b36cbf
+          IsEnabled: true
+          TargetState: Off
+          TextStyleKey: Xrv.Primary2.Size2
+        - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+          Id: 91ee5366-8728-4af4-b828-19194658fb12
+          IsEnabled: true
+          TargetState: On
+          TextStyleKey: Xrv.Primary2.Size2
       Children:
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
           Name: CompressableButtonVisuals
