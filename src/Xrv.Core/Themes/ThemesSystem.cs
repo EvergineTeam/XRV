@@ -159,7 +159,7 @@ namespace Xrv.Core.Themes
 
         private void ChangeColorAndNotify(Guid materialId, ThemeColor color)
         {
-            this.UpdateHoloGraphicAlbedo(materialId, this.currentTheme[color]);
+            this.UpdateHoloGraphicAlbedo(materialId, this.currentTheme.GetColor(color));
             this.NotifyColorUpdate(color);
         }
 
@@ -179,8 +179,8 @@ namespace Xrv.Core.Themes
             var texture = this.assetsService.Load<Texture>(CoreResourcesIDs.Textures.IridescentSpectrum);
             Span<byte> data = new byte[textureWidth * textureHeight * bytesPerPixel];
 
-            var start = this.currentTheme[ThemeColor.SecondaryColor4];
-            var end = this.currentTheme[ThemeColor.SecondaryColor5];
+            var start = this.currentTheme.SecondaryColor4;
+            var end = this.currentTheme.SecondaryColor5;
             var diff = new Vector4
             {
                 X = end.R - start.R,
@@ -225,7 +225,7 @@ namespace Xrv.Core.Themes
 
         private void UpdateAllProximityLights()
         {
-            var color = this.currentTheme[ThemeColor.SecondaryColor4];
+            var color = this.currentTheme.SecondaryColor4;
             var materials = new[]
             {
                 CoreResourcesIDs.Materials.PrimaryColor1,

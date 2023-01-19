@@ -81,9 +81,6 @@ Items:
         SmoothOrientationFactor: 0.0500000007
         SmoothPositionFactor: 0.00999999978
         UpdateOrder: 0.5
-      - !Xrv.Core.Themes.ApplyTheme,Xrv.Core
-        Id: 621b5880-5535-46f9-8741-f51d3f7abc5a
-        IsEnabled: true
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: back
@@ -239,9 +236,9 @@ Items:
                     Id: 399d1059-4253-4795-8d8e-622d7cb0f895
                     Color:
                       A: 255
-                      B: 255
-                      G: 255
-                      R: 255
+                      B: 220
+                      G: 220
+                      R: 220
                     Ellipsis: true
                     Font: 353e3432-ebdf-44f6-99cc-6b667efd14ba
                     HorizontalAlignment: Left
@@ -272,6 +269,10 @@ Items:
                     DictionaryKey: null
                     DictionaryName: null
                     IsEnabled: true
+                  - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+                    Id: 1000268b-b7aa-46af-9c5e-216c81297680
+                    IsEnabled: true
+                    TextStyleKey: Xrv.Primary1.Size1
                 Children: []
                 Id: 2a42ad98-d652-4429-b017-078f9099fda0
             Id: a3d6c2e1-f042-4ef4-a663-f49efe440120
@@ -345,6 +346,7 @@ Items:
                       R: 255
                     TargetState: Off
                     Text: Follow
+                    TextScale: 0.00499999989
                   - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                     Id: 1c0be061-559b-4544-ba71-14b5f57ca7b3
                     AllowBackPlateNullMaterial: true
@@ -362,6 +364,7 @@ Items:
                       R: 255
                     TargetState: On
                     Text: Pin
+                    TextScale: 0.00499999989
                   - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                     Id: bb7d6f73-c42f-4029-8f8d-595076c49330
                     IsEnabled: true
@@ -396,6 +399,16 @@ Items:
                     DictionaryName: Xrv.Core.Resources.Strings
                     IsEnabled: true
                     TargetState: On
+                  - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+                    Id: aa1b4bc9-aead-4768-8706-930599f373d8
+                    IsEnabled: true
+                    TargetState: Off
+                    TextStyleKey: Xrv.Primary2.Size3
+                  - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+                    Id: 46ddf7a0-db9d-42e3-b370-b1422ec2b619
+                    IsEnabled: true
+                    TargetState: On
+                    TextStyleKey: Xrv.Primary2.Size3
                 Children:
                   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                     Name: PressableButtonPlatedRoot
@@ -645,7 +658,7 @@ Items:
                                 Origin:
                                   X: 0.5
                                   Y: 0.5
-                                ScaleFactor: 0.00400000019
+                                ScaleFactor: 0.00499999989
                                 Size:
                                   X: 0.0320000015
                                   Y: 0.00800000038
@@ -837,6 +850,7 @@ Items:
                       G: 255
                       R: 255
                     Text: Close
+                    TextScale: 0.00499999989
                   - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                     Id: 0abffe51-50c8-469a-a4cd-f0174d13a810
                     IsEnabled: true
@@ -864,6 +878,10 @@ Items:
                     DictionaryKey: Window.Button.Close
                     DictionaryName: Xrv.Core.Resources.Strings
                     IsEnabled: true
+                  - !Xrv.Core.Themes.Texts.ButtonTextStyle,Xrv.Core
+                    Id: c1b4e7e7-e977-42bb-a5ca-9a384cba6ea6
+                    IsEnabled: true
+                    TextStyleKey: Xrv.Primary2.Size3
                 Children:
                   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                     Name: PressableButtonPlatedRoot
@@ -1113,7 +1131,7 @@ Items:
                                 Origin:
                                   X: 0.5
                                   Y: 0.5
-                                ScaleFactor: 0.00400000019
+                                ScaleFactor: 0.00499999989
                                 Size:
                                   X: 0.0320000015
                                   Y: 0.00800000038

@@ -191,15 +191,15 @@ namespace Xrv.Ruler
         private void OnPrimaryColor3Updated(Theme theme)
         {
             var holoGraphic = new HoloGraphic(this.idle);
-            holoGraphic.Albedo = theme[ThemeColor.PrimaryColor3];
+            holoGraphic.Albedo = theme.PrimaryColor3;
             holoGraphic = new HoloGraphic(this.grabbed);
-            holoGraphic.Albedo = theme[ThemeColor.PrimaryColor3];
+            holoGraphic.Albedo = theme.PrimaryColor3;
         }
 
         private void OnSecondaryControl2Updated(Theme theme)
         {
             var holoGraphic = new HoloGraphic(this.selected);
-            holoGraphic.Albedo = theme[ThemeColor.SecondaryColor2];
+            holoGraphic.Albedo = theme.SecondaryColor2;
         }
     }
 }

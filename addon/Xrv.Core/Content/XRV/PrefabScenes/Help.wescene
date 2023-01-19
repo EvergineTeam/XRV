@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 1331eb0b-a5a5-4f01-bf98-f79ab0a1603c
         Aperture: 1.0
-        AspectRatio: 0.653409064
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -168,7 +167,7 @@ Items:
         Id: c34a229e-adb4-478d-92ab-86ea828e3008
         AsignedTo: Default
         IsEnabled: true
-        Material: 20b4a38d-de01-4a71-bcd3-e342d9a9a8b7
+        Material: ec6f9a05-d147-4e1b-945e-7848e01a95d9
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: c1ea2232-6d07-490e-88c9-4d6121f09d6e
@@ -488,10 +487,11 @@ Items:
                         Origin:
                           X: 0.5
                           Y: 0.5
-                        ScaleFactor: 0.00600000005
+                        ScaleFactor: 0.00700000022
                         Size:
                           X: 0.230000019
                           Y: 0.00800000038
+                        Softness: 0.75
                         Text: From here you can access all the main options of the application.
                         VerticalAlignment: Top
                         Wrapping: true
@@ -503,6 +503,10 @@ Items:
                         IsEnabled: true
                         OrderBias: 0
                         RenderFlags: CastShadows
+                      - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+                        Id: 7485734f-1f56-4ff1-ab16-2c16c99225a7
+                        IsEnabled: true
+                        TextStyleKey: Xrv.Primary2.Size1
                     Children: []
                     Id: 68436516-ca0f-4c49-9794-e2ec7b56fbb1
                   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -596,10 +600,11 @@ Items:
                         Origin:
                           X: 0.5
                           Y: 0.5
-                        ScaleFactor: 0.00600000005
+                        ScaleFactor: 0.00700000022
                         Size:
                           X: 0.230000019
                           Y: 0.0250000358
+                        Softness: 0.75
                         Text: To show the Main Menu hold out your  palm facing you. You'll see the main bar with the section buttons next to your hand and it will stays attached to your hand as long as you hold the gesture. The Main Menu will disappear if your hand is not facing you or open.
                         VerticalAlignment: Top
                         Wrapping: true
@@ -611,6 +616,10 @@ Items:
                         IsEnabled: true
                         OrderBias: 0
                         RenderFlags: CastShadows
+                      - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+                        Id: c366d90c-e89c-4d00-af02-e6fe56bc40a7
+                        IsEnabled: true
+                        TextStyleKey: Xrv.Primary2.Size1
                     Children: []
                     Id: a4225f22-6528-4efd-aa78-bf808ad4847e
                   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -682,8 +691,8 @@ Items:
                           Z: 0.0
                         LocalPosition:
                           X: 0.014640322
-                          Y: -0.0456951782
-                          Z: 0.00399998808
+                          Y: -0.0431957655
+                          Z: 0.00399999553
                         LocalScale:
                           X: 1.0
                           Y: 1.0
@@ -704,10 +713,11 @@ Items:
                         Origin:
                           X: 0.5
                           Y: 0.5
-                        ScaleFactor: 0.00600000005
+                        ScaleFactor: 0.00700000022
                         Size:
                           X: 0.180000007
                           Y: 0.0299999993
+                        Softness: 0.75
                         Text: DETACH MENU /n/nDetach the main menu from your hand and turn it into a floating window that will follows you.
                         VerticalAlignment: Top
                         Wrapping: true
@@ -719,6 +729,10 @@ Items:
                         IsEnabled: true
                         OrderBias: 0
                         RenderFlags: CastShadows
+                      - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+                        Id: 49a8d745-7822-4946-8e2f-497949902293
+                        IsEnabled: true
+                        TextStyleKey: Xrv.Primary2.Size1
                     Children: []
                     Id: fd507f41-e1ed-43a1-95f0-a148cc9a59a3
                   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -812,10 +826,11 @@ Items:
                         Origin:
                           X: 0.5
                           Y: 0.5
-                        ScaleFactor: 0.00600000005
+                        ScaleFactor: 0.00700000022
                         Size:
                           X: 0.180000007
                           Y: 0.00999999978
+                        Softness: 0.75
                         Text: Main menu detached as a window
                         VerticalAlignment: Top
                         Wrapping: true
@@ -827,6 +842,10 @@ Items:
                         IsEnabled: true
                         OrderBias: 0
                         RenderFlags: CastShadows
+                      - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+                        Id: db2b58b0-2798-41d3-8393-96bc046bdd8e
+                        IsEnabled: true
+                        TextStyleKey: Xrv.Primary2.Size1
                     Children: []
                     Id: 8fb8c091-c12e-4f55-83ee-a752aec5fd76
                 Id: 0762fe44-d597-41ee-a51a-7f8f72f0b386
@@ -850,7 +869,7 @@ Items:
                       Z: 0.00400000019
                     LocalScale:
                       X: 1.0
-                      Y: 0.824030399
+                      Y: 0.824488401
                       Z: 1.0
                   - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
                     Id: d3dd5e94-2074-449e-a56c-63a2554386bf

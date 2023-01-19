@@ -7,6 +7,13 @@ namespace Xrv.Core
 {
     public static class CoreResourcesIDs
     {
+        public static class Fonts
+        {
+            public static Guid Montserrat_Regular = new Guid("1c6e2929-d555-4c02-af49-50b4ecb01ce3");
+
+            public static Guid Montserrat_SemiBold = new Guid("353e3432-ebdf-44f6-99cc-6b667efd14ba");
+        }
+
         public static class Materials
         {
             public static class Icons
@@ -40,6 +47,12 @@ namespace Xrv.Core
 
             /// <summary> Asset Path (XRV/Materials/HandTutorial.wemt) </summary>
             public static readonly Guid HandTutorial = new Guid("66f1bb1f-95e9-49a6-9a59-88371ccc8a16");
+        }
+
+        public sealed class Models
+        {
+            /// <summary> Asset Path (XRV/Models/Hand_Panel_anim.glb.wemd) </summary>
+            public static readonly Guid Hand_Panel_anim_glb = new Guid("769ab5a4-32b4-4b30-945a-3f121608ed88");
         }
 
         public static class Prefabs
@@ -76,12 +89,6 @@ namespace Xrv.Core
         public static class Textures
         {
             public static Guid IridescentSpectrum = new Guid("ba547d15-0927-4bfe-b7da-6625fdd7d9a5");
-        }
-
-        public sealed class Models
-        {
-            /// <summary> Asset Path (XRV/Models/Hand_Panel_anim.glb.wemd) </summary>
-            public static readonly Guid Hand_Panel_anim_glb = new Guid("769ab5a4-32b4-4b30-945a-3f121608ed88");
         }
     }
 }

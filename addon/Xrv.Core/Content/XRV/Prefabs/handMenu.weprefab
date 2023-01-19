@@ -62,9 +62,6 @@ Root:
         X: 0.0320000015
         Y: 0.064000003
         Z: 0.0320000015
-    - !Xrv.Core.Themes.ApplyTheme,Xrv.Core
-      Id: a29a9e93-6918-49f5-91bc-a581003eb2ad
-      IsEnabled: true
   Children:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: backPlate
@@ -220,6 +217,7 @@ Root:
                 R: 255
               TargetState: Off
               Text: Follow
+              TextScale: 0.00499999989
             - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
               Id: efa66ee8-c742-47f1-8643-584a5cea0c1e
               AllowBackPlateNullMaterial: false
@@ -237,6 +235,7 @@ Root:
                 R: 255
               TargetState: On
               Text: Pin
+              TextScale: 0.00499999989
             - !Xrv.Core.UI.Buttons.XrvPressableButtonLookAndFeel,Xrv.Core
               Id: aeb7e1df-e37f-4e10-9b5f-f12bb3917478
               IsEnabled: true
@@ -254,6 +253,16 @@ Root:
               DictionaryName: Xrv.Core.Resources.Strings
               IsEnabled: true
               TargetState: On
+            - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+              Id: 9d840614-fd29-45a3-853f-6da9f2177c07
+              IsEnabled: true
+              TargetState: Off
+              TextStyleKey: Xrv.Primary2.Size3
+            - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+              Id: eeeca02f-a81c-49fd-9296-ef68503bfa31
+              IsEnabled: true
+              TargetState: On
+              TextStyleKey: Xrv.Primary2.Size3
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -503,7 +512,7 @@ Root:
                           Origin:
                             X: 0.5
                             Y: 0.5
-                          ScaleFactor: 0.00400000019
+                          ScaleFactor: 0.00499999989
                           Size:
                             X: 0.0320000015
                             Y: 0.00800000038
@@ -704,6 +713,7 @@ Root:
                 R: 255
               TargetState: Off
               Text: Detach
+              TextScale: 0.00499999989
             - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
               Id: c9c777ba-8e9e-472d-b47d-58a27322b6f1
               AllowBackPlateNullMaterial: false
@@ -721,6 +731,7 @@ Root:
                 R: 255
               TargetState: On
               Text: Close
+              TextScale: 0.00499999989
             - !Xrv.Core.UI.Buttons.XrvPressableButtonLookAndFeel,Xrv.Core
               Id: 9fee5eea-8431-4dda-b42c-3fad2809d822
               IsEnabled: true
@@ -738,6 +749,16 @@ Root:
               DictionaryName: Xrv.Core.Resources.Strings
               IsEnabled: true
               TargetState: On
+            - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+              Id: c322a329-c4e2-4006-90c7-f89da20bf6fa
+              IsEnabled: true
+              TargetState: Off
+              TextStyleKey: Xrv.Primary2.Size3
+            - !Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Xrv.Core
+              Id: bf0a2545-f01a-4337-8413-9e827f6b46f6
+              IsEnabled: true
+              TargetState: On
+              TextStyleKey: Xrv.Primary2.Size3
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -987,7 +1008,7 @@ Root:
                           Origin:
                             X: 0.5
                             Y: 0.5
-                          ScaleFactor: 0.00400000019
+                          ScaleFactor: 0.00499999989
                           Size:
                             X: 0.0320000015
                             Y: 0.00800000038
@@ -1200,6 +1221,10 @@ Root:
               DictionaryKey: Menu.Title
               DictionaryName: Xrv.Core.Resources.Strings
               IsEnabled: true
+            - !Xrv.Core.Themes.Texts.Text3dStyle,Xrv.Core
+              Id: be6b326a-9680-4495-bea2-52dba0cbd233
+              IsEnabled: true
+              TextStyleKey: Xrv.Primary1.Size1
           Children: []
           Id: b539ca53-0907-4bfd-8135-ae87b5936cb0
       Id: fd064738-75e8-47d4-aaa7-18c2a5386320
