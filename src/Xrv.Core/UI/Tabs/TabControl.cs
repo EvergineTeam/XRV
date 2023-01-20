@@ -17,7 +17,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Xrv.Core.Extensions;
-using Xrv.Core.Themes;
 using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.UI.Tabs

@@ -11,6 +11,9 @@
 		<!-- Fix some rules not being checked by MSBuild 
 		https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/1721 -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<!-- Other rules like IDE0005 neither evaluated
+		https://github.com/dotnet/roslyn/issues/41640#issuecomment-985780130 -->
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>		
 	</PropertyGroup>
 	
 	<ItemGroup>
