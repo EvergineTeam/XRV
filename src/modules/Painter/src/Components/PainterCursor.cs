@@ -20,6 +20,8 @@ namespace Xrv.Painter.Components
     [AllowMultipleInstances]
     public class PainterCursor : Behavior
     {
+        internal const int RemoveCursorScaleFactor = 2;
+
         [BindComponent]
         private PainterManager manager = null;
 
@@ -177,10 +179,12 @@ namespace Xrv.Painter.Components
             }
         }
 
-        private void Manager_ModeChanged(object sender, PainterModes e)
+        private void Manager_ModeChanged(object sender, PainterModes mode)
         {
-            this.Pointer.IsEnabled = e != PainterModes.Hand;
-            this.pointerMaterial.Albedo = e == PainterModes.Painter ? Color.White : Color.Red;
+            this.Pointer.IsEnabled = mode != PainterModes.Hand;
+            this.pointerMaterial.Albedo = mode == PainterModes.Painter ? Color.White : Color.Red;
+            this.pointerTransform.LocalScale = mode == PainterModes.Eraser
+                ? Vector3.One * RemoveCursorScaleFactor : Vector3.One;
         }
 
         private void DoAction(Vector3 position)

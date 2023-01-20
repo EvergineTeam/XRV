@@ -73,6 +73,13 @@ namespace Xrv.Painter.Components
     /// </summary>
     public class PainterManager : Component
     {
+        // TODO: some refactoring required here. IMO this component
+        // should only be worried about painting panel itself, and not check
+        // things like cursors collisions, which should be moved, maybe, to separated
+        // cursors component. We have no time to do that kind of refactor right now,
+        // so we have done cheapest approach.
+        private const float CursorSphereDiameter = 0.01f;
+
         /// <summary>
         /// Assets service.
         /// </summary>
@@ -208,7 +215,8 @@ namespace Xrv.Painter.Components
         /// <param name="position">Cursor position.</param>
         public void DoErase(Vector3 position)
         {
-            var sphere = new BoundingSphere(position, 0.1f);
+            var collisionRadius = CursorSphereDiameter * PainterCursor.RemoveCursorScaleFactor;
+            var sphere = new BoundingSphere(position, collisionRadius);
             var collision = this.FindCollision(sphere);
             if (collision != null)
             {
@@ -464,13 +472,13 @@ namespace Xrv.Painter.Components
             {
                 Tag = LINETAG,
             }
-                .AddComponent(new Transform3D())
-                .AddComponent(mesh)
-                .AddComponent(new MaterialComponent()
-                {
-                    Material = this.assetsService.Load<Material>(ColorHelper.GetMaterialFromColor(color)),
-                })
-                .AddComponent(new MeshRenderer());
+            .AddComponent(new Transform3D())
+            .AddComponent(mesh)
+            .AddComponent(new MaterialComponent()
+            {
+                Material = this.assetsService.Load<Material>(ColorHelper.GetMaterialFromColor(color)),
+            })
+            .AddComponent(new MeshRenderer());
 
             return (entity, mesh);
         }
@@ -509,13 +517,13 @@ namespace Xrv.Painter.Components
                 }
             }
 
-            var eraseController = this.modeButtons?
+            var eraserController = this.modeButtons?
                 .Select(button => button.Owner.FindComponentInParents<VisuallyEnabledController>())
                 .Where(controller => controller != null)
                 .FirstOrDefault(controller => controller.Owner.Name == "Eraser");
-            if (eraseController != null)
+            if (eraserController != null)
             {
-                eraseController.IsVisuallyEnabled = hasAnyAction;
+                eraserController.IsVisuallyEnabled = hasAnyAction;
             }
         }
 
