@@ -10,6 +10,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
@@ -140,6 +141,7 @@ namespace Xrv.AudioNote
         private ToggleStateManager recordManager;
         private ToggleStateManager playManager;
         private HoloGraphic playingMaterial;
+        private AudioNoteModule module;
 
         /// <summary>
         /// Gets or sets data.
@@ -204,16 +206,10 @@ namespace Xrv.AudioNote
             {
                 if (this.windowState == AudioNoteWindowState.Recording)
                 {
-                    var stream = await this.StopRecordingServiceAsync();
-                    if (stream != null)
+                    ok = await this.StopRecordingAndSaveAsync();
+                    if (!ok)
                     {
-                        await this.SaveContentAsync(stream);
-                    }
-                    else
-                    {
-                        this.xrvService.WindowSystem.ShowAlertDialog("Audio note save error", "Cannot save audio.", "Ok");
-                        this.WindowState = AudioNoteWindowState.ReadyToPlay;
-                        return false;
+                        return ok;
                     }
                 }
 
@@ -224,12 +220,13 @@ namespace Xrv.AudioNote
                 {
                     this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot reproduce audio.", "Ok");
                     this.WindowState = AudioNoteWindowState.ReadyToPlay;
+                    ok = false;
                 }
             }
             catch (Exception ex)
             {
                 this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
-                return false;
+                ok = false;
             }
 
             return ok;
@@ -307,6 +304,8 @@ namespace Xrv.AudioNote
             this.recordingService.OnRecordingTime += this.RecordingService_RecordingTimeChanged;
             this.playingMaterial = new HoloGraphic(this.playingPlate.Material);
 
+            this.module = this.xrvService.FindModule<AudioNoteModule>();
+
             return true;
         }
 
@@ -322,6 +321,35 @@ namespace Xrv.AudioNote
             this.deleteButton.ButtonReleased -= this.DeleteButton_ButtonReleased;
             this.playButton.ButtonReleased -= this.PlayButton_ButtonReleased;
             this.recordButton.ButtonReleased -= this.RecordButton_ButtonReleased;
+        }
+
+        /// <inheritdoc/>
+        protected override async void OnDeactivated()
+        {
+            base.OnDeactivated();
+
+            if (this.recordingService.IsRecording)
+            {
+                this.xrvService.PubSub.Publish(new SaveAnchorPositions());
+                await this.StopRecordingAndSaveAsync();
+            }
+        }
+
+        private async Task<bool> StopRecordingAndSaveAsync(CancellationToken cancellation = default)
+        {
+            var stream = await this.StopRecordingServiceAsync();
+            if (stream != null)
+            {
+                await this.SaveContentAsync(stream, cancellation);
+            }
+            else
+            {
+                this.xrvService.WindowSystem.ShowAlertDialog("Audio note save error", "Cannot save audio.", "Ok");
+                this.WindowState = AudioNoteWindowState.ReadyToPlay;
+                return false;
+            }
+
+            return true;
         }
 
         private void RecordingService_RecordingTimeChanged(object sender, TimeSpan e)
@@ -451,15 +479,21 @@ namespace Xrv.AudioNote
             return null;
         }
 
-        private async Task<bool> StartPlayingServiceAsync()
+        private async Task<bool> StartPlayingServiceAsync(CancellationToken cancellation = default)
         {
             try
             {
-                // TODO read real file this.data.Path
-                var stream = new MemoryStream();
-
-                await this.playbackService.Load(stream);
-                this.playbackService.Play();
+                var path = this.data.Path;
+                var stream = await this.module.GetFileAsync(path, cancellation);
+                if (stream == null)
+                {
+                    this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"missing file: {path}", "Ok");
+                }
+                else
+                {
+                    await this.playbackService.Load(stream);
+                    this.playbackService.Play();
+                }
             }
             catch (Exception ex)
             {
@@ -470,19 +504,9 @@ namespace Xrv.AudioNote
             return true;
         }
 
-        private async Task<bool> SaveContentAsync(Stream stream)
+        private async Task<bool> SaveContentAsync(Stream stream, CancellationToken cancellation = default)
         {
-            // TODO do save content here
-            await Task.Delay(1);
-
-            if (!string.IsNullOrEmpty(this.Data.Path))
-            {
-                // TODO remove previous record
-            }
-
-            this.Data.Path = "XRV/Audio/sample.wav";
-
-            return true;
+            return await this.module.SaveAudioFileAsync(stream, this.data, cancellation);
         }
     }
 }

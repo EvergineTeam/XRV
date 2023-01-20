@@ -4,9 +4,14 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Xrv.AudioNote.Messages;
 using Xrv.AudioNote.Models;
@@ -14,9 +19,11 @@ using Xrv.AudioNote.Services;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
+using Xrv.Core.Storage;
 using Xrv.Core.UI.Dialogs;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
+using Path = System.IO.Path;
 
 namespace Xrv.AudioNote
 {
@@ -25,6 +32,10 @@ namespace Xrv.AudioNote
     /// </summary>
     public class AudioNoteModule : Module
     {
+        private const string FOLDERNAME = "audionotes";
+        private const string FILENAME = "audionotes.json";
+        private const string ANCHORTAG = "anchor tag";
+
         private AssetsService assetsService;
         private XrvService xrv;
         private Entity audioNoteHelp;
@@ -33,6 +44,8 @@ namespace Xrv.AudioNote
         private AudioNoteAnchor lastAnchorSelected;
         private Dictionary<string, Entity> anchorsDic = new Dictionary<string, Entity>();
         private AudioNoteDeleteMessage audionoteToRemove;
+        private string audioNoteFilePath;
+        private ApplicationDataFileAccess fileAccess;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioNoteModule"/> class.
@@ -67,11 +80,58 @@ namespace Xrv.AudioNote
         {
             this.lastAnchorSelected = null;
 
-            // TODO when anchor is serialized, remove from there also
             if (this.anchorsDic.TryGetValue(guid, out var anchor))
             {
                 this.scene.Managers.EntityManager.Remove(anchor);
             }
+        }
+
+        /// <summary>
+        /// Gets file from path.
+        /// </summary>
+        /// <param name="path">Path to file.</param>
+        /// <param name="cancellation">Cancellation token.</param>
+        /// <returns>Stream if exist, null otherwise.</returns>
+        public async Task<Stream> GetFileAsync(string path, CancellationToken cancellation = default)
+        {
+            if (!await this.fileAccess.ExistsFileAsync(path, cancellation))
+            {
+                return null;
+            }
+
+            return await this.fileAccess.GetFileAsync(path, cancellation);
+        }
+
+        /// <summary>
+        /// Save audio file and update audionotes.json.
+        /// </summary>
+        /// <param name="stream">Audio note stream.</param>
+        /// <param name="note">Audio note data.</param>
+        /// <param name="cancellation">Cancellation token.</param>
+        /// <returns>true if everything whent ok.</returns>
+        public async Task<bool> SaveAudioFileAsync(Stream stream, AudioNoteData note, CancellationToken cancellation = default)
+        {
+            try
+            {
+                var audionotePath = Path.Combine(FOLDERNAME, note.Guid);
+                audionotePath += ".wav";
+                note.Path = audionotePath;
+
+                if (await this.fileAccess.ExistsFileAsync(audionotePath, cancellation))
+                {
+                    await this.fileAccess.DeleteFileAsync(audionotePath, cancellation);
+                }
+
+                await this.fileAccess.WriteFileAsync(audionotePath, stream, cancellation);
+                await this.SerializeAudioNotesAsync();
+            }
+            catch (Exception ex)
+            {
+                this.xrv.WindowSystem.ShowAlertDialog("Audio note saving error", $"{ex.Message}", "Ok");
+                return false;
+            }
+
+            return true;
         }
 
         /// <inheritdoc/>
@@ -99,20 +159,67 @@ namespace Xrv.AudioNote
 
             this.xrv.PubSub.Subscribe<AudioAnchorSelectedMessage>(this.CreateAudioNoteWindow);
             this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
+            this.xrv.PubSub.Subscribe<SaveAnchorPositions>(this.SaveAnchorPositions);
+
+            this.fileAccess = new ApplicationDataFileAccess();
+
+            // Load previous audionotes
+            EvergineBackgroundTask.Run(async () =>
+            {
+                this.audioNoteFilePath = Path.Combine(FOLDERNAME, FILENAME);
+                var list = new List<AudioNoteData>();
+
+                if (!await this.fileAccess.ExistsDirectoryAsync(FOLDERNAME))
+                {
+                    await this.fileAccess.CreateDirectoryAsync(FOLDERNAME);
+                }
+
+                if (await this.fileAccess.ExistsFileAsync(this.audioNoteFilePath))
+                {
+                    list = await JsonSerializer.DeserializeAsync<List<AudioNoteData>>(await this.fileAccess.GetFileAsync(this.audioNoteFilePath));
+                }
+                else
+                {
+                    await this.SerializeAudioNotesAsync();
+                }
+
+                foreach (var note in list)
+                {
+                    var anchor = this.CreateAnchor();
+
+                    anchor.transform.Position = note.GetPosition();
+                    await EvergineForegroundTask.Run(() =>
+                    {
+                        scene.Managers.EntityManager.Add(anchor.entity);
+                    });
+
+                    anchor.note.AudioNote = note;
+                }
+            });
         }
 
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            var anchor = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Anchor).Instantiate();
+            var anchor = this.CreateAnchor();
 
-            this.SetFrontPosition(this.scene, anchor);
-            this.AddAudioAnchor(anchor);
+            this.SetFrontPosition(this.scene, anchor.transform);
+            this.AddAudioAnchor(anchor.entity);
 
             this.xrv.PubSub.Publish(new AudioAnchorSelectedMessage()
             {
-                Anchor = anchor.FindComponent<AudioNoteAnchor>(),
+                Anchor = anchor.note,
             });
+        }
+
+        private (Entity entity, Transform3D transform, AudioNoteAnchor note) CreateAnchor()
+        {
+            var entity = this.assetsService.Load<Prefab>(AudioNoteResourceIDs.Prefabs.Anchor).Instantiate();
+            entity.Tag = ANCHORTAG;
+            var transform = entity.FindComponent<Transform3D>();
+            var note = entity.FindComponent<AudioNoteAnchor>();
+
+            return (entity, transform, note);
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -131,12 +238,30 @@ namespace Xrv.AudioNote
             {
                 this.scene.Managers.EntityManager.Add(anchor);
                 this.anchorsDic.Add(c.AudioNote.Guid, anchor);
+
+                var transform = anchor.FindComponent<Transform3D>();
+                c.AudioNote.SetPosition(transform.Position);
             }
         }
 
-        private void SetFrontPosition(Scene scene, Entity entity)
+        private async Task SerializeAudioNotesAsync()
         {
-            var anchorTransform = entity.FindComponent<Transform3D>();
+            await EvergineBackgroundTask.Run(async () =>
+            {
+                using (var stream = new MemoryStream())
+                {
+                    var anchors = this.scene.Managers.EntityManager.FindAllByTag(ANCHORTAG)
+                    .Select(a => a.FindComponent<AudioNoteAnchor>().AudioNote)
+                    .ToList();
+                    await JsonSerializer.SerializeAsync(stream, anchors);
+                    stream.Position = 0;
+                    await this.fileAccess.WriteFileAsync(this.audioNoteFilePath, stream);
+                }
+            });
+        }
+
+        private void SetFrontPosition(Scene scene, Transform3D anchorTransform)
+        {
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
             anchorTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Far);
@@ -153,7 +278,7 @@ namespace Xrv.AudioNote
             return this.audioNoteHelp;
         }
 
-        private void CreateAudioNoteWindow(AudioAnchorSelectedMessage msg)
+        private async void CreateAudioNoteWindow(AudioAnchorSelectedMessage msg)
         {
             this.Window_Closed(this, EventArgs.Empty);
             this.window.Open();
@@ -162,31 +287,28 @@ namespace Xrv.AudioNote
             msg.Anchor.IsSelected = true;
             this.lastAnchorSelected = msg.Anchor;
 
-            _ = this.SetWindowInitialState(msg.Anchor.AudioNote);
-        }
-
-        private async Task<bool> SetWindowInitialState(AudioNoteData data)
-        {
-            var ok = true;
             var note = this.window.Owner.FindComponentInChildren<AudioNoteWindow>();
 
             if (note.WindowState == AudioNoteWindowState.Recording)
             {
-                ok = await note.StopRecordingAsync();
+                await note.StopRecordingAsync();
             }
 
-            note.Data = data;
+            note.Data = msg.Anchor.AudioNote;
             this.window.Open();
-            if (string.IsNullOrEmpty(data.Path))
+            if (string.IsNullOrEmpty(note.Data.Path))
             {
-                ok &= await note.StartRecordingAsync();
+                await note.StartRecordingAsync();
             }
             else
             {
-                ok &= await note.StartPlayingAsync();
+                await note.StartPlayingAsync();
             }
+        }
 
-            return ok;
+        private async void SaveAnchorPositions(SaveAnchorPositions msg)
+        {
+            await this.SerializeAudioNotesAsync();
         }
 
         private void ConfirmDelete(AudioNoteDeleteMessage msg)
@@ -198,7 +320,7 @@ namespace Xrv.AudioNote
             confirmDelete.Closed += this.Alert_Closed;
         }
 
-        private void Alert_Closed(object sender, System.EventArgs e)
+        private async void Alert_Closed(object sender, System.EventArgs e)
         {
             if (sender is Dialog dialog)
             {
@@ -221,6 +343,8 @@ namespace Xrv.AudioNote
                 _ = audioNote.Window.StopRecordingAsync(false);
                 this.RemoveAnchor(guid);
                 this.window.Close();
+
+                await this.SerializeAudioNotesAsync();
             }
         }
 
