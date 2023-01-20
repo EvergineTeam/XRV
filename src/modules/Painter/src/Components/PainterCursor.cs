@@ -33,6 +33,7 @@ namespace Xrv.Painter.Components
         private HoloGraphic pointerMaterial;
         private Transform3D pointerTransform;
         private XRHandedness hand;
+        private CursorMaterialAssignation cursorMaterialAssignation;
 
         /// <summary>
         /// Gets or sets update time.
@@ -93,10 +94,25 @@ namespace Xrv.Painter.Components
             }
 
             this.Pointer.IsEnabled = false;
-            this.pointerMaterial = new HoloGraphic(this.Pointer.FindComponentInChildren<MaterialComponent>().Material);
             this.pointerTransform = this.Pointer.FindComponent<Transform3D>();
+            this.cursorMaterialAssignation = this.Pointer.FindComponentInChildren<CursorMaterialAssignation>();
+            if (this.cursorMaterialAssignation != null)
+            {
+                this.cursorMaterialAssignation.MaterialUpdated += this.CursorMaterialAssignation_MaterialUpdated;
+            }
 
             return true;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDetach()
+        {
+            base.OnDetach();
+
+            if (this.cursorMaterialAssignation != null)
+            {
+                this.cursorMaterialAssignation.MaterialUpdated -= this.CursorMaterialAssignation_MaterialUpdated;
+            }
         }
 
         /// <inheritdoc/>
@@ -110,9 +126,6 @@ namespace Xrv.Painter.Components
 
             var mode = this.manager.Mode;
             this.Pointer.IsEnabled = mode == PainterModes.Hand ? false : true;
-            this.pointerMaterial.Albedo = mode == PainterModes.Painter ? Color.White : Color.Red;
-            this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
-
             this.manager.ModeChanged += this.Manager_ModeChanged;
             this.UpdateHandTracking(this.hand, true);
         }
@@ -139,11 +152,16 @@ namespace Xrv.Painter.Components
             {
                 this.current += gameTime;
                 var position = this.pointerTransform.Position;
+
+                if (this.pointerMaterial != null)
+                {
+                    this.pointerMaterial.Parameters_Alpha = this.cursor.Pinch ? 1f : this.MinAlpha;
+                }
+
                 if (this.cursor.Pinch && !this.cursor.PreviousPinch)
                 {
                     // Begin down
                     this.DoAction(position);
-                    this.pointerMaterial.Parameters_Alpha = 1f;
                     this.current = TimeSpan.Zero;
                 }
                 else if (this.cursor.Pinch && this.cursor.PreviousPinch)
@@ -166,8 +184,6 @@ namespace Xrv.Painter.Components
                     {
                         this.manager.EndPaint(this.hand);
                     }
-
-                    this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
                 }
             }
             else
@@ -229,6 +245,13 @@ namespace Xrv.Painter.Components
             {
                 this.pointerTransform.Position = transform.Position;
             }
+        }
+
+        private void CursorMaterialAssignation_MaterialUpdated(object sender, EventArgs e)
+        {
+            this.pointerMaterial = new HoloGraphic(this.Pointer.FindComponentInChildren<MaterialComponent>().Material);
+            this.pointerMaterial.Albedo = this.manager.Mode == PainterModes.Painter ? Color.White : Color.Red;
+            this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
         }
     }
 }

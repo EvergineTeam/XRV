@@ -73,13 +73,6 @@ namespace Xrv.Painter.Components
     /// </summary>
     public class PainterManager : Component
     {
-        // TODO: some refactoring required here. IMO this component
-        // should only be worried about painting panel itself, and not check
-        // things like cursors collisions, which should be moved, maybe, to separated
-        // cursors component. We have no time to do that kind of refactor right now,
-        // so we have done cheapest approach.
-        private const float CursorSphereDiameter = 0.01f;
-
         /// <summary>
         /// Assets service.
         /// </summary>
@@ -111,6 +104,13 @@ namespace Xrv.Painter.Components
         protected Entity commandsEntity;
 
         private const string LINETAG = "linetag";
+
+        // TODO: some refactoring required here. IMO this component
+        // should only be worried about painting panel itself, and not check
+        // things like cursors collisions, which should be moved, maybe, to separated
+        // cursors component. We have no time to do that kind of refactor right now,
+        // so we have done cheapest approach.
+        private const float CursorSphereDiameter = 0.01f;
 
         private readonly ObservableCollection<PainterAction> actions = new ObservableCollection<PainterAction>();
 
