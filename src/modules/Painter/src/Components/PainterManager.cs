@@ -220,13 +220,13 @@ namespace Xrv.Painter.Components
             var collision = this.FindCollision(sphere);
             if (collision != null)
             {
+                var lineData = collision.FindComponent<PencilMesh>().LinePoints;
+                this.Owner.EntityManager.Remove(collision);
                 this.actions.Add(new PainterAction()
                 {
                     Mode = this.Mode,
-                    Line = collision.FindComponent<PencilMesh>().LinePoints,
+                    Line = lineData,
                 });
-
-                this.Owner.EntityManager.Remove(collision);
             }
         }
 
@@ -390,7 +390,7 @@ namespace Xrv.Painter.Components
 
         private Entity FindCollision(BoundingSphere bounding)
         {
-            foreach (var line in this.Owner.EntityManager.FindAllByTag(LINETAG).ToList())
+            foreach (var line in this.GetAllLineEntities().ToList())
             {
                 var mesh = line.FindComponent<PencilMesh>();
                 if (mesh.CheckLineCollision(bounding))
@@ -495,25 +495,30 @@ namespace Xrv.Painter.Components
                     return;
                 }
 
-                this.actions.Clear();
-                var lines = this.Owner.EntityManager.FindAllByTag(LINETAG).ToList();
+                var lines = this.GetAllLineEntities().ToList();
                 foreach (var item in lines)
                 {
                     this.Owner.EntityManager.Remove(item);
                 }
+
+                this.actions.Clear();
             }
         }
+
+        private IEnumerable<Entity> GetAllLineEntities() =>
+             this.Owner.EntityManager.FindAllByTag(LINETAG);
 
         private void OnNumberOfActionsChanged()
         {
             bool hasAnyAction = this.actions.Any();
+            bool hasAnyLine = this.GetAllLineEntities().Any();
 
             if (this.commandsButtons != null)
             {
                 foreach (var button in this.commandsButtons)
                 {
                     var enabledController = button.Owner.FindComponentInParents<VisuallyEnabledController>();
-                    enabledController.IsVisuallyEnabled = hasAnyAction;
+                    enabledController.IsVisuallyEnabled = button.Owner.Parent?.Name == "Undo" ? hasAnyAction : hasAnyLine;
                 }
             }
 
@@ -523,7 +528,7 @@ namespace Xrv.Painter.Components
                 .FirstOrDefault(controller => controller.Owner.Name == "Eraser");
             if (eraserController != null)
             {
-                eraserController.IsVisuallyEnabled = hasAnyAction;
+                eraserController.IsVisuallyEnabled = hasAnyLine;
             }
         }
 

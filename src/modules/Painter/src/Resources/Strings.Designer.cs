@@ -88,7 +88,7 @@ namespace Xrv.Painter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Undo Line.
+        ///   Looks up a localized string similar to Undo.
         /// </summary>
         internal static string Paint_Action_Undo {
             get {

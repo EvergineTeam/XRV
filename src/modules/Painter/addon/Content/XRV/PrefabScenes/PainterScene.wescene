@@ -5475,7 +5475,7 @@ Items:
                 AllowBackPlateNullMaterial: true
                 AllowIconNullMaterial: false
                 CreatesNewBackPlateMaterialInstance: false
-                CreatesNewIconMaterialInstance: false
+                CreatesNewIconMaterialInstance: true
                 Font: null
                 Icon: b70dcd75-78ac-4abf-a2af-011c5ebd458e
                 IsEnabled: false
@@ -5718,7 +5718,7 @@ Items:
                             AsignedTo: Default
                             IsEnabled: true
                             Material: b70dcd75-78ac-4abf-a2af-011c5ebd458e
-                            UseCopy: true
+                            UseCopy: false
                           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
                             Id: 99a8ee38-07b1-4bdb-b7d7-50f0d5027b8b
                             Height: 1.0
@@ -6058,7 +6058,7 @@ Items:
                       Z: 1.0
                   - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                     Id: 28f8c792-dba3-465c-8a85-1989f18704b1
-                    IsEnabled: true
+                    IsEnabled: false
                     Margin: 0.0
                     Offset:
                       X: 0.0
@@ -6089,7 +6089,7 @@ Items:
                     Id: fbc54719-e589-4271-9f59-02f0bfe08b23
                     EndPosition: -0.100000001
                     EnforceFrontPush: true
-                    IsEnabled: true
+                    IsEnabled: false
                     PressPosition: 0.100000001
                     ReleasePosition: 0.300000012
                     RetractSpeed: 10.0
