@@ -1,6 +1,5 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
