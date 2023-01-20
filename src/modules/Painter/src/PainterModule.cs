@@ -11,6 +11,7 @@ using Xrv.Core.Menu;
 using Xrv.Core.Modules;
 using Xrv.Core.UI.Tabs;
 using Xrv.Core.UI.Windows;
+using Xrv.Painter.Components;
 
 namespace Xrv.Painter
 {
@@ -70,10 +71,34 @@ namespace Xrv.Painter
                 config.FrontPlateOffsets = Vector2.Zero;
                 config.DisplayLogo = false;
 
-                await EvergineBackgroundTask.Run(() =>
+                await EvergineBackgroundTask.Run(async () =>
                 {
                     var content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
+                    var painterCursors = content.FindComponents<PainterCursor>();
+                    PainterCursor rightCursor = null;
+                    PainterCursor leftCursor = null;
+                    foreach (var painterCursor in painterCursors)
+                    {
+                        if (painterCursor.Hand == Evergine.Framework.XR.XRHandedness.RightHand)
+                        {
+                            rightCursor = painterCursor;
+                        }
+                        else
+                        {
+                            leftCursor = painterCursor;
+                        }
+                    }
+
+                    rightCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
+                    leftCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
                     config.Content = content;
+                    await EvergineForegroundTask.Run(() =>
+                    {
+                        scene.Managers.EntityManager.Add(rightCursor.Pointer);
+                        scene.Managers.EntityManager.Add(leftCursor.Pointer);
+                        rightCursor.Pointer.IsEnabled = false;
+                        leftCursor.Pointer.IsEnabled = false;
+                    });
                 });
             });
 
