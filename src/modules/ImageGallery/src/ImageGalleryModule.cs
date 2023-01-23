@@ -91,7 +91,7 @@ namespace Xrv.ImageGallery
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
 
             // Gallery Window
-            this.window = this.xrv.WindowSystem.CreateWindow((config) =>
+            this.window = this.xrv.WindowsSystem.CreateWindow((config) =>
             {
                 config.Title = this.Name;
                 config.Size = size;

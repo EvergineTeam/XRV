@@ -170,7 +170,7 @@ namespace Xrv.Core.Networking.ControlRequest
             // Show confirmation dialog to user, that may select an
             // option asynchronously.
             this.currentControlRequesterId = senderId;
-            var dialog = this.windows.ShowConfirmDialog(
+            var dialog = this.windows.ShowConfirmationDialog(
                 this.localization.GetString(() => Resources.Strings.Sessions_Control_RequestDialogTitle),
                 this.localization.GetString(() => Resources.Strings.Sessions_Control_RequestDialogMessage),
                 this.localization.GetString(() => Resources.Strings.Global_No),
@@ -180,7 +180,7 @@ namespace Xrv.Core.Networking.ControlRequest
 
         private void ControlRequestConfirmation_Closed(object sender, EventArgs args)
         {
-            var confirmDialog = sender as ConfirmDialog;
+            var confirmDialog = sender as ConfirmationDialog;
             if (confirmDialog == null)
             {
                 return;
@@ -191,7 +191,7 @@ namespace Xrv.Core.Networking.ControlRequest
             using (this.logger?.BeginScope("Control request protocol"))
             using (this.logger?.BeginScope("Confirmation dialog"))
             {
-                if (confirmDialog.Result == ConfirmDialog.AcceptKey)
+                if (confirmDialog.Result == ConfirmationDialog.AcceptKey)
                 {
                     this.logger?.LogInformation($"Control request accepted, updating session data");
                     _ = this.UpdatePresenterAsync(this.currentControlRequesterId.Value)
@@ -204,7 +204,7 @@ namespace Xrv.Core.Networking.ControlRequest
                         });
                 }
 
-                bool acceptedRequest = confirmDialog.Result == ConfirmDialog.AcceptKey;
+                bool acceptedRequest = confirmDialog.Result == ConfirmationDialog.AcceptKey;
                 this.logger?.LogDebug($"Sending control request response: {acceptedRequest}");
 
                 var confirmation = new ControlRequestResultMessage

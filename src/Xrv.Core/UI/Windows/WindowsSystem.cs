@@ -22,7 +22,7 @@ namespace Xrv.Core.UI.Windows
         private readonly AssetsService assetsService;
 
         private AlertDialog alertDialog;
-        private ConfirmDialog confirmDialog;
+        private ConfirmationDialog confirmationDialog;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSystem"/> class.
@@ -112,9 +112,9 @@ namespace Xrv.Core.UI.Windows
         /// <param name="text">Dialog text message.</param>
         /// <param name="cancelText">Cancel button text.</param>
         /// <param name="acceptText">Accept button text.</param>
-        /// <returns><see cref="ConfirmDialog"/> component.</returns>
-        public ConfirmDialog ShowConfirmDialog(string title, string text, string cancelText, string acceptText) =>
-            this.ShowConfirmDialog(() => title, () => text, () => cancelText, () => acceptText);
+        /// <returns><see cref="ConfirmationDialog"/> component.</returns>
+        public ConfirmationDialog ShowConfirmationDialog(string title, string text, string cancelText, string acceptText) =>
+            this.ShowConfirmationDialog(() => title, () => text, () => cancelText, () => acceptText);
 
         /// <summary>
         /// Shows a confirmation dialog.
@@ -123,19 +123,19 @@ namespace Xrv.Core.UI.Windows
         /// <param name="text">Dialog text message.</param>
         /// <param name="cancelText">Cancel button text.</param>
         /// <param name="acceptText">Accept button text.</param>
-        /// <returns><see cref="ConfirmDialog"/> component.</returns>
-        public ConfirmDialog ShowConfirmDialog(Func<string> title, Func<string> text, Func<string> cancelText, Func<string> acceptText)
+        /// <returns><see cref="ConfirmationDialog"/> component.</returns>
+        public ConfirmationDialog ShowConfirmationDialog(Func<string> title, Func<string> text, Func<string> cancelText, Func<string> acceptText)
         {
             bool anyOpened = this.CloseAllDialogs();
 
-            var configurator = this.confirmDialog.Configurator as DialogConfigurator;
+            var configurator = this.confirmationDialog.Configurator as DialogConfigurator;
             configurator.LocalizedTitle = title;
             configurator.LocalizedText = text;
-            this.confirmDialog.CancelOption.Configuration.LocalizedText = cancelText;
-            this.confirmDialog.AcceptOption.Configuration.LocalizedText = acceptText;
-            this.OpenDialogWithDelayIfRequired(this.confirmDialog, anyOpened);
+            this.confirmationDialog.CancelOption.Configuration.LocalizedText = cancelText;
+            this.confirmationDialog.AcceptOption.Configuration.LocalizedText = acceptText;
+            this.OpenDialogWithDelayIfRequired(this.confirmationDialog, anyOpened);
 
-            return this.confirmDialog;
+            return this.confirmationDialog;
         }
 
         /// <summary>
@@ -192,15 +192,15 @@ namespace Xrv.Core.UI.Windows
 
         private void CreateConfirmDialogInstance()
         {
-            this.confirmDialog = new ConfirmDialog();
-            var owner = this.CreateDialogAux(this.confirmDialog, string.Empty, string.Empty);
+            this.confirmationDialog = new ConfirmationDialog();
+            var owner = this.CreateDialogAux(this.confirmationDialog, string.Empty, string.Empty);
             this.entityManager.Add(owner);
 
             var contentPrefab = this.GetBaseDialogPrefab();
             var configurator = owner.FindComponent<DialogConfigurator>();
             configurator.Content = contentPrefab.Instantiate();
 
-            var configuration = this.confirmDialog.AcceptOption.Configuration;
+            var configuration = this.confirmationDialog.AcceptOption.Configuration;
             configuration.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor3);
 
             owner.IsEnabled = false;
@@ -239,10 +239,10 @@ namespace Xrv.Core.UI.Windows
         {
             bool anyOpen = false;
 
-            if (this.confirmDialog.IsOpened)
+            if (this.confirmationDialog.IsOpened)
             {
                 anyOpen = true;
-                this.confirmDialog.Close();
+                this.confirmationDialog.Close();
             }
             else if (this.alertDialog.IsOpened)
             {

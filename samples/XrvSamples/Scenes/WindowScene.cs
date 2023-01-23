@@ -36,7 +36,7 @@ namespace XrvSamples.Scenes
             xrv.Initialize(this);
 
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
-            this.windowsSystem = xrv.WindowSystem;
+            this.windowsSystem = xrv.WindowsSystem;
             this.windowsSystem.Distances.SetDistance(this.customDistanceKey, 0.5f);
             this.windowsSystem.OverrideIconMaterial = this.assetsService.Load<Material>(EvergineContent.Materials.EvergineLogo);
             this.messageText = this.Managers.EntityManager.FindAllByTag("message").First().FindComponent<Text3DMesh>();
@@ -91,14 +91,14 @@ namespace XrvSamples.Scenes
 
         private void CreateAlert_ButtonReleased(object sender, EventArgs e)
         {
-            var alertDialog = this.windowsSystem.ShowAlertDialog("test!", "this is a message\nSecond line", "ok");
+            var alertDialog = this.windowsSystem.ShowAlertDialog("This is an alert dialog!", "This is first line message.\nYou could optionally add a second one", "OK");
             var transform = alertDialog.Owner.FindComponent<Transform3D>();
             alertDialog.Closed += this.Dialog_Closed;
         }
 
         private void CreateConfirm_ButtonReleased(object sender, EventArgs e)
         {
-            var confirmDialog = this.windowsSystem.ShowConfirmDialog("test!", "this is a message", "no", "yes");
+            var confirmDialog = this.windowsSystem.ShowConfirmationDialog("Confirmation dialog here!", "This is first line message.\nYou could optionally add a second one", "No", "Yes");
             confirmDialog.Closed += this.Dialog_Closed;
         }
 
@@ -109,9 +109,9 @@ namespace XrvSamples.Scenes
                 dialog.Closed -= this.Dialog_Closed;
                 this.dialogMessageText.Text = $"Dialog result: {dialog.Result ?? "<null>"}";
 
-                if (dialog is ConfirmDialog confirm && confirm.Result == confirm.AcceptOption.Key)
+                if (dialog is ConfirmationDialog confirm && confirm.Result == confirm.AcceptOption.Key)
                 {
-                    var confirmDialog = this.windowsSystem.ShowConfirmDialog("test 2!", "this is other message", "nope", "yup");
+                    var confirmDialog = this.windowsSystem.ShowConfirmationDialog("test 2!", "this is other message", "nope", "yup");
                     confirmDialog.Closed += this.Dialog_Closed;
                 }
             }

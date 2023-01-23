@@ -162,7 +162,7 @@ namespace Xrv.LoadModel
             var cancelHolder = repositoryWindowEntity.FindChildrenByTag("PART_cancelbutton", true, true).First();
             cancelHolder.AddChild(cancelButton);
 
-            this.window = this.xrv.WindowSystem.CreateWindow((config) =>
+            this.window = this.xrv.WindowsSystem.CreateWindow((config) =>
             {
                 config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
                 config.Content = repositoryWindowEntity;

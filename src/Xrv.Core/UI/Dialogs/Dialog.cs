@@ -122,7 +122,7 @@ namespace Xrv.Core.UI.Dialogs
         /// <inheritdoc/>
         protected override float GetOpenDistance()
         {
-            var distances = this.xrvService.WindowSystem.Distances;
+            var distances = this.xrvService.WindowsSystem.Distances;
             return distances.GetDistanceOrAlternative(this.DistanceKey, Distances.NearKey);
         }
 

@@ -139,7 +139,7 @@ namespace Xrv.AudioNote
             var anchorTransform = entity.FindComponent<Transform3D>();
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
-            anchorTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Far);
+            anchorTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowsSystem.Distances.Far);
         }
 
         private Entity HelpContent()
@@ -191,7 +191,7 @@ namespace Xrv.AudioNote
 
         private void ConfirmDelete(AudioNoteDeleteMessage msg)
         {
-            var confirmDelete = this.xrv.WindowSystem.ShowConfirmDialog("Delete this note?", "This action can't be undone.", "No", "Yes");
+            var confirmDelete = this.xrv.WindowsSystem.ShowConfirmationDialog("Delete this note?", "This action can't be undone.", "No", "Yes");
 
             confirmDelete.Open();
             this.audionoteToRemove = msg;
@@ -206,7 +206,7 @@ namespace Xrv.AudioNote
                 var audioNote = this.audionoteToRemove;
                 this.audionoteToRemove = null;
 
-                var isAcceted = dialog.Result == ConfirmDialog.AcceptKey;
+                var isAcceted = dialog.Result == ConfirmationDialog.AcceptKey;
                 if (!isAcceted)
                 {
                     return;
@@ -227,7 +227,7 @@ namespace Xrv.AudioNote
         private Window ShowAudionoteWindow(Guid prefabId)
         {
             var audioNoteSize = new Vector2(0.18f, 0.04f);
-            var window = this.xrv.WindowSystem.CreateWindow((config) =>
+            var window = this.xrv.WindowsSystem.CreateWindow((config) =>
             {
                 config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
                 config.Size = audioNoteSize;

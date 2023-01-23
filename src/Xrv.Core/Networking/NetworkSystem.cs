@@ -412,7 +412,7 @@ namespace Xrv.Core.Networking
         {
             this.orchestator.RegisterProtocolInstantiator(
                 ControlRequestProtocol.ProtocolName,
-                () => new ControlRequestProtocol(this, this.xrvService.WindowSystem, this.SessionDataUpdateManager, this.xrvService.Localization, this.logger));
+                () => new ControlRequestProtocol(this, this.xrvService.WindowsSystem, this.SessionDataUpdateManager, this.xrvService.Localization, this.logger));
         }
 
         private void EnableSessionDataSync(bool enabled)
@@ -447,7 +447,7 @@ namespace Xrv.Core.Networking
                 {
                     var requestProtocol = new ControlRequestProtocol(
                         this,
-                        this.xrvService.WindowSystem,
+                        this.xrvService.WindowsSystem,
                         this.sessionDataUpdater,
                         this.xrvService.Localization,
                         this.logger);
@@ -474,7 +474,7 @@ namespace Xrv.Core.Networking
             {
                 var requestProtocol = new ControlRequestProtocol(
                     this,
-                    this.xrvService.WindowSystem,
+                    this.xrvService.WindowsSystem,
                     this.sessionDataUpdater,
                     this.xrvService.Localization,
                     this.logger);

@@ -76,7 +76,7 @@ namespace Xrv.StreamingViewer
             // Initial size. Will be updated on stream load
             var size = new Vector2(0.30f, 0.30f);
 
-            this.window = this.xrv.WindowSystem.CreateWindow((config) =>
+            this.window = this.xrv.WindowsSystem.CreateWindow((config) =>
             {
                 config.LocalizedTitle = () => Resources.Strings.Window_Title;
                 config.Size = size;
@@ -99,7 +99,7 @@ namespace Xrv.StreamingViewer
             var entityTransform = entity.FindComponent<Transform3D>();
             var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
             var cameraWorldTransform = cameraTransform.WorldTransform;
-            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
+            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowsSystem.Distances.Medium);
         }
     }
 }

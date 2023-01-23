@@ -100,9 +100,9 @@ namespace Xrv.Core
         public CrossCutting Services { get; private set; }
 
         /// <summary>
-        /// Gets window system access.
+        /// Gets windows system access.
         /// </summary>
-        public WindowsSystem WindowSystem { get; private set; }
+        public WindowsSystem WindowsSystem { get; private set; }
 
         /// <summary>
         /// Gets access to themes system.
@@ -176,8 +176,8 @@ namespace Xrv.Core
 
                 // Register services and managers
                 this.logger?.LogDebug("Loading windows system");
-                this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
-                this.WindowSystem.Load();
+                this.WindowsSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
+                this.WindowsSystem.Load();
 
                 // Hand menu initialization
                 this.logger?.LogDebug("Loading hand menu manager");
