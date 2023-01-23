@@ -5,7 +5,9 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK.SDK.Features.UX.Components.Scrolls;
 using System.Collections.Generic;
+using System.Linq;
 using Xrv.Core;
 using Xrv.Core.Menu;
 using Xrv.Core.Modules;
@@ -23,12 +25,15 @@ namespace Xrv.StreamingViewer
         private AssetsService assetsService;
         private XrvService xrv;
         private Scene scene;
-        private Window window = null;
+        private ListView streamsListView;
+        private Window listWindow;
+
+        private Dictionary<string, Window> players = new Dictionary<string, Window>();
 
         /// <summary>
         /// Gets or sets the URL of the source of the streaming.
         /// </summary>
-        public string SourceURL { get; set; }
+        public IEnumerable<string> SourceURLs { get; set; }
 
         /// <summary>
         /// Gets or sets the width of the images listed in the gallery.
@@ -55,6 +60,11 @@ namespace Xrv.StreamingViewer
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
 
+        /// <summary>
+        /// Gets current Selected url from list.
+        /// </summary>
+        public string SelectedUrl => this.streamsListView.Selected.FirstOrDefault().ToString();
+
         /// <inheritdoc/>
         public override void Initialize(Scene scene)
         {
@@ -69,29 +79,70 @@ namespace Xrv.StreamingViewer
                 TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
             };
 
-            var streamingViewerPrefab = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingViewer_weprefab).Instantiate();
-            var streamingViewerComponent = streamingViewerPrefab.FindComponent<StreamingViewerComponent>();
-            streamingViewerComponent.SourceURL = this.SourceURL;
+            var streamsWindowEntity = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingListWindow_weprefab).Instantiate();
+            this.streamsListView = streamsWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_streams", true, true);
+            this.streamsListView.DataSource = new ListViewData(1);
+            this.streamsListView.Render = new ListViewRender()
+                                .AddColumn("Source", 1f, TextCellRenderer.Instance);
 
-            // Initial size. Will be updated on stream load
-            var size = new Vector2(0.30f, 0.30f);
+            foreach (var source in this.SourceURLs)
+            {
+                this.streamsListView.DataSource.Add(source);
+            }
 
-            this.window = this.xrv.WindowSystem.CreateWindow((config) =>
+            this.streamsListView.SelectedChanged += (o, e) =>
+            {
+                var player = this.GetOrCreatePlayer(this.SelectedUrl);
+                this.SetFrontPosition(this.scene, player.Owner);
+                player.Open();
+            };
+
+            var size = new Vector2(0.15f, 0.15f);
+
+            this.listWindow = this.xrv.WindowSystem.CreateWindow((config) =>
             {
                 config.LocalizedTitle = () => Resources.Strings.Window_Title;
                 config.Size = size;
                 config.FrontPlateSize = size;
                 config.FrontPlateOffsets = Vector2.Zero;
                 config.DisplayLogo = false;
-                config.Content = streamingViewerPrefab;
+                config.Content = streamsWindowEntity;
             });
         }
 
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.SetFrontPosition(this.scene, this.window.Owner);
-            this.window.Open();
+            this.SetFrontPosition(this.scene, this.listWindow.Owner);
+            this.listWindow.Open();
+        }
+
+        /// <summary>
+        /// Gets or Create stream player.
+        /// </summary>
+        /// <param name="streamUrl">stream url.</param>
+        /// <returns>Window asociated to that stream.</returns>
+        public Window GetOrCreatePlayer(string streamUrl)
+        {
+            if (!this.players.TryGetValue(streamUrl, out var w))
+            {
+                var streamingViewerPrefab = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingViewer_weprefab).Instantiate();
+                var streamingViewerComponent = streamingViewerPrefab.FindComponent<StreamingViewerComponent>();
+                streamingViewerComponent.SourceURL = streamUrl;
+
+                var size = new Vector2(0.30f, 0.30f);
+                w = this.xrv.WindowSystem.CreateWindow((config) =>
+                {
+                    config.LocalizedTitle = () => streamUrl;
+                    config.Size = size;
+                    config.FrontPlateSize = size;
+                    config.FrontPlateOffsets = Vector2.Zero;
+                    config.DisplayLogo = false;
+                    config.Content = streamingViewerPrefab;
+                });
+            }
+
+            return w;
         }
 
         private void SetFrontPosition(Scene scene, Entity entity)

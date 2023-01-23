@@ -3,6 +3,7 @@ using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Platform;
 using System;
+using System.Collections.Generic;
 using Xrv.AudioNote;
 using Xrv.Core;
 using Xrv.Core.Storage;
@@ -67,9 +68,11 @@ namespace XrvSamples
                 })
                 .AddModule(new StreamingViewerModule()
 	            {
-	                SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
-	                //SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
-	                //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
+	                SourceURLs = new List<string> { 
+                        "http://85.93.226.157:8082/mjpg/video.mjpg" , 
+                        "http://161.72.22.244/mjpg/video.mjpg" , 
+                        "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength" 
+                    } 
 	            })
 	            .AddModule(new PainterModule());
 	            
