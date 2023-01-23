@@ -4,6 +4,7 @@ using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
@@ -26,6 +27,9 @@ namespace Xrv.StreamingViewer.Components
     /// </summary>
     public class StreamingViewerComponent : Component
     {
+        [BindService]
+        private readonly AssetsService assetsService = null;
+
         [BindService]
         private readonly XrvService xrvService = null;
 
@@ -72,6 +76,9 @@ namespace Xrv.StreamingViewer.Components
             {
                 this.logger = this.xrvService.Services.Logging;
             }
+
+            // Create material copy so you can reuse component.
+            this.videoFrameMaterial.Material = this.assetsService.Load<Material>(this.videoFrameMaterial.Material.Id, true);
 
             return attached;
         }
