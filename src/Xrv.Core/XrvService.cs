@@ -72,7 +72,7 @@ namespace Xrv.Core
         /// <summary>
         /// Gets access to help system.
         /// </summary>
-        public HelpSystem Help { get; private set; }
+        public HelpSystem HelpSystem { get; private set; }
 
         /// <summary>
         /// Gets localization service.
@@ -188,8 +188,8 @@ namespace Xrv.Core
                 TabControl.Builder = new TabControlBuilder(this, this.assetsService);
 
                 this.logger?.LogDebug("Loading help system");
-                this.Help = new HelpSystem(this, scene.Managers.EntityManager);
-                this.Help.Load();
+                this.HelpSystem = new HelpSystem(this, scene.Managers.EntityManager);
+                this.HelpSystem.Load();
 
                 this.logger?.LogDebug("Loading settings system");
                 this.Settings = new SettingsSystem(this, this.assetsService, scene.Managers.EntityManager);
@@ -223,7 +223,7 @@ namespace Xrv.Core
                         if (module.Help != null)
                         {
                             this.logger?.LogDebug($"Adding help entry");
-                            this.Help.AddTabItem(module.Help);
+                            this.HelpSystem.AddTabItem(module.Help);
                         }
 
                         // Adding setting data
