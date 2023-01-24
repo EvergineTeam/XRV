@@ -1,11 +1,15 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Components.Fonts;
+using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Scrolls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xrv.Core;
@@ -29,6 +33,9 @@ namespace Xrv.StreamingViewer
         private Window listWindow;
 
         private Dictionary<string, Window> players = new Dictionary<string, Window>();
+
+        private float playerDistance = 0.8f;
+        private string playerDistanceTag = "playerDistanceTag";
 
         /// <summary>
         /// Gets or sets the URL of the source of the streaming.
@@ -79,25 +86,20 @@ namespace Xrv.StreamingViewer
                 TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
             };
 
+            this.xrv.WindowSystem.Distances.SetDistance(this.playerDistanceTag, this.playerDistance);
+
             var streamsWindowEntity = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingListWindow_weprefab).Instantiate();
             this.streamsListView = streamsWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_streams", true, true);
             this.streamsListView.DataSource = new ListViewData(1);
             this.streamsListView.Render = new ListViewRender()
-                                .AddColumn("Source", 1f, TextCellRenderer.Instance);
+                                .AddColumn("Feeds", 1f, TextCellRenderer.Instance);
 
             foreach (var source in this.SourceURLs)
             {
                 this.streamsListView.DataSource.Add(source);
             }
 
-            this.streamsListView.SelectedChanged += (o, e) =>
-            {
-                var player = this.GetOrCreatePlayer(this.SelectedUrl);
-                this.SetFrontPosition(this.scene, player.Owner);
-                player.Open();
-            };
-
-            var size = new Vector2(0.15f, 0.15f);
+            var size = new Vector2(0.15f, 0.18f);
 
             this.listWindow = this.xrv.WindowSystem.CreateWindow((config) =>
             {
@@ -108,12 +110,32 @@ namespace Xrv.StreamingViewer
                 config.DisplayLogo = false;
                 config.Content = streamsWindowEntity;
             });
+
+            // Buttons
+            var loadButton = this.CreateButton("Load", () =>
+            {
+                var player = this.GetOrCreatePlayer(this.SelectedUrl);
+                player.Open();
+            });
+
+            var loadHolder = streamsWindowEntity.FindChildrenByTag("PART_loadbutton", true, true).First();
+            loadHolder.AddChild(loadButton);
+
+            var cancelButton = this.CreateButton("Clear", () =>
+            {
+                foreach (var item in this.players.Values)
+                {
+                    item.Close();
+                }
+            });
+
+            var cancelHolder = streamsWindowEntity.FindChildrenByTag("PART_clearbutton", true, true).First();
+            cancelHolder.AddChild(cancelButton);
         }
 
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.SetFrontPosition(this.scene, this.listWindow.Owner);
             this.listWindow.Open();
         }
 
@@ -140,17 +162,27 @@ namespace Xrv.StreamingViewer
                     config.DisplayLogo = false;
                     config.Content = streamingViewerPrefab;
                 });
+
+                this.players[streamUrl] = w;
+                w.DistanceKey = this.playerDistanceTag;
             }
+
 
             return w;
         }
 
-        private void SetFrontPosition(Scene scene, Entity entity)
+        private Entity CreateButton(string buttonText, Action releasedAction)
         {
-            var entityTransform = entity.FindComponent<Transform3D>();
-            var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
-            var cameraWorldTransform = cameraTransform.WorldTransform;
-            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowSystem.Distances.Medium);
+            var buttonPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);
+            var button = buttonPrefab.Instantiate();
+            var buttonText3D = button.FindComponentInChildren<Text3DMesh>(true, "PART_Text", true, true);
+            buttonText3D.Text = buttonText;
+            var buttonPlate = button.FindComponentInChildren<MaterialComponent>(true, "PART_Plate", true, true);
+            buttonPlate.Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1);
+
+            button.FindComponentInChildren<PressableButton>().ButtonReleased += (s, e) => releasedAction.Invoke();
+
+            return button;
         }
     }
 }
