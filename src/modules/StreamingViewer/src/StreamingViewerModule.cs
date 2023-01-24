@@ -99,7 +99,7 @@ namespace Xrv.StreamingViewer
                 this.streamsListView.DataSource.Add(source);
             }
 
-            var size = new Vector2(0.15f, 0.18f);
+            var size = new Vector2(0.17f, 0.19f);
 
             this.listWindow = this.xrv.WindowSystem.CreateWindow((config) =>
             {
