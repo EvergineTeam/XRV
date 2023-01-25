@@ -97,8 +97,8 @@ namespace Xrv.AudioNote
             this.window = this.ShowAudionoteWindow(AudioNoteResourceIDs.Prefabs.Window);
             this.window.Closed += this.Window_Closed;
 
-            this.xrv.PubSub.Subscribe<AudioAnchorSelectedMessage>(this.CreateAudioNoteWindow);
-            this.xrv.PubSub.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
+            this.xrv.Services.Messaging.Subscribe<AudioAnchorSelectedMessage>(this.CreateAudioNoteWindow);
+            this.xrv.Services.Messaging.Subscribe<AudioNoteDeleteMessage>(this.ConfirmDelete);
         }
 
         /// <inheritdoc/>
@@ -109,7 +109,7 @@ namespace Xrv.AudioNote
             this.SetFrontPosition(this.scene, anchor);
             this.AddAudioAnchor(anchor);
 
-            this.xrv.PubSub.Publish(new AudioAnchorSelectedMessage()
+            this.xrv.Services.Messaging.Publish(new AudioAnchorSelectedMessage()
             {
                 Anchor = anchor.FindComponent<AudioNoteAnchor>(),
             });

@@ -11,11 +11,11 @@ using System.Linq;
 using Xrv.Core.Help;
 using Xrv.Core.Localization;
 using Xrv.Core.Menu;
-using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking;
 using Xrv.Core.Services;
 using Xrv.Core.Services.Logging;
+using Xrv.Core.Services.Messaging;
 using Xrv.Core.Services.QR;
 using Xrv.Core.Settings;
 using Xrv.Core.Themes;
@@ -46,11 +46,15 @@ namespace Xrv.Core
         public XrvService()
         {
             this.modules = new Dictionary<Type, Module>();
-            this.PubSub = new PubSub();
-            this.PubSub.Subscribe<ActivateModuleMessage>(message =>
+
+            var shared = new SharedServices();
+            this.Services = shared;
+            this.Services.Messaging = new PubSub();
+            this.Services.Messaging.Subscribe<ActivateModuleMessage>(message =>
             {
                 message.Module.Run(message.IsOn);
             });
+
             this.voiceSystem = new VoiceCommandsSystem();
             this.voiceSystem.RegisterService();
 
@@ -59,9 +63,6 @@ namespace Xrv.Core
             {
                 Application.Current.Container.RegisterInstance(this.Localization);
             }
-
-            var crossCutting = new CrossCutting();
-            this.Services = crossCutting;
         }
 
         /// <summary>
@@ -85,11 +86,6 @@ namespace Xrv.Core
         public NetworkSystem Networking { get; private set; }
 
         /// <summary>
-        /// Gets basic publisher-subscriber implementation.
-        /// </summary>
-        public PubSub PubSub { get; private set; }
-
-        /// <summary>
         /// Gets access to settings system.
         /// </summary>
         public SettingsSystem Settings { get; private set; }
@@ -97,7 +93,7 @@ namespace Xrv.Core
         /// <summary>
         /// Gets cross-cutting services.
         /// </summary>
-        public CrossCutting Services { get; private set; }
+        public SharedServices Services { get; private set; }
 
         /// <summary>
         /// Gets windows system access.

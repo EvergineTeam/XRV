@@ -5,7 +5,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using System;
 
-namespace Xrv.Core.Messaging
+namespace Xrv.Core.Services.Messaging
 {
     /// <summary>
     /// Publishes a message once button is pressed.
@@ -64,7 +64,8 @@ namespace Xrv.Core.Messaging
         /// Notifies toggle button state change.
         /// </summary>
         /// <param name="isOn">Toggle button state.</param>
-        protected void NotifyChange(bool isOn) => this.xrvService.PubSub.Publish(this.GetPublishData(isOn));
+        protected void NotifyChange(bool isOn) =>
+            this.xrvService.Services.Messaging.Publish(this.GetPublishData(isOn));
 
         private void StateChangedEvent(object sender, EventArgs e)
         {

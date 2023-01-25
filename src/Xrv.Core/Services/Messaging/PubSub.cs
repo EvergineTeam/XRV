@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Xrv.Core.Messaging
+namespace Xrv.Core.Services.Messaging
 {
     /// <summary>
     /// Simple publisher-subscriber implementation. It allows messaging

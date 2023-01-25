@@ -2,7 +2,7 @@
 
 using Evergine.Framework;
 using System;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Networking.Settings
 {
@@ -34,7 +34,7 @@ namespace Xrv.Core.Networking.Settings
             if (attached && !Application.Current.IsEditor)
             {
                 this.networkSystem = this.xrvService.Networking;
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.subscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
             }
 

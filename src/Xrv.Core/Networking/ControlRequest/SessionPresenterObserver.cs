@@ -4,8 +4,8 @@ using Evergine.Framework;
 using Evergine.Networking.Server;
 using Evergine.Networking.Server.Players;
 using System;
-using Xrv.Core.Messaging;
 using Xrv.Core.Networking.Properties.Session;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Networking.ControlRequest
 {
@@ -31,7 +31,7 @@ namespace Xrv.Core.Networking.ControlRequest
             if (attached)
             {
                 this.networking = this.xrvService.Networking;
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.subscription = this.pubSub.Subscribe<SessionDataSynchronizedMessage>(this.OnSessionDataChanged);
                 this.server.PlayerLeaving += this.Server_PlayerLeaving;
             }

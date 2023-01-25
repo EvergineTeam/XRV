@@ -90,7 +90,7 @@ namespace Xrv.Core.Settings
                 Order = int.MaxValue - 1,
             };
             this.xrvService.HandMenu.ButtonDescriptions.Add(this.handMenuButtonDescription);
-            this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
+            this.xrvService.Services.Messaging.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
         }
 
         private void OnHandMenuButtonPressed(HandMenuActionMessage message)

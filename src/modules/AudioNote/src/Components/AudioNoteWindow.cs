@@ -405,7 +405,7 @@ namespace Xrv.AudioNote
             this.StopPlaying();
             _ = this.StopRecordingAsync(false);
 
-            this.xrvService.PubSub.Publish(new AudioNoteDeleteMessage()
+            this.xrvService.Services.Messaging.Publish(new AudioNoteDeleteMessage()
             {
                 Data = this.Data,
                 Window = this,

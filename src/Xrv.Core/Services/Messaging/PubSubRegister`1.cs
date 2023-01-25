@@ -3,7 +3,7 @@
 using Evergine.Framework;
 using System;
 
-namespace Xrv.Core.Messaging
+namespace Xrv.Core.Services.Messaging
 {
     /// <summary>
     /// Registers to publisher-subscriber specific message type.
@@ -23,7 +23,7 @@ namespace Xrv.Core.Messaging
             bool attached = base.OnAttached();
             if (attached)
             {
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.subToken = this.pubSub.Subscribe<TMessage>(this.OnReceived);
             }
 

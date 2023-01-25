@@ -1,8 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Networking.Client;
-using Xrv.Core.Messaging;
 using Xrv.Core.Networking.Properties.Session;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Networking
 {

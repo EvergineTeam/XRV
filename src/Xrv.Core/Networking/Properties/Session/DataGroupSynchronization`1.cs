@@ -5,7 +5,7 @@ using Evergine.Networking;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Networking.Properties.Session
 {
@@ -60,7 +60,7 @@ namespace Xrv.Core.Networking.Properties.Session
             if (attached)
             {
                 this.logger = this.xrvService.Services.Logging;
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.sessionStatusToken = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
                 this.sessionSyncToken = this.pubSub.Subscribe<SessionDataSynchronizedMessage>(this.OnSessionDataSynchronized);
                 this.IsEnabled = false;
