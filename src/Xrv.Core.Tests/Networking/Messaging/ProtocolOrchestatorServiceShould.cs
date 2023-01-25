@@ -1,13 +1,11 @@
 ﻿using Evergine.Framework.Managers;
 using Evergine.Framework.Services;
-using Evergine.Networking.Client;
 using Evergine.Networking.Connection.Messages;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Xrv.Core.Messaging;
 using Xrv.Core.Networking;
 using Xrv.Core.Networking.Messaging;
 using Xunit;
