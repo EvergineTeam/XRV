@@ -28,7 +28,6 @@ namespace Xrv.StreamingViewer
     {
         private AssetsService assetsService;
         private XrvService xrv;
-        private Scene scene;
         private ListView streamsListView;
         private Window listWindow;
 
@@ -77,7 +76,6 @@ namespace Xrv.StreamingViewer
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
-            this.scene = scene;
 
             this.HandMenuButton = new MenuButtonDescription()
             {
