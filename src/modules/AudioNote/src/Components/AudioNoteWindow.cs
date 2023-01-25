@@ -180,13 +180,13 @@ namespace Xrv.AudioNote
                 ok = await this.StartRecordingServiceAsync();
                 if (!ok)
                 {
-                    this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot record audio.", "Ok");
+                    this.xrvService.WindowsSystem.ShowAlertDialog("Audio note error", "Cannot record audio.", "Ok");
                     this.WindowState = AudioNoteWindowState.ReadyToPlay;
                 }
             }
             catch (Exception ex)
             {
-                this.xrvService.WindowSystem.ShowAlertDialog("Audio note recording error", $"{ex.Message}", "Ok");
+                this.xrvService.WindowsSystem.ShowAlertDialog("Audio note recording error", $"{ex.Message}", "Ok");
                 return false;
             }
 
@@ -211,7 +211,7 @@ namespace Xrv.AudioNote
                     }
                     else
                     {
-                        this.xrvService.WindowSystem.ShowAlertDialog("Audio note save error", "Cannot save audio.", "Ok");
+                        this.xrvService.WindowsSystem.ShowAlertDialog("Audio note save error", "Cannot save audio.", "Ok");
                         this.WindowState = AudioNoteWindowState.ReadyToPlay;
                         return false;
                     }
@@ -222,13 +222,13 @@ namespace Xrv.AudioNote
                 ok = await this.StartPlayingServiceAsync();
                 if (!ok)
                 {
-                    this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Cannot reproduce audio.", "Ok");
+                    this.xrvService.WindowsSystem.ShowAlertDialog("Audio note error", "Cannot reproduce audio.", "Ok");
                     this.WindowState = AudioNoteWindowState.ReadyToPlay;
                 }
             }
             catch (Exception ex)
             {
-                this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
+                this.xrvService.WindowsSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
                 return false;
             }
 
@@ -268,7 +268,7 @@ namespace Xrv.AudioNote
 
             if (!ok)
             {
-                this.xrvService.WindowSystem.ShowAlertDialog("Audio note error", "Audio note not saved.", "Ok");
+                this.xrvService.WindowsSystem.ShowAlertDialog("Audio note error", "Audio note not saved.", "Ok");
             }
 
             return ok;
@@ -358,7 +358,7 @@ namespace Xrv.AudioNote
             {
                 if (!string.IsNullOrEmpty(this.data.Path))
                 {
-                    var confirmOverride = this.xrvService.WindowSystem.ShowConfirmDialog("Override this audio?", "This action can’t be undone.", "No", "Yes");
+                    var confirmOverride = this.xrvService.WindowsSystem.ShowConfirmationDialog("Override this audio?", "This action can’t be undone.", "No", "Yes");
                     confirmOverride.Closed += this.ConfirmOverride_Closed;
                     confirmOverride.Open();
                 }
@@ -387,7 +387,7 @@ namespace Xrv.AudioNote
             {
                 dialog.Closed -= this.ConfirmOverride_Closed;
 
-                var isAcceted = dialog.Result == ConfirmDialog.AcceptKey;
+                var isAcceted = dialog.Result == ConfirmationDialog.AcceptKey;
 
                 if (isAcceted)
                 {
@@ -405,7 +405,7 @@ namespace Xrv.AudioNote
             this.StopPlaying();
             _ = this.StopRecordingAsync(false);
 
-            this.xrvService.PubSub.Publish(new AudioNoteDeleteMessage()
+            this.xrvService.Services.Messaging.Publish(new AudioNoteDeleteMessage()
             {
                 Data = this.Data,
                 Window = this,
@@ -463,7 +463,7 @@ namespace Xrv.AudioNote
             }
             catch (Exception ex)
             {
-                this.xrvService.WindowSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
+                this.xrvService.WindowsSystem.ShowAlertDialog("Audio note playing error", $"{ex.Message}", "Ok");
                 return false;
             }
 

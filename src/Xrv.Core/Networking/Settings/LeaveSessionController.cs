@@ -43,7 +43,7 @@ namespace Xrv.Core.Networking.Settings
                 this.Owner.IsEnabled = Application.Current.IsEditor;
                 this.logger = this.xrvService.Services.Logging;
                 this.networking = this.xrvService.Networking;
-                this.windows = this.xrvService.WindowSystem;
+                this.windows = this.xrvService.WindowsSystem;
             }
 
             return attached;
@@ -85,10 +85,10 @@ namespace Xrv.Core.Networking.Settings
 
         private void EndSessionButton_ButtonReleased(object sender, EventArgs e)
         {
-            ConfirmDialog dialog;
+            ConfirmationDialog dialog;
             if (this.networking.Session.CurrentUserIsHost)
             {
-                dialog = this.windows.ShowConfirmDialog(
+                dialog = this.windows.ShowConfirmationDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_EndSessionConfirmationTitle),
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_EndSessionConfirmationMessage),
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Cancel),
@@ -96,7 +96,7 @@ namespace Xrv.Core.Networking.Settings
             }
             else
             {
-                dialog = this.windows.ShowConfirmDialog(
+                dialog = this.windows.ShowConfirmationDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_LeaveSessionConfirmationTitle),
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_End_LeaveSessionConfirmationMessage),
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Cancel),
@@ -108,14 +108,14 @@ namespace Xrv.Core.Networking.Settings
 
         private async void Dialog_Closed(object sender, EventArgs e)
         {
-            var dialog = sender as ConfirmDialog;
+            var dialog = sender as ConfirmationDialog;
             if (dialog == null)
             {
                 return;
             }
 
             dialog.Closed -= this.Dialog_Closed;
-            if (dialog.Result != ConfirmDialog.AcceptKey)
+            if (dialog.Result != ConfirmationDialog.AcceptKey)
             {
                 return;
             }

@@ -165,7 +165,7 @@ namespace Xrv.Core.UI.Windows
         /// <returns>Distance.</returns>
         protected virtual float GetOpenDistance()
         {
-            var distances = this.xrvService.WindowSystem.Distances;
+            var distances = this.xrvService.WindowsSystem.Distances;
             return distances.GetDistanceOrAlternative(this.DistanceKey, Distances.MediumKey);
         }
 

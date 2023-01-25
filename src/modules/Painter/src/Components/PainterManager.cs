@@ -204,7 +204,7 @@ namespace Xrv.Painter.Components
         /// </summary>
         public void ClearAll()
         {
-            var confirmDelete = this.xrvService.WindowSystem.ShowConfirmDialog("Delete all the drawing?", "This action can't be undone.", "No", "Yes");
+            var confirmDelete = this.xrvService.WindowsSystem.ShowConfirmationDialog("Delete all the drawing?", "This action can't be undone.", "No", "Yes");
             confirmDelete.Open();
             confirmDelete.Closed += this.ConfirmDeleteClosed;
         }
@@ -489,7 +489,7 @@ namespace Xrv.Painter.Components
             {
                 dialog.Closed -= this.ConfirmDeleteClosed;
 
-                var isAcceted = dialog.Result == ConfirmDialog.AcceptKey;
+                var isAcceted = dialog.Result == ConfirmationDialog.AcceptKey;
                 if (!isAcceted)
                 {
                     return;

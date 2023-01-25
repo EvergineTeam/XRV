@@ -11,7 +11,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Resources;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Localization
 {
@@ -172,7 +172,7 @@ namespace Xrv.Core.Localization
         {
             base.Start();
             this.LoadSearchAssemblies();
-            this.pubSub = this.xrvService.PubSub;
+            this.pubSub = this.xrvService.Services.Messaging;
         }
     }
 }

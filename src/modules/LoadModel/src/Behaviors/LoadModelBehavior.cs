@@ -328,7 +328,7 @@ namespace Xrv.LoadModel
                 return;
             }
 
-            var confirmDialog = this.xrvService.WindowSystem.ShowConfirmDialog(this.modelEntity.Name, "Delete this model? /n This action can't be undone.", "No", "Yes");
+            var confirmDialog = this.xrvService.WindowsSystem.ShowConfirmationDialog(this.modelEntity.Name, "Delete this model? /n This action can't be undone.", "No", "Yes");
             var configuration = confirmDialog.AcceptOption.Configuration;
             configuration.Plate = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;
@@ -342,7 +342,7 @@ namespace Xrv.LoadModel
             if (sender is Dialog dialog)
             {
                 dialog.Closed -= this.Dialog_Closed;
-                if (dialog is ConfirmDialog confirm && confirm.Result == confirm.AcceptOption.Key)
+                if (dialog is ConfirmationDialog confirm && confirm.Result == confirm.AcceptOption.Key)
                 {
                     this.Managers.EntityManager.Remove(this.Owner);
                 }

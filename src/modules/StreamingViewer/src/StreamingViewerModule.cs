@@ -86,7 +86,7 @@ namespace Xrv.StreamingViewer
                 TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
             };
 
-            this.xrv.WindowSystem.Distances.SetDistance(this.playerDistanceTag, this.playerDistance);
+            this.xrv.WindowsSystem.Distances.SetDistance(this.playerDistanceTag, this.playerDistance);
 
             var streamsWindowEntity = this.assetsService.Load<Prefab>(StreamingViewerResourceIDs.Prefabs.StreamingListWindow_weprefab).Instantiate();
             this.streamsListView = streamsWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_streams", true, true);
@@ -101,7 +101,7 @@ namespace Xrv.StreamingViewer
 
             var size = new Vector2(0.17f, 0.19f);
 
-            this.listWindow = this.xrv.WindowSystem.CreateWindow((config) =>
+            this.listWindow = this.xrv.WindowsSystem.CreateWindow((config) =>
             {
                 config.LocalizedTitle = () => Resources.Strings.Window_Title;
                 config.Size = size;
@@ -153,7 +153,7 @@ namespace Xrv.StreamingViewer
                 streamingViewerComponent.SourceURL = streamUrl;
 
                 var size = new Vector2(0.30f, 0.30f);
-                w = this.xrv.WindowSystem.CreateWindow((config) =>
+                w = this.xrv.WindowsSystem.CreateWindow((config) =>
                 {
                     config.LocalizedTitle = () => streamUrl;
                     config.Size = size;
@@ -166,7 +166,6 @@ namespace Xrv.StreamingViewer
                 this.players[streamUrl] = w;
                 w.DistanceKey = this.playerDistanceTag;
             }
-
 
             return w;
         }

@@ -8,7 +8,7 @@ namespace Xrv.Core.UI.Dialogs
     /// <summary>
     /// Confirmation dialog.
     /// </summary>
-    public class ConfirmDialog : Dialog
+    public class ConfirmationDialog : Dialog
     {
         /// <summary>
         /// Key for cancel button.

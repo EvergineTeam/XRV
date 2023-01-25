@@ -55,6 +55,6 @@ namespace Xrv.Core.Networking.Properties.Session
         }
 
         private void NotifySessionDataChange() =>
-            this.xrvService.PubSub.Publish(new SessionDataSynchronizedMessage(this.PropertyValue));
+            this.xrvService.Services.Messaging.Publish(new SessionDataSynchronizedMessage(this.PropertyValue));
     }
 }

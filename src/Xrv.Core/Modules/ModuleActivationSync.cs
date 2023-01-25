@@ -37,7 +37,7 @@ namespace Xrv.Core.Modules
                 var moduleButton = this.xrvService.HandMenu.GetModuleButtonEntity(this.Module);
                 this.activationOnPress = moduleButton?.FindComponent<ActivateModuleOnButtonPress>();
                 this.handMenuButton = moduleButton?.FindComponentInChildren<ToggleButton>();
-                this.subscription = this.xrvService.PubSub.Subscribe<ActivateModuleMessage>(this.OnModuleActivationChange);
+                this.subscription = this.xrvService.Services.Messaging.Subscribe<ActivateModuleMessage>(this.OnModuleActivationChange);
             }
 
             return attached;
@@ -47,7 +47,7 @@ namespace Xrv.Core.Modules
         protected override void OnDetach()
         {
             base.OnDetach();
-            this.xrvService.PubSub.Unsubscribe(this.subscription);
+            this.xrvService.Services.Messaging.Unsubscribe(this.subscription);
         }
 
         /// <inheritdoc/>

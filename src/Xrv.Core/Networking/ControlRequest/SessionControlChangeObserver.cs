@@ -2,7 +2,7 @@
 
 using Evergine.Framework;
 using System;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Networking.ControlRequest
 {
@@ -25,7 +25,7 @@ namespace Xrv.Core.Networking.ControlRequest
             bool attached = base.OnAttached();
             if (attached)
             {
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.presenterSubscription = this.pubSub.Subscribe<SessionPresenterUpdatedMessage>(this.OnPresenterChanged);
                 this.sessionStateSubscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStateChanged);
             }

@@ -1,7 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Common.Attributes;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Menu
 {

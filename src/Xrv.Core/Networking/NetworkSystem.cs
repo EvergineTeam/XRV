@@ -159,7 +159,7 @@ namespace Xrv.Core.Networking
                 var container = Application.Current.Container;
                 this.server = new MatchmakingServerService();
                 this.client = new MatchmakingClientService();
-                this.Session = new SessionInfo(this.client, this.xrvService.PubSub);
+                this.Session = new SessionInfo(this.client, this.xrvService.Services.Messaging);
 
                 container.RegisterInstance(this.server);
                 container.RegisterInstance(this.client);
@@ -186,7 +186,7 @@ namespace Xrv.Core.Networking
                 .AddComponent(this.sessionDataUpdater)
                 .AddComponent(new SessionPresenterObserver());
             this.entityManager.Add(this.worldCenterEntity);
-            this.xrvService.PubSub.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
+            this.xrvService.Services.Messaging.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
         }
 
         internal async Task<bool> StartSessionAsync(string serverName)
@@ -412,7 +412,7 @@ namespace Xrv.Core.Networking
         {
             this.orchestator.RegisterProtocolInstantiator(
                 ControlRequestProtocol.ProtocolName,
-                () => new ControlRequestProtocol(this, this.xrvService.WindowSystem, this.SessionDataUpdateManager, this.xrvService.Localization, this.logger));
+                () => new ControlRequestProtocol(this, this.xrvService.WindowsSystem, this.SessionDataUpdateManager, this.xrvService.Localization, this.logger));
         }
 
         private void EnableSessionDataSync(bool enabled)
@@ -447,7 +447,7 @@ namespace Xrv.Core.Networking
                 {
                     var requestProtocol = new ControlRequestProtocol(
                         this,
-                        this.xrvService.WindowSystem,
+                        this.xrvService.WindowsSystem,
                         this.sessionDataUpdater,
                         this.xrvService.Localization,
                         this.logger);
@@ -474,7 +474,7 @@ namespace Xrv.Core.Networking
             {
                 var requestProtocol = new ControlRequestProtocol(
                     this,
-                    this.xrvService.WindowSystem,
+                    this.xrvService.WindowsSystem,
                     this.sessionDataUpdater,
                     this.xrvService.Localization,
                     this.logger);

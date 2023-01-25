@@ -36,7 +36,7 @@ namespace Xrv.Core.UI.Tabs
         /// <returns>Tabbed window.</returns>
         public static Entity Create(XrvService xrvService)
         {
-            var owner = xrvService.WindowSystem.BuildWindow(new TabbedWindow(), (BaseWindowConfigurator)null);
+            var owner = xrvService.WindowsSystem.BuildWindow(new TabbedWindow(), (BaseWindowConfigurator)null);
             var configurator = owner.FindComponent<WindowConfigurator>();
             configurator.DisplayFrontPlate = false;
             configurator.Size = new Vector2(0.35f, 0.2f);

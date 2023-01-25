@@ -63,7 +63,7 @@ namespace Xrv.Painter
 
             // Painter
             var painterSize = new Vector2(0.214f, 0.173f);
-            this.painterWindow = this.xrv.WindowSystem.CreateWindow(async (config) =>
+            this.painterWindow = this.xrv.WindowsSystem.CreateWindow(async (config) =>
             {
                 config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
                 config.Size = painterSize;

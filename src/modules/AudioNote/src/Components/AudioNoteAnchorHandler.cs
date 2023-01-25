@@ -168,7 +168,7 @@ namespace Xrv.AudioNote
 
         private void Handler_OnClick(object sender, EventArgs e)
         {
-            this.xrvService.PubSub.Publish(new AudioAnchorSelectedMessage()
+            this.xrvService.Services.Messaging.Publish(new AudioAnchorSelectedMessage()
             {
                 Anchor = this.anchor,
             });

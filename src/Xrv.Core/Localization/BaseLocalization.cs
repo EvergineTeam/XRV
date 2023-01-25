@@ -3,7 +3,7 @@
 using Evergine.Common.Attributes;
 using Evergine.Framework;
 using System;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Localization
 {
@@ -87,7 +87,7 @@ namespace Xrv.Core.Localization
             bool attached = base.OnAttached();
             if (attached)
             {
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.subscription = this.pubSub.Subscribe<CurrentCultureChangeMessage>(this.OnCultureChange);
             }
 

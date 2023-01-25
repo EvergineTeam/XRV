@@ -11,11 +11,11 @@ using System.Linq;
 using Xrv.Core.Help;
 using Xrv.Core.Localization;
 using Xrv.Core.Menu;
-using Xrv.Core.Messaging;
 using Xrv.Core.Modules;
 using Xrv.Core.Networking;
 using Xrv.Core.Services;
 using Xrv.Core.Services.Logging;
+using Xrv.Core.Services.Messaging;
 using Xrv.Core.Services.QR;
 using Xrv.Core.Settings;
 using Xrv.Core.Themes;
@@ -46,11 +46,15 @@ namespace Xrv.Core
         public XrvService()
         {
             this.modules = new Dictionary<Type, Module>();
-            this.PubSub = new PubSub();
-            this.PubSub.Subscribe<ActivateModuleMessage>(message =>
+
+            var shared = new SharedServices();
+            this.Services = shared;
+            this.Services.Messaging = new PubSub();
+            this.Services.Messaging.Subscribe<ActivateModuleMessage>(message =>
             {
                 message.Module.Run(message.IsOn);
             });
+
             this.voiceSystem = new VoiceCommandsSystem();
             this.voiceSystem.RegisterService();
 
@@ -59,9 +63,6 @@ namespace Xrv.Core
             {
                 Application.Current.Container.RegisterInstance(this.Localization);
             }
-
-            var crossCutting = new CrossCutting();
-            this.Services = crossCutting;
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Xrv.Core
         /// <summary>
         /// Gets access to help system.
         /// </summary>
-        public HelpSystem Help { get; private set; }
+        public HelpSystem HelpSystem { get; private set; }
 
         /// <summary>
         /// Gets localization service.
@@ -85,11 +86,6 @@ namespace Xrv.Core
         public NetworkSystem Networking { get; private set; }
 
         /// <summary>
-        /// Gets basic publisher-subscriber implementation.
-        /// </summary>
-        public PubSub PubSub { get; private set; }
-
-        /// <summary>
         /// Gets access to settings system.
         /// </summary>
         public SettingsSystem Settings { get; private set; }
@@ -97,12 +93,12 @@ namespace Xrv.Core
         /// <summary>
         /// Gets cross-cutting services.
         /// </summary>
-        public CrossCutting Services { get; private set; }
+        public SharedServices Services { get; private set; }
 
         /// <summary>
-        /// Gets window system access.
+        /// Gets windows system access.
         /// </summary>
-        public WindowsSystem WindowSystem { get; private set; }
+        public WindowsSystem WindowsSystem { get; private set; }
 
         /// <summary>
         /// Gets access to themes system.
@@ -176,8 +172,8 @@ namespace Xrv.Core
 
                 // Register services and managers
                 this.logger?.LogDebug("Loading windows system");
-                this.WindowSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
-                this.WindowSystem.Load();
+                this.WindowsSystem = new WindowsSystem(scene.Managers.EntityManager, this.assetsService);
+                this.WindowsSystem.Load();
 
                 // Hand menu initialization
                 this.logger?.LogDebug("Loading hand menu manager");
@@ -188,8 +184,8 @@ namespace Xrv.Core
                 TabControl.Builder = new TabControlBuilder(this, this.assetsService);
 
                 this.logger?.LogDebug("Loading help system");
-                this.Help = new HelpSystem(this, scene.Managers.EntityManager);
-                this.Help.Load();
+                this.HelpSystem = new HelpSystem(this, scene.Managers.EntityManager);
+                this.HelpSystem.Load();
 
                 this.logger?.LogDebug("Loading settings system");
                 this.Settings = new SettingsSystem(this, this.assetsService, scene.Managers.EntityManager);
@@ -223,7 +219,7 @@ namespace Xrv.Core
                         if (module.Help != null)
                         {
                             this.logger?.LogDebug($"Adding help entry");
-                            this.Help.AddTabItem(module.Help);
+                            this.HelpSystem.AddTabItem(module.Help);
                         }
 
                         // Adding setting data

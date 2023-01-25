@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 
 namespace Xrv.Core.Networking.Properties.KeyRequest
 {
@@ -65,7 +65,7 @@ namespace Xrv.Core.Networking.Properties.KeyRequest
             {
                 this.networking = this.xrvService.Networking;
                 this.logger = this.xrvService.Services.Logging;
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.subscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
             }
 

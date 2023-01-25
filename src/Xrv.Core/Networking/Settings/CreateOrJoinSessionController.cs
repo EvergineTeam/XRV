@@ -101,7 +101,7 @@ namespace Xrv.Core.Networking.Settings
             catch (Exception ex)
             {
                 Trace.TraceError(ex.Message);
-                this.xrvService.WindowSystem.ShowAlertDialog(
+                this.xrvService.WindowsSystem.ShowAlertDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Create_Error),
                     ex.Message,
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
@@ -125,7 +125,7 @@ namespace Xrv.Core.Networking.Settings
             catch (Exception ex)
             {
                 Trace.TraceError(ex.Message);
-                this.xrvService.WindowSystem.ShowAlertDialog(
+                this.xrvService.WindowsSystem.ShowAlertDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_Error),
                     ex.Message,
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
@@ -134,7 +134,7 @@ namespace Xrv.Core.Networking.Settings
             if (!succeeded)
             {
                 Trace.TraceError("Could not join session");
-                this.xrvService.WindowSystem.ShowAlertDialog(
+                this.xrvService.WindowsSystem.ShowAlertDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_Error),
                     string.Empty,
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));

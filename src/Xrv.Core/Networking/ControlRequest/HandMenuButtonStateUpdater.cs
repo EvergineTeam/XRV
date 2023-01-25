@@ -2,7 +2,7 @@
 
 using Evergine.Framework;
 using System;
-using Xrv.Core.Messaging;
+using Xrv.Core.Services.Messaging;
 using Xrv.Core.UI.Buttons;
 
 namespace Xrv.Core.Networking.ControlRequest
@@ -25,7 +25,7 @@ namespace Xrv.Core.Networking.ControlRequest
             if (attached)
             {
                 this.networking = this.xrvService.Networking;
-                this.pubSub = this.xrvService.PubSub;
+                this.pubSub = this.xrvService.Services.Messaging;
                 this.subscription = this.pubSub.Subscribe<SessionPresenterUpdatedMessage>(this.OnPresenterUpdated);
             }
 
