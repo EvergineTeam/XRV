@@ -14,6 +14,7 @@ using Xrv.LoadModel.Structs;
 using Xrv.Painter;
 using Xrv.Ruler;
 using Xrv.StreamingViewer;
+using Xrv.StreamingViewer.Structs;
 using Random = Evergine.Framework.Services.Random;
 
 namespace XrvSamples
@@ -40,8 +41,13 @@ namespace XrvSamples
             var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://waveengineagentdiag159.file.core.windows.net/models?st=2022-10-26T11%3A46%3A02Z&se=2028-10-27T18%3A46%3A00Z&sp=rl&sv=2018-03-28&sr=s&sig=dOR9IQtYCPMYfoP7TouKuh9UXjPQUMABAFLYkSbaPR0%3D"));
             loadModelFileAccess.Cache = new DiskCache("models");
 
-            var imageGalleryFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvgallerystorage.file.core.windows.net/galleryimages/?sv=2021-06-08&ss=f&srt=sco&sp=rwdlc&se=2024-11-03T21:21:33Z&st=2020-11-03T13:21:33Z&spr=https&sig=Xh73u%2FIVcw00vCm%2BN3z5EbyaxaIuISfCUUk0mdCiDnI%3D"));
+            var imageGalleryFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvdevelopment.file.core.windows.net/tests?sv=2021-06-08&ss=f&srt=sco&sp=rl&se=2027-01-26T21:57:31Z&st=2023-01-25T13:57:31Z&spr=https&sig=B7Ds43k2m2fLC3pyRg2A1auTxZj8y1SALQh4iLVz3lk%3D"));
             imageGalleryFileAccess.Cache = new DiskCache("images");
+            imageGalleryFileAccess.BaseDirectory = "images";
+
+            var streamFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvdevelopment.file.core.windows.net/tests?sv=2021-06-08&ss=f&srt=sco&sp=rl&se=2027-01-26T21:57:31Z&st=2023-01-25T13:57:31Z&spr=https&sig=B7Ds43k2m2fLC3pyRg2A1auTxZj8y1SALQh4iLVz3lk%3D"));
+            streamFileAccess.Cache = new DiskCache("streams");
+            streamFileAccess.BaseDirectory = "streams";
 
             // XRV service
             var xrv = new XrvService()
@@ -67,14 +73,17 @@ namespace XrvSamples
                     FileAccess = imageGalleryFileAccess,
                 })
                 .AddModule(new StreamingViewerModule()
-	            {
-	                SourceURLs = new List<string> { 
-                        "http://85.93.226.157:8082/mjpg/video.mjpg" , 
-                        "http://161.72.22.244/mjpg/video.mjpg" , 
-                        "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength" 
-                    } 
-	            })
-	            .AddModule(new PainterModule());
+                {
+                    Streams = new Streams[]
+                                    {
+                                        new Streams()
+                                        {
+                                            Name = "Feed Samples",
+                                            FileAccess = streamFileAccess,
+                                        }
+                                    },
+                })
+                .AddModule(new PainterModule());
 	            
 
             this.Container.RegisterInstance(xrv);

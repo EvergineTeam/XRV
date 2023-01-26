@@ -42,8 +42,8 @@ namespace Xrv.StreamingViewer
             /// <summary> Asset Path (XRV/Prefabs/StreamingViewerHelp.weprefab.weprf). </summary>
             public static readonly Guid StreamingViewerHelp_weprefab = new Guid("e52f23d4-b606-40b1-963f-e851afcfcf20");
 
-            /// <summary> Asset Path (XRV/Prefabs/StreamListWindow.weprefab.weprf). </summary>
-            public static readonly Guid StreamingListWindow_weprefab = new Guid("9590fd11-aca6-47b6-9027-5610fa9b0403");
+            /// <summary> Asset Path (XRV/Prefabs/StreamsWindow.weprefab.weprf). </summary>
+            public static readonly Guid StreamsWindow_weprefab = new Guid("b6a981b9-d57d-417e-afae-b3a904db470b");
         }
     }
 }
