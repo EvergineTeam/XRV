@@ -78,6 +78,10 @@ namespace Xrv.StreamingViewer
         /// Gets current Selected url from list.
         /// </summary>
         public string SelectedUrl => this.feedListView.Selected.FirstOrDefault().ToString();
+
+        /// <summary>
+        /// Gets current Selected stream from list.
+        /// </summary>
         public string SelectedStream => this.streamListView.Selected.FirstOrDefault().ToString();
 
         /// <inheritdoc/>
@@ -243,6 +247,5 @@ namespace Xrv.StreamingViewer
                 this.feedlsLoading.IsEnabled = false;
             }
         }
-
     }
 }
