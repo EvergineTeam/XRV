@@ -1,7 +1,5 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Xrv.Core.Storage;
-
 namespace Xrv.StreamingViewer.Structs
 {
     /// <summary>
