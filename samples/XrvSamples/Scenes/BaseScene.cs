@@ -1,6 +1,6 @@
 ﻿using Evergine.MRTK.Scenes;
 using System;
-using Xrv.Core;
+using Evergine.Xrv.Core;
 
 namespace XrvSamples.Scenes
 {

@@ -4,8 +4,8 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Xrv.Core;
-using Xrv.Core.Menu;
+using Evergine.Xrv.Core;
+using Evergine.Xrv.Core.Menu;
 
 namespace XrvSamples.Scenes
 {

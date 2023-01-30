@@ -6,9 +6,9 @@ using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Linq;
-using Xrv.Core;
-using Xrv.Core.UI.Tabs;
-using Xrv.Core.UI.Windows;
+using Evergine.Xrv.Core;
+using Evergine.Xrv.Core.UI.Tabs;
+using Evergine.Xrv.Core.UI.Windows;
 
 namespace XrvSamples.Scenes
 {

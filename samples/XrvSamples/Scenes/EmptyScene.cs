@@ -1,7 +1,7 @@
 using Evergine.Framework;
 using Evergine.Platform;
-using Xrv.Core;
-using Xrv.Core.Networking;
+using Evergine.Xrv.Core;
+using Evergine.Xrv.Core.Networking;
 
 namespace XrvSamples.Scenes
 {

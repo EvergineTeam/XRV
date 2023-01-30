@@ -1,7 +1,7 @@
 ﻿using Evergine.Common.Graphics;
 using Evergine.Framework;
-using Xrv.Core;
-using Xrv.Core.Themes;
+using Evergine.Xrv.Core;
+using Evergine.Xrv.Core.Themes;
 
 namespace XrvSamples.Scenes
 {

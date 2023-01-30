@@ -7,7 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Xrv.Core.Storage;
+using Evergine.Xrv.Core.Storage;
+using FileAccess = Evergine.Xrv.Core.Storage.FileAccess;
 
 namespace XrvSamples.Scenes
 {
@@ -38,7 +39,7 @@ namespace XrvSamples.Scenes
              */
             this.azureFileShareConfig = new FileAccessConfiguration();
             this.azureFileShareConfig.ProgressText = entityManager.FindAllByTag("azureFileShare").First().FindComponentInChildren<Text3DMesh>();
-            Xrv.Core.Storage.FileAccess fileAccess = default;
+            FileAccess fileAccess = default;
 
             // Uncomment to check one of the auth modes
             //fileAccess = AzureFileShareFileAccess.CreateFromConnectionString("<REPLACE BY CONNECTION STRING>", "<REPLACE BY SHARE NAME>");
@@ -183,7 +184,7 @@ namespace XrvSamples.Scenes
         {
             public bool InProgress { get; set; }
 
-            public Xrv.Core.Storage.FileAccess FileAccess { get; set; }
+            public FileAccess FileAccess { get; set; }
 
             public Text3DMesh ProgressText { get; set; }
         }

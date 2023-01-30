@@ -5,7 +5,7 @@ using Evergine.Framework.Services;
 using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.UX.Components.Scrolls;
 using System.Linq;
-using Xrv.Core;
+using Evergine.Xrv.Core;
 
 namespace XrvSamples.Scenes
 {

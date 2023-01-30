@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
+    <ProjectReference Include="..\..\..\core\Evergine.Xrv.Core\Evergine.Xrv.Core.csproj" />
+    <PackageReference Include="Evergine.Common" Version="2023.1.13.1-nightly" />
+    <PackageReference Include="Evergine.Components" Version="2023.1.13.1-nightly" />
+    <PackageReference Include="Evergine.Framework" Version="2023.1.13.1-nightly" />
+    <PackageReference Include="Evergine.Mathematics" Version="2023.1.13.1-nightly" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

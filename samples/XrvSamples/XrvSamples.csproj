@@ -17,13 +17,13 @@
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\modules\LoadModel\src\Xrv.LoadModel.csproj" />
-    <ProjectReference Include="..\..\src\modules\AudioNote\src\Xrv.AudioNote.csproj" />
-    <ProjectReference Include="..\..\src\modules\Painter\src\Xrv.Painter.csproj" />
-    <ProjectReference Include="..\..\src\modules\Ruler\src\Xrv.Ruler.csproj" />
-    <ProjectReference Include="..\..\src\modules\ImageGallery\src\Xrv.ImageGallery.csproj" />
-    <ProjectReference Include="..\..\src\modules\StreamingViewer\src\Xrv.StreamingViewer.csproj" />
-    <ProjectReference Include="..\..\src\Xrv.Core\Xrv.Core.csproj" />
+    <ProjectReference Include="..\..\src\core\Evergine.Xrv.Core\Evergine.Xrv.Core.csproj" />
+    <ProjectReference Include="..\..\src\modules\AudioNotes\Evergine.Xrv.AudioNotes\Evergine.Xrv.AudioNotes.csproj" />
+    <ProjectReference Include="..\..\src\modules\ImageGallery\Evergine.Xrv.ImageGallery\Evergine.Xrv.ImageGallery.csproj" />
+    <ProjectReference Include="..\..\src\modules\ModelViewer\Evergine.Xrv.ModelViewer\Evergine.Xrv.ModelViewer.csproj" />
+    <ProjectReference Include="..\..\src\modules\Painter\Evergine.Xrv.Painter\Evergine.Xrv.Painter.csproj" />
+    <ProjectReference Include="..\..\src\modules\Ruler\Evergine.Xrv.Ruler\Evergine.Xrv.Ruler.csproj" />
+    <ProjectReference Include="..\..\src\modules\StreamingViewer\Evergine.Xrv.StreamingViewer\Evergine.Xrv.StreamingViewer.csproj" />
     <ProjectReference Include="..\..\submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
   </ItemGroup>
 </Project>
