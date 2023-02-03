@@ -81,7 +81,11 @@ namespace Evergine.Xrv.Core.UI.Buttons
 
             this.boxCollider.IsEnabled = this.isVisuallyEnabled;
             this.pressableButton.IsEnabled = this.isVisuallyEnabled;
-            this.iconHoloGraphic.Parameters_Alpha = this.isVisuallyEnabled ? 1f : 0.5f;
+
+            if (this.iconHoloGraphic != null)
+            {
+                this.iconHoloGraphic.Parameters_Alpha = this.isVisuallyEnabled ? 1f : 0.5f;
+            }
         }
     }
 }
