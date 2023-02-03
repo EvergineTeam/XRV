@@ -1,19 +1,19 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Common.Attributes;
-using Evergine.Framework;
-using Evergine.Framework.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Resources;
+using Evergine.Common.Attributes;
+using Evergine.Framework;
+using Evergine.Framework.Services;
 using Evergine.Xrv.Core.Services.Messaging;
-using System.IO;
-using System.Diagnostics;
 
 namespace Evergine.Xrv.Core.Localization
 {
