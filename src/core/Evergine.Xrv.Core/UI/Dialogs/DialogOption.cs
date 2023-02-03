@@ -14,7 +14,10 @@ namespace Evergine.Xrv.Core.UI.Dialogs
         public DialogOption(string key)
         {
             this.Key = key;
-            this.Configuration = new OptionButtonConfigurator();
+            this.Configuration = new OptionButtonConfigurator
+            {
+                AllowBackPlateNullMaterial = true,
+            };
         }
 
         /// <summary>

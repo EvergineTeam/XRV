@@ -187,6 +187,9 @@ namespace Evergine.Xrv.Core.UI.Windows
             var configurator = owner.FindComponent<DialogConfigurator>();
             configurator.Content = contentPrefab.Instantiate();
 
+            var acceptConfig = this.alertDialog.AcceptOption.Configuration;
+            acceptConfig.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor4);
+
             owner.IsEnabled = false;
         }
 
@@ -200,8 +203,11 @@ namespace Evergine.Xrv.Core.UI.Windows
             var configurator = owner.FindComponent<DialogConfigurator>();
             configurator.Content = contentPrefab.Instantiate();
 
-            var configuration = this.confirmationDialog.AcceptOption.Configuration;
-            configuration.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor3);
+            var cancelConfig = this.confirmationDialog.CancelOption.Configuration;
+            cancelConfig.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor4);
+
+            var acceptConfig = this.confirmationDialog.AcceptOption.Configuration;
+            acceptConfig.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor3);
 
             owner.IsEnabled = false;
         }
