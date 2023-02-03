@@ -12,6 +12,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Resources;
 using Evergine.Xrv.Core.Services.Messaging;
+using System.IO;
+using System.Diagnostics;
 
 namespace Evergine.Xrv.Core.Localization
 {
@@ -115,9 +117,21 @@ namespace Evergine.Xrv.Core.Localization
                 throw new ArgumentOutOfRangeException(nameof(dictionaryName), $"Dictionary {dictionaryName} not found");
             }
 
-            var manager = this.assemblyResources[dictionaryName];
-            var resourceSet = manager.GetResourceSet(this.CurrentCulture, true, true);
-            var entry = resourceSet.GetString(key);
+            string entry = NotFoundString;
+
+            try
+            {
+                var manager = this.assemblyResources[dictionaryName];
+                var resourceSet = manager.GetResourceSet(this.CurrentCulture, true, true);
+                entry = resourceSet.GetString(key);
+            }
+            catch (FileNotFoundException)
+            {
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.ToString());
+            }
 
             return entry ?? NotFoundString;
         }

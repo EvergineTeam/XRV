@@ -34,7 +34,31 @@ namespace XrvSamples
             this.Container.RegisterType<WorkActionScheduler>();
 
             BackgroundTaskScheduler.Background.Configure(this.Container);
+        }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            this.ConfigureXrv();
+
+            // Get ScreenContextManager
+            var screenContextManager = this.Container.Resolve<ScreenContextManager>();
+            var assetsService = this.Container.Resolve<AssetsService>();
+
+            // Navigate to scene
+            //var scene = assetsService.Load<Scenes.HandMenuScene>(EvergineContent.Scenes.HandMenu_wescene);
+            //var scene = assetsService.Load<Scenes.StorageScene>(EvergineContent.Scenes.StorageScene_wescene);
+            var scene = assetsService.Load<Scenes.EmptyScene>(EvergineContent.Scenes.Empty_wescene);
+            //var scene = assetsService.Load<Scenes.WindowScene>(EvergineContent.Scenes.Windows_wescene);
+            //var scene = assetsService.Load<Scenes.ScrollsScene>(EvergineContent.Scenes.Scrolls_wescene);
+
+            ScreenContext screenContext = new ScreenContext(scene);
+            screenContextManager.To(screenContext);
+        }
+
+        private void ConfigureXrv()
+        {
             // Repositories
             var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://waveengineagentdiag159.file.core.windows.net/models?st=2022-10-26T11%3A46%3A02Z&se=2028-10-27T18%3A46%3A00Z&sp=rl&sv=2018-03-28&sr=s&sig=dOR9IQtYCPMYfoP7TouKuh9UXjPQUMABAFLYkSbaPR0%3D"));
             loadModelFileAccess.Cache = new DiskCache("models");
@@ -66,34 +90,15 @@ namespace XrvSamples
                     FileAccess = imageGalleryFileAccess,
                 })
                 .AddModule(new StreamingViewerModule()
-	            {
-	                SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
-	                //SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
-	                //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
-	            })
-	            .AddModule(new PainterModule());
-	            
+                {
+                    SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
+                    //SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
+                    //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
+                })
+                .AddModule(new PainterModule());
+
 
             this.Container.RegisterInstance(xrv);
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            // Get ScreenContextManager
-            var screenContextManager = this.Container.Resolve<ScreenContextManager>();
-            var assetsService = this.Container.Resolve<AssetsService>();
-
-            // Navigate to scene
-            //var scene = assetsService.Load<Scenes.HandMenuScene>(EvergineContent.Scenes.HandMenu_wescene);
-            //var scene = assetsService.Load<Scenes.StorageScene>(EvergineContent.Scenes.StorageScene_wescene);
-            var scene = assetsService.Load<Scenes.EmptyScene>(EvergineContent.Scenes.Empty_wescene);
-            //var scene = assetsService.Load<Scenes.WindowScene>(EvergineContent.Scenes.Windows_wescene);
-            //var scene = assetsService.Load<Scenes.ScrollsScene>(EvergineContent.Scenes.Scrolls_wescene);
-
-            ScreenContext screenContext = new ScreenContext(scene);
-            screenContextManager.To(screenContext);
         }
     }
 }

@@ -311,7 +311,7 @@ namespace Evergine.Xrv.Core.Menu
             float start = show ? 0 : 1;
             float end = show ? 1 : 0;
 
-            this.appearAnimation?.Cancel();
+            this.appearAnimation?.TryCancel();
             this.appearAnimation = new ActionWorkAction(() =>
             {
                 this.handMenuTransform.LocalRotation = show ? new Vector3(0, MathHelper.PiOver2, 0) : new Vector3(0, -MathHelper.Pi, 0);
@@ -348,7 +348,7 @@ namespace Evergine.Xrv.Core.Menu
             float start = detach ? 0 : 1;
             float end = detach ? 1 : 0;
 
-            this.extendedAnimation?.Cancel();
+            this.extendedAnimation?.TryCancel();
             this.extendedAnimation = new ActionWorkAction(() =>
             {
                 if (end == 1)

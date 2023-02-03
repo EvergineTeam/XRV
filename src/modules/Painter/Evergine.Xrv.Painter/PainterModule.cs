@@ -49,7 +49,6 @@ namespace Evergine.Xrv.Painter
             // Menu and help entries
             this.HandMenuButton = new MenuButtonDescription()
             {
-                IconOff = PainterResourceIDs.Materials.Icons.Painter,
                 IconOn = PainterResourceIDs.Materials.Icons.Painter,
                 IsToggle = false,
                 TextOn = () => this.xrv.Localization.GetString(() => Resources.Strings.Menu),
@@ -91,9 +90,9 @@ namespace Evergine.Xrv.Painter
 
                     rightCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
                     leftCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
-                    config.Content = content;
                     await EvergineForegroundTask.Run(() =>
                     {
+                        config.Content = content;
                         scene.Managers.EntityManager.Add(rightCursor.Pointer);
                         scene.Managers.EntityManager.Add(leftCursor.Pointer);
                         rightCursor.Pointer.IsEnabled = false;

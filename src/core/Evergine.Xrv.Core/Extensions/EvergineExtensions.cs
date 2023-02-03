@@ -57,5 +57,22 @@ namespace Evergine.Xrv.Core.Extensions
                 entity.AddComponent(component);
             }
         }
+
+        /// <summary>
+        /// Tries to cancel a <see cref="IWorkAction"/>. It checks that action is already running
+        /// before canceling it.
+        /// </summary>
+        /// <param name="action">Target work action.</param>
+        /// <returns>True if it has been canceled; false otherwise.</returns>
+        public static bool TryCancel(this IWorkAction action)
+        {
+            if (action?.State == WorkActionState.Running)
+            {
+                action.Cancel();
+                return true;
+            }
+
+            return false;
+        }
     }
 }

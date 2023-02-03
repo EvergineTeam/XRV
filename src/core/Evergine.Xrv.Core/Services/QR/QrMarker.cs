@@ -10,6 +10,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
+using Evergine.Xrv.Core.Extensions;
 using System;
 
 namespace Evergine.Xrv.Core.Services.QR
@@ -113,7 +114,7 @@ namespace Evergine.Xrv.Core.Services.QR
             base.OnDeactivated();
 
             this.StopSound();
-            this.animation?.Cancel();
+            this.animation?.TryCancel();
             this.animation = null;
         }
 
@@ -142,7 +143,7 @@ namespace Evergine.Xrv.Core.Services.QR
                     this.soundEmitter.Play();
                 }
 
-                this.animation?.Cancel();
+                this.animation?.TryCancel();
                 this.animation = this.CreateAnimationInstance();
                 this.animation.Run();
             }

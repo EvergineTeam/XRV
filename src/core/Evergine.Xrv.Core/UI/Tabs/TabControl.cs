@@ -323,7 +323,7 @@ namespace Evergine.Xrv.Core.UI.Tabs
 
             if (itemIndex != -1)
             {
-                this.currentItemChangeAnimation?.Cancel();
+                this.currentItemChangeAnimation?.TryCancel();
 
                 var animationDuration = TimeSpan.FromMilliseconds(300);
                 var toPosition = new Vector3

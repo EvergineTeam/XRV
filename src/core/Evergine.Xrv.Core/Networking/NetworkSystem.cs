@@ -495,7 +495,10 @@ namespace Evergine.Xrv.Core.Networking
             // (internally used when creating server). We were struggling some days about what
             // was happening because HoloLens server was not reachable by other clients, and
             // we found this issue.
-            if (!DeviceHelper.IsHoloLens())
+            bool overrideDefaultNetworkInterface = !DeviceHelper.IsHoloLens()
+                && Platform.DeviceInfo.PlatformType != Common.PlatformType.Android;
+
+            if (overrideDefaultNetworkInterface)
             {
                 NetworkInterface candidate = NetUtility
                     .GetNetworkInterfaces()

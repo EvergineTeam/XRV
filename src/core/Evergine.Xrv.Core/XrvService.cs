@@ -31,7 +31,7 @@ namespace Evergine.Xrv.Core
     public class XrvService : Service
     {
         private readonly Dictionary<Type, Module> modules;
-        private readonly VoiceCommandsSystem voiceSystem;
+        private VoiceCommandsSystem voiceSystem;
         private ILogger logger;
 
         [BindService]
@@ -54,15 +54,6 @@ namespace Evergine.Xrv.Core
             {
                 message.Module.Run(message.IsOn);
             });
-
-            this.voiceSystem = new VoiceCommandsSystem();
-            this.voiceSystem.RegisterService();
-
-            this.Localization = new LocalizationService();
-            if (Application.Current?.IsEditor == false)
-            {
-                Application.Current.Container.RegisterInstance(this.Localization);
-            }
         }
 
         /// <summary>
@@ -158,6 +149,15 @@ namespace Evergine.Xrv.Core
                 scene.Managers.EntityManager,
                 scene.Managers.RenderManager,
                 this.assetsService);
+
+            if (Application.Current?.IsEditor == false)
+            {
+                Application.Current.Container.RegisterType<LocalizationService>();
+                this.Localization = Application.Current.Container.Resolve<LocalizationService>();
+            }
+
+            this.voiceSystem = new VoiceCommandsSystem();
+            this.voiceSystem.RegisterService();
 
             using (this.logger?.BeginScope("XRV initialization"))
             {

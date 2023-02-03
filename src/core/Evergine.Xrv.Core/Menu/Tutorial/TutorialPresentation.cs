@@ -83,9 +83,12 @@ namespace Evergine.Xrv.Core.Menu.Tutorial
                });
 
             this.handTutorialRootEntity.AddChild(handTutorialEntity);
-
-            this.Owner.Scene.Managers.EntityManager.Add(this.handTutorialRootEntity);
             this.menu.PalmUpDetected += this.HandMenu_PalmUpDetected;
+
+            EvergineForegroundTask.Run(() =>
+            {
+                this.Owner.Scene.Managers.EntityManager.Add(this.handTutorialRootEntity);
+            });
         }
 
         private void HandMenu_PalmUpDetected(object sender, EventArgs e)

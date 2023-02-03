@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
 using Evergine.Components.Fonts;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
@@ -7,7 +8,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
-using System;
+using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.UI.Cursors;
 
 namespace Evergine.Xrv.Core.UI.Buttons
@@ -97,7 +98,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
 
         private void AnimateHover()
         {
-            this.animation?.Cancel();
+            this.animation?.TryCancel();
 
             var animationDuration = TimeSpan.FromMilliseconds(300);
             var textTransformAction = new Vector3AnimationWorkAction(
@@ -137,7 +138,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
 
         private void AnimateLeave()
         {
-            this.animation?.Cancel();
+            this.animation?.TryCancel();
 
             var animationDuration = TimeSpan.FromMilliseconds(300);
             var textTransformAction = new Vector3AnimationWorkAction(
