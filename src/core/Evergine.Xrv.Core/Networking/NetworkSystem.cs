@@ -140,6 +140,11 @@ namespace Evergine.Xrv.Core.Networking
 
         internal IKeyStore KeyStore { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether TODO: Remove when networking is ready.
+        /// </summary>
+        internal static bool NetworkSystemEnabled { get; } = false;
+
         internal SessionDataUpdateManager SessionDataUpdateManager { get => this.sessionDataUpdater; }
 
         internal IClientServerMessagingImpl ClientServerMessaging { get; set; }
@@ -171,8 +176,11 @@ namespace Evergine.Xrv.Core.Networking
 
         internal void Load()
         {
-            this.AddOrRemoveSettingItem();
-            this.FixDefaultNetworkInterface();
+            if (NetworkSystemEnabled)
+            {
+                this.AddOrRemoveSettingItem();
+                this.FixDefaultNetworkInterface();
+            }
 
             this.sessionDataSync = new SessionDataSynchronization();
             this.sessionDataUpdater = new SessionDataUpdateManager();

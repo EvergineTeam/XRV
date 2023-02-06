@@ -17,14 +17,14 @@ namespace XrvSamples.Scenes
             xrv.Initialize(this);
 
             // Networking
-            var configuration = new NetworkConfigurationBuilder()
-                .ForApplication(nameof(XrvSamples))
-                .UsePort(DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? 12345 : 12344)
-                .Build();
-            xrv.Networking.Configuration = configuration;
-            xrv.Networking.OverrideScanningPort = 12345; // UWP client should be always the host
-            xrv.Networking.NetworkingAvailable = true;
-            xrv.Services.QrScanningFlow.ExpectedCodes = new[] { "This is XRV!" };
+            ////var configuration = new NetworkConfigurationBuilder()
+            ////    .ForApplication(nameof(XrvSamples))
+            ////    .UsePort(DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? 12345 : 12344)
+            ////    .Build();
+            ////xrv.Networking.Configuration = configuration;
+            ////xrv.Networking.OverrideScanningPort = 12345; // UWP client should be always the host
+            ////xrv.Networking.NetworkingAvailable = true;
+            ////xrv.Services.QrScanningFlow.ExpectedCodes = new[] { "This is XRV!" };
         }       
     }
 }

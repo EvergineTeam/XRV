@@ -16,6 +16,11 @@ namespace Evergine.Xrv.Core.Networking
         /// </summary>
         public NetworkConfigurationBuilder()
         {
+            if (!NetworkSystem.NetworkSystemEnabled)
+            {
+                throw new NotSupportedException("Networking not available");
+            }
+
             this.configuration = new NetworkConfiguration()
             {
                 ClientApplicationVersion = "1.0.0",

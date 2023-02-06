@@ -54,6 +54,7 @@ namespace Evergine.Xrv.Core.Themes
         /// <summary>
         /// Color used for:
         /// - Windows front plate gradient start.
+        /// - Dialog option buttons.
         /// </summary>
         SecondaryColor4,
 
