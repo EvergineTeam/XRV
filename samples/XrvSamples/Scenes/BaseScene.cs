@@ -1,6 +1,5 @@
 ﻿using Evergine.MRTK.Scenes;
 using System;
-using Evergine.Xrv.Core;
 
 namespace XrvSamples.Scenes
 {
@@ -17,5 +16,11 @@ namespace XrvSamples.Scenes
         protected override Guid HandRayTexture => EvergineContent.MRTK.Textures.line_dots_png;
 
         protected override Guid HandRaySampler => EvergineContent.MRTK.Samplers.LinearWrapSampler;
+
+        protected override Guid LeftControllerModelPrefab => Guid.Empty;
+
+        protected override Guid RightControllerModelPrefab => Guid.Empty;
+
+        protected override float MaxFarCursorLength => 0.5f;
     }
 }
