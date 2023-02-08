@@ -27,19 +27,23 @@ Items:
         AsignedTo: Default
         IsEnabled: true
         Material: 117070d5-cccf-4b60-93c8-eddafd9b51d5
+        UseCopy: false
       - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
         Id: 22c81c54-cc5e-483c-83ed-eb7cc6cfd75d
         Height: 0.180000007
-        UOffset: 0.0
-        VOffset: 0.0
         IsEnabled: true
+        Origin:
+          X: 0.5
+          Y: 0.5
         PlaneNormal: ZPositive
         TwoSides: false
-        UTile: 1.0
         UMirror: false
+        UOffset: 0.0
+        UTile: 1.0
         VMirror: false
-        Width: 0.25
+        VOffset: 0.0
         VTile: 1.0
+        Width: 0.25
       - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
         Id: 9a52f535-6fb1-4353-96bc-7ae0c3d5183b
         DebugBoundingbox: true
@@ -114,6 +118,7 @@ Items:
             Size:
               X: 0.200000033
               Y: 0.150000006
+            Softness: 0.75
             Text: 'From this color wheel you can choose the desired color to paint by touching it. /n/n/nHAND MODE /nTo exit paint or erase mode. Returns you to the default mode of hand interaction./n/nPAINT MODE /nAllows you to paint freely. Airtap and hold where you want the stroke to start, and move your hand to draw. /n/nERASE MODE /nIn this mode you can erase a complete stroke. Move your hand close to the stroke you want to erase and airtap on it./n/nCLEAR ALL /nErases all the drawn strokes. This action needs confirmation./n/n/nUNDO /nUndo the last stroke drawn or erased. There are 10 levels of undo./n/n/nTHICKNESS/nThere are 3 types of thickness to draw the strokes: thin, medium and thick. Select the one that best suits your needs.'
             VerticalAlignment: Center
             Wrapping: true
@@ -125,6 +130,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: 5307e188-24d5-456a-8df6-562bd33f838a
+            DictionaryKey: Text1
+            DictionaryName: Evergine.Xrv.Painter.Resources.Help
+            IsEnabled: true
         Children: []
         Id: dce327a9-97fd-4b20-b99c-67df75c924c0
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -154,19 +164,23 @@ Items:
             AsignedTo: Default
             IsEnabled: true
             Material: 3358d8df-5ba9-497d-bf68-a3064b3d7a31
+            UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: e88b53cf-2969-4bca-b350-e19dd7abe5cd
             Height: 0.0200000033
-            UOffset: 0.0
-            VOffset: 0.0
             IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
             PlaneNormal: ZPositive
             TwoSides: false
-            UTile: 1.0
             UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
             VMirror: false
-            Width: 0.0199999996
+            VOffset: 0.0
             VTile: 1.0
+            Width: 0.0199999996
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: e4916fdc-1833-4ee7-b5df-4a0115684474
             DebugBoundingbox: true
@@ -203,19 +217,23 @@ Items:
             AsignedTo: Default
             IsEnabled: true
             Material: b30dcd75-78ac-4abf-a2af-011c5ebd458e
+            UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: abfa54a1-e9e3-4723-9cda-ff0bff964076
             Height: 0.0150000034
-            UOffset: 0.0
-            VOffset: 0.0
             IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
             PlaneNormal: ZPositive
             TwoSides: false
-            UTile: 1.0
             UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
             VMirror: false
-            Width: 0.0149999997
+            VOffset: 0.0
             VTile: 1.0
+            Width: 0.0149999997
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: b7f23ce5-affd-447b-b215-a5a033ad9fcd
             DebugBoundingbox: true
@@ -252,19 +270,23 @@ Items:
             AsignedTo: Default
             IsEnabled: true
             Material: b70dcd75-78ac-4abf-a2af-011c5ebd458e
+            UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: f78b02c0-e604-435d-afb3-1f036b414673
             Height: 0.0150000034
-            UOffset: 0.0
-            VOffset: 0.0
             IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
             PlaneNormal: ZPositive
             TwoSides: false
-            UTile: 1.0
             UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
             VMirror: false
-            Width: 0.0149999997
+            VOffset: 0.0
             VTile: 1.0
+            Width: 0.0149999997
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: 80148060-dd9c-490a-9c16-719e676e5244
             DebugBoundingbox: true
@@ -301,19 +323,23 @@ Items:
             AsignedTo: Default
             IsEnabled: true
             Material: b20dcd75-78ac-4abf-a2af-011c5ebd458e
+            UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: f5328814-5a55-4a8a-a020-c999124e351d
             Height: 0.0150000034
-            UOffset: 0.0
-            VOffset: 0.0
             IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
             PlaneNormal: ZPositive
             TwoSides: false
-            UTile: 1.0
             UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
             VMirror: false
-            Width: 0.0149999997
+            VOffset: 0.0
             VTile: 1.0
+            Width: 0.0149999997
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: e3ad14ca-dcb2-414d-ae40-2b602ab80363
             DebugBoundingbox: true
@@ -350,19 +376,23 @@ Items:
             AsignedTo: Default
             IsEnabled: true
             Material: b10dcd75-78ac-4abf-a2af-011c5ebd458e
+            UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: a93e991b-4a50-4f9b-b30d-8d79c916b00d
             Height: 0.0150000034
-            UOffset: 0.0
-            VOffset: 0.0
             IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
             PlaneNormal: ZPositive
             TwoSides: false
-            UTile: 1.0
             UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
             VMirror: false
-            Width: 0.0149999997
+            VOffset: 0.0
             VTile: 1.0
+            Width: 0.0149999997
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: 3eb4da89-f934-470a-b3b0-2edcba4f91ab
             DebugBoundingbox: true
@@ -399,19 +429,23 @@ Items:
             AsignedTo: Default
             IsEnabled: true
             Material: b80dcd75-78ac-4abf-a2af-011c5ebd458e
+            UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: 18e98bda-6a05-4bd0-96d1-a4b6dd412819
             Height: 0.0150000034
-            UOffset: 0.0
-            VOffset: 0.0
             IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
             PlaneNormal: ZPositive
             TwoSides: false
-            UTile: 1.0
             UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
             VMirror: false
-            Width: 0.0149999997
+            VOffset: 0.0
             VTile: 1.0
+            Width: 0.0149999997
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: 3a6d28ac-0825-46b0-8e98-19bc0ff5808f
             DebugBoundingbox: true
@@ -448,19 +482,23 @@ Items:
             AsignedTo: Default
             IsEnabled: true
             Material: b60dcd75-78ac-4abf-a2af-011c5ebd458e
+            UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: 2ed16309-00cb-4698-bae8-88bb769caf34
             Height: 0.0150000034
-            UOffset: 0.0
-            VOffset: 0.0
             IsEnabled: true
+            Origin:
+              X: 0.5
+              Y: 0.5
             PlaneNormal: ZPositive
             TwoSides: false
-            UTile: 1.0
             UMirror: false
+            UOffset: 0.0
+            UTile: 1.0
             VMirror: false
-            Width: 0.0149999997
+            VOffset: 0.0
             VTile: 1.0
+            Width: 0.0149999997
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: bc830575-8cc4-4255-b916-d2b5c5ed5775
             DebugBoundingbox: true

@@ -22,7 +22,7 @@ namespace Evergine.Xrv.Core.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Evergine.Xrv.Core.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Evergine.Xrv.Core.Resources.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace Evergine.Xrv.Core.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Accept.
         /// </summary>
-        internal static string Global_Accept {
+        public static string Global_Accept {
             get {
                 return ResourceManager.GetString("Global.Accept", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
-        internal static string Global_Cancel {
+        public static string Global_Cancel {
             get {
                 return ResourceManager.GetString("Global.Cancel", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
-        internal static string Global_No {
+        public static string Global_No {
             get {
                 return ResourceManager.GetString("Global.No", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
-        internal static string Global_Ok {
+        public static string Global_Ok {
             get {
                 return ResourceManager.GetString("Global.Ok", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
-        internal static string Global_Yes {
+        public static string Global_Yes {
             get {
                 return ResourceManager.GetString("Global.Yes", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to About.
         /// </summary>
-        internal static string Help_Tab_About {
+        public static string Help_Tab_About {
             get {
                 return ResourceManager.GetString("Help.Tab.About", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to General.
         /// </summary>
-        internal static string Help_Tab_General {
+        public static string Help_Tab_General {
             get {
                 return ResourceManager.GetString("Help.Tab.General", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Help.
         /// </summary>
-        internal static string Help_Title {
+        public static string Help_Title {
             get {
                 return ResourceManager.GetString("Help.Title", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
-        internal static string Menu_Close {
+        public static string Menu_Close {
             get {
                 return ResourceManager.GetString("Menu.Close", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Detach.
         /// </summary>
-        internal static string Menu_Detach {
+        public static string Menu_Detach {
             get {
                 return ResourceManager.GetString("Menu.Detach", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Follow.
         /// </summary>
-        internal static string Menu_Follow {
+        public static string Menu_Follow {
             get {
                 return ResourceManager.GetString("Menu.Follow", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Pin.
         /// </summary>
-        internal static string Menu_Pin {
+        public static string Menu_Pin {
             get {
                 return ResourceManager.GetString("Menu.Pin", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Menu.
         /// </summary>
-        internal static string Menu_Title {
+        public static string Menu_Title {
             get {
                 return ResourceManager.GetString("Menu.Title", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Request control.
         /// </summary>
-        internal static string Networking_Menu_RequestControl {
+        public static string Networking_Menu_RequestControl {
             get {
                 return ResourceManager.GetString("Networking.Menu.RequestControl", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Scanning....
         /// </summary>
-        internal static string Services_QR_HubTitle {
+        public static string Services_QR_HubTitle {
             get {
                 return ResourceManager.GetString("Services.QR.HubTitle", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Session host has taken session control.
         /// </summary>
-        internal static string Sessions_Control_LostDialogMessage {
+        public static string Sessions_Control_LostDialogMessage {
             get {
                 return ResourceManager.GetString("Sessions.Control.LostDialogMessage", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Control lost.
         /// </summary>
-        internal static string Sessions_Control_LostDialogTitle {
+        public static string Sessions_Control_LostDialogTitle {
             get {
                 return ResourceManager.GetString("Sessions.Control.LostDialogTitle", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Someone has requested to take control.\nDo you agree?.
         /// </summary>
-        internal static string Sessions_Control_RequestDialogMessage {
+        public static string Sessions_Control_RequestDialogMessage {
             get {
                 return ResourceManager.GetString("Sessions.Control.RequestDialogMessage", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Control request.
         /// </summary>
-        internal static string Sessions_Control_RequestDialogTitle {
+        public static string Sessions_Control_RequestDialogTitle {
             get {
                 return ResourceManager.GetString("Sessions.Control.RequestDialogTitle", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Voice recognition status.
         /// </summary>
-        internal static string Settings_General_Voice_Title {
+        public static string Settings_General_Voice_Title {
             get {
                 return ResourceManager.GetString("Settings.General.Voice.Title", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Voice Off.
         /// </summary>
-        internal static string Settings_General_VoiceOff {
+        public static string Settings_General_VoiceOff {
             get {
                 return ResourceManager.GetString("Settings.General.VoiceOff", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Voice On.
         /// </summary>
-        internal static string Settings_General_VoiceOn {
+        public static string Settings_General_VoiceOn {
             get {
                 return ResourceManager.GetString("Settings.General.VoiceOn", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
-        internal static string Settings_Menu {
+        public static string Settings_Menu {
             get {
                 return ResourceManager.GetString("Settings.Menu", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
-        internal static string Settings_Sessions_Create_ButtonText {
+        public static string Settings_Sessions_Create_ButtonText {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Create.ButtonText", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Could not start session.
         /// </summary>
-        internal static string Settings_Sessions_Create_Error {
+        public static string Settings_Sessions_Create_Error {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Create.Error", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Create Session.
         /// </summary>
-        internal static string Settings_Sessions_Create_Label {
+        public static string Settings_Sessions_Create_Label {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Create.Label", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Session #{0}.
         /// </summary>
-        internal static string Settings_Sessions_Create_SessionName {
+        public static string Settings_Sessions_Create_SessionName {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Create.SessionName", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to End Session.
         /// </summary>
-        internal static string Settings_Sessions_End_ButtonText {
+        public static string Settings_Sessions_End_ButtonText {
             get {
                 return ResourceManager.GetString("Settings.Sessions.End.ButtonText", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to If you end the session, it will finish for anyone connected.
         /// </summary>
-        internal static string Settings_Sessions_End_EndSessionConfirmationMessage {
+        public static string Settings_Sessions_End_EndSessionConfirmationMessage {
             get {
                 return ResourceManager.GetString("Settings.Sessions.End.EndSessionConfirmationMessage", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to End session?.
         /// </summary>
-        internal static string Settings_Sessions_End_EndSessionConfirmationTitle {
+        public static string Settings_Sessions_End_EndSessionConfirmationTitle {
             get {
                 return ResourceManager.GetString("Settings.Sessions.End.EndSessionConfirmationTitle", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Error leaving session.
         /// </summary>
-        internal static string Settings_Sessions_End_Error {
+        public static string Settings_Sessions_End_Error {
             get {
                 return ResourceManager.GetString("Settings.Sessions.End.Error", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to You can join again to the session, if it is still available.
         /// </summary>
-        internal static string Settings_Sessions_End_LeaveSessionConfirmationMessage {
+        public static string Settings_Sessions_End_LeaveSessionConfirmationMessage {
             get {
                 return ResourceManager.GetString("Settings.Sessions.End.LeaveSessionConfirmationMessage", resourceCulture);
             }
@@ -351,7 +351,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Leave session?.
         /// </summary>
-        internal static string Settings_Sessions_End_LeaveSessionConfirmationTitle {
+        public static string Settings_Sessions_End_LeaveSessionConfirmationTitle {
             get {
                 return ResourceManager.GetString("Settings.Sessions.End.LeaveSessionConfirmationTitle", resourceCulture);
             }
@@ -360,7 +360,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Connect.
         /// </summary>
-        internal static string Settings_Sessions_Join_ButtonText {
+        public static string Settings_Sessions_Join_ButtonText {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Join.ButtonText", resourceCulture);
             }
@@ -369,7 +369,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Could not join session.
         /// </summary>
-        internal static string Settings_Sessions_Join_Error {
+        public static string Settings_Sessions_Join_Error {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Join.Error", resourceCulture);
             }
@@ -378,7 +378,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Join Session.
         /// </summary>
-        internal static string Settings_Sessions_Join_Label {
+        public static string Settings_Sessions_Join_Label {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Join.Label", resourceCulture);
             }
@@ -387,7 +387,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to No session found.
         /// </summary>
-        internal static string Settings_Sessions_Join_NoSessionsFound {
+        public static string Settings_Sessions_Join_NoSessionsFound {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Join.NoSessionsFound", resourceCulture);
             }
@@ -396,7 +396,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Select a session.
         /// </summary>
-        internal static string Settings_Sessions_Join_SelectorPlaceholder {
+        public static string Settings_Sessions_Join_SelectorPlaceholder {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Join.SelectorPlaceholder", resourceCulture);
             }
@@ -405,7 +405,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to You have joined #{0}.
         /// </summary>
-        internal static string Settings_Sessions_Joined_StatusTextAsClient {
+        public static string Settings_Sessions_Joined_StatusTextAsClient {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Joined.StatusTextAsClient", resourceCulture);
             }
@@ -414,7 +414,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to You have created and joined #{0}.
         /// </summary>
-        internal static string Settings_Sessions_Joined_StatusTextAsServer {
+        public static string Settings_Sessions_Joined_StatusTextAsServer {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Joined.StatusTextAsServer", resourceCulture);
             }
@@ -423,7 +423,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Creating session....
         /// </summary>
-        internal static string Settings_Sessions_Joining_CreationInProgress {
+        public static string Settings_Sessions_Joining_CreationInProgress {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Joining.CreationInProgress", resourceCulture);
             }
@@ -432,7 +432,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Joining session....
         /// </summary>
-        internal static string Settings_Sessions_Joining_JoinInProgress {
+        public static string Settings_Sessions_Joining_JoinInProgress {
             get {
                 return ResourceManager.GetString("Settings.Sessions.Joining.JoinInProgress", resourceCulture);
             }
@@ -441,7 +441,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to General.
         /// </summary>
-        internal static string Settings_Tab_General {
+        public static string Settings_Tab_General {
             get {
                 return ResourceManager.GetString("Settings.Tab.General", resourceCulture);
             }
@@ -450,7 +450,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Sessions.
         /// </summary>
-        internal static string Settings_Tab_Sessions {
+        public static string Settings_Tab_Sessions {
             get {
                 return ResourceManager.GetString("Settings.Tab.Sessions", resourceCulture);
             }
@@ -459,7 +459,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
-        internal static string Settings_Title {
+        public static string Settings_Title {
             get {
                 return ResourceManager.GetString("Settings.Title", resourceCulture);
             }
@@ -468,7 +468,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
-        internal static string Window_Button_Close {
+        public static string Window_Button_Close {
             get {
                 return ResourceManager.GetString("Window.Button.Close", resourceCulture);
             }
@@ -477,7 +477,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Follow.
         /// </summary>
-        internal static string Window_Button_Follow {
+        public static string Window_Button_Follow {
             get {
                 return ResourceManager.GetString("Window.Button.Follow", resourceCulture);
             }
@@ -486,7 +486,7 @@ namespace Evergine.Xrv.Core.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Pin.
         /// </summary>
-        internal static string Window_Button_Pin {
+        public static string Window_Button_Pin {
             get {
                 return ResourceManager.GetString("Window.Button.Pin", resourceCulture);
             }

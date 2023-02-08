@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 0be2bd41-4b4d-4c43-b61d-81091a951b9f
         Aperture: 1.0
-        AspectRatio: 1.49407113
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -168,7 +167,7 @@ Items:
         Id: d391ac3d-350f-4876-84ec-757d2db97efc
         AsignedTo: Default
         IsEnabled: true
-        Material: 685fc70f-5644-4a03-8ae8-a7ed1cc6fedd
+        Material: 8cbe67aa-61b5-42e5-8dec-07565b1b7d1d
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: afdf97e3-00ff-4f4d-820f-eba5c1a7128d
@@ -322,6 +321,7 @@ Items:
             Size:
               X: 0.230000019
               Y: 0.170000017
+            Softness: 0.75
             Text: From this module, you will be able to access to virtual ruler. That allows you to measure distances in meters or feet. The ruler has two handles in each extreme that you can manipulate with your hands.
             VerticalAlignment: Top
             Wrapping: true
@@ -333,6 +333,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: f2137ae0-270c-48d6-a555-ca365b384498
+            DictionaryKey: Text1
+            DictionaryName: Evergine.Xrv.Ruler.Resources.Help
+            IsEnabled: true
         Children: []
         Id: 571b0478-8071-40aa-9125-63480aadb379
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

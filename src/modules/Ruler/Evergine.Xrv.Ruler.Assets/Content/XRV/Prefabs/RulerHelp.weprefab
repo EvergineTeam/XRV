@@ -64,6 +64,7 @@ Root:
           Size:
             X: 0.230000019
             Y: 0.170000017
+          Softness: 0.75
           Text: From this module, you will be able to access to virtual ruler. That allows you to measure distances in meters or feet. The ruler has two handles in each extreme that you can manipulate with your hands.
           VerticalAlignment: Top
           Wrapping: true
@@ -75,6 +76,11 @@ Root:
           IsEnabled: true
           OrderBias: 0
           RenderFlags: CastShadows
+        - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+          Id: f2137ae0-270c-48d6-a555-ca365b384498
+          DictionaryKey: Text1
+          DictionaryName: Evergine.Xrv.Ruler.Resources.Help
+          IsEnabled: true
       Children: []
       Id: 571b0478-8071-40aa-9125-63480aadb379
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

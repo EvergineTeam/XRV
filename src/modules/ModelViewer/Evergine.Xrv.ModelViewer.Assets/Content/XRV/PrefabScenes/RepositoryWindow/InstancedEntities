@@ -322,6 +322,7 @@ Items:
             Size:
               X: 0.0799999982
               Y: 0.00999999978
+            Softness: 0.75
             Text: Repositories
             VerticalAlignment: Top
             Wrapping: true
@@ -333,6 +334,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: c00e5273-5559-497b-ac03-7c92cae28f0b
+            DictionaryKey: Window.Repositories
+            DictionaryName: Evergine.Xrv.ModelViewer.Resources.Strings
+            IsEnabled: true
         Children: []
         Id: 6b99a122-f3c1-4002-9b06-59ba58174ff1
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -357,7 +363,7 @@ Items:
               X: 1.0
               Y: 1.0
               Z: 1.0
-          - !Evergine.MRTK.SDK.Features.UX.Components.Scrolling.ListView,Evergine.MRTK
+          - !Evergine.MRTK.SDK.Features.UX.Components.Lists.ListView,Evergine.MRTK
             Id: 5f1cf029-c521-4366-8d6f-c646f80b4022
             BarWidth: 0.00300000003
             ContentPadding: 0.0199999996
@@ -826,6 +832,7 @@ Items:
             Size:
               X: 0.0799999982
               Y: 0.00999999978
+            Softness: 0.75
             Text: Models
             VerticalAlignment: Top
             Wrapping: true
@@ -837,6 +844,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: 7f4bf90f-177c-4644-8d48-bd6067619c78
+            DictionaryKey: Window.Models
+            DictionaryName: Evergine.Xrv.ModelViewer.Resources.Strings
+            IsEnabled: true
         Children: []
         Id: ca872187-740d-4e22-befa-f93625d79d6a
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

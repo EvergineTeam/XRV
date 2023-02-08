@@ -328,7 +328,12 @@ namespace Evergine.Xrv.ModelViewer
                 return;
             }
 
-            var confirmDialog = this.xrvService.WindowsSystem.ShowConfirmationDialog(this.modelEntity.Name, "Delete this model? /n This action can't be undone.", "No", "Yes");
+            var localization = this.xrvService.Localization;
+            var confirmDialog = this.xrvService.WindowsSystem.ShowConfirmationDialog(
+                () => this.modelEntity.Name,
+                () => localization.GetString(() => Resources.Strings.Model_Close_Confirmation_Message),
+                () => localization.GetString(() => Core.Resources.Strings.Global_No),
+                () => localization.GetString(() => Core.Resources.Strings.Global_Yes));
             var configuration = confirmDialog.AcceptOption.Configuration;
             configuration.Plate = this.assetsService.Load<Material>(MRTKResourceIDs.Materials.Buttons.ButtonPrimary);
             confirmDialog.Closed += this.Dialog_Closed;

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Evergine.Xrv.ImageGallery.Resources {
+namespace Evergine.Xrv.Core.Resources {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Evergine.Xrv.ImageGallery.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    internal class Help {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Strings() {
+        internal Help() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Evergine.Xrv.ImageGallery.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Evergine.Xrv.ImageGallery.Resources.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Evergine.Xrv.Core.Resources.Help", typeof(Help).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,38 @@ namespace Evergine.Xrv.ImageGallery.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Images.
+        ///   Looks up a localized string similar to From here you can access all the main options of the application..
         /// </summary>
-        internal static string Help_Tab_Name {
+        internal static string Text1 {
             get {
-                return ResourceManager.GetString("Help.Tab.Name", resourceCulture);
+                return ResourceManager.GetString("Text1", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Images.
+        ///   Looks up a localized string similar to To show the Main Menu hold out your  palm facing you. You&apos;ll see the main bar with the section buttons next to your hand and it will stays attached to your hand as long as you hold the gesture. The Main Menu will disappear if your hand is not facing you or open..
         /// </summary>
-        internal static string Menu {
+        internal static string Text2 {
             get {
-                return ResourceManager.GetString("Menu", resourceCulture);
+                return ResourceManager.GetString("Text2", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Gallery.
+        ///   Looks up a localized string similar to DETACH MENU /n/nDetach the main menu from your hand and turn it into a floating window that will follows you..
         /// </summary>
-        internal static string Window_Title {
+        internal static string Text3 {
             get {
-                return ResourceManager.GetString("Window.Title", resourceCulture);
+                return ResourceManager.GetString("Text3", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Gallery {0} of {1}.
+        ///   Looks up a localized string similar to Main menu detached as a window.
         /// </summary>
-        internal static string Window_Title_WithCount {
+        internal static string Text4 {
             get {
-                return ResourceManager.GetString("Window.Title.WithCount", resourceCulture);
+                return ResourceManager.GetString("Text4", resourceCulture);
             }
         }
     }

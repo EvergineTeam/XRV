@@ -204,7 +204,13 @@ namespace Evergine.Xrv.Painter.Components
         /// </summary>
         public void ClearAll()
         {
-            var confirmDelete = this.xrvService.WindowsSystem.ShowConfirmationDialog("Delete all the drawing?", "This action can't be undone.", "No", "Yes");
+            var localization = this.xrvService.Localization;
+
+            var confirmDelete = this.xrvService.WindowsSystem.ShowConfirmationDialog(
+                () => localization.GetString(() => Resources.Strings.Paint_Action_Clear_Confirm_Title),
+                () => localization.GetString(() => Resources.Strings.Paint_Action_Clear_Confirm_Message),
+                () => localization.GetString(() => Core.Resources.Strings.Global_No),
+                () => localization.GetString(() => Core.Resources.Strings.Global_Yes));
             confirmDelete.Open();
             confirmDelete.Closed += this.ConfirmDeleteClosed;
         }

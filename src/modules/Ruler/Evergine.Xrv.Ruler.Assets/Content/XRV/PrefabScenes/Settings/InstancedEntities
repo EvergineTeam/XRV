@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 0be2bd41-4b4d-4c43-b61d-81091a951b9f
         Aperture: 1.0
-        AspectRatio: 1.49407113
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -168,7 +167,7 @@ Items:
         Id: d391ac3d-350f-4876-84ec-757d2db97efc
         AsignedTo: Default
         IsEnabled: true
-        Material: 8698c0d4-3f47-451b-b687-031096649495
+        Material: cbfb293a-66ee-4bb2-86b8-1107b1283910
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: afdf97e3-00ff-4f4d-820f-eba5c1a7128d
@@ -322,6 +321,7 @@ Items:
             Size:
               X: 0.230000019
               Y: 0.170000017
+            Softness: 0.75
             Text: Measure Units
             VerticalAlignment: Top
             Wrapping: true
@@ -333,6 +333,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: eb5386f7-ffb4-43b4-a347-2b1de5701e9a
+            DictionaryKey: Settings.Ruler.Units.Title
+            DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
+            IsEnabled: true
         Children: []
         Id: 3e6bb9b3-7185-4c6b-a574-467e5e110014
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -459,6 +464,7 @@ Items:
                   R: 255
                 TargetState: Off
                 Text: Meters Off
+                TextScale: 0.00600000005
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                 Id: c3113706-6d8e-4023-954a-bc2060dd185d
                 AllowBackPlateNullMaterial: false
@@ -476,6 +482,19 @@ Items:
                   R: 255
                 TargetState: On
                 Text: Meters On
+                TextScale: 0.00600000005
+              - !Evergine.Xrv.Core.Localization.ToggleButtonLocalization,Evergine.Xrv.Core
+                Id: 1e518da6-5c73-418c-9087-0a84c0bd71d6
+                DictionaryKey: Settings.Ruler.Units.Meters.Off
+                DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
+                IsEnabled: true
+                TargetState: Off
+              - !Evergine.Xrv.Core.Localization.ToggleButtonLocalization,Evergine.Xrv.Core
+                Id: 4f05a87c-e6c8-450c-9add-7d8fdc67a18b
+                DictionaryKey: Settings.Ruler.Units.Meters.On
+                DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
+                IsEnabled: true
+                TargetState: On
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: CompressableButtonVisuals
@@ -595,6 +614,7 @@ Items:
                             Size:
                               X: 0.0700000003
                               Y: 0.0199999996
+                            Softness: 0.75
                             Text: Meters On
                             VerticalAlignment: Center
                             Wrapping: true
@@ -802,6 +822,7 @@ Items:
                   R: 255
                 TargetState: Off
                 Text: Feet Off
+                TextScale: 0.00600000005
               - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                 Id: 7cb5accc-9d2f-4fdf-912d-0d8703f573bd
                 AllowBackPlateNullMaterial: false
@@ -818,7 +839,20 @@ Items:
                   G: 255
                   R: 255
                 TargetState: On
-                Text: Feet On
+                Text: Feet Off
+                TextScale: 0.00600000005
+              - !Evergine.Xrv.Core.Localization.ToggleButtonLocalization,Evergine.Xrv.Core
+                Id: 3483c54a-744e-4646-8f10-b3e261722705
+                DictionaryKey: Settings.Ruler.Units.Feet.Off
+                DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
+                IsEnabled: true
+                TargetState: Off
+              - !Evergine.Xrv.Core.Localization.ToggleButtonLocalization,Evergine.Xrv.Core
+                Id: 48eae2d3-f758-4333-a7d0-4b344fefa822
+                DictionaryKey: Settings.Ruler.Units.Feet.On
+                DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
+                IsEnabled: true
+                TargetState: On
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: CompressableButtonVisuals
@@ -938,6 +972,7 @@ Items:
                             Size:
                               X: 0.0700000003
                               Y: 0.0199999996
+                            Softness: 0.75
                             Text: Feet Off
                             VerticalAlignment: Center
                             Wrapping: true

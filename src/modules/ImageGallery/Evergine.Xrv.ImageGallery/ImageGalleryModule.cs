@@ -94,7 +94,7 @@ namespace Evergine.Xrv.ImageGallery
             // Gallery Window
             this.window = this.xrv.WindowsSystem.CreateWindow((config) =>
             {
-                config.Title = this.Name;
+                config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
                 config.Size = size;
                 config.DisplayFrontPlate = false;
                 config.DisplayLogo = false;

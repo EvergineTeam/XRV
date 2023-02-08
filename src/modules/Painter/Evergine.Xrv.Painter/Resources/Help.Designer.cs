@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Evergine.Xrv.ImageGallery.Resources {
+namespace Evergine.Xrv.Painter.Resources {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Evergine.Xrv.ImageGallery.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    internal class Help {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Strings() {
+        internal Help() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Evergine.Xrv.ImageGallery.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Evergine.Xrv.ImageGallery.Resources.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Evergine.Xrv.Painter.Resources.Help", typeof(Help).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,11 @@ namespace Evergine.Xrv.ImageGallery.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Images.
+        ///   Looks up a localized string similar to From this color wheel you can choose the desired color to paint by touching it. /n/n/nHAND MODE /nTo exit paint or erase mode. Returns you to the default mode of hand interaction./n/nPAINT MODE /nAllows you to paint freely. Airtap and hold where you want the stroke to start, and move your hand to draw. /n/nERASE MODE /nIn this mode you can erase a complete stroke. Move your hand close to the stroke you want to erase and airtap on it./n/nCLEAR ALL /nErases all the drawn strokes. This action needs confirmatio [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Help_Tab_Name {
+        internal static string Text1 {
             get {
-                return ResourceManager.GetString("Help.Tab.Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Images.
-        /// </summary>
-        internal static string Menu {
-            get {
-                return ResourceManager.GetString("Menu", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image Gallery.
-        /// </summary>
-        internal static string Window_Title {
-            get {
-                return ResourceManager.GetString("Window.Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image Gallery {0} of {1}.
-        /// </summary>
-        internal static string Window_Title_WithCount {
-            get {
-                return ResourceManager.GetString("Window.Title.WithCount", resourceCulture);
+                return ResourceManager.GetString("Text1", resourceCulture);
             }
         }
     }

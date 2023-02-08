@@ -64,6 +64,7 @@ Root:
           Size:
             X: 0.0799999982
             Y: 0.00999999978
+          Softness: 0.75
           Text: Repositories
           VerticalAlignment: Top
           Wrapping: true
@@ -75,6 +76,11 @@ Root:
           IsEnabled: true
           OrderBias: 0
           RenderFlags: CastShadows
+        - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+          Id: c00e5273-5559-497b-ac03-7c92cae28f0b
+          DictionaryKey: Window.Repositories
+          DictionaryName: Evergine.Xrv.ModelViewer.Resources.Strings
+          IsEnabled: true
       Children: []
       Id: 6b99a122-f3c1-4002-9b06-59ba58174ff1
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -568,6 +574,7 @@ Root:
           Size:
             X: 0.0799999982
             Y: 0.00999999978
+          Softness: 0.75
           Text: Models
           VerticalAlignment: Top
           Wrapping: true
@@ -579,6 +586,11 @@ Root:
           IsEnabled: true
           OrderBias: 0
           RenderFlags: CastShadows
+        - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+          Id: 7f4bf90f-177c-4644-8d48-bd6067619c78
+          DictionaryKey: Window.Models
+          DictionaryName: Evergine.Xrv.ModelViewer.Resources.Strings
+          IsEnabled: true
       Children: []
       Id: ca872187-740d-4e22-befa-f93625d79d6a
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

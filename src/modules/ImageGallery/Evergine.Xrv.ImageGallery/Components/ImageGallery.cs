@@ -159,12 +159,13 @@ namespace Evergine.Xrv.ImageGallery.Components
         {
             base.OnActivated();
 
+            this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
+
             var fileList = await this.FileAccess.EnumerateFilesAsync();
             fileList ??= new List<FileItem>();
             this.images = new List<FileItem>(fileList);
             this.ReloadImage();
             this.RecalculateSliderPosition();
-            this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
         }
 
         /// <inheritdoc/>
@@ -261,8 +262,7 @@ namespace Evergine.Xrv.ImageGallery.Components
                 this.windowConfigurator.LocalizedTitle = () =>
                 {
                     var title = string.Format(
-                        this.localization.GetString(() => Resources.Strings.Window_Title),
-                        this.Name,
+                        this.localization.GetString(() => Resources.Strings.Window_Title_WithCount),
                         this.ImageIndex + 1,
                         this.images.Count);
                     return title;

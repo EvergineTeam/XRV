@@ -139,9 +139,12 @@ namespace Evergine.Xrv.Core.UI.Windows
                 {
                     this.titleLocalization.LocalizationFunc = value;
                 }
-                else
+
+                this.localizedTitle = value;
+
+                if (this.IsAttached)
                 {
-                    this.localizedTitle = value;
+                    this.UpdateTitle();
                 }
             }
         }
@@ -378,7 +381,10 @@ namespace Evergine.Xrv.Core.UI.Windows
             && this.frontPlateSize.X != 0
             && this.frontPlateSize.Y != 0;
 
-        private void UpdateTitle() => this.titleMesh.Text = this.title;
+        private void UpdateTitle() =>
+            this.titleMesh.Text = this.localizedTitle != null
+                ? this.localizedTitle.Invoke()
+                : this.title;
 
         private void UpdateDisplayLogo()
         {

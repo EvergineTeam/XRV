@@ -88,6 +88,51 @@ namespace Evergine.Xrv.Ruler.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Feet Off.
+        /// </summary>
+        internal static string Settings_Ruler_Units_Feet_Off {
+            get {
+                return ResourceManager.GetString("Settings.Ruler.Units.Feet.Off", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feet Off.
+        /// </summary>
+        internal static string Settings_Ruler_Units_Feet_On {
+            get {
+                return ResourceManager.GetString("Settings.Ruler.Units.Feet.On", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meters Off.
+        /// </summary>
+        internal static string Settings_Ruler_Units_Meters_Off {
+            get {
+                return ResourceManager.GetString("Settings.Ruler.Units.Meters.Off", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meters On.
+        /// </summary>
+        internal static string Settings_Ruler_Units_Meters_On {
+            get {
+                return ResourceManager.GetString("Settings.Ruler.Units.Meters.On", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Measure Units.
+        /// </summary>
+        internal static string Settings_Ruler_Units_Title {
+            get {
+                return ResourceManager.GetString("Settings.Ruler.Units.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ruler.
         /// </summary>
         internal static string Settings_Tab_Name {

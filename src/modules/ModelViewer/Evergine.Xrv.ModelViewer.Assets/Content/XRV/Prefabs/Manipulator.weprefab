@@ -98,7 +98,7 @@ Root:
                 R: 255
               Ellipsis: true
               Font: 1c6e2929-d555-4c02-af49-50b4ecb01ce3
-              HorizontalAlignment: Left
+              HorizontalAlignment: Center
               IsEnabled: true
               Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
               LineSpacing: 0.0
@@ -107,9 +107,10 @@ Root:
                 Y: 0.0
               ScaleFactor: 0.100000001
               Size:
-                X: 0.5
-                Y: 0.100000165
-              Text: Loading ...
+                X: 0.800000012
+                Y: 0.100000016
+              Softness: 0.75
+              Text: Loading...
               VerticalAlignment: Top
               Wrapping: true
             - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -132,6 +133,11 @@ Root:
               OrientationAxis: Y
               TargetEntity: null
               UpdateOrder: 0.5
+            - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+              Id: 123b311d-b7f9-4186-af5e-d7645f2897f8
+              DictionaryKey: Model.Loading.Text
+              DictionaryName: Evergine.Xrv.ModelViewer.Resources.Strings
+              IsEnabled: true
           Children: []
           Id: 64ed8ce0-da65-46a8-b37c-e22366d58d3c
       Id: cf8242e7-a3ce-44d6-a867-dbd4123b1dd3
@@ -320,6 +326,7 @@ Root:
                     R: 255
                   TargetState: Off
                   Text: Options
+                  TextScale: 0.00600000005
                 - !Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons.ToggleButtonConfigurator,Evergine.MRTK
                   Id: bc4c2df2-c8e4-42f9-b440-71985558c565
                   AllowBackPlateNullMaterial: true
@@ -337,6 +344,7 @@ Root:
                     R: 255
                   TargetState: On
                   Text: Close
+                  TextScale: 0.00600000005
                 - !Evergine.Xrv.Core.UI.Buttons.XrvPressableButtonLookAndFeel,Evergine.Xrv.Core
                   Id: 3bc09c68-793f-4e41-809f-4662b9909327
                   IsEnabled: true
@@ -359,6 +367,18 @@ Root:
                     X: 0.0320000015
                     Y: 0.0320000015
                     Z: 0.0320000015
+                - !Evergine.Xrv.Core.Localization.ToggleButtonLocalization,Evergine.Xrv.Core
+                  Id: 0f08fccd-3498-4299-b494-8c7ab81cca08
+                  DictionaryKey: Model.Menu.Options
+                  DictionaryName: Evergine.Xrv.ModelViewer.Resources.Strings
+                  IsEnabled: true
+                  TargetState: Off
+                - !Evergine.Xrv.Core.Localization.ToggleButtonLocalization,Evergine.Xrv.Core
+                  Id: 8807bf0e-db55-4afa-834d-01f6896fa3db
+                  DictionaryKey: Model.Menu.Close
+                  DictionaryName: Evergine.Xrv.ModelViewer.Resources.Strings
+                  IsEnabled: true
+                  TargetState: On
               Children:
                 - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                   Name: PressableButtonPlatedRoot
@@ -612,6 +632,7 @@ Root:
                               Size:
                                 X: 0.0320000015
                                 Y: 0.00800000038
+                              Softness: 0.75
                               Text: Options
                               VerticalAlignment: Center
                               Wrapping: true

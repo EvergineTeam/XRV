@@ -9,19 +9,34 @@
     <PackageReference Include="Evergine.Mathematics" Version="2023.1.17.1-nightly" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Update="Resources\Help.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>Help.resx</DependentUpon>
+	</Compile>
+	<EmbeddedResource Update="Resources\Help.es.resx">
+		<DependentUpon>Help.resx</DependentUpon>
+		<SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Update="Resources\Help.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>Help.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<Compile Update="Resources\Strings.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>Strings.resx</DependentUpon>
+	</Compile>
+	<EmbeddedResource Update="Resources\Strings.es.resx">
+		<DependentUpon>Strings.resx</DependentUpon>
+		<SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Update="Resources\Strings.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>Strings.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\core\Evergine.Xrv.Core\Evergine.Xrv.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Resources\Strings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

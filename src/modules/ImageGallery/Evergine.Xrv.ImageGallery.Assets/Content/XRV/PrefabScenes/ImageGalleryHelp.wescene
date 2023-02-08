@@ -77,7 +77,7 @@ Items:
           Z: 1.0
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-        Name: TopText
+        Name: text1
         Tag: null
         IsEnabled: true
         IsStatic: false
@@ -118,6 +118,7 @@ Items:
             Size:
               X: 0.230000019
               Y: 0.170000017
+            Softness: 0.75
             Text: With this module, you will be able to navigate through different images. It has two different ways to change the showing image.
             VerticalAlignment: Top
             Wrapping: true
@@ -129,10 +130,15 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: 7ae7d45d-1f70-4129-85a1-ad4cc6fdf568
+            DictionaryKey: Text1
+            DictionaryName: Evergine.Xrv.ImageGallery.Resources.Help
+            IsEnabled: true
         Children: []
         Id: 505c2463-eb35-4632-9efe-4b3e0eb9ac3c
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-        Name: NextImageText
+        Name: text2
         Tag: null
         IsEnabled: true
         IsStatic: false
@@ -173,6 +179,7 @@ Items:
             Size:
               X: 0.195000052
               Y: 0.170000017
+            Softness: 0.75
             Text: Next Image
             VerticalAlignment: Top
             Wrapping: true
@@ -184,6 +191,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: a20a25fa-be65-4105-af81-918fa8c92c01
+            DictionaryKey: Text2
+            DictionaryName: Evergine.Xrv.ImageGallery.Resources.Help
+            IsEnabled: true
         Children: []
         Id: 833b3fcf-778a-4ad2-9b51-45b712a8f777
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -240,7 +252,7 @@ Items:
         Children: []
         Id: bd74d115-d52c-40c7-83c3-5c1f940eb58c
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-        Name: PreviousImageText
+        Name: text3
         Tag: null
         IsEnabled: true
         IsStatic: false
@@ -281,6 +293,7 @@ Items:
             Size:
               X: 0.230000019
               Y: 0.170000017
+            Softness: 0.75
             Text: Previous Image
             VerticalAlignment: Top
             Wrapping: true
@@ -292,6 +305,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: d42b7e82-6eae-4cc1-b2df-bab273760f7a
+            DictionaryKey: Text3
+            DictionaryName: Evergine.Xrv.ImageGallery.Resources.Help
+            IsEnabled: true
         Children: []
         Id: 339695c5-2944-49b0-a02b-e2bbd686e6d2
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -348,7 +366,7 @@ Items:
         Children: []
         Id: 64f05f15-e18c-465e-8b0d-b35f5d5e8ac6
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-        Name: SliderText
+        Name: text4
         Tag: null
         IsEnabled: true
         IsStatic: false
@@ -389,6 +407,7 @@ Items:
             Size:
               X: 0.0800000951
               Y: 0.115000054
+            Softness: 0.75
             Text: The slider also can be used to select the image.
             VerticalAlignment: Top
             Wrapping: true
@@ -400,6 +419,11 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: 48c5b9c6-c181-43f6-961d-24112c010f62
+            DictionaryKey: Text4
+            DictionaryName: Evergine.Xrv.ImageGallery.Resources.Help
+            IsEnabled: true
         Children: []
         Id: 2a4c7db5-74b4-4e3f-82f1-afcec2ef783a
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -771,6 +795,7 @@ Items:
                                 Size:
                                   X: 8.0
                                   Y: 1.10000002
+                                Softness: 0.75
                                 Text: Title
                                 VerticalAlignment: Bottom
                                 Wrapping: true
@@ -826,6 +851,7 @@ Items:
                                 Size:
                                   X: 8.0
                                   Y: 1.10000002
+                                Softness: 0.75
                                 Text: 0.00
                                 VerticalAlignment: Top
                                 Wrapping: true
@@ -858,7 +884,7 @@ Items:
                       W: 1.0
                       X: 0.0
                       Y: 0.0
-                      Z: -0.0
+                      Z: 0.0
                     LocalPosition:
                       X: -0.135000005
                       Y: -0.0
@@ -883,6 +909,7 @@ Items:
                       G: 255
                       R: 255
                     Text: 
+                    TextScale: 0.00600000005
                   - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                     Id: 3943eea3-3e8b-48d4-8168-5695a16009b8
                     IsEnabled: true
@@ -1129,7 +1156,7 @@ Items:
                                   W: 1.0
                                   X: 0.0
                                   Y: 0.0
-                                  Z: -0.0
+                                  Z: 0.0
                                 LocalPosition:
                                   X: 0.0
                                   Y: -0.0131131671
@@ -1154,10 +1181,11 @@ Items:
                                 Origin:
                                   X: 0.5
                                   Y: 0.5
-                                ScaleFactor: 0.00400000019
+                                ScaleFactor: 0.00600000005
                                 Size:
                                   X: 0.0320000015
                                   Y: 0.00800000038
+                                Softness: 0.75
                                 Text: 
                                 VerticalAlignment: Center
                                 Wrapping: true
@@ -1320,7 +1348,7 @@ Items:
                       W: 1.0
                       X: 0.0
                       Y: 0.0
-                      Z: -0.0
+                      Z: 0.0
                     LocalPosition:
                       X: 0.134741455
                       Y: -0.0
@@ -1345,6 +1373,7 @@ Items:
                       G: 255
                       R: 255
                     Text: ' '
+                    TextScale: 0.00600000005
                   - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                     Id: 39be779f-0733-4ffd-ae93-b62874898551
                     IsEnabled: true
@@ -1591,7 +1620,7 @@ Items:
                                   W: 1.0
                                   X: 0.0
                                   Y: 0.0
-                                  Z: -0.0
+                                  Z: 0.0
                                 LocalPosition:
                                   X: 0.0
                                   Y: -0.0131131671
@@ -1616,10 +1645,11 @@ Items:
                                 Origin:
                                   X: 0.5
                                   Y: 0.5
-                                ScaleFactor: 0.00400000019
+                                ScaleFactor: 0.00600000005
                                 Size:
                                   X: 0.0320000015
                                   Y: 0.00800000038
+                                Softness: 0.75
                                 Text: ' '
                                 VerticalAlignment: Center
                                 Wrapping: true
@@ -1772,16 +1802,6 @@ Items:
             Id: 6ab47c6b-b769-44e4-8821-d4489662d293
         Id: d9d3216a-46db-4a81-a6b4-10e5c35f309b
     Id: be61d3cf-332c-4466-8bc4-35b99c314a04
-  - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
-    Id: 8316f5db-3ecc-43ab-a414-6724ae05e1fd
-    Source: 0e6f8cc5-2149-4293-8e59-e8d02f419771
-    entityLinks: {}
-    modificationList:
-      - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[System.String,System.Private.CoreLib]],Evergine.Framework
-        Name: Text
-        Target: 2fe58453-2014-4391-b204-1cf4b85e25d1
-        TypedValue: 0.00
-    removedComponentList: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: 396a0f78-b8ad-4e0e-a54a-e6a39dbcbfd1

@@ -88,6 +88,24 @@ namespace Evergine.Xrv.Painter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This action can&apos;t be undone..
+        /// </summary>
+        internal static string Paint_Action_Clear_Confirm_Message {
+            get {
+                return ResourceManager.GetString("Paint.Action.Clear.Confirm.Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete all the drawing?.
+        /// </summary>
+        internal static string Paint_Action_Clear_Confirm_Title {
+            get {
+                return ResourceManager.GetString("Paint.Action.Clear.Confirm.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Undo.
         /// </summary>
         internal static string Paint_Action_Undo {

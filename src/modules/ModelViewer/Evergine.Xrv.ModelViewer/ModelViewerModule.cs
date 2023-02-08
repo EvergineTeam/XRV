@@ -1,8 +1,11 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Evergine.Common.Graphics;
-using Evergine.Components.Fonts;
-using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
@@ -13,14 +16,11 @@ using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
+using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.Lists;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Evergine.Xrv.Core;
+using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
 using Evergine.Xrv.Core.UI.Tabs;
@@ -41,6 +41,7 @@ namespace Evergine.Xrv.ModelViewer
     {
         private AssetsService assetsService;
         private XrvService xrv;
+        private LocalizationService localization;
         private Scene scene;
         private Prefab manipulatorPrefab;
         private Prefab repositoryWindow;
@@ -122,6 +123,7 @@ namespace Evergine.Xrv.ModelViewer
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
+            this.localization = this.xrv.Localization;
             this.scene = scene;
 
             this.HandMenuButton = new MenuButtonDescription()
@@ -139,8 +141,8 @@ namespace Evergine.Xrv.ModelViewer
             this.repositoriesListView = repositoryWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_repositories", true, true);
             this.repositoriesListView.DataSource = new ListViewData(2);
             this.repositoriesListView.Render = new ListViewRender()
-                                .AddColumn("Name", 0.7f, TextCellRenderer.Instance)
-                                .AddColumn("Models", 0.3f, TextCellRenderer.Instance);
+                .AddColumn("Name", 0.7f, TextCellRenderer.Instance)
+                .AddColumn("Models", 0.3f, TextCellRenderer.Instance);
 
             this.repositoriesListView.SelectedChanged += (s, e) => { this.RefreshModelList(); };
             this.repositoriesLoading = repositoryWindowEntity.FindChildrenByTag("PART_repositories_loading", true, true).First();
@@ -149,16 +151,20 @@ namespace Evergine.Xrv.ModelViewer
             this.modelsListView = repositoryWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_models", true, true);
             this.modelsListView.DataSource = new ListViewData(2);
             this.modelsListView.Render = new ListViewRender()
-                                .AddColumn("Name", 0.7f, TextCellRenderer.Instance)
-                                .AddColumn("Last update", 0.3f, TextCellRenderer.Instance);
+                .AddColumn("Name", 0.7f, TextCellRenderer.Instance)
+                .AddColumn("Last update", 0.3f, TextCellRenderer.Instance);
             this.modelsLoading = repositoryWindowEntity.FindChildrenByTag("PART_models_loading", true, true).First();
 
             // Buttons
-            var loadButton = this.CreateButton("Load", this.LoadModel);
+            var loadButton = this.CreateButton(
+                () => this.localization.GetString(() => Resources.Strings.Window_Load),
+                this.LoadModel);
             var loadHolder = repositoryWindowEntity.FindChildrenByTag("PART_loadbutton", true, true).First();
             loadHolder.AddChild(loadButton);
 
-            var cancelButton = this.CreateButton("Cancel", () => { this.window.Close(); });
+            var cancelButton = this.CreateButton(
+                () => this.localization.GetString(() => Core.Resources.Strings.Global_Cancel),
+                () => { this.window.Close(); });
             var cancelHolder = repositoryWindowEntity.FindChildrenByTag("PART_cancelbutton", true, true).First();
             cancelHolder.AddChild(cancelButton);
 
@@ -234,7 +240,7 @@ namespace Evergine.Xrv.ModelViewer
 
                             // Root Entity
                             root = new Entity()
-                                        .AddComponent(new Transform3D());
+                                .AddComponent(new Transform3D());
 
                             root.AddChild(modelEntity);
 
@@ -253,7 +259,7 @@ namespace Evergine.Xrv.ModelViewer
                         }
                         else
                         {
-                            throw new Exception($"3D format {extension} not supported.");
+                            throw new NotSupportedException($"3D format {extension} not supported.");
                         }
                     }
                 }
@@ -269,15 +275,19 @@ namespace Evergine.Xrv.ModelViewer
             }
         }
 
-        private Entity CreateButton(string buttonText, Action releasedAction)
+        private Entity CreateButton(Func<string> buttonText, Action releasedAction)
         {
+            var localization = this.xrv.Localization;
             var buttonPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);
             var button = buttonPrefab.Instantiate();
-            var buttonText3D = button.FindComponentInChildren<Text3DMesh>(true, "PART_Text", true, true);
-            buttonText3D.Text = buttonText;
-            var buttonPlate = button.FindComponentInChildren<MaterialComponent>(true, "PART_Plate", true, true);
-            buttonPlate.Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1);
-
+            button.AddComponent(new StandardButtonConfigurator
+            {
+                Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor1),
+            });
+            button.AddComponent(new ButtonLocalization
+            {
+                LocalizationFunc = buttonText,
+            });
             button.FindComponentInChildren<PressableButton>().ButtonReleased += (s, e) => releasedAction.Invoke();
 
             return button;

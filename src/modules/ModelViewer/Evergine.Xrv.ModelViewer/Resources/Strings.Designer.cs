@@ -88,6 +88,42 @@ namespace Evergine.Xrv.ModelViewer.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete this model? /n This action can&apos;t be undone..
+        /// </summary>
+        internal static string Model_Close_Confirmation_Message {
+            get {
+                return ResourceManager.GetString("Model.Close.Confirmation.Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        internal static string Model_Loading_Text {
+            get {
+                return ResourceManager.GetString("Model.Loading.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string Model_Menu_Close {
+            get {
+                return ResourceManager.GetString("Model.Menu.Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        internal static string Model_Menu_Options {
+            get {
+                return ResourceManager.GetString("Model.Menu.Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset.
         /// </summary>
         internal static string Reset {
@@ -102,6 +138,33 @@ namespace Evergine.Xrv.ModelViewer.Resources {
         internal static string Unlock {
             get {
                 return ResourceManager.GetString("Unlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load.
+        /// </summary>
+        internal static string Window_Load {
+            get {
+                return ResourceManager.GetString("Window.Load", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Models.
+        /// </summary>
+        internal static string Window_Models {
+            get {
+                return ResourceManager.GetString("Window.Models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repositories.
+        /// </summary>
+        internal static string Window_Repositories {
+            get {
+                return ResourceManager.GetString("Window.Repositories", resourceCulture);
             }
         }
         
