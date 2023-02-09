@@ -10,7 +10,7 @@ namespace Evergine.Xrv.Core.Themes.Texts
     /// </summary>
     public class ButtonTextStyle : BaseTextStyleComponent
     {
-        [BindComponent]
+        [BindComponent(isExactType: false)]
         private StandardButtonConfigurator configurator = null;
 
         /// <inheritdoc/>

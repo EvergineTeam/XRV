@@ -167,7 +167,7 @@ Items:
         Id: d391ac3d-350f-4876-84ec-757d2db97efc
         AsignedTo: Default
         IsEnabled: true
-        Material: cbfb293a-66ee-4bb2-86b8-1107b1283910
+        Material: 35370b6e-c416-4552-90b8-920312c56f04
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: afdf97e3-00ff-4f4d-820f-eba5c1a7128d
@@ -317,7 +317,7 @@ Items:
             Origin:
               X: 0.5
               Y: 0.5
-            ScaleFactor: 0.00600000005
+            ScaleFactor: 0.00800000038
             Size:
               X: 0.230000019
               Y: 0.170000017
@@ -338,6 +338,18 @@ Items:
             DictionaryKey: Settings.Ruler.Units.Title
             DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
             IsEnabled: true
+          - !Evergine.Xrv.Core.Themes.Texts.Text3dStyle,Evergine.Xrv.Core
+            Id: d62ca324-39df-484b-b302-6c26bd313518
+            ExplicitColor:
+              A: 255
+              B: 0
+              G: 0
+              R: 255
+            ExplicitThemeColor: PrimaryColor1
+            IsEnabled: true
+            OverrideColor: false
+            OverrideThemeColor: false
+            TextStyleKey: Xrv.Primary1.Size3
         Children: []
         Id: 3e6bb9b3-7185-4c6b-a574-467e5e110014
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
@@ -495,6 +507,32 @@ Items:
                 DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
                 IsEnabled: true
                 TargetState: On
+              - !Evergine.Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Evergine.Xrv.Core
+                Id: 55f72a29-33f3-4060-9aee-e0248e4ef3da
+                ExplicitColor:
+                  A: 255
+                  B: 0
+                  G: 0
+                  R: 255
+                ExplicitThemeColor: PrimaryColor1
+                IsEnabled: true
+                OverrideColor: false
+                OverrideThemeColor: false
+                TargetState: Off
+                TextStyleKey: Xrv.Primary2.Size2
+              - !Evergine.Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Evergine.Xrv.Core
+                Id: 2ea20e3c-9aa9-47ab-8f5a-d6f99b336c96
+                ExplicitColor:
+                  A: 255
+                  B: 0
+                  G: 0
+                  R: 255
+                ExplicitThemeColor: PrimaryColor1
+                IsEnabled: true
+                OverrideColor: false
+                OverrideThemeColor: false
+                TargetState: On
+                TextStyleKey: Xrv.Primary2.Size2
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: CompressableButtonVisuals
@@ -853,6 +891,32 @@ Items:
                 DictionaryName: Evergine.Xrv.Ruler.Resources.Strings
                 IsEnabled: true
                 TargetState: On
+              - !Evergine.Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Evergine.Xrv.Core
+                Id: 14e4eafc-27bf-460e-9af1-4e61111e9b94
+                ExplicitColor:
+                  A: 255
+                  B: 0
+                  G: 0
+                  R: 255
+                ExplicitThemeColor: PrimaryColor1
+                IsEnabled: true
+                OverrideColor: false
+                OverrideThemeColor: false
+                TargetState: Off
+                TextStyleKey: Xrv.Primary2.Size2
+              - !Evergine.Xrv.Core.Themes.Texts.ToggleButtonTextStyle,Evergine.Xrv.Core
+                Id: 4aaefcc7-ff1a-4a3b-83b5-b4f9d264bf7b
+                ExplicitColor:
+                  A: 255
+                  B: 0
+                  G: 0
+                  R: 255
+                ExplicitThemeColor: PrimaryColor1
+                IsEnabled: true
+                OverrideColor: false
+                OverrideThemeColor: false
+                TargetState: On
+                TextStyleKey: Xrv.Primary2.Size2
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: CompressableButtonVisuals

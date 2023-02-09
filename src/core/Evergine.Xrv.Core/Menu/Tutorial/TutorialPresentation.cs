@@ -55,7 +55,7 @@ namespace Evergine.Xrv.Core.Menu.Tutorial
             handMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.HandTutorial);
             handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? false : true;
             var panelMesh = handTutorialEntity.Find("[this].Panel");
-            panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.PrimaryColor2);
+            panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor4);
 
             // In front of the camera
             var camera = this.Owner.Scene.Managers.RenderManager?.ActiveCamera3D;

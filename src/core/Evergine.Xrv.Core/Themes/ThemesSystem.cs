@@ -6,6 +6,7 @@ using Evergine.Mathematics;
 using Evergine.MRTK;
 using Evergine.MRTK.Effects;
 using System;
+using System.Linq;
 
 namespace Evergine.Xrv.Core.Themes
 {
@@ -88,6 +89,7 @@ namespace Evergine.Xrv.Core.Themes
             this.ChangeColorAndNotify(CoreResourcesIDs.Materials.SecondaryColor3, ThemeColor.SecondaryColor3);
             this.ChangeColorAndNotify(CoreResourcesIDs.Materials.SecondaryColor4, ThemeColor.SecondaryColor4);
             this.UpdateFrontPlaneGradientTexture();
+            this.UpdateAllMrtkMaterials();
         }
 
         internal void Load()
@@ -118,6 +120,8 @@ namespace Evergine.Xrv.Core.Themes
 
         private void CurrentTheme_ColorChanged(object sender, ThemeColor color)
         {
+            this.UpdateMrtkMaterialsByThemeColor(color);
+
             switch (color)
             {
                 case ThemeColor.PrimaryColor1:
@@ -260,6 +264,29 @@ namespace Evergine.Xrv.Core.Themes
             holoGraphic.ProximityLightCenterColorOverride = ProximityLightDiff.ApplyDiffTo(color, diff.CenterDiff);
             holoGraphic.ProximityLightMiddleColorOverride = ProximityLightDiff.ApplyDiffTo(color, diff.MiddleDiff);
             holoGraphic.ProximityLightOuterColorOverride = ProximityLightDiff.ApplyDiffTo(color, diff.OuterDiff);
+        }
+
+        private void UpdateAllMrtkMaterials() =>
+            Enum.GetValues(typeof(ThemeColor))
+                .Cast<ThemeColor>()
+                .ToList()
+                .ForEach(this.UpdateMrtkMaterialsByThemeColor);
+
+        private void UpdateMrtkMaterialsByThemeColor(ThemeColor color)
+        {
+            var themedColor = this.currentTheme.GetColor(color);
+
+            switch (color)
+            {
+                case ThemeColor.PrimaryColor2:
+                    this.UpdateHoloGraphicAlbedo(MRTKResourceIDs.Materials.PinchSlider.PinchSlider_Thumb, themedColor);
+                    this.UpdateHoloGraphicAlbedo(MRTKResourceIDs.Materials.Scrolling.ScrollViewerBar, themedColor);
+                    break;
+                case ThemeColor.PrimaryColor3:
+                    this.UpdateHoloGraphicAlbedo(MRTKResourceIDs.Materials.loadingMat, themedColor);
+                    this.UpdateHoloGraphicAlbedo(MRTKResourceIDs.Materials.PinchSlider.PinchSlider_Track, themedColor);
+                    break;
+            }
         }
 
         private class ProximityLightDiff

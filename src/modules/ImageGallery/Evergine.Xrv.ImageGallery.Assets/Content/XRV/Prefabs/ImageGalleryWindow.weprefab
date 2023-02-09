@@ -438,6 +438,7 @@ Root:
                           Size:
                             X: 8.0
                             Y: 1.10000002
+                          Softness: 0.75
                           Text: Title
                           VerticalAlignment: Bottom
                           Wrapping: true
@@ -493,6 +494,7 @@ Root:
                           Size:
                             X: 8.0
                             Y: 1.10000002
+                          Softness: 0.75
                           Text: 0.00
                           VerticalAlignment: Top
                           Wrapping: true
@@ -525,7 +527,7 @@ Root:
                 W: 1.0
                 X: 0.0
                 Y: 0.0
-                Z: -0.0
+                Z: 0.0
               LocalPosition:
                 X: -0.135000005
                 Y: -0.0
@@ -550,6 +552,7 @@ Root:
                 G: 255
                 R: 255
               Text: 
+              TextScale: 0.00999999978
             - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
               Id: 78b129a4-4abb-41ec-a4f3-282ae18fa500
               IsEnabled: true
@@ -572,6 +575,18 @@ Root:
               IsEnabled: true
               TextPositionOffset: 0.0
               UpdateOrder: 0.5
+            - !Evergine.Xrv.Core.Themes.Texts.ButtonTextStyle,Evergine.Xrv.Core
+              Id: 11743e4c-f540-4dea-810d-62f4056c6c85
+              ExplicitColor:
+                A: 255
+                B: 0
+                G: 0
+                R: 255
+              ExplicitThemeColor: PrimaryColor1
+              IsEnabled: true
+              OverrideColor: false
+              OverrideThemeColor: false
+              TextStyleKey: Xrv.Primary1.Size2
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -796,7 +811,7 @@ Root:
                             W: 1.0
                             X: 0.0
                             Y: 0.0
-                            Z: -0.0
+                            Z: 0.0
                           LocalPosition:
                             X: 0.0
                             Y: -0.0131131671
@@ -821,10 +836,11 @@ Root:
                           Origin:
                             X: 0.5
                             Y: 0.5
-                          ScaleFactor: 0.00400000019
+                          ScaleFactor: 0.00999999978
                           Size:
                             X: 0.0320000015
                             Y: 0.00800000038
+                          Softness: 0.75
                           Text: 
                           VerticalAlignment: Center
                           Wrapping: true
@@ -987,7 +1003,7 @@ Root:
                 W: 1.0
                 X: 0.0
                 Y: 0.0
-                Z: -0.0
+                Z: 0.0
               LocalPosition:
                 X: 0.134741455
                 Y: -0.0
@@ -1012,6 +1028,7 @@ Root:
                 G: 255
                 R: 255
               Text: ' '
+              TextScale: 0.00999999978
             - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
               Id: ab2ebff8-be30-40d8-befd-12d50d478dbc
               IsEnabled: true
@@ -1034,6 +1051,18 @@ Root:
               IsEnabled: true
               TextPositionOffset: 0.0
               UpdateOrder: 0.5
+            - !Evergine.Xrv.Core.Themes.Texts.ButtonTextStyle,Evergine.Xrv.Core
+              Id: 9e43029c-1586-4e2f-8c83-23c3d804903f
+              ExplicitColor:
+                A: 255
+                B: 0
+                G: 0
+                R: 255
+              ExplicitThemeColor: PrimaryColor1
+              IsEnabled: true
+              OverrideColor: false
+              OverrideThemeColor: false
+              TextStyleKey: Xrv.Primary1.Size2
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -1258,7 +1287,7 @@ Root:
                             W: 1.0
                             X: 0.0
                             Y: 0.0
-                            Z: -0.0
+                            Z: 0.0
                           LocalPosition:
                             X: 0.0
                             Y: -0.0131131671
@@ -1283,10 +1312,11 @@ Root:
                           Origin:
                             X: 0.5
                             Y: 0.5
-                          ScaleFactor: 0.00400000019
+                          ScaleFactor: 0.00999999978
                           Size:
                             X: 0.0320000015
                             Y: 0.00800000038
+                          Softness: 0.75
                           Text: ' '
                           VerticalAlignment: Center
                           Wrapping: true

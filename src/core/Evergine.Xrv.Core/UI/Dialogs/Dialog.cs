@@ -1,14 +1,15 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Evergine.Xrv.Core.Extensions;
+using Evergine.Xrv.Core.Themes.Texts;
 using Evergine.Xrv.Core.UI.Windows;
 
 namespace Evergine.Xrv.Core.UI.Dialogs
@@ -114,7 +115,12 @@ namespace Evergine.Xrv.Core.UI.Dialogs
         {
             var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);
             var buttonInstance = prefab.Instantiate();
-            buttonInstance.AddComponent(option.Configuration);
+            buttonInstance
+                .AddComponent(option.Configuration)
+                .AddComponent(new ButtonTextStyle
+                {
+                    TextStyleKey = DefaultTextStyles.XrvPrimary2Size2,
+                });
 
             return buttonInstance;
         }

@@ -27,10 +27,14 @@ namespace Evergine.Xrv.Core.Themes.Texts
         [BindService]
         private XrvService xrvService = null;
 
-        private ILogger logger;
-
         private string textStyleKey;
         private TextStyle currentStyle;
+        private bool overrideThemeColor;
+        private ThemeColor explicitThemeColor;
+        private bool overrideColor;
+        private Color explicitColor = Color.Red;
+
+        private ILogger logger;
 
         /// <summary>
         /// Gets or sets text style key to be applied to the text.
@@ -47,6 +51,88 @@ namespace Evergine.Xrv.Core.Themes.Texts
                 {
                     this.textStyleKey = value;
                     this.OnTextStyleUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether <see cref="TextStyle"/> color should be
+        /// overriden by <see cref="ExplicitThemeColor"/>.
+        /// </summary>
+        public bool OverrideThemeColor
+        {
+            get => this.overrideThemeColor;
+
+            set
+            {
+                if (this.overrideThemeColor != value)
+                {
+                    this.overrideThemeColor = value;
+                    if (this.IsAttached)
+                    {
+                        this.OnTextStyleUpdate();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets explicit theme color.
+        /// </summary>
+        public ThemeColor ExplicitThemeColor
+        {
+            get => this.explicitThemeColor;
+
+            set
+            {
+                if (this.explicitThemeColor != value)
+                {
+                    this.explicitThemeColor = value;
+                    if (this.IsAttached)
+                    {
+                        this.OnTextStyleUpdate();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether <see cref="TextStyle"/> color should be
+        /// overriden by <see cref="ExplicitColor"/>.
+        /// </summary>
+        public bool OverrideColor
+        {
+            get => this.overrideColor;
+
+            set
+            {
+                if (this.overrideColor != value)
+                {
+                    this.overrideColor = value;
+                    if (this.IsAttached)
+                    {
+                        this.OnTextStyleUpdate();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets explicit color.
+        /// </summary>
+        public Color ExplicitColor
+        {
+            get => this.explicitColor;
+
+            set
+            {
+                if (this.explicitColor != value)
+                {
+                    this.explicitColor = value;
+                    if (this.IsAttached)
+                    {
+                        this.OnTextStyleUpdate();
+                    }
                 }
             }
         }
@@ -95,9 +181,17 @@ namespace Evergine.Xrv.Core.Themes.Texts
             var currentTheme = this.themeSystem?.CurrentTheme;
             Color? preferredColor = null;
 
-            if (style.ThemeColor.HasValue && currentTheme != null)
+            if (this.overrideThemeColor)
             {
-                preferredColor = currentTheme.GetColor(style.ThemeColor.Value);
+                preferredColor = currentTheme?.GetColor(this.explicitThemeColor);
+            }
+            else if (this.overrideColor)
+            {
+                preferredColor = this.explicitColor;
+            }
+            else if (style.ThemeColor.HasValue)
+            {
+                preferredColor = currentTheme?.GetColor(style.ThemeColor.Value);
             }
             else if (style.TextColor.HasValue)
             {

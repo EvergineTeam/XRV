@@ -9,6 +9,7 @@ using Evergine.Framework.XR;
 using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.Emulation;
+using Evergine.Xrv.Core;
 using System;
 using System.Linq;
 
@@ -24,6 +25,9 @@ namespace Evergine.Xrv.Painter.Components
 
         [BindComponent]
         private PainterManager manager = null;
+
+        [BindService]
+        private XrvService xrvService = null;
 
         private Cursor cursor;
         private Vector3 lastPosition;
@@ -198,9 +202,15 @@ namespace Evergine.Xrv.Painter.Components
         private void Manager_ModeChanged(object sender, PainterModes mode)
         {
             this.Pointer.IsEnabled = mode != PainterModes.Hand;
-            this.pointerMaterial.Albedo = mode == PainterModes.Painter ? Color.White : Color.Red;
+            this.pointerMaterial.Albedo = this.GetPointerColorByMode(mode);
             this.pointerTransform.LocalScale = mode == PainterModes.Eraser
                 ? Vector3.One * RemoveCursorScaleFactor : Vector3.One;
+        }
+
+        private Color GetPointerColorByMode(PainterModes mode)
+        {
+            var theme = this.xrvService.ThemesSystem.CurrentTheme;
+            return mode == PainterModes.Painter ? theme.PrimaryColor3 : theme.SecondaryColor3;
         }
 
         private void DoAction(Vector3 position)
@@ -250,7 +260,7 @@ namespace Evergine.Xrv.Painter.Components
         private void CursorMaterialAssignation_MaterialUpdated(object sender, EventArgs e)
         {
             this.pointerMaterial = new HoloGraphic(this.Pointer.FindComponentInChildren<MaterialComponent>().Material);
-            this.pointerMaterial.Albedo = this.manager.Mode == PainterModes.Painter ? Color.White : Color.Red;
+            this.pointerMaterial.Albedo = this.GetPointerColorByMode(this.manager.Mode);
             this.pointerMaterial.Parameters_Alpha = this.MinAlpha;
         }
     }

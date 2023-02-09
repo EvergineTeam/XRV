@@ -217,7 +217,10 @@ namespace Evergine.Xrv.ImageGallery.Components
 
         private void SliderInteractionEnded(object sender, EventArgs e)
         {
-            this.RecalculateSliderPosition();
+            if (!Application.Current.IsEditor)
+            {
+                this.RecalculateSliderPosition();
+            }
         }
 
         private void RecalculateSliderPosition()
