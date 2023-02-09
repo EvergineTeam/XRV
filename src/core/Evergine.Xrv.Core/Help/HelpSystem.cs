@@ -77,12 +77,13 @@ namespace Evergine.Xrv.Core.Help
                 Contents = this.GeneralHelp,
             });
 
-            window.Tabs.Add(new TabItem
-            {
-                Name = () => this.localization.GetString(() => Resources.Strings.Help_Tab_About),
-                Order = int.MaxValue,
-                Contents = this.AboutHelp,
-            });
+            // TODO: uncomment when working on fully supporting about section
+            ////window.Tabs.Add(new TabItem
+            ////{
+            ////    Name = () => this.localization.GetString(() => Resources.Strings.Help_Tab_About),
+            ////    Order = int.MaxValue,
+            ////    Contents = this.AboutHelp,
+            ////});
 
             return window;
         }
