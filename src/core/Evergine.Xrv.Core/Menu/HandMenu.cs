@@ -17,6 +17,7 @@ using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Extensions;
+using Evergine.Xrv.Core.Menu.PalmDetection;
 using Evergine.Xrv.Core.Modules;
 using Evergine.Xrv.Core.Themes.Texts;
 using Evergine.Xrv.Core.UI.Windows;
@@ -51,7 +52,7 @@ namespace Evergine.Xrv.Core.Menu
         private XrvService xrvService = null;
 
         [BindComponent(isExactType: false, source: BindComponentSource.Scene)]
-        private IPalmPanelBehavior palmPanelBehavior = null;
+        private PalmPanelBehaviorBase palmPanelBehavior = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner)]
         private WindowTagAlong tagAlong = null;

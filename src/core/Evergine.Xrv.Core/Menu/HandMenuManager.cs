@@ -7,6 +7,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features;
+using Evergine.Xrv.Core.Menu.PalmDetection;
 using Evergine.Xrv.Core.Menu.Tutorial;
 
 namespace Evergine.Xrv.Core.Menu
@@ -15,7 +16,7 @@ namespace Evergine.Xrv.Core.Menu
     {
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
-        private IPalmPanelBehavior palmPanelBehavior;
+        private PalmPanelBehaviorBase palmPanelBehavior;
 
         private Entity menuEntity;
 
@@ -30,7 +31,7 @@ namespace Evergine.Xrv.Core.Menu
             if (Tools.IsXRPlatformInputTrackingAvailable())
             {
                 // Quest / Hololens
-                this.palmPanelBehavior = new PalmPanelBehavior();
+                this.palmPanelBehavior = new XRPalmPanelBehavior();
             }
             else
             {
@@ -39,8 +40,10 @@ namespace Evergine.Xrv.Core.Menu
             }
 
             this.palmPanelBehavior.DistanceFromHand = 0.1f;
-            this.palmPanelBehavior.LookAtCameraUpperThreshold = 0.6f;
-            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.6f;
+            this.palmPanelBehavior.LookAtCameraUpperThreshold = 0.9f;
+            this.palmPanelBehavior.LookAtCameraLowerThreshold = 0.7f;
+            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.95f;
+            this.palmPanelBehavior.OpenPalmLowerThreshold = 0.85f;
 
             var menuPrefab = this.GetMenuPrefab();
             this.menuEntity = menuPrefab.Instantiate();
