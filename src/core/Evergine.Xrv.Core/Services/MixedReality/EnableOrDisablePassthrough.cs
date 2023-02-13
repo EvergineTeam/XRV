@@ -22,6 +22,7 @@ namespace Evergine.Xrv.Core.Services.MixedReality
         private VisuallyEnabledController visuallyEnabledController = null;
 
         private PasstroughService passthroughService;
+        private bool ignoreToggleStateChanges;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -32,6 +33,8 @@ namespace Evergine.Xrv.Core.Services.MixedReality
                 this.passthroughService = this.xrv.Services.Passthrough;
                 this.UpdateButtonStatus();
             }
+
+            this.ignoreToggleStateChanges = true;
 
             return attached;
         }
@@ -47,12 +50,21 @@ namespace Evergine.Xrv.Core.Services.MixedReality
         protected override void OnDeactivated()
         {
             base.OnDeactivated();
+
+            this.ignoreToggleStateChanges = true;
             this.toggleButton.Toggled -= this.ToggleButton_Toggled;
         }
 
         private void ToggleButton_Toggled(object sender, EventArgs args)
         {
-            if (this.toggleButton.IsOn)
+            // ToggleStateManager forces a default state that may provoke an
+            // accidental change of passthroug state. We just ignore this first
+            // toggle event invoke, and listen to laters (made by user, BTW).
+            if (this.ignoreToggleStateChanges)
+            {
+                this.ignoreToggleStateChanges = false;
+            }
+            else if (this.toggleButton.IsOn)
             {
                 this.passthroughService?.Enable();
             }
