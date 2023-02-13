@@ -466,6 +466,24 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Down.
+        /// </summary>
+        public static string TabControl_Down {
+            get {
+                return ResourceManager.GetString("TabControl.Down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Up.
+        /// </summary>
+        public static string TabControl_Up {
+            get {
+                return ResourceManager.GetString("TabControl.Up", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
         public static string Window_Button_Close {

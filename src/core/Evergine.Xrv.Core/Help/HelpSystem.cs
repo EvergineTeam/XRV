@@ -107,6 +107,7 @@ namespace Evergine.Xrv.Core.Help
             if (this.handMenuButtonDescription == message.Description)
             {
                 this.Window.Open();
+                this.Window.TabControl.MaxVisibleItems = 5;
             }
         }
 

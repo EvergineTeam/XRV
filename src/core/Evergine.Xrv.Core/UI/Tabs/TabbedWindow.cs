@@ -30,6 +30,11 @@ namespace Evergine.Xrv.Core.UI.Tabs
         public IList<TabItem> Tabs { get => this.tabControl?.Items ?? this.tabsToBeLoadedWhenAvailable; }
 
         /// <summary>
+        /// Gets window <see cref="TabControl"/> instance.
+        /// </summary>
+        public TabControl TabControl => this.tabControl;
+
+        /// <summary>
         /// Creates a tabbed window instance.
         /// </summary>
         /// <param name="xrvService">XRV service instance.</param>

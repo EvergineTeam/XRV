@@ -45,31 +45,24 @@ namespace XrvSamples.Scenes
                 .First()
                 .FindComponentInChildren<Text3DMesh>();
 
-            var window = this.Managers.EntityManager
-                .FindAllByTag("window")
-                .First()
-                .FindComponentInChildren<Window>();
-            var tabEntity = TabControl.Builder
-                .Create()
-                .WithSize(new Vector2(0.315f, 0.2f))
-                .AddItem(new TabItem
-                {
-                    Name = () => "Repositories",
-                    Contents = () => this.CreateText(0),
-                })
-                .Build();
-            this.tabControl = tabEntity.FindComponent<TabControl>();
-            this.UpdateCounts();
-
-            EvergineForegroundTask.Run(() =>
+            var window = xrv.WindowsSystem.CreateWindow(config =>
             {
-                var transform = tabEntity.FindComponent<Transform3D>();
-                var position = transform.LocalPosition;
-                position.X += 0.036f;
-                transform.LocalPosition = position;
-                window.Configurator.Content = tabEntity;
-                window.Configurator.DisplayFrontPlate = false;
+                var tabEntity = TabControl.Builder
+                    .Create()
+                    .WithSize(new Vector2(0.315f, 0.2f))
+                    .AddItem(new TabItem
+                    {
+                        Name = () => "Repositories",
+                        Contents = () => this.CreateText(0),
+                    })
+                    .Build();
+                this.tabControl = tabEntity.FindComponent<TabControl>();
+                this.UpdateCounts();
+                config.Content = tabEntity;
+                config.DisplayFrontPlate = false;
             });
+
+            EvergineForegroundTask.Run(window.Open);
         }
 
         private void IncreaseNumberOfItems_ButtonReleased(object sender, EventArgs e)

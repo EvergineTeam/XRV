@@ -28,11 +28,34 @@ namespace Evergine.Xrv.Core.Extensions
         /// Removes all children within an entity.
         /// </summary>
         /// <param name="entity">Target entity.</param>
-        public static void RemoveAllChildren(this Entity entity)
+        public static void RemoveAllChildren(this Entity entity) =>
+            RemoveAllChildren(entity, _ => true);
+
+        /// <summary>
+        /// Removes all children within an entity after evaluating a condition.
+        /// Items that do not satisfy the condition will not be removed.
+        /// </summary>
+        /// <param name="entity">Target entity.</param>
+        /// <param name="evaluate">Removal evaluation function.</param>
+        public static void RemoveAllChildren(this Entity entity, Func<Entity, bool> evaluate)
         {
-            while (entity.NumChildren > 0)
+            /*
+             * Approach is leaving all non-removable items at the beginning of the
+             * collection.
+             */
+            int currentSkipIndex = -1;
+
+            while (entity.NumChildren > currentSkipIndex + 1)
             {
-                entity.RemoveChild(entity.ChildEntities.ElementAt(0));
+                var currentEntity = entity.ChildEntities.ElementAt(currentSkipIndex + 1);
+                if (evaluate(currentEntity))
+                {
+                    entity.RemoveChild(currentEntity);
+                }
+                else
+                {
+                    currentSkipIndex++;
+                }
             }
         }
 

@@ -33,11 +33,14 @@ namespace Evergine.Xrv.Core.UI.Tabs
         private Vector2 size;
         private TabItem selectedItem;
         private Entity contentsContainer;
+        private int? maxVisibleItems;
 
         private Vector3 defaultCurrentItemPlatePosition;
         private IWorkAction currentItemChangeAnimation;
         private Color inactiveItemTextColor;
         private Color activeItemTextColor;
+
+        private int currentSkippedItemsCount;
 
         [BindService]
         private XrvService xrvService = null;
@@ -57,7 +60,14 @@ namespace Evergine.Xrv.Core.UI.Tabs
         [BindComponent(source: BindComponentSource.Children, tag: "PART_tab_control_buttons_container")]
         private Transform3D buttonsContainerTransform = null;
 
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_tab_control_more")]
+        private Entity moreItemsContainer = null;
+
         private Entity buttonsContainer;
+        private Entity moreItemsUpEntity;
+        private Entity moreItemsDownEntity;
+        private PressableButton moreItemsUpButton;
+        private PressableButton moreItemsDownButton;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TabControl"/> class.
@@ -162,6 +172,31 @@ namespace Evergine.Xrv.Core.UI.Tabs
         public IList<TabItem> Items { get => this.items; }
 
         /// <summary>
+        /// Gets or sets maximum number of visible items.
+        /// </summary>
+        public int? MaxVisibleItems
+        {
+            get => this.maxVisibleItems;
+
+            set
+            {
+                if (value.HasValue && value < 1)
+                {
+                    throw new InvalidOperationException($"{nameof(this.MaxVisibleItems)} should be greater than 0");
+                }
+
+                if (this.maxVisibleItems != value)
+                {
+                    this.maxVisibleItems = value;
+                    if (this.IsAttached)
+                    {
+                        this.ReorderItems();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets builder instance for tab control.
         /// </summary>
         public static TabControlBuilder Builder { get; internal set; }
@@ -175,6 +210,14 @@ namespace Evergine.Xrv.Core.UI.Tabs
                 this.items.CollectionChanged += this.Items_CollectionChanged;
                 this.buttonsContainer = this.Owner.FindChildrenByTag("PART_tab_control_buttons_container", isRecursive: true).First();
                 this.contentsContainer = this.Owner.FindChildrenByTag("PART_tab_control_current_item_contents", isRecursive: true).First();
+                this.moreItemsUpEntity = this.moreItemsContainer.FindChildrenByTag("PART_tab_control_more_up").First();
+                this.moreItemsDownEntity = this.moreItemsContainer.FindChildrenByTag("PART_tab_control_more_down").First();
+                this.moreItemsUpButton = this.moreItemsUpEntity.FindComponentInChildren<PressableButton>();
+                this.moreItemsDownButton = this.moreItemsDownEntity.FindComponentInChildren<PressableButton>();
+
+                this.moreItemsUpButton.ButtonReleased += this.MoreItemsUpButton_ButtonReleased;
+                this.moreItemsDownButton.ButtonReleased += this.MoreItemsDownButton_ButtonReleased;
+
                 this.InternalAddItems(this.items); // We can have items added before this component has been attached
             }
 
@@ -197,6 +240,8 @@ namespace Evergine.Xrv.Core.UI.Tabs
         {
             base.OnDetach();
             this.items.CollectionChanged -= this.Items_CollectionChanged;
+            this.moreItemsUpButton.ButtonReleased -= this.MoreItemsUpButton_ButtonReleased;
+            this.moreItemsDownButton.ButtonReleased -= this.MoreItemsDownButton_ButtonReleased;
         }
 
         private void UpdateFrontPlateSize()
@@ -306,7 +351,8 @@ namespace Evergine.Xrv.Core.UI.Tabs
 
         private void UpdateSelectedItem()
         {
-            var itemIndex = -1;
+            var selectedItemIndex = -1;
+            bool hasSpaceForAllItems = this.HasSpaceForAllTabItems();
 
             int i = 0;
             foreach (var child in this.itemsEnumerator)
@@ -314,14 +360,21 @@ namespace Evergine.Xrv.Core.UI.Tabs
                 TabItem currentItem = this.mappings.ContainsKey(child) ? this.mappings[child] : null;
                 if (currentItem == this.selectedItem)
                 {
-                    itemIndex = i;
+                    // If we don't have enough space for all items, last slot will be reserved
+                    // for up/down controls.
+                    selectedItemIndex = i;
                     break;
                 }
 
                 i++;
             }
 
-            if (itemIndex != -1)
+            var visibleItemsRange = this.GetVisibleItemsRange();
+            bool isInRange = selectedItemIndex >= visibleItemsRange.MinIndex && selectedItemIndex <= visibleItemsRange.MaxIndex;
+            this.currentItemPlate.Owner.IsEnabled = Application.Current.IsEditor
+                || (this.items.Any() && isInRange);
+
+            if (isInRange)
             {
                 this.currentItemChangeAnimation?.TryCancel();
 
@@ -329,7 +382,7 @@ namespace Evergine.Xrv.Core.UI.Tabs
                 var toPosition = new Vector3
                 {
                     X = this.defaultCurrentItemPlatePosition.X,
-                    Y = this.defaultCurrentItemPlatePosition.Y - (itemIndex * ButtonConstants.SquareButtonSize),
+                    Y = this.defaultCurrentItemPlatePosition.Y - ((selectedItemIndex - visibleItemsRange.MinIndex) * ButtonConstants.SquareButtonSize),
                     Z = this.defaultCurrentItemPlatePosition.Z,
                 };
 
@@ -348,13 +401,14 @@ namespace Evergine.Xrv.Core.UI.Tabs
                         this.currentItemPlateTransform.LocalPosition = position;
                     });
                 this.currentItemChangeAnimation.Run();
-            }
 
-            this.UpdateContent();
-            this.SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(this.selectedItem));
+                this.UpdateContent();
+                this.SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(this.selectedItem));
+            }
         }
 
-        private void InternalClearItems() => this.buttonsContainer.RemoveAllChildren();
+        private void InternalClearItems() =>
+            this.buttonsContainer.RemoveAllChildren(child => child != this.moreItemsContainer);
 
         private void UpdateContent()
         {
@@ -391,19 +445,49 @@ namespace Evergine.Xrv.Core.UI.Tabs
 
         private void ReorderItems()
         {
-            if (this.IsAttached)
+            if (!this.IsAttached)
             {
-                int i = 0;
-                foreach (var child in this.itemsEnumerator)
+                return;
+            }
+
+            bool hasSpaceForAllItems = this.HasSpaceForAllTabItems();
+            this.moreItemsContainer.IsEnabled = !hasSpaceForAllItems || Application.Current.IsEditor;
+
+            var visibleItemsRange = this.GetVisibleItemsRange();
+            if (visibleItemsRange.MaxIndex - visibleItemsRange.MinIndex <= 0)
+            {
+                return;
+            }
+
+            // We are going to display only items that fit existing space. If current items count
+            // fits with available space everything is ok. If not, we have to reserve last
+            // item slot to place up/down controls.
+            Action<Entity, int> updatePositionFunc = (entity, currentIndexPosition) =>
+            {
+                var transform = entity.FindComponent<Transform3D>();
+                var newPosition = transform.LocalPosition;
+                newPosition.Y = -currentIndexPosition * ButtonConstants.SquareButtonSize;
+                transform.LocalPosition = newPosition;
+            };
+
+            int currentItemPosition = 0;
+            foreach (var child in this.itemsEnumerator)
+            {
+                child.IsEnabled = currentItemPosition >= visibleItemsRange.MinIndex && currentItemPosition <= visibleItemsRange.MaxIndex;
+                if (child.IsEnabled)
                 {
-                    var transform = child.FindComponent<Transform3D>();
-                    var position = transform.LocalPosition;
-                    position.Y = -i * ButtonConstants.SquareButtonSize;
-                    transform.LocalPosition = position;
-                    i++;
+                    // Update positions for visible items only
+                    updatePositionFunc(child, currentItemPosition - visibleItemsRange.MinIndex);
                 }
 
-                this.currentItemPlate.Owner.IsEnabled = this.items.Any() || Application.Current.IsEditor;
+                currentItemPosition++;
+            }
+
+            if (!hasSpaceForAllItems)
+            {
+                updatePositionFunc(this.moreItemsContainer, visibleItemsRange.MaxIndex - visibleItemsRange.MinIndex + 1);
+                this.moreItemsDownEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.HasMoreItemsDown();
+                this.moreItemsUpEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.HasMoreItemsUp();
             }
         }
 
@@ -439,6 +523,35 @@ namespace Evergine.Xrv.Core.UI.Tabs
             return isSelected ? theme.PrimaryColor3 : theme.SecondaryColor1;
         }
 
+        private int GetMaxNumberOfVisibleItems()
+        {
+            int maxNumberOfSlots = (int)Math.Floor(this.size.Y / ButtonConstants.SquareButtonSize);
+
+            return this.maxVisibleItems.HasValue
+                ? (int)Math.Min(maxNumberOfSlots, this.maxVisibleItems.Value)
+                : maxNumberOfSlots;
+        }
+
+        private (int MinIndex, int MaxIndex) GetVisibleItemsRange()
+        {
+            bool hasSpaceForAllItems = this.HasSpaceForAllTabItems();
+            int maxVisibleItems = this.GetMaxNumberOfVisibleItems();
+            int maxItemPosition = hasSpaceForAllItems ? maxVisibleItems - 1 : maxVisibleItems - 2;
+            int maxVisibleItemPosition = maxItemPosition + this.currentSkippedItemsCount;
+
+            return (this.currentSkippedItemsCount, maxVisibleItemPosition);
+        }
+
+        private bool HasSpaceForAllTabItems() => this.GetMaxNumberOfVisibleItems() >= (this.items?.Count ?? 0);
+
+        private bool HasMoreItemsUp() => this.currentSkippedItemsCount > 0;
+
+        private bool HasMoreItemsDown()
+        {
+            var visibleItemsRange = this.GetVisibleItemsRange();
+            return visibleItemsRange.MaxIndex < this.items.Count() - 1;
+        }
+
         private void PressableButton_ButtonReleased(object sender, EventArgs e)
         {
             if (sender is PressableButton button)
@@ -449,6 +562,26 @@ namespace Evergine.Xrv.Core.UI.Tabs
                     this.SelectedItem = this.mappings[owner];
                     this.UpdateItemsTextColor();
                 }
+            }
+        }
+
+        private void MoreItemsDownButton_ButtonReleased(object sender, EventArgs e)
+        {
+            if (this.HasMoreItemsDown())
+            {
+                this.currentSkippedItemsCount++;
+                this.ReorderItems();
+                this.UpdateSelectedItem();
+            }
+        }
+
+        private void MoreItemsUpButton_ButtonReleased(object sender, EventArgs e)
+        {
+            if (this.HasMoreItemsUp())
+            {
+                this.currentSkippedItemsCount--;
+                this.ReorderItems();
+                this.UpdateSelectedItem();
             }
         }
 
