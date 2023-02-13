@@ -27,7 +27,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
         private HashSet<byte> coreKeys;
         private ILogger logger;
 
-        private static Guid CoreKeyCorrelation = Guid.Empty;
+        private static Guid coreKeyCorrelation = Guid.Empty;
 
         public KeyStore()
         {
@@ -37,7 +37,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
             this.correlationIdsToFilter = new Dictionary<Guid, NetworkPropertyProviderFilter>();
             this.keysToFlush = new List<byte>();
             this.coreKeys = new HashSet<byte>();
-            this.correlationIdsToFilter[CoreKeyCorrelation] = NetworkPropertyProviderFilter.Room;
+            this.correlationIdsToFilter[coreKeyCorrelation] = NetworkPropertyProviderFilter.Room;
         }
 
         public TimeSpan KeyReservationTime { get; set; } = TimeSpan.FromSeconds(5);
@@ -180,7 +180,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
 
                 dictionary = this.GetDictionaryByFilter(NetworkPropertyProviderFilter.Room);
                 var keysToRemove = dictionary
-                    .Where(kvp => kvp.Value.CorrelationId != CoreKeyCorrelation)
+                    .Where(kvp => kvp.Value.CorrelationId != coreKeyCorrelation)
                     .ToList();
                 foreach (var toRemove in keysToRemove)
                 {
@@ -188,7 +188,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
                 }
 
                 var correlationsToRemove = this.correlationIdsToFilter
-                    .Where(kvp => kvp.Key != CoreKeyCorrelation)
+                    .Where(kvp => kvp.Key != coreKeyCorrelation)
                     .ToList();
                 foreach (var toRemove in correlationsToRemove)
                 {
@@ -212,7 +212,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
             {
                 dictionary[key] = new KeyRegister
                 {
-                    CorrelationId = CoreKeyCorrelation,
+                    CorrelationId = coreKeyCorrelation,
                     Key = key,
                     ReservedByClientId = -1,
                 };

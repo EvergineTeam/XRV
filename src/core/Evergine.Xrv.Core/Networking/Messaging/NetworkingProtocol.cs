@@ -20,7 +20,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// <summary>
         /// Target client identifier.
         /// </summary>
-        protected int? TargetClientId;
+        protected int? targetClientId;
 
         private readonly ILogger logger;
         private readonly ILifecycleMessaging lifecycle;
@@ -108,7 +108,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
                     this.ProtocolStarter = new ProtocolStarter(this, this.lifecycle);
                 }
 
-                this.ProtocolStarter.TargetClientId = this.TargetClientId;
+                this.ProtocolStarter.TargetClientId = this.targetClientId;
                 this.ClientServer.RegisterSelfProtocol(this);
 
                 this.logger?.LogDebug($"Starting protocol {this.Name} with correlation: {this.CorrelationId}");

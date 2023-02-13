@@ -49,13 +49,13 @@ namespace Evergine.Xrv.ModelViewer
         private AssetsService assetsService = null;
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_loading")]
-        private Entity Loading = null;
+        private Entity loading = null;
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_lockedIcon")]
-        private Entity LockedIcon = null;
+        private Entity lockedIcon = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_lockedIcon")]
-        private LockIconBehavior LockedIconBehavior = null;
+        private LockIconBehavior lockedIconBehavior = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_backplate")]
         private Transform3D backPlateTransform = null;
@@ -97,8 +97,8 @@ namespace Evergine.Xrv.ModelViewer
             {
                 if (value != null)
                 {
-                    this.Loading.IsEnabled = false;
-                    this.LockedIcon.IsEnabled = false;
+                    this.loading.IsEnabled = false;
+                    this.lockedIcon.IsEnabled = false;
                     this.modelEntity = value;
                     this.modelEntityWorld = this.modelEntity.FindComponent<Transform3D>().WorldTransform;
                     this.Owner.AddChild(this.modelEntity);
@@ -110,7 +110,7 @@ namespace Evergine.Xrv.ModelViewer
                     this.menuBehavior.Owner.IsEnabled = true;
 
                     // Set model to locked icon behavior.
-                    this.LockedIconBehavior.ModelTransform = modelTransform;
+                    this.lockedIconBehavior.ModelTransform = modelTransform;
                 }
             }
         }
@@ -166,7 +166,7 @@ namespace Evergine.Xrv.ModelViewer
         {
             base.OnActivated();
 
-            this.LockedIcon.IsEnabled = false;
+            this.lockedIcon.IsEnabled = false;
             this.menuBehavior.Owner.IsEnabled = false;
             this.optionsButtonToggle.Toggled += this.OptionsButtonToggle_Toggled;
 
@@ -293,7 +293,7 @@ namespace Evergine.Xrv.ModelViewer
 
             if (sender is ToggleButton lockButton)
             {
-                this.LockedIcon.IsEnabled = lockButton.IsOn;
+                this.lockedIcon.IsEnabled = lockButton.IsOn;
 
                 var boundingBox = this.modelEntity.FindComponent<Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox>();
                 boundingBox.IsEnabled = !lockButton.IsOn;

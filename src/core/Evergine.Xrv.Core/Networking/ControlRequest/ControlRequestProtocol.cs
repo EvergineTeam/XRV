@@ -53,7 +53,7 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
                 bool granted = false;
 
                 var sessionData = this.network.Session.Data;
-                this.TargetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
+                this.targetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
 
                 await this.ExecuteAsync(async () =>
                 {
@@ -74,7 +74,7 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
 
                 if (currentPresenterId != myClientId)
                 {
-                    this.TargetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
+                    this.targetClientId = sessionData.PresenterId == 0 ? null : sessionData.PresenterId;
 
                     await this.ExecuteAsync(this.InternalTakeControlAsync).ConfigureAwait(false);
                     await this.UpdatePresenterAsync(this.network.Client.ClientId).ConfigureAwait(false);
