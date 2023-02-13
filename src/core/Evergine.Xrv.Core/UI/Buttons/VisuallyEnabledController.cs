@@ -22,7 +22,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
         [BindComponent(source: BindComponentSource.Children, isRecursive: true)]
         private PressableButton pressableButton = null;
 
-        [BindComponent(source: BindComponentSource.Children, isRecursive: true, tag: "PART_Icon")]
+        [BindComponent(source: BindComponentSource.Children, isRecursive: true, tag: "PART_Icon", isRequired: false)]
         private MaterialComponent iconMaterialComponent = null;
 
         private HoloGraphic iconHoloGraphic;
@@ -66,7 +66,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
 
         private void InstantiateHoloGraphic()
         {
-            if (this.iconHoloGraphic == null && this.iconMaterialComponent.Material != null)
+            if (this.iconHoloGraphic == null && this.iconMaterialComponent?.Material != null)
             {
                 this.iconHoloGraphic = new HoloGraphic(this.iconMaterialComponent.Material);
             }

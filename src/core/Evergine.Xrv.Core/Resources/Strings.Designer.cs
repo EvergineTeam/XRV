@@ -232,6 +232,33 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activated.
+        /// </summary>
+        public static string Settings_General_Passthrough_Activated {
+            get {
+                return ResourceManager.GetString("Settings.General.Passthrough.Activated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deactivated.
+        /// </summary>
+        public static string Settings_General_Passthrough_Deactivated {
+            get {
+                return ResourceManager.GetString("Settings.General.Passthrough.Deactivated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Passthrough.
+        /// </summary>
+        public static string Settings_General_Passthrough_Title {
+            get {
+                return ResourceManager.GetString("Settings.General.Passthrough.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Voice recognition status.
         /// </summary>
         public static string Settings_General_Voice_Title {

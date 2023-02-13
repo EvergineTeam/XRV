@@ -7,9 +7,10 @@
     
   <uses-feature android:name="android.hardware.vulkan.compute" android:version="0" android:required="true" />
   <uses-feature android:name="android.hardware.vulkan.level" android:version="0" android:required="true" />
-  <uses-feature android:name="android.hardware.vr.headtracking" android:required="true" />
+  <uses-feature android:name="android.hardware.vr.headtracking" android:required="true" android:version="1" />
+  <uses-feature android:name="com.oculus.feature.PASSTHROUGH" android:required="true" />
   
-    <!-- Tell the system this app can handle tracked remotes and hands -->
+  <!-- Tell the system this app can handle tracked remotes and hands -->
   <uses-feature android:name="oculus.software.handtracking" android:required="false" />
 
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

@@ -15,6 +15,7 @@ using Evergine.Xrv.Core.Networking;
 using Evergine.Xrv.Core.Services;
 using Evergine.Xrv.Core.Services.Logging;
 using Evergine.Xrv.Core.Services.Messaging;
+using Evergine.Xrv.Core.Services.MixedReality;
 using Evergine.Xrv.Core.Services.QR;
 using Evergine.Xrv.Core.Settings;
 using Evergine.Xrv.Core.Themes;
@@ -145,10 +146,13 @@ namespace Evergine.Xrv.Core
         public void Initialize(Scene scene)
         {
             // Services
+            this.logger?.LogDebug("Loading common services");
             this.Services.QrScanningFlow = new QrScanningFlow(
                 scene.Managers.EntityManager,
                 scene.Managers.RenderManager,
                 this.assetsService);
+            this.Services.Passthrough = new PasstroughService(scene.Managers.EntityManager);
+            this.Services.Passthrough.Load();
 
             if (Application.Current?.IsEditor == false)
             {
