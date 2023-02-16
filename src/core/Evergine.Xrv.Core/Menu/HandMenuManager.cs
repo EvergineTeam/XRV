@@ -40,10 +40,10 @@ namespace Evergine.Xrv.Core.Menu
             }
 
             this.palmPanelBehavior.DistanceFromHand = 0.1f;
-            this.palmPanelBehavior.LookAtCameraUpperThreshold = 0.9f;
-            this.palmPanelBehavior.LookAtCameraLowerThreshold = 0.7f;
-            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.95f;
-            this.palmPanelBehavior.OpenPalmLowerThreshold = 0.85f;
+            this.palmPanelBehavior.LookAtCameraUpperThreshold = 0.80f;
+            this.palmPanelBehavior.LookAtCameraLowerThreshold = 0.50f;
+            this.palmPanelBehavior.OpenPalmUpperThreshold = 0.80f;
+            this.palmPanelBehavior.OpenPalmLowerThreshold = 0.50f;
 
             var menuPrefab = this.GetMenuPrefab();
             this.menuEntity = menuPrefab.Instantiate();
