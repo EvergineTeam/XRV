@@ -1,9 +1,51 @@
 ﻿<Project>
+    <!-- Nuget metadata -->
+	<PropertyGroup>
+		<Version>2023.0.0.0-alpha</Version>
+		<Copyright>Copyright (c) Evergine</Copyright>
+		<Authors>Evergine Team</Authors>
+		<Company>Plain Concepts</Company>
+		<Product>XRV</Product>
+		<PackageProjectUrl>https://evergine.com/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/EvergineTeam/</RepositoryUrl>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageTags>Evergine;C#;3D;AR;VR;MixedReality;HoloLens</PackageTags>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<!-- 
+			This one indicates that required projects should reference MRTK NuGet package.
+			When false, it will reference MRTK project file.
+		-->
+		<UseMRTKNuget Condition="'$(UseMRTKNuget)'==''">false</UseMRTKNuget>
+		<!--  This one indicates that target project should actually include a direct reference to MRTK.-->
+		<ReferenceMRTK Condition="'$(ReferenceMRTK)'==''">false</ReferenceMRTK>
+	</PropertyGroup>
+	
+	<!-- Nuget packaging assets -->
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)packaging\resources\LICENSE.txt" Pack="true" PackagePath="\" Visible="false"/>
+		<None Include="$(MSBuildThisFileDirectory)packaging\resources\icon.png" Pack="true" PackagePath="\" Visible="false"/>
+	</ItemGroup>
+    <ItemGroup Condition="'$(UseMRTKNuget)'=='false' And '$(ReferenceMRTK)'=='true'">
+		<ProjectReference Include="$(MSBuildThisFileDirectory)submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(UseMRTKNuget)'=='true' And '$(ReferenceMRTK)'=='true'">
+		<PackageReference Include="Evergine.MRTK" Version="2023.2.14.2-nightly" />
+    </ItemGroup>
+	
+	<!-- Add-ons packaging -->
+	<PropertyGroup>
+	    <!--  This one is intended to be used in Asset projects only.-->
+		<IsAddOnProject Condition="'$(IsAddOnProject)'==''">false</IsAddOnProject>
+	</PropertyGroup>	
+	<ItemGroup Condition="'$(IsAddOnProject)'=='true'">
+		<PackageReference Include="Evergine.Packages.Targets" Version="2023.2.13.1-nightly" />
+	</ItemGroup>
+	
+	<!-- Stylecop -->
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-	</PropertyGroup>
-	
+	</PropertyGroup>	
 	<PropertyGroup>
 	    <LangVersion>latest</LangVersion>
 		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\stylecop.ruleset</CodeAnalysisRuleSet>

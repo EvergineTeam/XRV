@@ -1,0 +1,144 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      isPackagingBuild:
+        description: "Indicates if this is a build that should create packages"
+        required: true
+        type: boolean
+      coreProjectFilePath:
+        description: "Path to Evergine.Xrv.Core project file."
+        required: false
+        type: string
+        default: src/core/Evergine.Xrv.Core/Evergine.Xrv.Core.csproj
+      mrtkProjectFilePath:
+        description: "Path to Evergine.MRTK project file."
+        required: false
+        type: string
+        default: submodules/MRTK/Source/Evergine.MRTK/Evergine.MRTK.csproj
+      windowsSdkVersion:
+        description: "Windows SDK version to be installed. Only required when compiling MRTK."
+        required: false
+        type: number
+        default: 18362
+      buildConfiguration:
+        description: "Build configuration, usually 'Release'."
+        required: false
+        type: string
+        default: Release
+      versionSuffix:
+        description: "Suffix for version number."
+        required: false
+        type: string
+        default: 
+      testResultsDirectory:
+        description: "Output directory for unit test results."
+        required: false
+        type: string
+        default: testResults
+      outputNugetsPath:
+        description: "Output directory for NuGet packages."
+        required: false
+        type: string
+        default: nugets
+      outputAddonsPath:
+        description: "Output directory for Add-on packages."
+        required: false
+        type: string
+        default: add-ons
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Generate build version
+        shell: pwsh
+        run: |
+          $suffix = "${{ inputs.versionSuffix }}"
+          if ($suffix) 
+          {
+            $suffix = "-$suffix";
+          }
+        
+          $version = "$(Get-Date -Format "yyyy.M.dd").$env:GITHUB_RUN_NUMBER$suffix"
+          
+          echo "BUILD_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Repository checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: MSBuild setup
+        uses: microsoft/setup-msbuild@v1.1.3
+      - name: NuGet setup
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: "6.x"
+      - name: Install Windows SDK
+        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.8
+        with:
+          sdk-version: ${{ inputs.windowsSdkVersion }}
+      - name: Build MRTK
+        if: ${{ !inputs.isPackagingBuild }}
+        shell: pwsh
+        run: |
+          nuget restore ${{ inputs.mrtkProjectFilePath }}
+          msbuild ${{ inputs.mrtkProjectFilePath }} /p:Configuration=${{ inputs.buildConfiguration }}
+      - name: Build Xrv.Core
+        shell: pwsh
+        run: |
+          . ./packaging/BuildProjects.ps1 `
+            -version $env:BUILD_VERSION `
+            -configuration ${{ inputs.buildConfiguration }} `
+            -mode core `
+            -createPackages ([System.Convert]::ToBoolean("${{ inputs.isPackagingBuild }}")) `
+            -outputPath ${{ inputs.outputNugetsPath }} `
+            -prepareEnvironment $false `
+            -forceAllModules $false
+      - name: Build modules
+        shell: pwsh
+        run: |
+          . ./packaging/BuildProjects.ps1 `
+            -version $env:BUILD_VERSION `
+            -configuration ${{ inputs.buildConfiguration }} `
+            -mode modules `
+            -createPackages ([System.Convert]::ToBoolean("${{ inputs.isPackagingBuild }}")) `
+            -outputPath ${{ inputs.outputNugetsPath }} `
+            -prepareEnvironment $false `
+            -forceAllModules (![System.Convert]::ToBoolean("${{ inputs.isPackagingBuild }}"))
+      - name: Run tests
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path src -Recurse -Filter '*.Tests.csproj' | 
+          Foreach-Object { 
+            Write-Host "Running tests for $($_.Name)" 
+            dotnet test $_.FullName --configuration ${{ inputs.buildConfiguration }} --filter Category!=Integration --logger trx --results-directory ${{ inputs.testResultsDirectory }}
+            if (-Not $?) {
+              exit $LastExitCode
+            }
+          }
+          Write-Host "Collected test result files"
+          Get-ChildItem -Path ${{ inputs.testResultsDirectory }} | Select FullName
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Test results
+          path: ${{ inputs.testResultsDirectory }}/*.trx    # Path to test results
+          reporter: dotnet-trx
+      - name: Create add-on packages and collect
+        if: ${{ inputs.isPackagingBuild }}
+        shell: pwsh
+        run: |
+          Write-Host "Creating add-on packages for core and modules"
+          . ./packaging/CreateAddOns.ps1 `
+            -version $env:BUILD_VERSION `
+            -configuration ${{ inputs.buildConfiguration }} `
+            -mode all `
+            -outputPath ${{ inputs.outputAddonsPath }} `
+            -prepareEnvironment $false `
+            -forceAllModules $false
+            
+          Write-Host "Collected nuget files"
+          Get-ChildItem -Path ${{ inputs.outputNugetsPath }} | Select FullName
+          
+          Write-Host "Collected add-on files"
+          Get-ChildItem -Path ${{ inputs.outputAddonsPath }} | Select FullName

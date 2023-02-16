@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+	<Description>XRV module that lets you load a collection of images.</Description>
+	<ReferenceMRTK>true</ReferenceMRTK>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
     <ProjectReference Include="..\..\..\core\Evergine.Xrv.Core\Evergine.Xrv.Core.csproj" />
     <PackageReference Include="Evergine.Common" Version="2023.2.13.1-nightly" />
     <PackageReference Include="Evergine.Components" Version="2023.2.13.1-nightly" />
