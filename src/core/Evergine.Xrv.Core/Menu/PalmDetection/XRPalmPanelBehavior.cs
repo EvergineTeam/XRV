@@ -63,7 +63,7 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
 
             // Get tracker device
             var trackedDevice = this.xrPlatform?.InputTracking?.GetDeviceByTypeAndHandedness(XRTrackedDeviceType.Hand, handedness);
-            if (trackedDevice == null)
+            if (trackedDevice == null || !trackedDevice.PoseIsValid)
             {
                 return false;
             }
