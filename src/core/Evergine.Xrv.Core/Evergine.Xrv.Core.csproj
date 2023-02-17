@@ -24,6 +24,19 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
+
+  <!-- Packaging -->
+  <ItemGroup>
+	<None Include="..\Evergine.Xrv.Core.Editor\bin\$(Configuration)\netstandard2.0\Evergine.Xrv.Core.Editor.dll" Visible="false">
+		<Pack>True</Pack>
+		<PackagePath>lib\netstandard2.0\Evergine.Xrv.Core.Editor.dll</PackagePath>
+	</None>
+  </ItemGroup>
+  <ItemGroup>
+	<Content Include="Evergine.Xrv.Core.targets" PackagePath="build" Visible="true" />
+  </ItemGroup>
+
+  <!-- Resource files -->
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

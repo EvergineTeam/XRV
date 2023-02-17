@@ -30,6 +30,20 @@ param (
     [bool]$forceAllModules = $false
 )
 
+function UpdateAddOnSpecFile([string]$assetsProjectPath, [string]$version) {
+    $assetsProjectFolder = (Get-Item $assetsProjectPath).Directory.FullName
+    Get-ChildItem -Path $assetsProjectFolder -Filter '*.wespec' |
+        ForEach-Object {
+            Write-Host "Reading contents for $_.FullName"
+            $contents = Get-Content -Raw -Path $_.FullName | ConvertFrom-Yaml -Ordered
+            $contents.Nugets -replace "2023.0.0.0-preview$", $version
+
+            Write-Host "Updating contents for $_.FullName"
+            ConvertTo-Yaml -Data $contents | Out-File -FilePath $_.FullName
+            Get-Content $_.FullName
+        }
+}
+
 # Source helper functions
 . "$PSScriptRoot/Helpers.ps1"
 
@@ -74,6 +88,9 @@ Get-ChildItem -Path src -Recurse -Filter '*.Assets.csproj' |
         if (($isCore -and $createCorePackage) `
             -or (-not $isCore -and $createModulePackages -and $forceAllModules) `
             -or (-not $isCore -and $createModulePackages -and $whiteListedModules.Contains($moduleName))) {
+            Write-Host "Update $moduleName spec file"
+            UpdateAddOnSpecFile $_.FullName $version
+            
             Write-Host "Create add-on package for $moduleName"
             MsBuildRestoreProject `
                 -projectFilePath $_.FullName `

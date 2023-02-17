@@ -22,6 +22,19 @@ function ClearDirectory([string]$directoryPath) {
 
 function PrepareEnvironment()
 {
+	# Install YAML cmdlets
+	if (Get-Module -ListAvailable -Name powershell-yaml) {
+		Write-Host "Skip: powershell-yaml already installed"
+	}
+	else {
+		Write-Host "Installing powershell-yaml"
+		Install-Module -Name powershell-yaml -Force -Repository PSGallery -Scope CurrentUser
+		if (-Not $?) { 
+			throw "Could not install YAML module. Code: {$lastexitcode}"
+		}
+	}
+
+	# Locate MSBuild
 	if (Get-Command "msbuild.exe" -ErrorAction SilentlyContinue) {
 		Write-Host "Skip: msbuild is already in PATH"
 		return;

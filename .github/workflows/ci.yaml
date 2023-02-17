@@ -9,6 +9,6 @@ on:
   workflow_dispatch:
 jobs:
   build-xrv:
-    uses: EvergineTeam/XRV/.github/workflows/build.yaml@feature/prepare-packaging
+    uses: ./.github/workflows/build.yaml
     with:
       isPackagingBuild: false

@@ -1,0 +1,8 @@
+﻿<Project ToolsVersion="12.0" DefaultTargets="Build"
+	xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup Condition="$(DefineConstants.Contains('EVERGINE_EDITOR'))">
+		<Reference Include="Evergine.Xrv.Core.Editor">
+			<HintPath>../lib/netstandard2.0/Evergine.Xrv.Core.Editor.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+</Project>

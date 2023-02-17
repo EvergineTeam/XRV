@@ -33,6 +33,27 @@ param (
     [bool]$forceAllModules = $false
 )
 
+function BuildEditorProjectIfExists([string]$moduleName, [string]$projectPath, [string]$configuration) {
+    $editorProjectName = $(Get-Item $projectPath).Name.Replace(".csproj", ".Editor.csproj")
+    $editorProjectFolder = "$((Get-Item $projectPath).Directory.FullName).Editor"
+    $editorProjectFullPath = "$editorProjectFolder\$editorProjectName"
+
+    if (Test-Path $editorProjectFullPath) {
+        Write-Host "Building $moduleName editor project"
+        MsBuildRestoreProject `
+            -projectFilePath $editorProjectFullPath `
+            -useMRTKNuget $false
+
+        MsBuildProject `
+            -projectFilePath $editorProjectFullPath `
+            -configuration $configuration `
+            -useMRTKNuget $false
+    }
+    else {
+        Write-Host "Skip: Editor project not found at $editorProjectFullPath"
+    }
+}
+
 # Source helper functions
 . "$PSScriptRoot/Helpers.ps1"
 
@@ -58,6 +79,7 @@ else {
 if ($mode -eq 'core' -or $mode -eq 'all') {
     $coreProjectPath = Get-ChildItem Evergine.Xrv.Core.csproj -Recurse | Select-Object -ExpandProperty FullName
     Write-Host "Core project file path: $coreProjectPath"
+    BuildEditorProjectIfExists "Core" $coreProjectPath $configuration
 
     Write-Host "Restoring $coreProjectPath dependencies"
     MsBuildRestoreProject `
@@ -99,6 +121,8 @@ if ($mode -eq 'modules' -or $mode -eq 'all') {
       $moduleName = $matches[1];
 
       if ($forceAllModules -or $whiteListedModules.Contains($moduleName)) {
+        BuildEditorProjectIfExists $moduleName $_.FullName $configuration
+
         Write-Host "Restoring $moduleName dependencies"
         MsBuildRestoreProject `
             -projectFilePath $_.FullName `
