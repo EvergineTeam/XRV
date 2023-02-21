@@ -1,0 +1,21 @@
+name: CD Preview
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    with:
+      isPackagingBuild: true
+      versionSuffix: preview
+  publish:
+    needs: build
+    uses: ./.github/workflows/publish.yaml
+    with:
+      version: ${{ needs.build.outputs.version }}
+      storageAccountName: everginestudio
+      blobsContainerName: pkg-preview
+      nugetSourceUrl: "https://api.nuget.org/v3/index.json"
+    secrets:
+      archiveSasToken: ${{ secrets.PUBLISH_FILE_SHARE_ARCHIVE_SAS_TOKEN }}
+      blobContainerSasToken: ${{ secrets.PUBLISH_PREVIEW_BLOB_CONTAINER_SAS_TOKEN }}
+      nugetToken: ${{ secrets.EVERGINE_NUGETORG_TOKEN }}

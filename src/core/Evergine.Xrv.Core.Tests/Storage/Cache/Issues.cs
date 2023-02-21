@@ -17,6 +17,7 @@ namespace Evergine.Xrv.Core.Tests.Storage.Cache
             };
         }
 
+        [Trait("Category", "Integration")]
         [Fact]
         public async Task StreamLengthErrosOnGetFileForAzureFileShare()
         {
