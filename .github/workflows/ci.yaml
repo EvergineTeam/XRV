@@ -8,7 +8,7 @@ on:
     - develop
   workflow_dispatch:
 jobs:
-  build-xrv:
+  build:
     uses: ./.github/workflows/build.yaml
     with:
       isPackagingBuild: false

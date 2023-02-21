@@ -34,11 +34,11 @@ function UpdateAddOnSpecFile([string]$assetsProjectPath, [string]$version) {
     $assetsProjectFolder = (Get-Item $assetsProjectPath).Directory.FullName
     Get-ChildItem -Path $assetsProjectFolder -Filter '*.wespec' |
         ForEach-Object {
-            Write-Host "Reading contents for $_.FullName"
+            Write-Host "Reading contents for $($_.FullName)"
             $contents = Get-Content -Raw -Path $_.FullName | ConvertFrom-Yaml -Ordered
-            $contents.Nugets -replace "2023.0.0.0-preview$", $version
+            $contents.Nugets = $contents.Nugets -replace "2023.0.0.0-preview$", $version
 
-            Write-Host "Updating contents for $_.FullName"
+            Write-Host "Updating contents for $($_.FullName)"
             ConvertTo-Yaml -Data $contents | Out-File -FilePath $_.FullName
             Get-Content $_.FullName
         }

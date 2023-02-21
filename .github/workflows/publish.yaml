@@ -1,0 +1,81 @@
+name: Publish
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Build version."
+        required: true
+        type: string
+      storageAccountName:
+        description: "Target storage account name."
+        required: true
+        type: string
+      blobsContainerName:
+        description: "Container name to upload add-on packages."
+        required: true
+        type: string
+      nugetSourceUrl:
+        description: "Target source URL to upload NuGet packages."
+        required: true
+        type: string
+      archiveFileShareName:
+        description: "File share name to archive packages."
+        required: false
+        type: string
+        default: archive
+      nugetArtifactDirectory:
+        description: "Download directory for nuget packages."
+        required: false
+        type: string
+        default: nuget
+      addOnArtifactDirectory:
+        description: "Download directory for add-on packages."
+        required: false
+        type: string
+        default: add-ons
+    secrets:
+      archiveSasToken:
+        required: true
+      blobContainerSasToken:
+        required: true
+      nugetToken:
+        required: true
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.x'
+          source-url: ${{ inputs.nugetSourceUrl }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.nugetToken }} 
+      - name: Download NuGet artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGets ${{ inputs.version }}
+          path: ${{ inputs.nugetArtifactDirectory }}
+      - name: Download Add-on artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: Add-ons ${{ inputs.version }}
+          path: ${{ inputs.addOnArtifactDirectory }}
+      - name: Upload to archive file share
+        if: success()
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage directory create --name add-ons/XRV/${{ inputs.version }} --share-name ${{ inputs.archiveFileShareName }} --account-name ${{ inputs.storageAccountName }} --sas-token "${{ secrets.archiveSasToken }}"
+            az storage file upload-batch --destination ${{ inputs.archiveFileShareName }} --destination-path add-ons/XRV/${{ inputs.version }} --source ${{ inputs.nugetArtifactDirectory }} --account-name ${{ inputs.storageAccountName }} --sas-token "${{ secrets.archiveSasToken }}"
+            az storage file upload-batch --destination ${{ inputs.archiveFileShareName }} --destination-path add-ons/XRV/${{ inputs.version }} --source ${{ inputs.addOnArtifactDirectory }} --account-name ${{ inputs.storageAccountName }} --sas-token "${{ secrets.archiveSasToken }}"
+      - name: Upload to public blob container
+        if: success()
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --destination ${{ inputs.blobsContainerName }} --source ${{ inputs.addOnArtifactDirectory }} --account-name ${{ inputs.storageAccountName }} --sas-token "${{ secrets.blobContainerSasToken }}"
+      - name: Push NuGets
+        if: success()
+        run: |
+          dotnet nuget push "${{ inputs.nugetArtifactDirectory }}/**/*.nupkg" --skip-duplicate --no-symbols --api-key "${{ secrets.nugetToken }}"
