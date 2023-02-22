@@ -55,6 +55,9 @@ namespace Evergine.Xrv.Core
             {
                 message.Module.Run(message.IsOn);
             });
+
+            this.voiceSystem = new VoiceCommandsSystem();
+            this.voiceSystem.RegisterService();
         }
 
         /// <summary>
@@ -159,9 +162,6 @@ namespace Evergine.Xrv.Core
                 Application.Current.Container.RegisterType<LocalizationService>();
                 this.Localization = Application.Current.Container.Resolve<LocalizationService>();
             }
-
-            this.voiceSystem = new VoiceCommandsSystem();
-            this.voiceSystem.RegisterService();
 
             using (this.logger?.BeginScope("XRV initialization"))
             {

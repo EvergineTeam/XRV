@@ -18,7 +18,7 @@
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>XrvSamples.UWP.MixedReality_TemporaryKey.pfx</PackageCertificateKeyFile>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
-	<AppxGeneratePrisForPortableLibrariesEnabled>false</AppxGeneratePrisForPortableLibrariesEnabled>
+    <AppxGeneratePrisForPortableLibrariesEnabled>false</AppxGeneratePrisForPortableLibrariesEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -158,6 +158,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\core\Evergine.Xrv.Core\Evergine.Xrv.Core.csproj">
+      <Project>{b29174c2-f718-465c-b934-833bfbb2452d}</Project>
+      <Name>Evergine.Xrv.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\XrvSamples\XrvSamples.csproj">
       <Project>{04070017-d150-405d-9c6b-9b313dea8f1a}</Project>
       <Name>XrvSamples</Name>
