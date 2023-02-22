@@ -45,17 +45,30 @@ namespace Evergine.Xrv.Core.Storage
         }
 
         /// <summary>
-        /// Creates a blob access instance from container URI.
+        /// Creates a blob access instance from container URI. URI query string will be considered
+        /// to be SAS token. If no query string is provided, we supose that developer is indicating
+        /// a public container URI.
         /// </summary>
         /// <param name="containerUri">Container URI.</param>
         /// <returns>File access instance.</returns>
         public static AzureBlobFileAccess CreateFromUri(Uri containerUri)
         {
             var builder = new UriBuilder(containerUri);
-            var credentials = new AzureSasCredential(builder.Query);
-            builder.Query = null;
+            bool isPublicContainer = string.IsNullOrEmpty(builder.Query);
 
-            var container = new BlobContainerClient(builder.Uri, credentials);
+            BlobContainerClient container;
+
+            if (isPublicContainer)
+            {
+                container = new BlobContainerClient(builder.Uri);
+            }
+            else
+            {
+                var credentials = new AzureSasCredential(builder.Query);
+                builder.Query = null;
+                container = new BlobContainerClient(builder.Uri, credentials);
+            }
+
             return new AzureBlobFileAccess(container);
         }
 
