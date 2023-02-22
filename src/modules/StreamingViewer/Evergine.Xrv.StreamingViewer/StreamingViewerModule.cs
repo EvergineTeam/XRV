@@ -1,7 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Framework;
-using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
@@ -29,16 +28,6 @@ namespace Evergine.Xrv.StreamingViewer
         /// Gets or sets the URL of the source of the streaming.
         /// </summary>
         public string SourceURL { get; set; }
-
-        /// <summary>
-        /// Gets or sets the width of the images listed in the gallery.
-        /// </summary>
-        public uint ImagePixelsWidth { get; set; }
-
-        /// <summary>
-        /// Gets or sets the height of the images listed in the gallery.
-        /// </summary>
-        public uint ImagePixelsHeight { get; set; }
 
         /// <inheritdoc/>
         public override string Name => "Streaming Viewer";
@@ -90,16 +79,7 @@ namespace Evergine.Xrv.StreamingViewer
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.SetFrontPosition(this.scene, this.window.Owner);
             this.window.Open();
-        }
-
-        private void SetFrontPosition(Scene scene, Entity entity)
-        {
-            var entityTransform = entity.FindComponent<Transform3D>();
-            var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
-            var cameraWorldTransform = cameraTransform.WorldTransform;
-            entityTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowsSystem.Distances.Medium);
         }
     }
 }

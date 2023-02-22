@@ -106,7 +106,6 @@ namespace Evergine.Xrv.AudioNotes
         {
             var anchor = this.assetsService.Load<Prefab>(AudioNotesResourceIDs.Prefabs.Anchor).Instantiate();
 
-            this.SetFrontPosition(this.scene, anchor);
             this.AddAudioAnchor(anchor);
 
             this.xrv.Services.Messaging.Publish(new AudioAnchorSelectedMessage()
@@ -132,14 +131,6 @@ namespace Evergine.Xrv.AudioNotes
                 this.scene.Managers.EntityManager.Add(anchor);
                 this.anchorsDic.Add(c.AudioNote.Guid, anchor);
             }
-        }
-
-        private void SetFrontPosition(Scene scene, Entity entity)
-        {
-            var anchorTransform = entity.FindComponent<Transform3D>();
-            var cameraTransform = scene.Managers.RenderManager.ActiveCamera3D.Transform;
-            var cameraWorldTransform = cameraTransform.WorldTransform;
-            anchorTransform.Position = cameraTransform.Position + (cameraWorldTransform.Forward * this.xrv.WindowsSystem.Distances.Far);
         }
 
         private Entity HelpContent()
