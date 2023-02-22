@@ -133,7 +133,7 @@ namespace Evergine.Xrv.Core.Storage
         protected override async Task<IEnumerable<FileItem>> InternalEnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var items = await this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken).ConfigureAwait(false);
-            return items.Select(item => ConvertToFileItem(item.Blob, Path.GetDirectoryName(relativePath)));
+            return items.Select(item => ConvertToFileItem(item.Blob, string.IsNullOrEmpty(relativePath) ? relativePath : Path.GetDirectoryName(relativePath)));
         }
 
         /// <inheritdoc/>
