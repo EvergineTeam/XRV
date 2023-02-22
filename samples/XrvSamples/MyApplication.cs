@@ -9,7 +9,6 @@ using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.Storage.Cache;
 using Evergine.Xrv.ImageGallery;
 using Evergine.Xrv.ModelViewer;
-using Evergine.Xrv.ModelViewer.Structs;
 using Evergine.Xrv.Painter;
 using Evergine.Xrv.Ruler;
 using Evergine.Xrv.StreamingViewer;

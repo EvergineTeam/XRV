@@ -28,7 +28,6 @@ using Evergine.Xrv.ModelViewer.Effects;
 using Evergine.Xrv.ModelViewer.Importers;
 using Evergine.Xrv.ModelViewer.Importers.GLB;
 using Evergine.Xrv.ModelViewer.Importers.STL;
-using Evergine.Xrv.ModelViewer.Structs;
 using static glTFLoader.Schema.Material;
 using Window = Evergine.Xrv.Core.UI.Windows.Window;
 
@@ -85,7 +84,7 @@ namespace Evergine.Xrv.ModelViewer
         /// <summary>
         /// Gets or sets the model repository list.
         /// </summary>
-        public Repository[] Repositories { get; set; }
+        public IEnumerable<Repository> Repositories { get; set; }
 
         /// <summary>
         /// Gets or sets the DataSource collection.
@@ -298,16 +297,22 @@ namespace Evergine.Xrv.ModelViewer
             this.repositoriesListView.ClearData();
             var repositoriesDataSource = this.repositoriesListView.DataSource;
             this.repositoriesLoading.IsEnabled = true;
-            foreach (var repo in this.Repositories)
+
+            if (this.Repositories != null)
             {
-                var name = repo.Name;
-                var models = await repo.FileAccess.EnumerateFilesAsync();
-                repositoriesDataSource.Add(name, models.Count().ToString());
+                foreach (var repo in this.Repositories)
+                {
+                    var name = repo.Name;
+                    var models = await repo.FileAccess.EnumerateFilesAsync();
+                    repositoriesDataSource.Add(name, models.Count().ToString());
+                }
+
+                this.repositoriesListView.Refresh();
+
+                this.RefreshModelList();
             }
 
-            this.repositoriesListView.Refresh();
-
-            this.RefreshModelList();
+            this.modelsLoading.IsEnabled = false;
             this.repositoriesLoading.IsEnabled = false;
         }
 

@@ -2,12 +2,12 @@
 
 using Evergine.Xrv.Core.Storage;
 
-namespace Evergine.Xrv.ModelViewer.Structs
+namespace Evergine.Xrv.ModelViewer
 {
     /// <summary>
     /// Repository information.
     /// </summary>
-    public struct Repository
+    public class Repository
     {
         /// <summary>
         /// Gets or sets the repository name.
