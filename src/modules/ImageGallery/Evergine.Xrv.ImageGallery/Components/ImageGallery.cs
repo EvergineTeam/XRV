@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
@@ -12,10 +14,12 @@ using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
 using Evergine.Platform;
+using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Windows;
 using Evergine.Xrv.ImageGallery.Helpers;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace Evergine.Xrv.ImageGallery.Components
@@ -26,34 +30,37 @@ namespace Evergine.Xrv.ImageGallery.Components
     public class ImageGallery : Component
     {
         [BindService]
-        private readonly GraphicsContext graphicsContext = null;
+        private GraphicsContext graphicsContext = null;
 
         [BindService]
-        private readonly LocalizationService localization = null;
+        private LocalizationService localization = null;
+
+        [BindService]
+        private XrvService xrvService = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_next_pressable_button")]
-        private readonly PressableButton nextButton = null;
+        private PressableButton nextButton = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_previous_pressable_button")]
-        private readonly PressableButton previousButton = null;
+        private PressableButton previousButton = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
-        private readonly PinchSlider slider = null;
+        private PinchSlider slider = null;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
-        private readonly MaterialComponent galleryFrameMaterial = null;
+        private MaterialComponent galleryFrameMaterial = null;
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_next", isRecursive: true)]
-        private readonly Entity nextButtonEntity = null;
+        private Entity nextButtonEntity = null;
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_previous", isRecursive: true)]
-        private readonly Entity previousButtonEntity = null;
+        private Entity previousButtonEntity = null;
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_slider", isRecursive: true)]
-        private readonly Entity sliderEntity = null;
+        private Entity sliderEntity = null;
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_spinner", isRecursive: true)]
-        private readonly Entity spinnerEntity = null;
+        private Entity spinnerEntity = null;
 
         private Texture imageTexture = null;
         private int imageIndex = 0;
@@ -62,6 +69,7 @@ namespace Evergine.Xrv.ImageGallery.Components
         private bool showNavigationSlider = true;
         private List<FileItem> images = null;
         private WindowConfigurator windowConfigurator = null;
+        private ILogger logger;
 
         /// <summary>
         /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
@@ -130,10 +138,11 @@ namespace Evergine.Xrv.ImageGallery.Components
             {
                 if (value >= 0)
                 {
-                    if (this.images != null && value < this.images.Count)
+                    if (this.HasImages && value < this.images.Count)
                     {
                         this.imageIndex = value;
                         this.ReloadImage();
+                        this.UpdateUIElements();
                     }
                 }
             }
@@ -154,25 +163,19 @@ namespace Evergine.Xrv.ImageGallery.Components
         /// </summary>
         public string Name { get; set; }
 
-        /// <inheritdoc/>
-        protected async override void OnActivated()
-        {
-            base.OnActivated();
-
-            this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
-
-            var fileList = await this.FileAccess.EnumerateFilesAsync();
-            fileList ??= new List<FileItem>();
-            this.images = new List<FileItem>(fileList);
-            this.ReloadImage();
-            this.RecalculateSliderPosition();
-        }
+        /// <summary>
+        /// Gets a value indicating whether gallery contains any image.
+        /// </summary>
+        public bool HasImages { get => this.images?.Any() == true; }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
         {
-            if (base.OnAttached())
+            bool attached = base.OnAttached();
+            if (attached)
             {
+                this.logger = this.xrvService.Services.Logging;
+
                 var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
                 TextureDescription desc = new ()
@@ -204,7 +207,17 @@ namespace Evergine.Xrv.ImageGallery.Components
                 this.sliderEntity.IsEnabled = this.ShowNavigationSlider;
             }
 
-            return base.OnAttached();
+            return attached;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnActivated()
+        {
+            base.OnActivated();
+
+            this.windowConfigurator = this.Owner.FindComponentInParents<WindowConfigurator>();
+
+            _ = this.LoadFilesOnInitAsync();
         }
 
         /// <inheritdoc/>
@@ -213,6 +226,27 @@ namespace Evergine.Xrv.ImageGallery.Components
             this.nextButton.ButtonReleased -= this.NextButtonReleased;
             this.previousButton.ButtonReleased -= this.PreviousButtonReleased;
             base.OnDetach();
+        }
+
+        private async Task LoadFilesOnInitAsync()
+        {
+            try
+            {
+                if (this.FileAccess != null)
+                {
+                    var fileList = await this.FileAccess.EnumerateFilesAsync();
+                    fileList ??= new List<FileItem>();
+                    this.images = new List<FileItem>(fileList);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger?.LogError(ex, "Error requesting list of images for gallery");
+            }
+
+            this.ReloadImage();
+            this.RecalculateSliderPosition();
+            this.UpdateUIElements();
         }
 
         private void SliderInteractionEnded(object sender, EventArgs e)
@@ -225,7 +259,10 @@ namespace Evergine.Xrv.ImageGallery.Components
 
         private void RecalculateSliderPosition()
         {
-            if (this.ShowNavigationSlider)
+            bool shouldShowSlider = this.HasImages && this.images.Count > 1;
+            this.slider.IsEnabled = shouldShowSlider;
+
+            if (this.ShowNavigationSlider && shouldShowSlider)
             {
                 this.slider.SliderValue = this.ImageIndex / (float)(this.images.Count - 1);
             }
@@ -254,7 +291,7 @@ namespace Evergine.Xrv.ImageGallery.Components
 
         private void ReloadImage()
         {
-            if (this.images.Count == 0)
+            if (!this.HasImages)
             {
                 return;
             }
@@ -270,6 +307,21 @@ namespace Evergine.Xrv.ImageGallery.Components
                         this.images.Count);
                     return title;
                 };
+            }
+        }
+
+        private void UpdateUIElements()
+        {
+            if (Application.Current.IsEditor)
+            {
+                return;
+            }
+
+            if (!this.HasImages)
+            {
+                this.previousButtonEntity.IsEnabled = this.nextButtonEntity.IsEnabled = false;
+                this.spinnerEntity.IsEnabled = false;
+                return;
             }
 
             if (this.ShowNavigationButtons)
