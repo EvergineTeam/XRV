@@ -3,7 +3,7 @@
 using System;
 using System.Buffers;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
@@ -55,9 +55,18 @@ namespace Evergine.Xrv.StreamingViewer.Components
         private bool stop;
 
         private ILogger logger;
+        private HttpClient httpClient;
 
         private const float PixelsInAMeter = 2000f;
         private const float BottomMarginForLogo = 0.05f;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingViewerComponent"/> class.
+        /// </summary>
+        public StreamingViewerComponent()
+        {
+            this.httpClient = new HttpClient();
+        }
 
         /// <summary>
         /// Gets or sets the URL of the source of the streaming.
@@ -84,8 +93,9 @@ namespace Evergine.Xrv.StreamingViewer.Components
             if (!Application.Current.IsEditor)
             {
                 this.connectionErrorTextEntity.IsEnabled = false;
+                this.videoFramePlaneMesh.Owner.IsEnabled = true;
                 this.stop = false;
-                this.GetVideo();
+                _ = this.TryGetVideoAsync();
             }
         }
 
@@ -97,75 +107,70 @@ namespace Evergine.Xrv.StreamingViewer.Components
             this.stop = true;
         }
 
-        private void GetVideo()
+        private async Task TryGetVideoAsync()
         {
-            WebRequest req = WebRequest.Create(this.SourceURL);
-            req.BeginGetResponse(
-                async
-                ar =>
+            try
+            {
+                using var responseStream = await this.httpClient.GetStreamAsync(this.SourceURL).ConfigureAwait(false);
+
+                int responseByte;
+                bool atEndOfLine = false;
+                string line = string.Empty;
+                int size = 0;
+
+                // This loop goes as long as streaming is on
+                while (!this.stop && (responseByte = responseStream.ReadByte()) != -1)
                 {
-                    try
+                    // Ignore Blanks
+                    if (responseByte == 10)
                     {
-                        using var response = req.EndGetResponse(ar);
-                        using var responseStream = response.GetResponseStream();
-                        int responseByte;
-                        bool atEndOfLine = false;
-                        string line = string.Empty;
-                        int size = 0;
+                        continue;
+                    }
 
-                        // This loop goes as long as streaming is on
-                        while (!this.stop && (responseByte = responseStream.ReadByte()) != -1)
+                    // Check if Carriage Return (We will start a new line)
+                    if (responseByte == 13)
+                    {
+                        // Check if two blank lines (end of header)
+                        if (atEndOfLine)
                         {
-                            // Ignore Blanks
-                            if (responseByte == 10)
-                            {
-                                continue;
-                            }
+                            responseStream.ReadByte();
 
-                            // Check if Carriage Return (We will start a new line)
-                            if (responseByte == 13)
-                            {
-                                // Check if two blank lines (end of header)
-                                if (atEndOfLine)
-                                {
-                                    responseStream.ReadByte();
+                            // Read all
+                            await this.ReadStreamingAsync(responseStream, size).ConfigureAwait(false);
+                            atEndOfLine = false;
+                            line = string.Empty;
+                        }
+                        else
+                        {
+                            atEndOfLine = true;
+                        }
 
-                                    // Read all
-                                    await this.ReadStreaming(responseStream, size);
-                                    atEndOfLine = false;
-                                    line = string.Empty;
-                                }
-                                else
-                                {
-                                    atEndOfLine = true;
-                                }
-
-                                if (line.ToLower().StartsWith("content-length:"))
-                                {
-                                    size = Convert.ToInt32(line.Substring("Content-Length:".Length).Trim());
-                                }
-                                else
-                                {
-                                    line = string.Empty;
-                                }
-                            }
-                            else
-                            {
-                                atEndOfLine = false;
-                                line += (char)responseByte;
-                            }
+                        if (line.ToLower().StartsWith("content-length:"))
+                        {
+                            size = Convert.ToInt32(line.Substring("Content-Length:".Length).Trim());
+                        }
+                        else
+                        {
+                            line = string.Empty;
                         }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        this.logger?.LogError(ex, "Streaming connection error");
-                        this.connectionErrorTextEntity.IsEnabled = true;
-                        this.spinnerEntity.IsEnabled = false;
+                        atEndOfLine = false;
+                        line += (char)responseByte;
                     }
-                }, req);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger?.LogError(ex, "Streaming connection error");
+                this.connectionErrorTextEntity.IsEnabled = true;
+                this.spinnerEntity.IsEnabled = false;
+                this.videoFramePlaneMesh.Owner.IsEnabled = false;
+            }
         }
 
-        private async Task ReadStreaming(Stream responseStream, int bytesToRead)
+        private async Task ReadStreamingAsync(Stream stream, int bytesToRead)
         {
             var shared = ArrayPool<byte>.Shared;
             var buffer = shared.Rent(bytesToRead);
@@ -173,8 +178,7 @@ namespace Evergine.Xrv.StreamingViewer.Components
             int bytesLeft = bytesToRead;
             while (bytesLeft > 0)
             {
-                bytesLeft -= responseStream.Read(buffer, bytesToRead - bytesLeft, bytesLeft);
-                await Task.Delay(100);
+                bytesLeft -= await stream.ReadAsync(buffer, bytesToRead - bytesLeft, bytesLeft).ConfigureAwait(false);
             }
 
             this.SetTextureFromBytesArray(buffer);

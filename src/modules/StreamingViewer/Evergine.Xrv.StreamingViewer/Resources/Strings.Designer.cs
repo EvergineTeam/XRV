@@ -61,6 +61,15 @@ namespace Evergine.Xrv.StreamingViewer.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection error.
+        /// </summary>
+        internal static string ConnectionError {
+            get {
+                return ResourceManager.GetString("ConnectionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Streaming.
         /// </summary>
         internal static string Menu {

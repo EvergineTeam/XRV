@@ -21,7 +21,6 @@ namespace Evergine.Xrv.StreamingViewer
     {
         private AssetsService assetsService;
         private XrvService xrv;
-        private Scene scene;
         private Window window = null;
 
         /// <summary>
@@ -49,7 +48,6 @@ namespace Evergine.Xrv.StreamingViewer
         {
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
-            this.scene = scene;
 
             this.HandMenuButton = new MenuButtonDescription()
             {
@@ -62,13 +60,13 @@ namespace Evergine.Xrv.StreamingViewer
             var streamingViewerComponent = streamingViewerPrefab.FindComponent<StreamingViewerComponent>();
             streamingViewerComponent.SourceURL = this.SourceURL;
 
-            // Initial size. Will be updated on stream load
-            var size = new Vector2(0.30f, 0.30f);
-
-            this.window = this.xrv.WindowsSystem.CreateWindow((config) =>
+            this.window = this.xrv.WindowsSystem.CreateWindow(config =>
             {
+                // Initial size. Will be updated on stream load
+                var size = new Vector2(0.30f, 0.30f);
                 config.LocalizedTitle = () => Resources.Strings.Window_Title;
                 config.Size = size;
+                config.DisplayFrontPlate = false;
                 config.FrontPlateSize = size;
                 config.FrontPlateOffsets = Vector2.Zero;
                 config.DisplayLogo = false;

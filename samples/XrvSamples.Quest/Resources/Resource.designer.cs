@@ -1075,7 +1075,10 @@ namespace XrvSamples.Quest
 		{
 			
 			// aapt resource value: 0x7F0C0000
-			public const int xamarin_essentials_fileprovider_file_paths = 2131492864;
+			public const int network_security_config = 2131492864;
+			
+			// aapt resource value: 0x7F0C0001
+			public const int xamarin_essentials_fileprovider_file_paths = 2131492865;
 			
 			static Xml()
 			{

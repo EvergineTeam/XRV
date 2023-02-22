@@ -110,7 +110,7 @@ Items:
             UseCopy: false
           - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
             Id: cb559833-015f-4fbb-83ce-675d4aa09eb1
-            Height: 0.100000001
+            Height: 0.0500000007
             IsEnabled: true
             Origin:
               X: 0.5
@@ -123,7 +123,7 @@ Items:
             VMirror: false
             VOffset: 0.0
             VTile: 1.0
-            Width: 0.100000001
+            Width: 0.0500000007
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
             Id: 3d176c4b-baf5-4454-abfb-da920dcc471f
             DebugBoundingbox: true
@@ -179,12 +179,12 @@ Items:
             Origin:
               X: 0.509999692
               Y: 0.544999659
-            ScaleFactor: 0.0600008033
+            ScaleFactor: 0.0120000001
             Size:
               X: 0.325000644
               Y: 0.110000946
             Softness: 0.75
-            Text: Connection Error
+            Text: Connection error
             VerticalAlignment: Center
             Wrapping: true
           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -195,6 +195,23 @@ Items:
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
+          - !Evergine.Xrv.Core.Localization.Text3dLocalization,Evergine.Xrv.Core
+            Id: 5dc1a80d-dc35-4633-94ca-6e10613e98e0
+            DictionaryKey: ConnectionError
+            DictionaryName: Evergine.Xrv.StreamingViewer.Resources.Strings
+            IsEnabled: true
+          - !Evergine.Xrv.Core.Themes.Texts.Text3dStyle,Evergine.Xrv.Core
+            Id: 21ad6879-1309-45df-b6c1-7dfb1986cc0e
+            ExplicitColor:
+              A: 255
+              B: 0
+              G: 0
+              R: 255
+            ExplicitThemeColor: PrimaryColor1
+            IsEnabled: true
+            OverrideColor: false
+            OverrideThemeColor: false
+            TextStyleKey: Xrv.Primary1.Size1
         Children: []
         Id: 009ae4af-81d7-42bc-a1ca-b8deb60b74a2
     Id: 9ebfc03d-b0ec-4ac5-9e13-2fba94248924
