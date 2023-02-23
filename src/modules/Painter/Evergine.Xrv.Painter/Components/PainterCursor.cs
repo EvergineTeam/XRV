@@ -38,6 +38,7 @@ namespace Evergine.Xrv.Painter.Components
         private Transform3D pointerTransform;
         private XRHandedness hand;
         private CursorMaterialAssignation cursorMaterialAssignation;
+        private bool wasDoingPichBefore;
 
         /// <summary>
         /// Gets or sets update time.
@@ -149,54 +150,71 @@ namespace Evergine.Xrv.Painter.Components
             this.UpdateHandTracking(this.hand, false);
         }
 
+
         /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
-            if (this.cursor != null && this.cursor.Owner.IsEnabled)
+            bool isPointerEnabled = this.cursor != null && this.cursor.Owner.IsEnabled;
+            this.Pointer.IsEnabled = isPointerEnabled;
+
+            if (!isPointerEnabled)
             {
-                this.current += gameTime;
-                var position = this.pointerTransform.Position;
+                this.wasDoingPichBefore = false;
+                this.current = TimeSpan.Zero;
+                return;
+            }
 
-                if (this.pointerMaterial != null)
-                {
-                    this.pointerMaterial.Parameters_Alpha = this.cursor.Pinch ? 1f : this.MinAlpha;
-                }
+            this.current += gameTime;
+            var position = this.pointerTransform.Position;
 
-                if (this.cursor.Pinch && !this.cursor.PreviousPinch)
+            // we need to update opacity for both paint and erase modes
+            if (this.pointerMaterial != null)
+            {
+                this.pointerMaterial.Parameters_Alpha = this.cursor.Pinch ? 1f : this.MinAlpha;
+            }
+
+            // Pinch up
+            if (this.manager.Mode != PainterModes.Painter)
+            {
+                this.wasDoingPichBefore = false;
+                return;
+            }
+
+            /*
+             * For some weird reason, it seems that we can't trust in cursor.PreviousPinch
+             * as it's not always updated on time. I found a case that I was able to easily reproduce
+             * (hiding one of the hands from device sensors) where that value remains as true
+             * even if pinch gesture is physically stopped and done again. Maybe some kind of weird issue
+             * with current implementation of rays and pinch update? Anyways, this is why we are storing
+             * now our own value in wasDoingPichBefore field.
+             */
+            if (this.cursor.Pinch && !this.wasDoingPichBefore)
+            {
+                // Begin down
+                this.manager.EndPaint(this.hand);
+                this.DoAction(position);
+                this.current = TimeSpan.Zero;
+            }
+            else if (this.cursor.Pinch && this.wasDoingPichBefore)
+            {
+                // Pinch drag
+                if (this.current > this.betweenUpdate)
                 {
-                    // Begin down
-                    this.DoAction(position);
+                    if (Vector3.Distance(this.lastPosition, position) > this.PositionDelta)
+                    {
+                        this.DoAction(position);
+                    }
+
                     this.current = TimeSpan.Zero;
                 }
-                else if (this.cursor.Pinch && this.cursor.PreviousPinch)
-                {
-                    // Pinch drag
-                    if (this.current > this.betweenUpdate)
-                    {
-                        if (Vector3.Distance(this.lastPosition, position) > this.PositionDelta)
-                        {
-                            this.DoAction(position);
-                        }
-
-                        this.current = TimeSpan.Zero;
-                    }
-                }
-                else if (!this.cursor.Pinch && this.cursor.PreviousPinch)
-                {
-                    // Pinch up
-                    if (this.manager.Mode == PainterModes.Painter)
-                    {
-                        this.manager.EndPaint(this.hand);
-                    }
-                }
             }
-            else
+            else if (!this.cursor.Pinch && this.wasDoingPichBefore)
             {
-                if (this.Pointer.IsEnabled)
-                {
-                    this.Pointer.IsEnabled = false;
-                }
+                // Pinch up
+                this.manager.EndPaint(this.hand);
             }
+
+            this.wasDoingPichBefore = this.cursor.Pinch;
         }
 
         private void Manager_ModeChanged(object sender, PainterModes mode)
