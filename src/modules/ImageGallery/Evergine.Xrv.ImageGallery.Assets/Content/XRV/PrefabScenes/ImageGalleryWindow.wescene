@@ -552,8 +552,8 @@ Items:
                   B: 255
                   G: 255
                   R: 255
-                Text: 
-                TextScale: 0.00999999978
+                Text: Previous
+                TextScale: 0.00600000005
               - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                 Id: 78b129a4-4abb-41ec-a4f3-282ae18fa500
                 IsEnabled: true
@@ -587,7 +587,12 @@ Items:
                 IsEnabled: true
                 OverrideColor: false
                 OverrideThemeColor: false
-                TextStyleKey: Xrv.Primary1.Size2
+                TextStyleKey: Xrv.Primary2.Size2
+              - !Evergine.Xrv.Core.Localization.ButtonLocalization,Evergine.Xrv.Core
+                Id: 6f8db5e7-2e24-49aa-8b6e-a219c75ec9a9
+                DictionaryKey: Gallery.Previous
+                DictionaryName: Evergine.Xrv.ImageGallery.Resources.Strings
+                IsEnabled: true
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
@@ -837,12 +842,12 @@ Items:
                             Origin:
                               X: 0.5
                               Y: 0.5
-                            ScaleFactor: 0.00999999978
+                            ScaleFactor: 0.00600000005
                             Size:
                               X: 0.0320000015
                               Y: 0.00914250035
                             Softness: 0.75
-                            Text: 
+                            Text: Previous
                             VerticalAlignment: Center
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components
@@ -1028,8 +1033,8 @@ Items:
                   B: 255
                   G: 255
                   R: 255
-                Text: ' '
-                TextScale: 0.00999999978
+                Text: Next
+                TextScale: 0.00600000005
               - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
                 Id: ab2ebff8-be30-40d8-befd-12d50d478dbc
                 IsEnabled: true
@@ -1063,7 +1068,12 @@ Items:
                 IsEnabled: true
                 OverrideColor: false
                 OverrideThemeColor: false
-                TextStyleKey: Xrv.Primary1.Size2
+                TextStyleKey: Xrv.Primary2.Size2
+              - !Evergine.Xrv.Core.Localization.ButtonLocalization,Evergine.Xrv.Core
+                Id: d3d01817-d328-4434-926c-2761defb7fc0
+                DictionaryKey: Gallery.Next
+                DictionaryName: Evergine.Xrv.ImageGallery.Resources.Strings
+                IsEnabled: true
             Children:
               - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
                 Name: PressableButtonPlatedRoot
@@ -1313,12 +1323,12 @@ Items:
                             Origin:
                               X: 0.5
                               Y: 0.5
-                            ScaleFactor: 0.00999999978
+                            ScaleFactor: 0.00600000005
                             Size:
                               X: 0.0320000015
                               Y: 0.00914250035
                             Softness: 0.75
-                            Text: ' '
+                            Text: Next
                             VerticalAlignment: Center
                             Wrapping: true
                           - !Evergine.Components.Fonts.Text3DRenderer,Evergine.Components

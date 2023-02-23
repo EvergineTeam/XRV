@@ -150,7 +150,6 @@ namespace Evergine.Xrv.Painter.Components
             this.UpdateHandTracking(this.hand, false);
         }
 
-
         /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {

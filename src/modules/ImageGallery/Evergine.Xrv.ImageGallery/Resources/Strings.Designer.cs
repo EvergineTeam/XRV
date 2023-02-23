@@ -61,6 +61,24 @@ namespace Evergine.Xrv.ImageGallery.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Next.
+        /// </summary>
+        internal static string Gallery_Next {
+            get {
+                return ResourceManager.GetString("Gallery.Next", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous.
+        /// </summary>
+        internal static string Gallery_Previous {
+            get {
+                return ResourceManager.GetString("Gallery.Previous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Images.
         /// </summary>
         internal static string Help_Tab_Name {
