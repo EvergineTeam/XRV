@@ -25,8 +25,8 @@ namespace Evergine.Xrv.Core.UI.Windows
         /// </summary>
         public const string FarKey = nameof(FarKey);
 
-        private const float DefaultNear = 0.4f;
-        private const float DefaultMedium = 0.6f;
+        private const float DefaultNear = 0.3f;
+        private const float DefaultMedium = 0.5f;
         private const float DefaultFar = 1f;
 
         private Dictionary<string, float> distances = new Dictionary<string, float>()

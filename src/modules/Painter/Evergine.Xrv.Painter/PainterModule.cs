@@ -101,7 +101,7 @@ namespace Evergine.Xrv.Painter
                 });
             });
 
-            this.painterWindow.DistanceKey = Distances.NearKey;
+            this.painterWindow.DistanceKey = Distances.MediumKey;
         }
 
         /// <inheritdoc/>
