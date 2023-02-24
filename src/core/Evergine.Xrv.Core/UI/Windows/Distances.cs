@@ -25,7 +25,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         /// </summary>
         public const string FarKey = nameof(FarKey);
 
-        private const float DefaultNear = 0.3f;
+        private const float DefaultNear = 0.35f;
         private const float DefaultMedium = 0.5f;
         private const float DefaultFar = 1f;
 
