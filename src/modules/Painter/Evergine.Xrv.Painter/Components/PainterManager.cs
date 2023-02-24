@@ -247,7 +247,7 @@ namespace Evergine.Xrv.Painter.Components
             {
                 Color = this.Color,
                 Position = position,
-                Thickness = this.GetThickNess(this.Thickness),
+                Thickness = this.GetThickness(this.Thickness),
                 PainterThickness = this.thickness,
                 Hand = hand,
             };
@@ -408,7 +408,7 @@ namespace Evergine.Xrv.Painter.Components
             return null;
         }
 
-        private float GetThickNess(PainterThickness thickness)
+        private float GetThickness(PainterThickness thickness)
         {
             switch (thickness)
             {

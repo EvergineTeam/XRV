@@ -63,7 +63,18 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
         /// <inheritdoc/>
         protected override void Prepare()
         {
-            this.ReadKeys();
+            // Read menu key
+            var keyboardDispatcher = this.graphicsPresenter.FocusedDisplay.KeyboardDispatcher;
+            foreach (var cursor in this.emulatedCursorInfos)
+            {
+                var cursorkey = cursor.MouseControlBehavior.Key;
+                if (keyboardDispatcher.IsKeyDown(cursorkey) &&
+                    keyboardDispatcher.ReadKeyState(this.ToggleHandKey) == ButtonState.Pressing)
+                {
+                    this.isActiveCursorDirty = true;
+                    cursor.IsPalmUp = !cursor.IsPalmUp;
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -77,21 +88,6 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
         protected override Vector3? GetAnchorPoint()
         {
             return this.activeCursor?.Transform.Position;
-        }
-
-        private void ReadKeys()
-        {
-            var keyboardDispatcher = this.graphicsPresenter.FocusedDisplay.KeyboardDispatcher;
-            foreach (var cursor in this.emulatedCursorInfos)
-            {
-                var cursorkey = cursor.MouseControlBehavior.Key;
-                if (keyboardDispatcher.IsKeyDown(cursorkey) &&
-                    keyboardDispatcher.ReadKeyState(this.ToggleHandKey) == ButtonState.Pressing)
-                {
-                    this.isActiveCursorDirty = true;
-                    cursor.IsPalmUp = !cursor.IsPalmUp;
-                }
-            }
         }
 
         private void RefreshActiveCursor()

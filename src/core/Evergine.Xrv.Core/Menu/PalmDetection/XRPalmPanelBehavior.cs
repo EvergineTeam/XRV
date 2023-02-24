@@ -1,11 +1,13 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Framework.XR;
 using Evergine.Framework.XR.TrackedDevices;
 using Evergine.Mathematics;
+using System;
 
 namespace Evergine.Xrv.Core.Menu.PalmDetection
 {
@@ -16,9 +18,17 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
         private XRPlatform xrPlatform = null;
 
         private XRTrackedDevice lastTrackedDevice;
+        private bool lastButtonState;
+        private bool menuToggleState;
 
         /// <inheritdoc/>
         public override XRHandedness ActiveHandedness => this.lastTrackedDevice?.Handedness ?? XRHandedness.Undefined;
+
+        /// <summary>
+        /// Gets or sets the button that will toggle the palm panel when a controller is detected instead of a hand.
+        /// </summary>
+        [RenderProperty(Tooltip = "The button that will toggle the palm panel when a controller is detected instead of a hand.")]
+        public XRButtons ControllerMenuButton { get; set; } = XRButtons.Button2;
 
         /// <inheritdoc/>
         protected override void Prepare()
@@ -28,44 +38,58 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
         /// <inheritdoc/>
         protected override bool GetNewPalmUp()
         {
-            if (this.Handedness == XRHandedness.Undefined)
-            {
-                var handedness = this.lastTrackedDevice?.Handedness ?? XRHandedness.LeftHand;
-                if (this.TryGetValidPalm(handedness))
-                {
-                    return true;
-                }
-
-                handedness = handedness == XRHandedness.LeftHand ? XRHandedness.RightHand : XRHandedness.LeftHand;
-                return this.TryGetValidPalm(handedness);
-            }
-            else
-            {
-                return this.TryGetValidPalm(this.Handedness);
-            }
+            return this.TryGetNewPalmUpBy(this.TryGetValidPalm) || this.TryGetNewPalmUpBy(this.TryGetValidControllerMenu);
         }
 
         /// <inheritdoc/>
         protected override Vector3? GetAnchorPoint()
         {
-            if (this.lastTrackedDevice == null ||
-                !this.lastTrackedDevice.TryGetArticulatedHandJoint(XRHandJointKind.MiddleProximal, out var middleProximalJoint))
+            if (this.lastTrackedDevice != null && this.lastTrackedDevice.PoseIsValid)
             {
-                return null;
+                if (this.lastTrackedDevice.DeviceType == XRTrackedDeviceType.Hand)
+                {
+                    if (this.lastTrackedDevice.TryGetArticulatedHandJoint(XRHandJointKind.MiddleProximal, out var middleProximalJoint))
+                    {
+                        return middleProximalJoint.Pose.Position;
+                    }
+                }
+                else if (this.lastTrackedDevice.DeviceType == XRTrackedDeviceType.Controller)
+                {
+                    if (this.lastTrackedDevice.GetTrackingState(out var trackingState))
+                    {
+                        return trackingState.Pose.Position;
+                    }
+                }
             }
 
-            return middleProximalJoint.Pose.Position;
+            return null;
+        }
+
+        private bool TryGetNewPalmUpBy(Func<XRHandedness, bool> tryGetValidStateMethod)
+        {
+            if (this.Handedness == XRHandedness.Undefined)
+            {
+                var handedness = this.lastTrackedDevice?.Handedness ?? XRHandedness.LeftHand;
+                if (tryGetValidStateMethod(handedness))
+                {
+                    return true;
+                }
+
+                handedness = handedness == XRHandedness.LeftHand ? XRHandedness.RightHand : XRHandedness.LeftHand;
+                return tryGetValidStateMethod(handedness);
+            }
+            else
+            {
+                return tryGetValidStateMethod(this.Handedness);
+            }
         }
 
         private bool TryGetValidPalm(XRHandedness handedness)
         {
-            var cameraTransform = this.Managers.RenderManager?.ActiveCamera3D?.Transform;
-
-            // Get tracker device
-            var trackedDevice = this.xrPlatform?.InputTracking?.GetDeviceByTypeAndHandedness(XRTrackedDeviceType.Hand, handedness);
-            if (trackedDevice == null || !trackedDevice.PoseIsValid)
+            // Get tracked device
+            if (!this.TryGetDeviceByTypeAndHandednessThrottled(XRTrackedDeviceType.Hand, handedness, out var trackedDevice, out var menuResult))
             {
-                return false;
+                return menuResult;
             }
 
             // Get joints status
@@ -74,11 +98,6 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
                 !trackedDevice.TryGetArticulatedHandJoint(XRHandJointKind.RingTip, out var ringTipJoint))
             {
                 return false;
-            }
-
-            if (this.accumulatedTime < this.TimeBetweenActivationChanges)
-            {
-                return this.isPalmUp;
             }
 
             // Get the positions for the joints that will be used to determine if the palm is open
@@ -95,6 +114,8 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
             // Check that the palm is looking at the camera and the hand is open
             var palmNormal = middleMetacarpalOrientation * Vector3.Down;
             var fingersNormal = handPlane.Normal;
+
+            var cameraTransform = this.Managers.RenderManager?.ActiveCamera3D?.Transform;
             var cameraNormal = Vector3.Normalize(cameraTransform.Position - middleMetacarpalPosition);
 
             var cameraPalm = Vector3.Dot(cameraNormal, palmNormal);
@@ -125,6 +146,54 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
             if (this.ActiveHandedness != previousHandedness)
             {
                 this.OnActiveHandednessChanged();
+            }
+
+            return true;
+        }
+
+        private bool TryGetValidControllerMenu(XRHandedness handedness)
+        {
+            // Get tracked device
+            if (!this.TryGetDeviceByTypeAndHandednessThrottled(XRTrackedDeviceType.Controller, handedness, out var trackedDevice, out var menuResult))
+            {
+                return menuResult;
+            }
+
+            if (trackedDevice.GetControllerState(out var controllerGenericState))
+            {
+                var newButtonState = controllerGenericState.IsButtonPressed(this.ControllerMenuButton);
+                this.menuToggleState ^= newButtonState && !this.lastButtonState;
+                this.lastButtonState = newButtonState;
+            }
+
+            if (this.menuToggleState)
+            {
+                var previousHandedness = this.ActiveHandedness;
+                this.lastTrackedDevice = trackedDevice;
+
+                if (this.ActiveHandedness != previousHandedness)
+                {
+                    this.OnActiveHandednessChanged();
+                }
+            }
+
+            return this.menuToggleState;
+        }
+
+        private bool TryGetDeviceByTypeAndHandednessThrottled(XRTrackedDeviceType type, XRHandedness handedness, out XRTrackedDevice trackedDevice, out bool menuResult)
+        {
+            menuResult = false;
+
+            trackedDevice = this.xrPlatform?.InputTracking?.GetDeviceByTypeAndHandedness(type, handedness);
+            if (trackedDevice == null || !trackedDevice.PoseIsValid)
+            {
+                return false;
+            }
+
+            if (this.accumulatedTime < this.TimeBetweenActivationChanges)
+            {
+                menuResult = this.isPalmUp;
+                return false;
             }
 
             return true;

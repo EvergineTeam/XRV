@@ -17,9 +17,9 @@ namespace XrvSamples.Scenes
 
         protected override Guid HandRaySampler => EvergineContent.MRTK.Samplers.LinearWrapSampler;
 
-        protected override Guid LeftControllerModelPrefab => Guid.Empty;
+        protected override Guid LeftControllerModelPrefab => EvergineContent.MRTK.Prefabs.DefaultLeftController_weprefab;
 
-        protected override Guid RightControllerModelPrefab => Guid.Empty;
+        protected override Guid RightControllerModelPrefab => EvergineContent.MRTK.Prefabs.DefaultRightController_weprefab;
 
         protected override float MaxFarCursorLength => 0.5f;
     }

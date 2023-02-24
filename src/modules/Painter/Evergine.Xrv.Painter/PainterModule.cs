@@ -1,11 +1,13 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System.Collections.Generic;
+using System.Linq;
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
+using Evergine.Framework.XR;
 using Evergine.Mathematics;
-using System.Collections.Generic;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
@@ -73,30 +75,24 @@ namespace Evergine.Xrv.Painter
                 await EvergineBackgroundTask.Run(async () =>
                 {
                     var content = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.Painter).Instantiate();
-                    var painterCursors = content.FindComponents<PainterCursor>();
-                    PainterCursor rightCursor = null;
-                    PainterCursor leftCursor = null;
+                    var painterCursors = content.FindComponents<PainterCursor>().ToArray();
+
+                    var pointerPainterPrefab = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter);
+
                     foreach (var painterCursor in painterCursors)
                     {
-                        if (painterCursor.Hand == Evergine.Framework.XR.XRHandedness.RightHand)
-                        {
-                            rightCursor = painterCursor;
-                        }
-                        else
-                        {
-                            leftCursor = painterCursor;
-                        }
+                        painterCursor.Pointer = pointerPainterPrefab.Instantiate();
                     }
 
-                    rightCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
-                    leftCursor.Pointer = this.assetsService.Load<Prefab>(PainterResourceIDs.Prefabs.PointerPainter).Instantiate();
                     await EvergineForegroundTask.Run(() =>
                     {
                         config.Content = content;
-                        scene.Managers.EntityManager.Add(rightCursor.Pointer);
-                        scene.Managers.EntityManager.Add(leftCursor.Pointer);
-                        rightCursor.Pointer.IsEnabled = false;
-                        leftCursor.Pointer.IsEnabled = false;
+
+                        foreach (var painterCursor in painterCursors)
+                        {
+                            scene.Managers.EntityManager.Add(painterCursor.Pointer);
+                            painterCursor.Pointer.IsEnabled = false;
+                        }
                     });
                 });
             });

@@ -52,7 +52,7 @@ namespace Evergine.Xrv.Core.Menu
             var palmMenuAnchorTransform = new Transform3D();
             var palmMenuAnchor = new Entity("palmMenuAnchor")
                 .AddComponent(palmMenuAnchorTransform)
-                .AddComponent(this.palmPanelBehavior as Component);
+                .AddComponent(this.palmPanelBehavior);
 
             var handMenu = new HandMenu();
             var menuRoot = new Entity("menuRoot")

@@ -3,15 +3,16 @@
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
+using Evergine.Components.XR;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.XR;
+using Evergine.Framework.XR.TrackedDevices;
 using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.Emulation;
 using Evergine.Xrv.Core;
 using System;
-using System.Linq;
 
 namespace Evergine.Xrv.Painter.Components
 {
@@ -36,6 +37,7 @@ namespace Evergine.Xrv.Painter.Components
         private float updateTime = 0.03f;
         private HoloGraphic pointerMaterial;
         private Transform3D pointerTransform;
+        private XRTrackedDeviceType type;
         private XRHandedness hand;
         private CursorMaterialAssignation cursorMaterialAssignation;
         private bool wasDoingPichBefore;
@@ -60,6 +62,22 @@ namespace Evergine.Xrv.Painter.Components
         public Entity Pointer { get; set; }
 
         /// <summary>
+        /// Gets or sets type.
+        /// </summary>
+        public XRTrackedDeviceType Type
+        {
+            get => this.type;
+            set
+            {
+                this.type = value;
+                if (this.IsAttached)
+                {
+                    this.UpdateHandTracking(subscribe: true);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets hand.
         /// </summary>
         public XRHandedness Hand
@@ -70,7 +88,7 @@ namespace Evergine.Xrv.Painter.Components
                 this.hand = value;
                 if (this.IsAttached)
                 {
-                    this.UpdateHandTracking(value, true);
+                    this.UpdateHandTracking(subscribe: true);
                 }
             }
         }
@@ -132,7 +150,7 @@ namespace Evergine.Xrv.Painter.Components
             var mode = this.manager.Mode;
             this.Pointer.IsEnabled = mode == PainterModes.Hand ? false : true;
             this.manager.ModeChanged += this.Manager_ModeChanged;
-            this.UpdateHandTracking(this.hand, true);
+            this.UpdateHandTracking(subscribe: true);
         }
 
         /// <inheritdoc/>
@@ -147,7 +165,7 @@ namespace Evergine.Xrv.Painter.Components
             this.Pointer.IsEnabled = false;
 
             this.manager.ModeChanged -= this.Manager_ModeChanged;
-            this.UpdateHandTracking(this.hand, false);
+            this.UpdateHandTracking(subscribe: false);
         }
 
         /// <inheritdoc/>
@@ -245,7 +263,7 @@ namespace Evergine.Xrv.Painter.Components
             this.lastPosition = position;
         }
 
-        private void UpdateHandTracking(XRHandedness value, bool subscribe)
+        private void UpdateHandTracking(bool subscribe)
         {
             if (Application.Current.IsEditor)
             {
@@ -255,6 +273,7 @@ namespace Evergine.Xrv.Painter.Components
             if (this.cursor != null)
             {
                 this.cursor.Owner.FindComponent<Transform3D>().PositionChanged -= this.PainterCursor_PositionChanged;
+                this.cursor.Owner.AttachableStateChanged -= this.Owner_AttachableStateChanged;
             }
 
             if (!subscribe)
@@ -262,8 +281,52 @@ namespace Evergine.Xrv.Painter.Components
                 return;
             }
 
-            this.cursor = this.Owner.EntityManager.FindComponentsOfType<CursorTouch>(isExactType: false).FirstOrDefault(c => c.Owner.Name.Contains(value.ToString()));
+            var cursors = this.Owner.EntityManager.FindComponentsOfType<CursorTouch>(isExactType: false);
+            foreach (var cursor in cursors)
+            {
+                var parent = cursor.Owner;
+                while (parent.Parent != null)
+                {
+                    parent = parent.Parent;
+                }
+
+                var trackXRController = parent.FindComponentInChildren<TrackXRController>(isExactType: false);
+                if (trackXRController.Handedness == this.Hand)
+                {
+                    if (trackXRController is TrackXRArticulatedHand)
+                    {
+                        if (this.type == XRTrackedDeviceType.Hand)
+                        {
+                            this.cursor = cursor;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (this.type == XRTrackedDeviceType.Controller)
+                        {
+                            this.cursor = cursor;
+                            break;
+                        }
+                    }
+                }
+            }
+
             this.cursor.Owner.FindComponent<Transform3D>().PositionChanged += this.PainterCursor_PositionChanged;
+            this.cursor.Owner.AttachableStateChanged += this.Owner_AttachableStateChanged;
+        }
+
+        private void Owner_AttachableStateChanged(object sender, AttachableObjectState state)
+        {
+            if (state == AttachableObjectState.Activated)
+            {
+                this.Pointer.IsEnabled = true;
+            }
+
+            if (state == AttachableObjectState.Deactivated)
+            {
+                this.Pointer.IsEnabled = false;
+            }
         }
 
         private void PainterCursor_PositionChanged(object sender, EventArgs e)
