@@ -6,7 +6,6 @@ using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
-using Evergine.Framework.XR;
 using Evergine.Mathematics;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Menu;
