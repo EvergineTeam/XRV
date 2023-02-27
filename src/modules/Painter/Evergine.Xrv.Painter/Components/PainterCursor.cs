@@ -191,7 +191,7 @@ namespace Evergine.Xrv.Painter.Components
             }
 
             // Pinch up
-            if (this.manager.Mode != PainterModes.Painter)
+            if (this.manager.Mode != PainterModes.Painter && this.manager.Mode != PainterModes.Eraser)
             {
                 this.wasDoingPichBefore = false;
                 return;
@@ -312,8 +312,11 @@ namespace Evergine.Xrv.Painter.Components
                 }
             }
 
-            this.cursor.Owner.FindComponent<Transform3D>().PositionChanged += this.PainterCursor_PositionChanged;
-            this.cursor.Owner.AttachableStateChanged += this.Owner_AttachableStateChanged;
+            if (this.cursor != null)
+            {
+                this.cursor.Owner.FindComponent<Transform3D>().PositionChanged += this.PainterCursor_PositionChanged;
+                this.cursor.Owner.AttachableStateChanged += this.Owner_AttachableStateChanged;
+            }
         }
 
         private void Owner_AttachableStateChanged(object sender, AttachableObjectState state)
