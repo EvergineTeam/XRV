@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 76dc7e7b-b74e-482c-9a76-963c748eeb93
         Aperture: 1.0
-        AspectRatio: 1.60337555
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -43,9 +42,6 @@ Items:
         ClearFlags: All
         ClearStencil: 0
         Compensation: 0.0
-        DepthRange:
-          MaxDepth: 1.0
-          MinDepth: 0.0
         DisplayTag: null
         Exposure: 1.0
         FarPlane: 1000.0
@@ -66,13 +62,6 @@ Items:
         LogLuminanceRange: 12.0
         MinLogLuminance: -10.0
         NearPlane: 0.100000001
-        ScreenViewport:
-          Height: 237.0
-          MaxDepth: 1.0
-          MinDepth: 0.0
-          Width: 380.0
-          X: 0.0
-          Y: 0.0
         Sensitivity: 100.0
         SensorSize:
           X: 36.0
@@ -80,10 +69,6 @@ Items:
         ShutterSpeed: 1.20000005
         TAU: 1.10000002
         TagFilter: null
-        UpVector:
-          X: 0.0
-          Y: 1.0
-          Z: 0.0
         UsePhysicalParameters: false
     Children: []
     Id: c23d053d-ddc1-4534-8d55-9e201d220ee3
@@ -168,7 +153,8 @@ Items:
         Id: 4543e57d-2454-4ecf-89d9-2db9df9f80cd
         AsignedTo: Default
         IsEnabled: true
-        Material: ecf842fb-8040-4222-aedf-86c647d757fc
+        Material: 568a73c7-5e5b-4df2-91e0-0d2eed1439d7
+        UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: ea466503-fc88-429f-810b-ee4f4a2d9cc3
         Diameter: 1.0
@@ -235,6 +221,8 @@ Items:
             additionalComponentList:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: 8084b4cd-8fb8-41ab-833f-929381577dae
+                AllowBackPlateNullMaterial: false
+                AllowIconNullMaterial: false
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
@@ -247,6 +235,7 @@ Items:
                   G: 255
                   R: 255
                 Text: '#1'
+                TextScale: 0.00600000005
         modificationList:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
@@ -278,6 +267,8 @@ Items:
             additionalComponentList:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: 6c12192c-3116-4ed4-a83e-80e5befd7c09
+                AllowBackPlateNullMaterial: false
+                AllowIconNullMaterial: false
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
@@ -290,6 +281,7 @@ Items:
                   G: 255
                   R: 255
                 Text: '#2'
+                TextScale: 0.00600000005
         modificationList:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
@@ -361,6 +353,7 @@ Items:
             Size:
               X: 0.800000012
               Y: 0.100000001
+            Softness: 0.75
             Text: Text message
             VerticalAlignment: Top
             Wrapping: true
@@ -407,6 +400,8 @@ Items:
             additionalComponentList:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: 700b8fac-a3f8-4ba3-b8ce-a7caac708eb5
+                AllowBackPlateNullMaterial: false
+                AllowIconNullMaterial: false
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
@@ -419,6 +414,7 @@ Items:
                   G: 255
                   R: 255
                 Text: Alert
+                TextScale: 0.00600000005
         modificationList:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
@@ -450,6 +446,8 @@ Items:
             additionalComponentList:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: 1f59a6f2-c00b-4970-99fd-cb8439684b30
+                AllowBackPlateNullMaterial: false
+                AllowIconNullMaterial: false
                 CreatesNewBackPlateMaterialInstance: false
                 CreatesNewIconMaterialInstance: false
                 Font: null
@@ -462,6 +460,7 @@ Items:
                   G: 255
                   R: 255
                 Text: Confirm
+                TextScale: 0.00600000005
         modificationList:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
@@ -533,6 +532,7 @@ Items:
             Size:
               X: 0.800000012
               Y: 0.100000001
+            Softness: 0.75
             Text: Text message
             VerticalAlignment: Top
             Wrapping: true

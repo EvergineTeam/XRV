@@ -35,7 +35,6 @@ Items:
       - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
         Id: 69fa33fa-df8e-4117-b756-276eb1dbac9e
         Aperture: 1.0
-        AspectRatio: 1.76744187
         AutoDepthBounds: false
         AutoExposureEnabled: false
         CameraOrder: 0.0
@@ -43,9 +42,6 @@ Items:
         ClearFlags: All
         ClearStencil: 0
         Compensation: 0.0
-        DepthRange:
-          MaxDepth: 1.0
-          MinDepth: 0.0
         DisplayTag: null
         Exposure: 1.0
         FarPlane: 1000.0
@@ -66,13 +62,6 @@ Items:
         LogLuminanceRange: 12.0
         MinLogLuminance: -10.0
         NearPlane: 0.100000001
-        ScreenViewport:
-          Height: 215.0
-          MaxDepth: 1.0
-          MinDepth: 0.0
-          Width: 380.0
-          X: 0.0
-          Y: 0.0
         Sensitivity: 100.0
         SensorSize:
           X: 36.0
@@ -80,10 +69,6 @@ Items:
         ShutterSpeed: 1.20000005
         TAU: 1.10000002
         TagFilter: null
-        UpVector:
-          X: 0.0
-          Y: 1.0
-          Z: 0.0
         UsePhysicalParameters: false
     Children: []
     Id: 86de6e29-ee6a-4fb4-81ea-4b127246b35c
@@ -168,7 +153,8 @@ Items:
         Id: 35953939-aab9-490d-8dbb-cf89622c5a32
         AsignedTo: Default
         IsEnabled: true
-        Material: 9fdc4cb8-6a9d-46b5-aecb-7d6d139c1094
+        Material: 24f27c89-1de9-4da7-a83a-a5a979482e5c
+        UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: caa06199-596a-42a2-a99f-98fc01263eae
         Diameter: 1.0
@@ -291,6 +277,7 @@ Items:
                 Size:
                   X: 8.0
                   Y: 1.10000002
+                Softness: 0.75
                 Text: Local storage
                 VerticalAlignment: Top
                 Wrapping: true
@@ -369,6 +356,7 @@ Items:
                     Size:
                       X: 8.0
                       Y: 1.10000002
+                    Softness: 0.75
                     Text: Progress message
                     VerticalAlignment: Top
                     Wrapping: true
@@ -391,6 +379,8 @@ Items:
                     additionalComponentList:
                       - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                         Id: febf3f13-93db-4511-b2ae-addcc6cf062e
+                        AllowBackPlateNullMaterial: false
+                        AllowIconNullMaterial: false
                         CreatesNewBackPlateMaterialInstance: false
                         CreatesNewIconMaterialInstance: false
                         Font: null
@@ -403,6 +393,7 @@ Items:
                           G: 255
                           R: 255
                         Text: Execute
+                        TextScale: 0.00600000005
                 modificationList:
                   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
                     Name: Name
@@ -503,6 +494,7 @@ Items:
                 Size:
                   X: 8.0
                   Y: 1.10000002
+                Softness: 0.75
                 Text: Azure file shares
                 VerticalAlignment: Top
                 Wrapping: true
@@ -581,6 +573,7 @@ Items:
                     Size:
                       X: 8.0
                       Y: 1.10000002
+                    Softness: 0.75
                     Text: Progress message
                     VerticalAlignment: Top
                     Wrapping: true
@@ -603,6 +596,8 @@ Items:
                     additionalComponentList:
                       - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                         Id: ae44e157-e96d-4a17-a9b3-d9dd76d7c80a
+                        AllowBackPlateNullMaterial: false
+                        AllowIconNullMaterial: false
                         CreatesNewBackPlateMaterialInstance: false
                         CreatesNewIconMaterialInstance: false
                         Font: null
@@ -615,6 +610,7 @@ Items:
                           G: 255
                           R: 255
                         Text: Execute
+                        TextScale: 0.00600000005
                 modificationList:
                   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
                     Name: Name
@@ -715,6 +711,7 @@ Items:
                 Size:
                   X: 8.0
                   Y: 1.10000002
+                Softness: 0.75
                 Text: Azure blobs
                 VerticalAlignment: Top
                 Wrapping: true
@@ -793,6 +790,7 @@ Items:
                     Size:
                       X: 8.0
                       Y: 1.10000002
+                    Softness: 0.75
                     Text: Progress message
                     VerticalAlignment: Top
                     Wrapping: true
@@ -815,6 +813,8 @@ Items:
                     additionalComponentList:
                       - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                         Id: a8e8110b-2f66-43b3-b627-d50926afbc90
+                        AllowBackPlateNullMaterial: false
+                        AllowIconNullMaterial: false
                         CreatesNewBackPlateMaterialInstance: false
                         CreatesNewIconMaterialInstance: false
                         Font: null
@@ -827,6 +827,7 @@ Items:
                           G: 255
                           R: 255
                         Text: Execute
+                        TextScale: 0.00600000005
                 modificationList:
                   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
                     Name: Name

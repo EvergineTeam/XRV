@@ -1,8 +1,8 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;uap10.0.16299</TargetFrameworks>
-	  <Description>XRV core features, including hand menu, windows creation, dialogs, settings and help panels, localization, themes, etc.</Description>
-	  <ReferenceMRTK>true</ReferenceMRTK>
+    <Description>XRV core features, including hand menu, windows creation, dialogs, settings and help panels, localization, themes, etc.</Description>
+    <ReferenceMRTK>true</ReferenceMRTK>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Evergine.Xrv.Core.Editor" />
@@ -12,30 +12,28 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.1" />
     <PackageReference Include="Azure.Storage.Files.Shares" Version="12.11.0" />
-    <PackageReference Include="Evergine.Common" Version="2023.2.13.1-nightly" />
-    <PackageReference Include="Evergine.Components" Version="2023.2.13.1-nightly" />
-    <PackageReference Include="Evergine.Framework" Version="2023.2.13.1-nightly" />
-    <PackageReference Include="Evergine.Mathematics" Version="2023.2.13.1-nightly" />
-    <PackageReference Include="Evergine.Networking" Version="2023.2.13.1-nightly" />
-    <PackageReference Include="Evergine.Platform" Version="2023.2.13.1-nightly" />
+    <PackageReference Include="Evergine.Common" Version="2023.2.24.1-nightly" />
+    <PackageReference Include="Evergine.Components" Version="2023.2.24.1-nightly" />
+    <PackageReference Include="Evergine.Framework" Version="2023.2.24.1-nightly" />
+    <PackageReference Include="Evergine.Mathematics" Version="2023.2.24.1-nightly" />
+    <PackageReference Include="Evergine.Networking" Version="2023.2.24.1-nightly" />
+    <PackageReference Include="Evergine.Platform" Version="2023.2.24.1-nightly" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
-
   <!-- Packaging -->
   <ItemGroup>
-	<None Include="..\Evergine.Xrv.Core.Editor\bin\$(Configuration)\netstandard2.0\Evergine.Xrv.Core.Editor.dll" Visible="false">
-		<Pack>True</Pack>
-		<PackagePath>lib\netstandard2.0\Evergine.Xrv.Core.Editor.dll</PackagePath>
-	</None>
+    <None Include="..\Evergine.Xrv.Core.Editor\bin\$(Configuration)\netstandard2.0\Evergine.Xrv.Core.Editor.dll" Visible="false">
+      <Pack>True</Pack>
+      <PackagePath>lib\netstandard2.0\Evergine.Xrv.Core.Editor.dll</PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
-	<Content Include="Evergine.Xrv.Core.targets" PackagePath="build" Visible="true" />
+    <Content Include="Evergine.Xrv.Core.targets" PackagePath="build" Visible="true" />
   </ItemGroup>
-
   <!-- Resource files -->
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">

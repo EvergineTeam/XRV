@@ -1,209 +1,6 @@
 !Evergine.Framework.Assets.AssetSources.Entities.SceneModel,Evergine.Framework
 Items:
   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-    Name: Camera
-    Tag: null
-    IsEnabled: true
-    IsStatic: false
-    Components:
-      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-        Id: 5f1bd8ac-bf18-4f76-b490-6573cb2bed28
-        IsEnabled: true
-        LocalOrientation:
-          W: 0.923879504
-          X: -0.382683456
-          Y: 0.0
-          Z: 0.0
-        LocalPosition:
-          X: 0.0
-          Y: 2.0
-          Z: 2.0
-        LocalScale:
-          X: 1.0
-          Y: 1.0
-          Z: 1.0
-      - !Evergine.Components.Cameras.FreeCamera3D,Evergine.Components
-        Id: c5a15d7d-7bec-499c-97a6-062aadffbc2e
-        IsEnabled: true
-        MaxPitch: 1.49225652
-        MouseSensibility: 0.0299999993
-        MoveSpeed: 5.0
-        RotationSpeed: 5.0
-        TouchMoveAndOrientationRatio: 0.5
-        TouchSensibility: 1.0
-        UpdateOrder: 0.5
-      - !Evergine.Framework.Graphics.Camera3D,Evergine.Framework
-        Id: 8185e7eb-cfbc-4fe4-96d0-395b3f2c9c7d
-        Aperture: 1.0
-        AutoDepthBounds: false
-        AutoExposureEnabled: false
-        CameraOrder: 0.0
-        ClearDepth: 1.0
-        ClearFlags: All
-        ClearStencil: 0
-        Compensation: 0.0
-        DepthRange:
-          MaxDepth: 1.0
-          MinDepth: 0.0
-        DisplayTag: null
-        Exposure: 1.0
-        FarPlane: 1000.0
-        FieldOfView: 0.785398185
-        FieldOfViewAxis: Vertical
-        FocalDistance: 1.0
-        FocalLength: 50.0
-        FrameBuffer: null
-        FrustumCullingEnabled: true
-        HDREnabled: true
-        IsEnabled: true
-        LayerMaskDefaultValue: true
-        LinearBackgroundColor:
-          A: 1.0
-          B: 0.851251662
-          G: 0.306634784
-          R: 0.12752977
-        LogLuminanceRange: 12.0
-        MinLogLuminance: -10.0
-        NearPlane: 0.100000001
-        ScreenViewport:
-          Height: 276.0
-          MaxDepth: 1.0
-          MinDepth: 0.0
-          Width: 247.0
-          X: 0.0
-          Y: 0.0
-        Sensitivity: 100.0
-        SensorSize:
-          X: 36.0
-          Y: 24.0
-        ShutterSpeed: 1.20000005
-        TAU: 1.10000002
-        TagFilter: null
-        UpVector:
-          X: 0.0
-          Y: 1.0
-          Z: 0.0
-        UsePhysicalParameters: false
-    Children: []
-    Id: 43c64c58-4a6f-400a-a34a-2fac463972ea
-  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-    Name: SunLight
-    Tag: null
-    IsEnabled: true
-    IsStatic: false
-    Components:
-      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-        Id: c46e8731-19f3-406f-b836-cdde836b8431
-        IsEnabled: true
-        LocalOrientation:
-          W: 0.582563519
-          X: -0.271654308
-          Y: 0.694271922
-          Z: 0.323743761
-        LocalPosition:
-          X: 4.0
-          Y: 4.0
-          Z: 4.0
-        LocalScale:
-          X: 1.0
-          Y: 1.0
-          Z: 1.0
-      - !Evergine.Framework.Graphics.PhotometricDirectionalLight,Evergine.Framework
-        Id: 653a5098-8a24-4661-bf59-917f06493002
-        Color:
-          A: 0
-          B: 228
-          G: 240
-          R: 249
-        ColorByTemperature: true
-        DebugMode: false
-        GammaDistribution: 0.800000012
-        Illuminance: 3.0
-        Intensity: 3.0
-        IsEnabled: true
-        IsShadowEnabled: true
-        LinearColor:
-          A: 0.0
-          B: 0.77908951
-          G: 0.874792635
-          R: 0.9453125
-        ShadowBias: 0.00499999989
-        ShadowDistance: 80.0
-        ShadowOpacity: 1.0
-        SplitDistance:
-          - 0.0
-          - 0.0
-          - 0.0
-          - 0.0
-        Temperature: 6500.0
-      - !Evergine.Framework.Graphics.SunComponent,Evergine.Framework
-        Id: 7a8295e1-e445-4ad4-a374-f2eb6273fa98
-        IsEnabled: true
-    Children: []
-    Id: b8788008-1535-4373-b09c-1d3288e1f6ca
-  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-    Name: SkyAtmosphere
-    Tag: Skybox
-    IsEnabled: true
-    IsStatic: false
-    Components:
-      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-        Id: b89d0dea-a941-431c-94a7-f3fd4ac9211a
-        IsEnabled: true
-        LocalOrientation:
-          W: 1.0
-          X: 0.0
-          Y: 0.0
-          Z: 0.0
-        LocalPosition:
-          X: 0.0
-          Y: 5.0
-          Z: 0.0
-        LocalScale:
-          X: 1.0
-          Y: 1.0
-          Z: 1.0
-      - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
-        Id: dbe7eca6-6336-4faf-a265-db603db94627
-        AsignedTo: Default
-        IsEnabled: true
-        Material: ebe66f25-262b-4a62-962b-20f3484c3ff6
-        UseCopy: false
-      - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
-        Id: 1f65ebf5-9901-4f14-b279-861dbb2958df
-        Diameter: 1.0
-        IsEnabled: true
-        Tessellation: 32
-        UMirror: false
-        VMirror: false
-      - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
-        Id: 0c257749-3a58-4a53-be00-038d936d554c
-        DebugBoundingbox: true
-        IsCullingEnabled: false
-        IsEnabled: true
-        OrderBias: 0
-        RenderFlags: CastShadows
-      - !Evergine.Components.Environment.AtmosphereController,Evergine.Components
-        Id: 8e00c91d-adac-40bd-b9a9-8669e0659978
-        AtmosphereRadiusInKm: 6471.0
-        IsEnabled: true
-        MiePreferredScatteringDirection: 0.758000016
-        MieScaleHeight: 1200.0
-        MieScatteringCoefficient: 21.0
-        ModifySunColor: true
-        PlanetRadiusInKm: 6371.0
-        RayleighScaleHeight: 8000.0
-        RayleighScatteringCoefficient:
-          X: 5.5
-          Y: 13.0
-          Z: 22.3999996
-        SunDiskEnabled: true
-        SunDiskSize: 0.0199999996
-        SunIntensity: 22.0
-        UpdateOrder: 0.5
-    Children: []
-    Id: 449eea3f-5fcd-4dfa-978a-3c5fb5e592f8
-  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
     Name: Manipulator
     Tag: PART_manipulator
     IsEnabled: true
@@ -496,7 +293,7 @@ Items:
                       W: 1.0
                       X: 0.0
                       Y: 0.0
-                      Z: -0.0
+                      Z: 0.0
                     LocalPosition:
                       X: 0.0
                       Y: 0.0
@@ -807,7 +604,7 @@ Items:
                                   W: 1.0
                                   X: 0.0
                                   Y: 0.0
-                                  Z: -0.0
+                                  Z: 0.0
                                 LocalPosition:
                                   X: 0.0
                                   Y: -0.00911316648
@@ -832,7 +629,7 @@ Items:
                                 Origin:
                                   X: 0.5
                                   Y: 0.5
-                                ScaleFactor: 0.00600000005
+                                ScaleFactor: 0.00400000019
                                 Size:
                                   X: 0.0320000015
                                   Y: 0.00800000038
