@@ -31,7 +31,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
             if (attached)
             {
                 this.contentDefaultPosition = this.contentTransform.LocalPosition;
-                this.contentHoverPosition = this.contentTransform.LocalPosition - (Vector3.Forward * 0.002f);
+                this.contentHoverPosition = this.contentTransform.LocalPosition - (Vector3.Forward * 0.01f);
             }
 
             return attached;
@@ -40,6 +40,11 @@ namespace Evergine.Xrv.Core.UI.Buttons
         /// <inheritdoc/>
         protected override void OnCursorDetected(bool isDetected)
         {
+            if (Application.Current.IsEditor)
+            {
+                return;
+            }
+
             if (isDetected)
             {
                 this.AnimateHover();

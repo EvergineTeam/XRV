@@ -40,36 +40,12 @@ namespace Evergine.Xrv.Core.UI.Buttons
         /// </summary>
         public float TextPositionOffset { get; set; } = 0f;
 
-        /// <summary>
-        /// Applies look and feel to a button.
-        /// </summary>
-        /// <param name="button">Button entity.</param>
-        /// <returns>Look and feel component.</returns>
-        public static XrvPressableButtonLookAndFeel ApplyTo(Entity button)
-        {
-            if (button.FindComponent<Collider3D>(isExactType: false) == null)
-            {
-                button.AddComponent(new BoxCollider3D()
-                {
-                    Size = new Vector3(ButtonConstants.SquareButtonSize),
-                    Offset = new Vector3(0f, 0f, 0.01f),
-                });
-            }
-
-            var component = new XrvPressableButtonLookAndFeel();
-            button.AddComponent(component);
-
-            return component;
-        }
-
         /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
-            if (attached)
+            if (attached && !Application.Current.IsEditor)
             {
-                this.textMesh.ScaleFactor = 0.004f;
-
                 var textPosition = this.textTransform.LocalPosition;
                 textPosition.Y += this.TextPositionOffset;
                 this.textTransform.LocalPosition = textPosition;
@@ -84,8 +60,32 @@ namespace Evergine.Xrv.Core.UI.Buttons
         }
 
         /// <inheritdoc/>
+        protected override void SetTargetCollider()
+        {
+            if (Application.Current.IsEditor)
+            {
+                return;
+            }
+
+            if (this.Owner.FindComponent<Collider3D>(isExactType: false) == null)
+            {
+                this.collider3D = new BoxCollider3D()
+                {
+                    Size = new Vector3(ButtonConstants.SquareButtonSize),
+                    Offset = new Vector3(0f, 0f, 0.02f),
+                };
+                this.Owner.AddComponent(this.collider3D);
+            }
+        }
+
+        /// <inheritdoc/>
         protected override void OnCursorDetected(bool isDetected)
         {
+            if (Application.Current.IsEditor)
+            {
+                return;
+            }
+
             if (isDetected)
             {
                 this.AnimateHover();

@@ -24,6 +24,7 @@ namespace Evergine.Xrv.Core.Menu
     /// </summary>
     public class MenuButtonFactory
     {
+        private const float TextPositionHover = -0.002f;
         private readonly XrvService xrvService;
         private readonly AssetsService assetsService;
 
@@ -64,6 +65,10 @@ namespace Evergine.Xrv.Core.Menu
                 .AddComponent(new ButtonTextStyle
                 {
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
+                })
+                .AddComponent(new XrvPressableButtonLookAndFeel
+                {
+                    TextPositionOffset = TextPositionHover,
                 });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn))
@@ -76,8 +81,6 @@ namespace Evergine.Xrv.Core.Menu
             }
 
             this.AssociateActivationPublishers(description, button);
-            var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
-            lookAndFeel.TextPositionOffset = -0.002f;
 
             return button;
         }
@@ -103,6 +106,10 @@ namespace Evergine.Xrv.Core.Menu
                 {
                     TargetState = ToggleState.Off,
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
+                })
+                .AddComponent(new XrvPressableButtonLookAndFeel
+                {
+                    TextPositionOffset = TextPositionHover,
                 });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn)
@@ -135,8 +142,6 @@ namespace Evergine.Xrv.Core.Menu
                 });
 
             this.AssociateActivationPublishers(description, button);
-            var lookAndFeel = XrvPressableButtonLookAndFeel.ApplyTo(button);
-            lookAndFeel.TextPositionOffset = -0.002f;
 
             return button;
         }

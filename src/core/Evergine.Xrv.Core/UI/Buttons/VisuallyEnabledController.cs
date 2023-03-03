@@ -16,7 +16,10 @@ namespace Evergine.Xrv.Core.UI.Buttons
     {
         private bool isVisuallyEnabled = true;
 
-        [BindComponent(source: BindComponentSource.Children, isRecursive: true)]
+        // This must be ChildrenSkipOwner as we have XrvPressableButtonLookAndFeel components
+        // that adds a top-level collider to attached entity. But, we want to enable or disable, in this case,
+        // MRTK prefab button collider, to avoid user from pressing it.
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, isRecursive: true)]
         private BoxCollider3D boxCollider = null;
 
         [BindComponent(source: BindComponentSource.Children, isRecursive: true)]

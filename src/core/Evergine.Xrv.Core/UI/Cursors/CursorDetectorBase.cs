@@ -17,7 +17,6 @@ namespace Evergine.Xrv.Core.UI.Cursors
         /// <summary>
         /// Detection collider.
         /// </summary>
-        [BindComponent(isExactType: false, source: BindComponentSource.Children)]
         protected Collider3D collider3D;
 
         private int detectedCursorIndex;
@@ -41,6 +40,8 @@ namespace Evergine.Xrv.Core.UI.Cursors
             {
                 return true;
             }
+
+            this.SetTargetCollider();
 
             var physicBody = this.Owner.FindComponent<PhysicBody3D>(isExactType: false);
             if (physicBody == null)
@@ -66,7 +67,6 @@ namespace Evergine.Xrv.Core.UI.Cursors
                 return;
             }
 
-            this.CacheCursorsIfNonePreviouslyDetected();
             this.detectedCursorIndex = -1;
             this.OnCursorDetected(false);
         }
@@ -79,13 +79,13 @@ namespace Evergine.Xrv.Core.UI.Cursors
             var lastDetectedIndex = this.detectedCursorIndex;
             var lastDetected = lastDetectedIndex >= 0;
             var detected = false;
-            if (lastDetected)
+            if (lastDetected && this.cursors.Length > this.detectedCursorIndex)
             {
                 var item = this.cursors[this.detectedCursorIndex];
                 detected = this.CheckCursorIsDetected(item.cursor, item.transform);
             }
 
-            if (!detected && this.collider3D.IsEnabled)
+            if (!detected && this.collider3D?.IsEnabled == true)
             {
                 this.detectedCursorIndex = -1;
                 for (int i = 0; i < this.cursors.Length; i++)
@@ -112,6 +112,14 @@ namespace Evergine.Xrv.Core.UI.Cursors
         }
 
         /// <summary>
+        /// Sets target <see cref="Collider3D"/> to be considered for collisions.
+        /// </summary>
+        protected virtual void SetTargetCollider()
+        {
+            this.collider3D = this.Owner.FindComponentInChildren<Collider3D>(isExactType: false);
+        }
+
+        /// <summary>
         /// Invoked when cursor hover starts/stops being detected.
         /// </summary>
         /// <param name="isDetected">True if detected; false if not.</param>
@@ -119,8 +127,7 @@ namespace Evergine.Xrv.Core.UI.Cursors
 
         private bool CheckCursorIsDetected(Cursor cursor, Transform3D cursorTransform)
         {
-            if (cursor.IsVisible &&
-                this.collider3D.PointTest(cursorTransform.Position))
+            if (cursor.IsVisible && (this.collider3D?.PointTest(cursorTransform.Position) ?? false))
             {
                 return true;
             }
@@ -130,7 +137,7 @@ namespace Evergine.Xrv.Core.UI.Cursors
 
         private void CacheCursorsIfNonePreviouslyDetected()
         {
-            if (this.cursors?.Any() != true)
+            if (this.cursors == null || this.cursors.Length != Cursor.ActiveCursors.Count())
             {
                 this.cursors = Cursor.ActiveCursors.Select(x => (x, x.Owner.FindComponent<Transform3D>()))
                                                    .ToArray();
