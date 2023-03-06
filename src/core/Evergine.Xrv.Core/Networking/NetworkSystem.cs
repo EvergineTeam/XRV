@@ -2,7 +2,9 @@
 
 using System;
 using System.Linq;
+#if !ANDROID
 using System.Net.NetworkInformation;
+#endif
 using System.Threading.Tasks;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -24,8 +26,10 @@ using Evergine.Xrv.Core.Networking.Properties.Session;
 using Evergine.Xrv.Core.Services.QR;
 using Evergine.Xrv.Core.Settings;
 using Evergine.Xrv.Core.UI.Tabs;
+#if !ANDROID
 using Evergine.Xrv.Core.Utils;
 using Lidgren.Network;
+#endif
 using Microsoft.Extensions.Logging;
 
 namespace Evergine.Xrv.Core.Networking
@@ -498,13 +502,13 @@ namespace Evergine.Xrv.Core.Networking
 
         private void FixDefaultNetworkInterface()
         {
+#if !ANDROID
             // In previous development, we detected that our Lidgren fork
             // was not working in a deterministic way when calculating network interface
             // (internally used when creating server). We were struggling some days about what
             // was happening because HoloLens server was not reachable by other clients, and
             // we found this issue.
-            bool overrideDefaultNetworkInterface = !DeviceHelper.IsHoloLens()
-                && Platform.DeviceInfo.PlatformType != Common.PlatformType.Android;
+            bool overrideDefaultNetworkInterface = !DeviceHelper.IsHoloLens();
 
             if (overrideDefaultNetworkInterface)
             {
@@ -516,6 +520,7 @@ namespace Evergine.Xrv.Core.Networking
                     NetUtility.DefaultNetworkInterface = candidate;
                 }
             }
+#endif
         }
     }
 }

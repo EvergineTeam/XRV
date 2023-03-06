@@ -8,6 +8,7 @@ using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
+using System;
 
 namespace Evergine.Xrv.Core.Help
 {
@@ -25,6 +26,9 @@ namespace Evergine.Xrv.Core.Help
         private Entity generalHelp;
         private Entity about;
 
+        private bool displayAboutSection;
+        private TabItem aboutSectionItem;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HelpSystem"/> class.
         /// </summary>
@@ -35,12 +39,35 @@ namespace Evergine.Xrv.Core.Help
             this.xrvService = xrvService;
             this.entityManager = entityManager;
             this.localization = xrvService.Localization;
+            this.displayAboutSection = true;
         }
 
         /// <summary>
         /// Gets help window reference.
         /// </summary>
         public TabbedWindow Window { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether about section should be displayed.
+        /// </summary>
+        public bool DisplayAboutSection
+        {
+            get => this.displayAboutSection;
+
+            set
+            {
+                if (this.displayAboutSection != value)
+                {
+                    this.displayAboutSection = value;
+                    this.OnDisplayAboutSectionChange();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a function to retrieve about section text contents.
+        /// </summary>
+        public Func<string> AboutContents { get; set; }
 
         /// <summary>
         /// Adds a new item to the help.
@@ -57,6 +84,7 @@ namespace Evergine.Xrv.Core.Help
         internal void Load()
         {
             this.Window = this.CreateHelpWindow();
+            this.OnDisplayAboutSectionChange();
             this.SetUpHandMenu();
         }
 
@@ -77,13 +105,12 @@ namespace Evergine.Xrv.Core.Help
                 Contents = this.GeneralHelp,
             });
 
-            // TODO: uncomment when working on fully supporting about section
-            ////window.Tabs.Add(new TabItem
-            ////{
-            ////    Name = () => this.localization.GetString(() => Resources.Strings.Help_Tab_About),
-            ////    Order = int.MaxValue,
-            ////    Contents = this.AboutHelp,
-            ////});
+            this.aboutSectionItem = new TabItem
+            {
+                Name = () => this.localization.GetString(() => Resources.Strings.Help_Tab_About),
+                Order = int.MaxValue,
+                Contents = this.AboutHelp,
+            };
 
             return window;
         }
@@ -133,6 +160,18 @@ namespace Evergine.Xrv.Core.Help
             }
 
             return this.about;
+        }
+
+        private void OnDisplayAboutSectionChange()
+        {
+            if (this.displayAboutSection && !this.Window.Tabs.Contains(this.aboutSectionItem))
+            {
+                this.Window.Tabs.Add(this.aboutSectionItem);
+            }
+            else
+            {
+                this.Window.Tabs.Remove(this.aboutSectionItem);
+            }
         }
 
         internal static class VoiceCommands

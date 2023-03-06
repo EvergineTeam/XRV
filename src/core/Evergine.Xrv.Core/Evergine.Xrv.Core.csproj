@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;uap10.0.16299</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;uap10.0.16299;monoandroid81;net6.0-android</TargetFrameworks>
     <Description>XRV core features, including hand menu, windows creation, dialogs, settings and help panels, localization, themes, etc.</Description>
     <ReferenceMRTK>true</ReferenceMRTK>
   </PropertyGroup>
@@ -51,5 +51,10 @@
         <PackageReference Include="Evergine.MixedReality" Version="2022.9.28.6" />
       </ItemGroup>
     </When>
+	  <When Condition="$(TargetFramework.Contains('android'))">
+		  <PropertyGroup>
+			  <DefineConstants>ANDROID</DefineConstants>
+		  </PropertyGroup>
+	  </When>
   </Choose>
 </Project>
