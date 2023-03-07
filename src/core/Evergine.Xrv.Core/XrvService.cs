@@ -150,10 +150,11 @@ namespace Evergine.Xrv.Core
         {
             // Services
             this.logger?.LogDebug("Loading common services");
-            this.Services.QrScanningFlow = new QrScanningFlow(
+            this.Services.QrScanningFlow = new QRScanningFlow(
                 scene.Managers.EntityManager,
                 scene.Managers.RenderManager,
-                this.assetsService);
+                this.assetsService,
+                this.logger);
             this.Services.Passthrough = new PasstroughService(scene.Managers.EntityManager);
             this.Services.Passthrough.Load();
 

@@ -8,14 +8,14 @@ namespace Evergine.Xrv.Core.Services.QR
     /// <summary>
     /// QR scanning result data.
     /// </summary>
-    public class QrScanningResult
+    public class QRScanningResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QrScanningResult"/> class.
+        /// Initializes a new instance of the <see cref="QRScanningResult"/> class.
         /// </summary>
         /// <param name="code">QR code.</param>
         /// <param name="pose">QR pose.</param>
-        public QrScanningResult(QRCode code, Matrix4x4 pose)
+        public QRScanningResult(QRCode code, Matrix4x4 pose)
         {
             this.Code = code;
             this.Pose = pose;

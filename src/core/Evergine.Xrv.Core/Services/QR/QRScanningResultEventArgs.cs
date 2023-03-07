@@ -9,15 +9,15 @@ namespace Evergine.Xrv.Core.Services.QR
     /// <summary>
     /// Event args for QR scanning result.
     /// </summary>
-    public class QrScanningResultEventArgs : EventArgs
+    public class QRScanningResultEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QrScanningResultEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="QRScanningResultEventArgs"/> class.
         /// </summary>
         /// <param name="isValidResult">Indicates if scanned code was valid.</param>
         /// <param name="code">QR code data.</param>
         /// <param name="pose">QR code pose.</param>
-        public QrScanningResultEventArgs(bool isValidResult, QRCode code, Matrix4x4 pose)
+        public QRScanningResultEventArgs(bool isValidResult, QRCode code, Matrix4x4 pose)
         {
             this.IsValidResult = isValidResult;
             this.Code = code;

@@ -18,7 +18,7 @@ namespace Evergine.Xrv.Core.Services.QR
     /// <summary>
     /// Displays a marker when a QR code is detected.
     /// </summary>
-    public class QrMarker : Component
+    public class QRMarker : Component
     {
         [BindComponent(source: BindComponentSource.Children, tag: "PART_qrmarker_border")]
         private MaterialComponent borderMaterialComponent = null;

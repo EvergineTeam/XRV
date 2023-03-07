@@ -14,7 +14,7 @@ namespace Evergine.Xrv.Core.Services.QR
     /// <summary>
     /// Controls QR scanner user interface.
     /// </summary>
-    public class QrScannerController : Component
+    public class QRScannerController : Component
     {
         [BindService]
         private XrvService xrvService = null;

@@ -30,6 +30,6 @@ namespace Evergine.Xrv.Core.Services
         /// <summary>
         /// Gets scanning workflow for QR codes.
         /// </summary>
-        public QrScanningFlow QrScanningFlow { get; internal set; }
+        public QRScanningFlow QrScanningFlow { get; internal set; }
     }
 }

@@ -226,7 +226,7 @@ namespace Evergine.Xrv.Core.Networking
 
             // execute QR scanning flow to determine world center
             var scanningFlow = this.xrvService.Services.QrScanningFlow;
-            QrScanningResult result = await scanningFlow.ExecuteFlowAsync().ConfigureAwait(false);
+            QRScanningResult result = await scanningFlow.ExecuteFlowAsync().ConfigureAwait(false);
             if (result == null)
             {
                 await this.ClearSessionStatusAsync().ConfigureAwait(false);
@@ -360,7 +360,7 @@ namespace Evergine.Xrv.Core.Networking
             }
         }
 
-        private async Task MoveWorldCenterEntityAsync(QrScanningFlow scanningFlow, bool markerAsRoot)
+        private async Task MoveWorldCenterEntityAsync(QRScanningFlow scanningFlow, bool markerAsRoot)
         {
             var worldCenterTransform = this.worldCenterEntity.FindComponent<Transform3D>();
             worldCenterTransform.LocalTransform = Matrix4x4.CreateFromTRS(Vector3.Zero, Vector3.Zero, new Vector3(1, 1, 1));

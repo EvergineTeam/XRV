@@ -14,50 +14,57 @@ using System.Threading;
 using System.Threading.Tasks;
 using Evergine.Xrv.Core.Networking;
 using Evergine.Xrv.Core.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace Evergine.Xrv.Core.Services.QR
 {
     /// <summary>
     /// Scanning workflow for QR codes.
     /// </summary>
-    public class QrScanningFlow
+    public class QRScanningFlow
     {
         private readonly EntityManager entityManager;
         private readonly RenderManager renderManager;
         private readonly AssetsService assetsService;
+        private readonly ILogger logger;
         private readonly IQRCodeWatcherService watcherService;
+        private readonly HashSet<Guid> foundQrCodes;
 
         private Entity qrScannerEntity;
         private Entity qrMarkerEntityPivot;
         private Entity qrMarkerEntity;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QrScanningFlow"/> class.
+        /// Initializes a new instance of the <see cref="QRScanningFlow"/> class.
         /// </summary>
         /// <param name="entityManager">Entity manager.</param>
         /// <param name="renderManager">Render manager.</param>
         /// <param name="assetsService">Assets service.</param>
-        public QrScanningFlow(
+        /// <param name="logger">Logger.</param>
+        public QRScanningFlow(
             EntityManager entityManager,
             RenderManager renderManager,
-            AssetsService assetsService)
+            AssetsService assetsService,
+            ILogger logger)
         {
             this.entityManager = entityManager;
             this.renderManager = renderManager;
             this.assetsService = assetsService;
+            this.logger = logger;
             this.RegisterQrCodeWatcherServiceByPlatform();
             this.watcherService = Application.Current.Container.Resolve<IQRCodeWatcherService>();
+            this.foundQrCodes = new HashSet<Guid>();
         }
 
         /// <summary>
         /// Raised when an expected QR code has been detected.
         /// </summary>
-        public event EventHandler<QrScanningResultEventArgs> ExpectedCodeDetected;
+        public event EventHandler<QRScanningResultEventArgs> ExpectedCodeDetected;
 
         /// <summary>
         /// Raised when an unexpected QR code has been detected.
         /// </summary>
-        public event EventHandler<QrScanningResultEventArgs> UnexpectedCodeDetected;
+        public event EventHandler<QRScanningResultEventArgs> UnexpectedCodeDetected;
 
         /// <summary>
         /// Raised when workflow is canceled.
@@ -68,6 +75,12 @@ namespace Evergine.Xrv.Core.Services.QR
         /// Gets or sets expected codes to be detected.
         /// </summary>
         public IEnumerable<string> ExpectedCodes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether <see cref="ExpectedCodeDetected"/> or <see cref="UnexpectedCodeDetected"/> events
+        /// will just be fired once per scanned QR code.
+        /// </summary>
+        public bool NotifyOnceOnly { get; set; } = true;
 
         /// <summary>
         /// Gets entity marker that is used when a QR code is detected.
@@ -81,16 +94,16 @@ namespace Evergine.Xrv.Core.Services.QR
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>QR scanning result.</returns>
-        public async Task<QrScanningResult> ExecuteFlowAsync(CancellationToken cancellationToken = default)
+        public async Task<QRScanningResult> ExecuteFlowAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.Register(() => this.Stop());
 
-            var taskCompletionSource = new TaskCompletionSource<QrScanningResult>();
+            var taskCompletionSource = new TaskCompletionSource<QRScanningResult>();
             this.Start();
 
-            var scanCompletedHandler = new EventHandler<QrScanningResultEventArgs>((sender, args) =>
+            var scanCompletedHandler = new EventHandler<QRScanningResultEventArgs>((sender, args) =>
             {
-                var result = new QrScanningResult(args.Code, args.Pose);
+                var result = new QRScanningResult(args.Code, args.Pose);
                 if (taskCompletionSource.Task.Status < TaskStatus.RanToCompletion)
                 {
                     taskCompletionSource.TrySetResult(result);
@@ -104,7 +117,7 @@ namespace Evergine.Xrv.Core.Services.QR
                 }
             });
 
-            QrScanningResult result = null;
+            QRScanningResult result = null;
 
             try
             {
@@ -121,7 +134,7 @@ namespace Evergine.Xrv.Core.Services.QR
                 this.ExpectedCodeDetected -= scanCompletedHandler;
                 this.Canceled -= cancelledHandler;
 
-                this.InternalStop(false);
+                await this.InternalStopAsync(false).ConfigureAwait(false);
             }
 
             return result;
@@ -177,14 +190,26 @@ namespace Evergine.Xrv.Core.Services.QR
         /// <summary>
         /// Stops worflow.
         /// </summary>
-        public void Stop() => this.InternalStop();
-
-        private void InternalStop(bool raiseCancelledEvent = true)
+        public void Stop()
         {
+            _ = this.InternalStopAsync()
+                .ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                    {
+                        this.logger?.LogError(t.Exception, $"Error stopping {nameof(QRScanningFlow)}");
+                    }
+                });
+        }
+
+        private async Task InternalStopAsync(bool raiseCancelledEvent = true)
+        {
+            this.foundQrCodes.Clear();
+            await this.watcherService.StopQRWatchingAsync().ConfigureAwait(false);
             this.UnsubscribeEvents();
             this.qrScannerEntity.IsEnabled = false;
 
-            var qrMarker = this.qrMarkerEntity.FindComponent<QrMarker>();
+            var qrMarker = this.qrMarkerEntity.FindComponent<QRMarker>();
             if (qrMarker?.IsValidMarker != true)
             {
                 this.qrMarkerEntityPivot.IsEnabled = false;
@@ -201,6 +226,7 @@ namespace Evergine.Xrv.Core.Services.QR
             if (this.watcherService != null)
             {
                 this.watcherService.QRCodeAdded += this.WatcherService_QRCodeAdded;
+                this.watcherService.QRCodeUpdated += this.WatcherService_QRCodeUpdated;
             }
         }
 
@@ -209,17 +235,33 @@ namespace Evergine.Xrv.Core.Services.QR
             if (this.watcherService != null)
             {
                 this.watcherService.QRCodeAdded -= this.WatcherService_QRCodeAdded;
+                this.watcherService.QRCodeUpdated -= this.WatcherService_QRCodeUpdated;
             }
         }
 
-        private void WatcherService_QRCodeAdded(object sender, QRCode code)
+        private void WatcherService_QRCodeAdded(object sender, QRCode code) =>
+            this.EvaluateScannedCode(code);
+
+        private void WatcherService_QRCodeUpdated(object sender, QRCode code) =>
+            this.EvaluateScannedCode(code);
+
+        private void EvaluateScannedCode(QRCode code)
         {
             if (!code.Transform.HasValue)
             {
                 return;
             }
 
-            QrScanningResultEventArgs args = null;
+            bool previouslyDetected = this.foundQrCodes.Contains(code.Id);
+            bool skipNotification = this.NotifyOnceOnly && previouslyDetected;
+            if (skipNotification)
+            {
+                return;
+            }
+
+            this.foundQrCodes.Add(code.Id);
+
+            QRScanningResultEventArgs args = null;
             Matrix4x4 pose = code.Transform.Value;
             this.FixUpCodePoseByPlatform(ref pose);
 
@@ -230,11 +272,11 @@ namespace Evergine.Xrv.Core.Services.QR
             if (anyExpectedCode)
             {
                 bool expectedCodeFound = this.ExpectedCodes.Any(data => code.Data == data);
-                args = new QrScanningResultEventArgs(expectedCodeFound, code, pose);
+                args = new QRScanningResultEventArgs(expectedCodeFound, code, pose);
             }
             else
             {
-                args = new QrScanningResultEventArgs(true, code, pose);
+                args = new QRScanningResultEventArgs(true, code, pose);
             }
 
             this.qrMarkerEntityPivot.IsEnabled = true;
@@ -251,7 +293,7 @@ namespace Evergine.Xrv.Core.Services.QR
             transform.LocalPosition = qrLocalPosition * pose.Scale.X;
             transform.Scale = pose.Scale;
 
-            var qrMarker = this.qrMarkerEntity.FindComponent<QrMarker>();
+            var qrMarker = this.qrMarkerEntity.FindComponent<QRMarker>();
             qrMarker.IsValidMarker = args.IsValidResult;
 
             var worldAnchor = this.qrMarkerEntityPivot.FindComponent<WorldAnchor>();
