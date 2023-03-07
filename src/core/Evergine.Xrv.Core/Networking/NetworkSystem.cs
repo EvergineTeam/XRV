@@ -25,6 +25,7 @@ using Evergine.Xrv.Core.Networking.Properties.KeyRequest;
 using Evergine.Xrv.Core.Networking.Properties.Session;
 using Evergine.Xrv.Core.Services.QR;
 using Evergine.Xrv.Core.Settings;
+using Evergine.Xrv.Core.Themes;
 using Evergine.Xrv.Core.UI.Tabs;
 #if !ANDROID
 using Evergine.Xrv.Core.Utils;
@@ -199,6 +200,7 @@ namespace Evergine.Xrv.Core.Networking
                 .AddComponent(new SessionPresenterObserver());
             this.entityManager.Add(this.worldCenterEntity);
             this.xrvService.Services.Messaging.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
+            this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;
         }
 
         internal async Task<bool> StartSessionAsync(string serverName)
@@ -497,6 +499,16 @@ namespace Evergine.Xrv.Core.Networking
             catch (Exception ex)
             {
                 this.logger?.LogError(ex, "Control request error");
+            }
+        }
+
+        private void ThemesSystem_ThemeUpdated(object sender, ThemeUpdatedEventArgs args)
+        {
+            if (args.IsNewThemeInstance || args.UpdatedColor == ThemeColor.PrimaryColor3)
+            {
+                this.assetsService.UpdateHoloGraphicAlbedo(
+                    CoreResourcesIDs.Materials.Services.QR.ScannerBorder,
+                    this.xrvService.ThemesSystem.CurrentTheme.GetColor(ThemeColor.PrimaryColor3));
             }
         }
 

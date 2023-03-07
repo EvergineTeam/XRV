@@ -1,8 +1,11 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Common;
+using Evergine.Common.Graphics;
 using Evergine.Framework;
+using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
+using Evergine.MRTK.Effects;
 using System;
 using System.Linq;
 
@@ -96,6 +99,19 @@ namespace Evergine.Xrv.Core.Extensions
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Updates holographic albedo by a given color on a material.
+        /// </summary>
+        /// <param name="assetsService">Assets service.</param>
+        /// <param name="materialId">Material identifier.</param>
+        /// <param name="color">New albedo color.</param>
+        public static void UpdateHoloGraphicAlbedo(this AssetsService assetsService, Guid materialId, Color color)
+        {
+            var material = assetsService.Load<Material>(materialId);
+            var holoGraphic = new HoloGraphic(material);
+            holoGraphic.Albedo = color;
         }
     }
 }

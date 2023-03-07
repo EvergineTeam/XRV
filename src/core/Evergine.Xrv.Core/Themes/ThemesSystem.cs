@@ -5,6 +5,7 @@ using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK;
 using Evergine.MRTK.Effects;
+using Evergine.Xrv.Core.Extensions;
 using System;
 using System.Linq;
 
@@ -154,12 +155,8 @@ namespace Evergine.Xrv.Core.Themes
             }
         }
 
-        private void UpdateHoloGraphicAlbedo(Guid materialId, Color color)
-        {
-            var material = this.assetsService.Load<Material>(materialId);
-            var holoGraphic = new HoloGraphic(material);
-            holoGraphic.Albedo = color;
-        }
+        private void UpdateHoloGraphicAlbedo(Guid materialId, Color color) =>
+            this.assetsService.UpdateHoloGraphicAlbedo(materialId, color);
 
         private void ChangeColorAndNotify(Guid materialId, ThemeColor color)
         {
