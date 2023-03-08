@@ -8,6 +8,11 @@ namespace Evergine.Xrv.Core.Networking.Messaging
     public interface IClientServerMessaging
     {
         /// <summary>
+        /// Gets a value indicating whether there is a running client-server connection.
+        /// </summary>
+        public bool IsConnected { get; }
+
+        /// <summary>
         /// Registers a protocol as self-protocol: this is, a protocol that
         /// execution is started from current device.
         /// </summary>

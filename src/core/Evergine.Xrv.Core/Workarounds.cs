@@ -2,8 +2,6 @@
 
 using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using Evergine.Networking.Components;
-using System;
 using System.Linq;
 
 namespace Evergine.Xrv.Core
@@ -32,19 +30,6 @@ namespace Evergine.Xrv.Core
                     toggleStateManager.ChangeState(newState);
                 }
             }
-        }
-
-        /// <summary>
-        /// Forces networking property refresh (so, it's synchronized in rest of clients).
-        /// </summary>
-        /// <typeparam name="K">The type of the property key.Must be System.Byte or System.Enum.</typeparam>
-        /// <typeparam name="V">The type of the property value.</typeparam>
-        /// <param name="property">Network property.</param>
-        public static void ForceRefresh<K, V>(this NetworkPropertySync<K, V> property)
-            where K : struct, IConvertible
-        {
-            // TODO: create ForceRefresh method in Evergine.Networking
-            property.PropertyValue = property.PropertyValue;
         }
     }
 }

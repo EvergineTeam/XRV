@@ -125,20 +125,23 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             this.ProtocolStarter.Cancel();
             this.ClientServer.UnregisterSelfProtocol(this);
 
-            if (this.ProtocolStarter.TargetClientId.HasValue)
+            if (this.ClientServer.IsConnected)
             {
-                this.lifecycle.SendLifecycleMessageToClient(
-                    this.CorrelationId,
-                    LifecycleMessageType.EndProtocol,
-                    this.ProtocolStarter.TargetClientId.Value,
-                    beforeSending);
-            }
-            else
-            {
-                this.lifecycle.SendLifecycleMessageToServer(
-                    this.CorrelationId,
-                    LifecycleMessageType.EndProtocol,
-                    beforeSending);
+                if (this.ProtocolStarter.TargetClientId.HasValue)
+                {
+                    this.lifecycle.SendLifecycleMessageToClient(
+                        this.CorrelationId,
+                        LifecycleMessageType.EndProtocol,
+                        this.ProtocolStarter.TargetClientId.Value,
+                        beforeSending);
+                }
+                else
+                {
+                    this.lifecycle.SendLifecycleMessageToServer(
+                        this.CorrelationId,
+                        LifecycleMessageType.EndProtocol,
+                        beforeSending);
+                }
             }
 
             this.Ended?.Invoke(this, EventArgs.Empty);

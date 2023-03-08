@@ -56,7 +56,7 @@ namespace Evergine.Xrv.Core.Networking
         /// over this object will not be propagated through other clients. Use
         /// appropiate mechanism for that.
         /// </summary>
-        public SessionData Data { get => this.sessionDataSync.PropertyValue; }
+        public SessionData Data { get => this.sessionDataSync.CurrentValue; }
 
         /// <summary>
         /// Gets current session status.

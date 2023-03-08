@@ -214,7 +214,8 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Someone has requested to take control.\nDo you agree?.
+        ///   Looks up a localized string similar to Someone has requested to take control.
+        ///Do you agree?.
         /// </summary>
         public static string Sessions_Control_RequestDialogMessage {
             get {

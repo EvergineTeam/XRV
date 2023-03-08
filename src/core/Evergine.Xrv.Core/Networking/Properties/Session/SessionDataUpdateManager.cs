@@ -44,14 +44,14 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
 
         protected override void Update(TimeSpan gameTime)
         {
-            if (this.updateQueue.IsEmpty)
+            var sessionData = this.synchronization.PropertyValue;
+            if (this.updateQueue.IsEmpty || sessionData == null)
             {
                 return;
             }
 
             this.logger?.LogDebug($"Session data update detected. There are {this.updateQueue.Count} enqueued updates");
 
-            var sessionData = this.synchronization.PropertyValue;
             while (this.updateQueue.TryDequeue(out var update))
             {
                 update.Update(sessionData);
@@ -61,8 +61,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
             if (this.isDirty)
             {
                 this.logger?.LogDebug("Forcing session data update synchronization");
-                this.synchronization.PropertyValue = sessionData;
-                this.synchronization.ForceSync();
+                this.synchronization.SetData(sessionData);
             }
 
             this.isDirty = false;

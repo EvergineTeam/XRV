@@ -26,6 +26,8 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             this.client.MessageReceivedFromPlayer += this.Client_MessageReceivedFromPlayer;
         }
 
+        public bool IsConnected { get => this.client.IsConnectedAndReady; }
+
         public ProtocolOrchestatorService Orchestator { get; set; } // TODO review
 
         public Action<IIncomingMessage, bool> IncomingMessageCallback { get; set; }
