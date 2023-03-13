@@ -99,7 +99,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// Starts protocol execution.
         /// </summary>
         /// <returns>A task.</returns>
-        protected virtual Task StartProtocolAsync()
+        protected Task StartProtocolAsync()
         {
             using (this.logger?.BeginScope("Protocol start"))
             {
@@ -120,7 +120,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// Ends a protocol execution.
         /// </summary>
         /// <param name="beforeSending">Transform message before being sent.</param>
-        protected virtual void EndProtocol(Action<OutgoingMessage> beforeSending = null)
+        protected void EndProtocol(Action<OutgoingMessage> beforeSending = null)
         {
             this.ProtocolStarter.Cancel();
             this.ClientServer.UnregisterSelfProtocol(this);
