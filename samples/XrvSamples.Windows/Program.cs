@@ -15,6 +15,7 @@ namespace XrvSamples.Windows
         static uint height = 720;
         static bool Windowed = true;
         static bool VSync = true;
+        static int port = 0;
         
         static void Main(string[] args)
         {
@@ -27,7 +28,8 @@ namespace XrvSamples.Windows
                     .AddOption(new CmdParser.Option("-Vsync", (string _) => { VSync = true; return true; }, "Active vertical sync."))
                     .AddOption(new CmdParser.Option("-NoVsync", (string _) => { VSync = false; return true; }, "Desactive vertical sync."))
                     .AddOption(new CmdParser.Option("-Windowed", (string _) => { Windowed = true; return true; }, "Set application to run in windowed mode."))
-                    .AddOption(new CmdParser.Option("-FullScreen", (string _) => { Windowed = false; return true; }, "Set application to run in fullscreen mode."));
+                    .AddOption(new CmdParser.Option("-FullScreen", (string _) => { Windowed = false; return true; }, "Set application to run in fullscreen mode."))
+                    .AddOption(new CmdParser.Option("-Port", (string v) => { return int.TryParse(v, out port); }, "Set networking client port."));
 
                 var success = cmd.Parse(args);
 
@@ -44,12 +46,15 @@ namespace XrvSamples.Windows
             }
 
             // Create app
-            var application = new WindowsApplication();
+            var application = new WindowsApplication
+            {
+                NetworkingClientPort = port != 0 ? port : null,
+            };
 
             // Create Services
             WindowsSystem windowsSystem = new Evergine.Forms.FormsWindowsSystem();
             application.Container.RegisterInstance(windowsSystem);
-            var window = windowsSystem.CreateWindow("XrvSamples - DX11", width, height);
+            var window = windowsSystem.CreateWindow($"XrvSamples - DX11 - Port {port}", width, height);
 
             ConfigureGraphicsContext(application, window);
 			

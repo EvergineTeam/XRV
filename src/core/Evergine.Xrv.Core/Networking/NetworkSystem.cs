@@ -23,10 +23,12 @@ using Evergine.Xrv.Core.Networking.ControlRequest;
 using Evergine.Xrv.Core.Networking.Messaging;
 using Evergine.Xrv.Core.Networking.Properties.KeyRequest;
 using Evergine.Xrv.Core.Networking.Properties.Session;
+using Evergine.Xrv.Core.Networking.SessionClosing;
 using Evergine.Xrv.Core.Services.QR;
 using Evergine.Xrv.Core.Settings;
 using Evergine.Xrv.Core.Themes;
 using Evergine.Xrv.Core.UI.Tabs;
+using Evergine.Xrv.Core.UI.Windows;
 #if !ANDROID
 using Evergine.Xrv.Core.Utils;
 using Lidgren.Network;
@@ -44,6 +46,7 @@ namespace Evergine.Xrv.Core.Networking
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
         private readonly LocalizationService localization;
+        private readonly WindowsSystem windowsSystem;
         private readonly ILogger logger;
 
         private TabItem settingsItem;
@@ -76,6 +79,7 @@ namespace Evergine.Xrv.Core.Networking
             this.localization = xrvService.Localization;
             this.logger = logger;
 
+            this.windowsSystem = xrvService.WindowsSystem;
             this.controlRequestButtonDescription = new MenuButtonDescription
             {
                 TextOn = () => this.localization.GetString(() => Resources.Strings.Networking_Menu_RequestControl),
@@ -148,7 +152,7 @@ namespace Evergine.Xrv.Core.Networking
         /// <summary>
         /// Gets a value indicating whether TODO: Remove when networking is ready.
         /// </summary>
-        internal static bool NetworkSystemEnabled { get; } = false;
+        internal static bool NetworkSystemEnabled { get; } = true;
 
         internal SessionDataUpdateManager SessionDataUpdateManager { get => this.sessionDataUpdater; }
 
@@ -176,6 +180,7 @@ namespace Evergine.Xrv.Core.Networking
                 this.InitializeKeyRequestProtocol(container);
                 this.InitializeUpdateSessionDataProtocol();
                 this.InitializeControlRequestProtocol();
+                this.InitializeSessionClosingProtocol();
             }
         }
 
@@ -205,6 +210,8 @@ namespace Evergine.Xrv.Core.Networking
 
         internal async Task<bool> StartSessionAsync(string serverName)
         {
+            this.Session.ActivelyClosedByClient = false;
+            this.Session.ActivelyClosedByHost = false;
             this.Server = new NetworkServer(this.server, this.Configuration, this.logger);
             await this.Server.StartAsync(serverName).ConfigureAwait(false);
             if (this.Server.IsStarted)
@@ -218,6 +225,8 @@ namespace Evergine.Xrv.Core.Networking
         internal async Task<bool> ConnectToSessionAsync(SessionHostInfo host)
         {
             this.Session.Host = host;
+            this.Session.ActivelyClosedByClient = false;
+            this.Session.ActivelyClosedByHost = false;
             this.Session.Status = SessionStatus.Joining;
 
             // just to give enough time to show status changes to the user
@@ -263,10 +272,18 @@ namespace Evergine.Xrv.Core.Networking
             return true;
         }
 
-        internal Task LeaveSessionAsync()
+        internal async Task LeaveSessionAsync()
         {
+            if (this.Session.CurrentUserIsHost)
+            {
+                var broadcaster = new ProtocolBroadcaster<SessionClosingProtocol>(this, this.logger);
+                await broadcaster.BroadcastAsync(
+                    () => new SessionClosingProtocol(this, this.logger),
+                    protocol => protocol.NotifyClosingToClientAsync()).ConfigureAwait(false);
+            }
+
+            this.Session.ActivelyClosedByClient = true;
             this.Client.Disconnect();
-            return Task.CompletedTask;
         }
 
         private void SubscribeClientEvents()
@@ -297,8 +314,11 @@ namespace Evergine.Xrv.Core.Networking
             this.Session.Host = null;
             this.Session.Status = SessionStatus.Disconnected;
 
-            var handMenu = this.xrvService.HandMenu;
-            handMenu.ButtonDescriptions.Remove(this.controlRequestButtonDescription);
+            _ = EvergineForegroundTask.Run(() =>
+            {
+                var handMenu = this.xrvService.HandMenu;
+                handMenu.ButtonDescriptions.Remove(this.controlRequestButtonDescription);
+            });
 
             this.EnableSessionDataSync(false);
 
@@ -316,8 +336,25 @@ namespace Evergine.Xrv.Core.Networking
 
             await this.MoveWorldCenterEntityAsync(scanningFlow, false).ConfigureAwait(false);
             this.KeyStore.Clear();
-
             this.Server = null;
+
+            _ = EvergineForegroundTask.Run(() =>
+            {
+                if (this.Session.ActivelyClosedByHost)
+                {
+                    this.windowsSystem.ShowAlertDialog(
+                        this.localization.GetString(() => Resources.Strings.Sessions_HostFinishedSession_Title),
+                        this.localization.GetString(() => Resources.Strings.Sessions_HostFinishedSession_Message),
+                        this.localization.GetString(() => Resources.Strings.Global_Accept));
+                }
+                else if (!this.Session.ActivelyClosedByClient)
+                {
+                    this.windowsSystem.ShowAlertDialog(
+                        this.localization.GetString(() => Resources.Strings.Sessions_ConnectionLost_Title),
+                        this.localization.GetString(() => Resources.Strings.Sessions_ConnectionLost_Message),
+                        this.localization.GetString(() => Resources.Strings.Global_Accept));
+                }
+            });
         }
 
         private void AddOrRemoveSettingItem()
@@ -427,6 +464,13 @@ namespace Evergine.Xrv.Core.Networking
             this.orchestator.RegisterProtocolInstantiator(
                 ControlRequestProtocol.ProtocolName,
                 () => new ControlRequestProtocol(this, this.xrvService.WindowsSystem, this.SessionDataUpdateManager, this.xrvService.Localization, this.logger));
+        }
+
+        private void InitializeSessionClosingProtocol()
+        {
+            this.orchestator.RegisterProtocolInstantiator(
+                SessionClosingProtocol.ProtocolName,
+                () => new SessionClosingProtocol(this, this.logger));
         }
 
         private void EnableSessionDataSync(bool enabled)

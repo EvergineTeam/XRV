@@ -74,6 +74,18 @@ namespace Evergine.Xrv.Core.Networking
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether session has been actively closed by the client.
+        /// This is, user has tapped on disconnection button.
+        /// </summary>
+        public bool ActivelyClosedByClient { get; internal set; }
+
+        /// <summary>
+        /// Gets a value indicating whether session has been actively closed by the host.
+        /// This is, host has tapped on session end button.
+        /// </summary>
+        public bool ActivelyClosedByHost { get; internal set; }
+
         internal void SetData(SessionDataSynchronization sessionDataSync) => this.sessionDataSync = sessionDataSync;
     }
 }

@@ -35,6 +35,8 @@ namespace XrvSamples
             BackgroundTaskScheduler.Background.Configure(this.Container);
         }
 
+        public int? NetworkingClientPort { get; set; }
+
         public override void Initialize()
         {
             base.Initialize();

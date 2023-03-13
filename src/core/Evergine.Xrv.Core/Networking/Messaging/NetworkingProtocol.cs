@@ -17,11 +17,6 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// </summary>
         protected readonly IClientServerMessaging ClientServer;
 
-        /// <summary>
-        /// Target client identifier.
-        /// </summary>
-        protected int? targetClientId;
-
         private readonly ILogger logger;
         private readonly ILifecycleMessaging lifecycle;
 
@@ -49,6 +44,11 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// protocol instances.
         /// </summary>
         public Guid CorrelationId { get; internal set; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Gets or sets target client identifier.
+        /// </summary>
+        public int? TargetClientId { get; set; }
 
         internal virtual ProtocolStarter ProtocolStarter { get; set; }
 
@@ -99,7 +99,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// Starts protocol execution.
         /// </summary>
         /// <returns>A task.</returns>
-        protected Task StartProtocolAsync()
+        protected virtual Task StartProtocolAsync()
         {
             using (this.logger?.BeginScope("Protocol start"))
             {
@@ -108,7 +108,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
                     this.ProtocolStarter = new ProtocolStarter(this, this.lifecycle);
                 }
 
-                this.ProtocolStarter.TargetClientId = this.targetClientId;
+                this.ProtocolStarter.TargetClientId = this.TargetClientId;
                 this.ClientServer.RegisterSelfProtocol(this);
 
                 this.logger?.LogDebug($"Starting protocol {this.Name} with correlation: {this.CorrelationId}");
@@ -120,7 +120,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// Ends a protocol execution.
         /// </summary>
         /// <param name="beforeSending">Transform message before being sent.</param>
-        protected void EndProtocol(Action<OutgoingMessage> beforeSending = null)
+        protected virtual void EndProtocol(Action<OutgoingMessage> beforeSending = null)
         {
             this.ProtocolStarter.Cancel();
             this.ClientServer.UnregisterSelfProtocol(this);

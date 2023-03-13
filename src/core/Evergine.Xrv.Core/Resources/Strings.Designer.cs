@@ -196,6 +196,24 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to It looks like you&apos;ve been disconnected from the host. If this was not what you expected, try connecting again..
+        /// </summary>
+        public static string Sessions_ConnectionLost_Message {
+            get {
+                return ResourceManager.GetString("Sessions.ConnectionLost.Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ooops! Connection lost.
+        /// </summary>
+        public static string Sessions_ConnectionLost_Title {
+            get {
+                return ResourceManager.GetString("Sessions.ConnectionLost.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Session host has taken session control.
         /// </summary>
         public static string Sessions_Control_LostDialogMessage {
@@ -229,6 +247,24 @@ namespace Evergine.Xrv.Core.Resources {
         public static string Sessions_Control_RequestDialogTitle {
             get {
                 return ResourceManager.GetString("Sessions.Control.RequestDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, it looks like host has ended the session..
+        /// </summary>
+        public static string Sessions_HostFinishedSession_Message {
+            get {
+                return ResourceManager.GetString("Sessions.HostFinishedSession.Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Session terminated.
+        /// </summary>
+        public static string Sessions_HostFinishedSession_Title {
+            get {
+                return ResourceManager.GetString("Sessions.HostFinishedSession.Title", resourceCulture);
             }
         }
         
