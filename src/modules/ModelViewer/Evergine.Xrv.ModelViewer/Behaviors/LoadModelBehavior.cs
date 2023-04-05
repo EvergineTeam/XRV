@@ -76,7 +76,7 @@ namespace Evergine.Xrv.ModelViewer
         private ToggleStateManager options = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
-        private MenuBehavior menuBehavior = null;
+        private Core.UI.OrbitMenu orbitMenu = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelBehavior"/> class.
@@ -106,8 +106,8 @@ namespace Evergine.Xrv.ModelViewer
                     var modelTransform = this.modelEntity.FindComponent<Transform3D>();
 
                     // Set model to menu behavior.
-                    this.menuBehavior.ModelTransform = modelTransform;
-                    this.menuBehavior.Owner.IsEnabled = true;
+                    this.orbitMenu.CenterTransform = modelTransform;
+                    this.orbitMenu.Owner.IsEnabled = true;
 
                     // Set model to locked icon behavior.
                     this.lockedIconBehavior.ModelTransform = modelTransform;
@@ -167,7 +167,7 @@ namespace Evergine.Xrv.ModelViewer
             base.OnActivated();
 
             this.lockedIcon.IsEnabled = false;
-            this.menuBehavior.Owner.IsEnabled = false;
+            this.orbitMenu.Owner.IsEnabled = false;
             this.optionsButtonToggle.Toggled += this.OptionsButtonToggle_Toggled;
 
             this.ReorderButtons();

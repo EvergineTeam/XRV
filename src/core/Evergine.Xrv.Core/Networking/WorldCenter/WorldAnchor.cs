@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
@@ -7,7 +8,7 @@ using Evergine.Framework.XR.SpatialAnchors;
 using Evergine.Mathematics;
 using System;
 
-namespace Evergine.Xrv.Core.Networking
+namespace Evergine.Xrv.Core.Networking.WorldCenter
 {
     /// <summary>
     /// Updates entity <see cref="Transform3D"/> from data obtained from a
@@ -26,6 +27,8 @@ namespace Evergine.Xrv.Core.Networking
         /// <summary>
         /// Gets or sets spatial anchor key.
         /// </summary>
+        [IgnoreEvergine]
+        [DontRenderProperty]
         public string AnchorKey { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
@@ -33,6 +36,12 @@ namespace Evergine.Xrv.Core.Networking
         /// anchor is ignored.
         /// </summary>
         public bool IgnoreScale { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether debugging is enabled for world
+        /// anchor. It draws a 3D axis as reference.
+        /// </summary>
+        public bool EnableDebug { get; set; } = false;
 
         /// <summary>
         /// Saves spatial anchor, that will update owner's transform.
@@ -91,6 +100,13 @@ namespace Evergine.Xrv.Core.Networking
                         this.IgnoreScale ? this.transform.Scale : worldTransform.Value.Scale);
 
                     this.transform.WorldTransform = finalTransform;
+                }
+
+                if (this.EnableDebug)
+                {
+                    const float DebugLinesSize = 0.1f;
+                    var scale = this.transform.WorldInverseTransform.Scale.X * DebugLinesSize;
+                    this.Managers.RenderManager.LineBatch3D.DrawAxis(this.transform.WorldTransform, scale);
                 }
             }
         }

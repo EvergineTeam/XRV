@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Evergine.Xrv.Core.Networking;
 using Evergine.Xrv.Core.Utils;
 using Microsoft.Extensions.Logging;
 
@@ -72,6 +71,11 @@ namespace Evergine.Xrv.Core.Services.QR
         public event EventHandler Canceled;
 
         /// <summary>
+        /// Raised when workflow has been completed.
+        /// </summary>
+        public event EventHandler Completed;
+
+        /// <summary>
         /// Gets or sets expected codes to be detected.
         /// </summary>
         public IEnumerable<string> ExpectedCodes { get; set; }
@@ -81,6 +85,12 @@ namespace Evergine.Xrv.Core.Services.QR
         /// will just be fired once per scanned QR code.
         /// </summary>
         public bool NotifyOnceOnly { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether marker should be automatically
+        /// hidden once detection is performed.
+        /// </summary>
+        public bool HideMarkerAutomatically { get; set; } = false;
 
         /// <summary>
         /// Gets entity marker that is used when a QR code is detected.
@@ -165,15 +175,13 @@ namespace Evergine.Xrv.Core.Services.QR
                 var owner = camera.Owner;
                 owner.AddChild(this.qrScannerEntity);
 
-                var markerPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Services.QR.QrMarker_weprefab);
-                this.qrMarkerEntity = markerPrefab.Instantiate();
-                this.qrMarkerEntity.Name = "qrMarker";
-                this.qrMarkerEntityPivot = new Entity("qrMarkerPivot")
-                    .AddComponent(new Transform3D())
-                    .AddComponent(new WorldAnchor());
+                var markerFactory = new QRMarkerFactory(this.assetsService);
+                this.qrMarkerEntityPivot = markerFactory.CreateMarkerEntityInstance();
+                this.qrMarkerEntity = this.qrMarkerEntityPivot.ChildEntities.First();
                 this.qrMarkerEntityPivot.IsEnabled = false;
+                var marker = this.qrMarkerEntity.FindComponent<QRMarker>();
+                marker.AnimationCompleted += this.Marker_AnimationCompleted;
 
-                this.qrMarkerEntityPivot.AddChild(this.qrMarkerEntity);
                 this.entityManager.Add(this.qrMarkerEntityPivot);
             }
 
@@ -181,10 +189,6 @@ namespace Evergine.Xrv.Core.Services.QR
             this.watcherService.ClearQRCodes();
             this.qrScannerEntity.IsEnabled = true;
             this.qrMarkerEntityPivot.IsEnabled = false;
-
-            // Remove marker spatial anchor, if any
-            var worldAnchor = this.qrMarkerEntityPivot.FindComponent<WorldAnchor>();
-            worldAnchor.RemoveAnchor();
         }
 
         /// <summary>
@@ -286,7 +290,7 @@ namespace Evergine.Xrv.Core.Services.QR
             transform.WorldTransform = Matrix4x4.CreateFromTRS(args.Pose.Translation, args.Pose.Orientation, Vector3.One);
             transform = this.qrMarkerEntity.FindComponent<Transform3D>();
             var qrLocalPosition = transform.LocalPosition;
-            this.FixUpCodeOrigin(ref qrLocalPosition);
+            QRPlatformHelper.FixUpCodeOrigin(ref qrLocalPosition);
 
             // apply scale separately to avoid all qrMarkerEntityPivot to be scaled (we are
             // only interested in qrMarkerEntity, that should fit real QR size.
@@ -295,9 +299,6 @@ namespace Evergine.Xrv.Core.Services.QR
 
             var qrMarker = this.qrMarkerEntity.FindComponent<QRMarker>();
             qrMarker.IsValidMarker = args.IsValidResult;
-
-            var worldAnchor = this.qrMarkerEntityPivot.FindComponent<WorldAnchor>();
-            worldAnchor.SaveAnchor();
 
             if (args.IsValidResult)
             {
@@ -318,22 +319,6 @@ namespace Evergine.Xrv.Core.Services.QR
             }
         }
 
-        private void FixUpCodeOrigin(ref Vector3 position)
-        {
-            /* As stated here
-             * https://learn.microsoft.com/en-us/windows/mixed-reality/develop/unity/qr-code-tracking-unity#getting-the-coordinate-system-for-a-qr-code
-             *
-             * HoloLens API coordinate system considers top-left corner of QR code as origin.
-             * Our prefab origin is in the center (0.5, 0.5). We don't change this because maybe, in the future,
-             * we integrate other platforms for QR scanning, and maybe those platforms returns QR position from its center.
-             */
-
-            if (DeviceHelper.IsHoloLens())
-            {
-                position.X = position.Z = 0.5f;
-            }
-        }
-
         private void RegisterQrCodeWatcherServiceByPlatform()
         {
             var container = Application.Current.Container;
@@ -347,6 +332,16 @@ namespace Evergine.Xrv.Core.Services.QR
                 }
 #endif
             }
+        }
+
+        private void Marker_AnimationCompleted(object sender, EventArgs e)
+        {
+            if (this.HideMarkerAutomatically)
+            {
+                this.qrMarkerEntityPivot.IsEnabled = false;
+            }
+
+            this.Completed?.Invoke(this, EventArgs.Empty);
         }
     }
 }

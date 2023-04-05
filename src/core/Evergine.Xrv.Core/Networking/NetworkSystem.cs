@@ -24,7 +24,7 @@ using Evergine.Xrv.Core.Networking.Messaging;
 using Evergine.Xrv.Core.Networking.Properties.KeyRequest;
 using Evergine.Xrv.Core.Networking.Properties.Session;
 using Evergine.Xrv.Core.Networking.SessionClosing;
-using Evergine.Xrv.Core.Services.QR;
+using Evergine.Xrv.Core.Networking.WorldCenter;
 using Evergine.Xrv.Core.Settings;
 using Evergine.Xrv.Core.Themes;
 using Evergine.Xrv.Core.UI.Tabs;
@@ -86,6 +86,17 @@ namespace Evergine.Xrv.Core.Networking
                 IconOn = CoreResourcesIDs.Materials.Icons.ControlRequest,
                 Order = int.MaxValue - 2,
             };
+
+#if ANDROID
+            this.WorldCenterProvider = new ManualWorldCenterProvider(
+                this.assetsService,
+                this.entityManager,
+                this.windowsSystem,
+                this.localization,
+                this);
+#else
+            this.WorldCenterProvider = new QrWorldCenterProvider(this.xrvService.Services.QrScanningFlow, this.assetsService);
+#endif
         }
 
         /// <summary>
@@ -147,6 +158,11 @@ namespace Evergine.Xrv.Core.Networking
             }
         }
 
+        /// <summary>
+        /// Gets or sets world center provider to be used when connecting to sessions.
+        /// </summary>
+        public IWorldCenterProvider WorldCenterProvider { get; set; }
+
         internal IKeyStore KeyStore { get; private set; }
 
         /// <summary>
@@ -165,6 +181,21 @@ namespace Evergine.Xrv.Core.Networking
         /// <param name="entity">Entity.</param>
         public void AddNetworkingEntity(Entity entity) =>
             this.worldCenterEntity.AddChild(entity);
+
+        /// <summary>
+        /// Sets world center pose.
+        /// </summary>
+        /// <param name="pose">New pose.</param>
+        public void SetWorldCenterPose(Matrix4x4 pose)
+        {
+            var transform3d = this.worldCenterEntity.FindComponent<Transform3D>();
+            transform3d.WorldTransform = Matrix4x4.CreateFromTRS(pose.Translation, pose.Orientation, Vector3.One);
+            this.WorldCenterProvider.OnWorldCenterPoseUpdate(this.worldCenterEntity);
+
+            var worldAnchor = this.worldCenterEntity.FindComponent<WorldAnchor>();
+            worldAnchor.RemoveAnchor();
+            worldAnchor.SaveAnchor();
+        }
 
         internal void RegisterServices()
         {
@@ -202,7 +233,8 @@ namespace Evergine.Xrv.Core.Networking
                 .AddComponent(new NetworkRoomProvider())
                 .AddComponent(this.sessionDataSync)
                 .AddComponent(this.sessionDataUpdater)
-                .AddComponent(new SessionPresenterObserver());
+                .AddComponent(new SessionPresenterObserver())
+                .AddComponent(new WorldAnchor());
             this.entityManager.Add(this.worldCenterEntity);
             this.xrvService.Services.Messaging.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
             this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;
@@ -235,14 +267,16 @@ namespace Evergine.Xrv.Core.Networking
             // close settings panel
             this.xrvService.Settings.Window.Close();
 
-            // execute QR scanning flow to determine world center
-            var scanningFlow = this.xrvService.Services.QrScanningFlow;
-            QRScanningResult result = await scanningFlow.ExecuteFlowAsync().ConfigureAwait(false);
-            if (result == null)
+            // execute routine to get world center
+            Matrix4x4? worldCenterPose = await this.WorldCenterProvider.GetWorldCenterPoseAsync().ConfigureAwait(false);
+            if (worldCenterPose == null)
             {
                 await this.ClearSessionStatusAsync().ConfigureAwait(false);
                 return false;
             }
+
+            // Update world-center position and invoke provider update, that may show a visual indicator
+            this.SetWorldCenterPose(worldCenterPose.Value);
 
             bool succeeded = await this.Client.ConnectAsync(host).ConfigureAwait(false);
             if (!succeeded)
@@ -265,8 +299,6 @@ namespace Evergine.Xrv.Core.Networking
             var controlRequestButton = handMenu.GetButtonEntity(this.controlRequestButtonDescription);
             controlRequestButton.AddComponentIfNotExists(new HandMenuButtonStateUpdater());
 
-            // Move world-center entity as child of QR scanning marker
-            await this.MoveWorldCenterEntityAsync(scanningFlow, true).ConfigureAwait(false);
             this.EnableSessionDataSync(true);
 
             return true;
@@ -305,7 +337,7 @@ namespace Evergine.Xrv.Core.Networking
 
         private Entity GetSessionSettingsEntity()
         {
-            var rulerSettingPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.SessionSettings_weprefab);
+            var rulerSettingPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Networking.SessionSettings_weprefab);
             return rulerSettingPrefab.Instantiate();
         }
 
@@ -322,21 +354,17 @@ namespace Evergine.Xrv.Core.Networking
 
             this.EnableSessionDataSync(false);
 
-            var scanningFlow = this.xrvService.Services.QrScanningFlow;
-            scanningFlow.Marker.IsEnabled = false;
-
-            // Remove flow marker world anchor, if any
-            var worldAnchor = scanningFlow.Marker.FindComponent<WorldAnchor>();
-            worldAnchor.RemoveAnchor();
-
             if (this.Server?.IsStarted == true)
             {
                 await this.Server.StopAsync().ConfigureAwait(false);
             }
 
-            await this.MoveWorldCenterEntityAsync(scanningFlow, false).ConfigureAwait(false);
             this.KeyStore.Clear();
             this.Server = null;
+
+            // Clean world-center stuff
+            this.worldCenterEntity.FindComponent<WorldAnchor>().RemoveAnchor();
+            this.WorldCenterProvider.CleanWorldCenterEntity(this.worldCenterEntity);
 
             _ = EvergineForegroundTask.Run(() =>
             {
@@ -397,37 +425,6 @@ namespace Evergine.Xrv.Core.Networking
                         });
                 }
             }
-        }
-
-        private async Task MoveWorldCenterEntityAsync(QRScanningFlow scanningFlow, bool markerAsRoot)
-        {
-            var worldCenterTransform = this.worldCenterEntity.FindComponent<Transform3D>();
-            worldCenterTransform.LocalTransform = Matrix4x4.CreateFromTRS(Vector3.Zero, Vector3.Zero, new Vector3(1, 1, 1));
-
-            await EvergineForegroundTask.Run(
-                () =>
-                {
-                    if (this.worldCenterEntity.Parent != null)
-                    {
-                        this.worldCenterEntity.Parent.DetachChild(this.worldCenterEntity);
-                    }
-                    else
-                    {
-                        this.entityManager.Detach(this.worldCenterEntity);
-                    }
-                }).ConfigureEvergineAwait(EvergineTaskContinueOn.Background);
-
-            await EvergineForegroundTask.Run(() =>
-            {
-                if (markerAsRoot)
-                {
-                    scanningFlow.Marker.AddChild(this.worldCenterEntity);
-                }
-                else
-                {
-                    this.entityManager.Add(this.worldCenterEntity);
-                }
-            });
         }
 
         private void InitializeKeyRequestProtocol(Container container)

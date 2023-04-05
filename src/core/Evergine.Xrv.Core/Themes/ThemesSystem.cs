@@ -93,6 +93,48 @@ namespace Evergine.Xrv.Core.Themes
             this.UpdateAllMrtkMaterials();
         }
 
+        /// <summary>
+        /// Gets material instance by theme color.
+        /// </summary>
+        /// <param name="color">Theme color.</param>
+        /// <returns>Material.</returns>
+        /// <exception cref="NotSupportedException">Some colors like <see cref="ThemeColor.SecondaryColor5"></see>
+        /// have not any associated material.</exception>
+        public Material GetMaterialByColor(ThemeColor color)
+        {
+            Guid materialId = default;
+
+            switch (color)
+            {
+                case ThemeColor.PrimaryColor1:
+                    materialId = CoreResourcesIDs.Materials.PrimaryColor1;
+                    break;
+                case ThemeColor.PrimaryColor2:
+                    materialId = CoreResourcesIDs.Materials.PrimaryColor2;
+                    break;
+                case ThemeColor.PrimaryColor3:
+                    materialId = CoreResourcesIDs.Materials.PrimaryColor3;
+                    break;
+                case ThemeColor.SecondaryColor1:
+                    materialId = CoreResourcesIDs.Materials.SecondaryColor1;
+                    break;
+                case ThemeColor.SecondaryColor2:
+                    materialId = CoreResourcesIDs.Materials.SecondaryColor2;
+                    break;
+                case ThemeColor.SecondaryColor3:
+                    materialId = CoreResourcesIDs.Materials.SecondaryColor3;
+                    break;
+                case ThemeColor.SecondaryColor4:
+                    materialId = CoreResourcesIDs.Materials.SecondaryColor4;
+                    break;
+                case ThemeColor.SecondaryColor5:
+                    throw new NotSupportedException($"{nameof(ThemeColor.SecondaryColor5)} not available for this method");
+            }
+
+            Material material = this.assetsService.Load<Material>(materialId);
+            return material;
+        }
+
         internal void Load()
         {
             if (this.currentTheme == null)

@@ -1,16 +1,17 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
 using System;
 
-namespace Evergine.Xrv.ModelViewer
+namespace Evergine.Xrv.Core.UI
 {
     /// <summary>
-    /// Menu behavior.
+    /// Moves menu around other entity (by its transform).
     /// </summary>
-    public class MenuBehavior : Behavior
+    public class OrbitMenu : Behavior
     {
         [BindComponent]
         private Transform3D transform = null;
@@ -21,36 +22,46 @@ namespace Evergine.Xrv.ModelViewer
         private Quaternion velocityOrientation;
 
         /// <summary>
-        /// Gets or sets the transform target.
+        /// Gets or sets the orbit center transform.
         /// </summary>
-        public Transform3D ModelTransform { get; set; }
+        [IgnoreEvergine]
+        public Transform3D CenterTransform { get; set; }
+
+        /// <summary>
+        /// Gets or sets orbit radius.
+        /// </summary>
+        public float Radius { get; set; } = 0.2f;
+
+        /// <summary>
+        /// Gets or sets distance multiplier used as threshold to update
+        /// menu orientation.
+        /// </summary>
+        public float DistanceThreshold { get; set; } = 1.25f;
 
         /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             var camera = this.Managers.RenderManager.ActiveCamera3D;
-            var rad = 0.2f;
-
-            this.UpdatePosition(camera, rad, gameTime);
+            this.UpdatePosition(camera, this.Radius, gameTime);
             this.FaceTo(this.transform, camera.Position, gameTime);
         }
 
         private void UpdatePosition(Camera3D camera, float rad, TimeSpan gameTime)
         {
-            if (this.ModelTransform == null)
+            if (this.CenterTransform == null)
             {
                 return;
             }
 
-            var from = this.ModelTransform.Position;
+            var from = this.CenterTransform.Position;
             var cameraDir = camera.Position - from;
-            var distance = Vector3.Distance(this.ModelTransform.Position, camera.Position);
+            var distance = Vector3.Distance(this.CenterTransform.Position, camera.Position);
 
             cameraDir.Y = 0;
             cameraDir.Normalize();
 
             var offset = Vector3.Zero;
-            var threshold = rad * 1.25f;
+            var threshold = rad * this.DistanceThreshold;
             if (distance > threshold)
             {
                 offset = cameraDir * rad;

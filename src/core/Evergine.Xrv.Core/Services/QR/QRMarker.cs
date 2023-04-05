@@ -43,6 +43,11 @@ namespace Evergine.Xrv.Core.Services.QR
         private Vector3 initialIconScale;
 
         /// <summary>
+        /// Raised when animation has been completed.
+        /// </summary>
+        public event EventHandler AnimationCompleted;
+
+        /// <summary>
         /// Gets or sets a value indicating whether marker should present
         /// a valid or invalid QR code status.
         /// </summary>
@@ -78,6 +83,18 @@ namespace Evergine.Xrv.Core.Services.QR
         /// Gets or sets invalid status tint color.
         /// </summary>
         public Color InvalidColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether marker detection
+        /// should emit a sound.
+        /// </summary>
+        public bool EmitsSound { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether marker detection
+        /// should animate visual state change.
+        /// </summary>
+        public bool AnimateStateChange { get; set; } = true;
 
         /// <summary>
         /// Gets or sets valid status sound effect.
@@ -136,16 +153,27 @@ namespace Evergine.Xrv.Core.Services.QR
             this.StopSound();
             this.soundEmitter.Audio = this.isValidMarker ? this.ValidSound : this.InvalidSound;
 
-            if (!Application.Current.IsEditor)
+            if (Application.Current.IsEditor)
             {
-                if (this.soundEmitter.Audio != null)
-                {
-                    this.soundEmitter.Play();
-                }
+                return;
+            }
 
+            if (this.soundEmitter.Audio != null && this.EmitsSound)
+            {
+                this.soundEmitter.Play();
+            }
+
+            if (this.AnimateStateChange)
+            {
                 this.animation?.TryCancel();
                 this.animation = this.CreateAnimationInstance();
                 this.animation.Run();
+            }
+            else
+            {
+                var localScale = this.backgroundTransform.LocalScale;
+                localScale.X = 0;
+                this.backgroundTransform.LocalScale = localScale;
             }
         }
 
@@ -165,7 +193,9 @@ namespace Evergine.Xrv.Core.Services.QR
             var backgroundAnimation = this.CreateBackroundAnimation(time, ease);
             var iconAnimation = this.CreateIconAnimation(time, TimeSpan.FromSeconds(0.35), TimeSpan.FromSeconds(0.185f), ease);
 
-            return new WorkActionSet(new[] { backgroundAnimation, iconAnimation }).WaitAll();
+            return new WorkActionSet(new[] { backgroundAnimation, iconAnimation })
+                .WaitAll()
+                .ContinueWithAction(() => this.AnimationCompleted?.Invoke(this, EventArgs.Empty));
         }
 
         private IWorkAction CreateBackroundAnimation(TimeSpan time, EaseFunction ease)

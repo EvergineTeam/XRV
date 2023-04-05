@@ -13,6 +13,8 @@ namespace Evergine.Xrv.Core.Utils
     /// </summary>
     public static class DeviceHelper
     {
+        private static bool? isHoloLens;
+
         /// <summary>
         /// Gets platform application folder path.
         /// </summary>
@@ -37,13 +39,19 @@ namespace Evergine.Xrv.Core.Utils
         /// <returns>True if current device is HoloLens; false otherwise.</returns>
         public static bool IsHoloLens()
         {
-            bool isHoloLens = false;
-
+            if (!isHoloLens.HasValue)
+            {
+                isHoloLens = false;
 #if UWP
-            isHoloLens = Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview.IsCurrentViewPresentedOnHolographicDisplay();
+                /*
+                 * We have detected some exceptions on consecutive access to this
+                 * API method. Our solution is just cache first API usage.
+                 */
+                isHoloLens = Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview.IsCurrentViewPresentedOnHolographicDisplay();
 #endif
+            }
 
-            return isHoloLens;
+            return isHoloLens.Value;
         }
 
         /// <summary>

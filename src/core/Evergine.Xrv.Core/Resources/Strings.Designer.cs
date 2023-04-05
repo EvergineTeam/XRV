@@ -573,5 +573,41 @@ namespace Evergine.Xrv.Core.Resources {
                 return ResourceManager.GetString("Window.Button.Pin", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use pinch gesture to place world center plate. Then, you can change its orientation doing pinch on that plate..
+        /// </summary>
+        public static string WorldCenter_Manual_InitialMessage_Message {
+            get {
+                return ResourceManager.GetString("WorldCenter.Manual.InitialMessage.Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manual world center.
+        /// </summary>
+        public static string WorldCenter_Manual_InitialMessage_Title {
+            get {
+                return ResourceManager.GetString("WorldCenter.Manual.InitialMessage.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lock.
+        /// </summary>
+        public static string WorldCenter_Manual_Lock {
+            get {
+                return ResourceManager.GetString("WorldCenter.Manual.Lock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlock.
+        /// </summary>
+        public static string WorldCenter_Manual_Unlock {
+            get {
+                return ResourceManager.GetString("WorldCenter.Manual.Unlock", resourceCulture);
+            }
+        }
     }
 }
