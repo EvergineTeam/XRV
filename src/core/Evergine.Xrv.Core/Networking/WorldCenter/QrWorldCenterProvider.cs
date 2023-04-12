@@ -72,23 +72,28 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             // QR scanning flow is for general purpouse, and creats its own marker.
             // What we do here is to have a separated marker entity that will
             // be placed in space while networking session is running.
+            this.marker = new Entity("WorldCenterMarker-Pivot")
+                .AddComponent(new Transform3D());
             var factory = new QRMarkerFactory(this.assetsService);
-            this.marker = factory.CreateMarkerEntityInstance("WorldCenterMarker");
+            var visual = factory.CreateMarkerEntityInstance("WorldCenterMarker");
 
-            var markerComponent = this.marker.FindComponentInChildren<QRMarker>();
+            var markerComponent = visual.FindComponentInChildren<QRMarker>();
             markerComponent.IsValidMarker = true;
             markerComponent.EmitsSound = false;
             markerComponent.AnimateStateChange = false;
 
             this.marker.IsEnabled = false;
+            this.marker.AddChild(visual);
             worldCenter.AddChild(this.marker);
 
             // Apply platform QR representation position fix-up
-            var markerLocalTransform = markerComponent.Owner.FindComponent<Transform3D>();
-            var markerLocalPosition = markerLocalTransform.LocalPosition;
+            var visualMarkerTransform = markerComponent.Owner.FindComponent<Transform3D>();
+            var markerLocalPosition = visualMarkerTransform.LocalPosition;
             QRPlatformHelper.FixUpCodeOrigin(ref markerLocalPosition);
-            markerLocalTransform.LocalPosition = markerLocalPosition;
-            markerLocalTransform.LocalScale = this.pose.Value.Scale; // Respect real-world scale
+            visualMarkerTransform.LocalPosition = markerLocalPosition;
+
+            var pivotTransform = this.marker.FindComponent<Transform3D>();
+            pivotTransform.LocalScale = this.pose.Value.Scale; // Respect real-world scale
         }
 
         private void ScanningFlow_Completed(object sender, EventArgs e)

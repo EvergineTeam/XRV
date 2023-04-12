@@ -11,7 +11,11 @@ namespace Evergine.Xrv.Core.Services.QR
     public static class QRPlatformHelper
     {
         /// <summary>
-        /// Fixes code origin to match with QR prefab coordinates system.
+        /// Fixes code origin to match with QR prefab coordinates system. This requires
+        /// entity to be placed as child of a pivot entity (that may be scaled) to
+        /// properly apply origin fix-up. This fix is performed assuming dimensions
+        /// of 1x1 from its parent. For example, if translation is specified as XZ 0.5, 0.5,
+        /// and parent is scaled to 0.5 units, absolute displacement will be XZ 0.25, 0.25.
         /// </summary>
         /// <param name="position">QR representation position.</param>
         public static void FixUpCodeOrigin(ref Vector3 position)
