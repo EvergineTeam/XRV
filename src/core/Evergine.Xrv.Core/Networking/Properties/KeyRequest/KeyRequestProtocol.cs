@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Evergine.Networking.Components;
@@ -202,6 +203,17 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
                 {
                     Keys = this.AssignedKeys,
                 };
+
+                if (this.logger != null)
+                {
+                    var builder = new StringBuilder();
+                    foreach (var key in this.AssignedKeys)
+                    {
+                        builder.Append($"{key}, ");
+                    }
+
+                    this.logger?.LogDebug($"Preparing response of keys: {builder} for client {senderId}");
+                }
             }
             else
             {

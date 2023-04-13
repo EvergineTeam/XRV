@@ -41,12 +41,22 @@ namespace Evergine.Xrv.Core.UI.Windows
         private WindowTagAlong windowTagAlong = null;
 
         /// <summary>
-        /// Raised when window is opened.
+        /// Raised before window is opened.
+        /// </summary>
+        public event EventHandler Opening;
+
+        /// <summary>
+        /// Raised after window is opened.
         /// </summary>
         public event EventHandler Opened;
 
         /// <summary>
-        /// Raised when window is closed.
+        /// Raised before window is closed.
+        /// </summary>
+        public event EventHandler Closing;
+
+        /// <summary>
+        /// Raised after window is closed.
         /// </summary>
         public event EventHandler Closed;
 
@@ -96,6 +106,12 @@ namespace Evergine.Xrv.Core.UI.Windows
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether window should be placed in front
+        /// of user when it's opened.
+        /// </summary>
+        public bool PlaceInFrontOfUserWhenOpened { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets distance key to be used from <see cref="Distances"/> to get distance
         /// where window should be displayed to the user when is opened.
         /// </summary>
@@ -109,11 +125,15 @@ namespace Evergine.Xrv.Core.UI.Windows
         {
             if (!this.IsOpened)
             {
+                this.Opening?.Invoke(this, EventArgs.Empty);
                 this.Owner.IsEnabled = true;
                 this.Opened?.Invoke(this, EventArgs.Empty);
             }
 
-            this.PlaceInFrontOfUser();
+            if (this.PlaceInFrontOfUserWhenOpened)
+            {
+                this.PlaceInFrontOfUser();
+            }
         }
 
         /// <summary>
@@ -123,6 +143,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         {
             if (this.IsOpened)
             {
+                this.Closing?.Invoke(this, EventArgs.Empty);
                 this.UpdateFollowBehavior(false);
                 this.Owner.IsEnabled = false;
                 this.Closed?.Invoke(this, EventArgs.Empty);

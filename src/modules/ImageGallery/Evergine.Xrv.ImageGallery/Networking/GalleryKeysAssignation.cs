@@ -7,26 +7,27 @@ using Evergine.Xrv.Core.Networking.Properties;
 using Evergine.Xrv.Core.Networking.Properties.KeyRequest;
 using Microsoft.Extensions.Logging;
 
-namespace Evergine.Xrv.Ruler.Networking
+namespace Evergine.Xrv.ImageGallery.Networking
 {
     /// <summary>
-    /// Networking keys assignation for ruler handles.
+    /// It handles keys assignation for gallery module: module activation,
+    /// gallery window transform and gallery current image.
     /// </summary>
-    public class RulerKeysAssignation : KeysAssignation
+    public class GalleryKeysAssignation : KeysAssignation
     {
         [BindService]
         private XrvService xrvService = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle1")]
-        private TransformSynchronization handle1Sync = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle2")]
-        private TransformSynchronization handle2Sync = null;
+        [BindComponent(source: BindComponentSource.Parents, isRequired: false)]
+        private TransformSynchronization transformSync = null;
 
         [BindComponent(source: BindComponentSource.Scene, isRequired: false)]
-        private RulerSessionSynchronization session = null;
+        private GallerySessionSynchronization session = null;
 
-        private ILogger logger = null;
+        [BindComponent]
+        private CurrentImageSynchronization currentImageSync = null;
+
+        private ILogger logger;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -45,17 +46,17 @@ namespace Evergine.Xrv.Ruler.Networking
         {
             if (keys == null)
             {
-                this.handle1Sync?.ResetKey();
-                this.handle2Sync?.ResetKey();
+                this.transformSync?.ResetKey();
+                this.currentImageSync?.ResetKey();
                 return;
             }
 
-            this.logger?.LogDebug($"Ruler keys assigned. Result of {keys.Length} keys: {keys[0]}, {keys[1]}");
+            this.logger?.LogDebug($"Gallery keys assigned. Result of {keys.Length} keys: {keys[0]}, {keys[1]}");
             this.session?.UpdateData(data =>
             {
-                this.logger?.LogDebug($"Updating session data for ruler keys: {keys[0]}, {keys[1]}");
-                data.Handle1PropertyKey = keys[0];
-                data.Handle2PropertyKey = keys[1];
+                this.logger?.LogDebug($"Updating session data for image gallery keys: {keys[0]}, {keys[1]}");
+                data.WindowTransformPropertyKey = keys[0];
+                data.CurrentImageIndexPropertyKey = keys[1];
             });
         }
 
@@ -63,9 +64,9 @@ namespace Evergine.Xrv.Ruler.Networking
         protected override void AssignKeysToProperties()
         {
             var keys = this.AssignedKeys;
-            this.logger?.LogDebug($"Ruler keys established: {keys[0]}, {keys[1]}");
-            this.handle1Sync.PropertyKeyByte = keys[0];
-            this.handle2Sync.PropertyKeyByte = keys[1];
+            this.logger?.LogDebug($"Gallery keys established: {keys[0]}, {keys[1]}");
+            this.transformSync.PropertyKeyByte = keys[0];
+            this.currentImageSync.PropertyKeyByte = keys[1];
         }
     }
 }

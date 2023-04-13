@@ -9,6 +9,7 @@ using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Threading;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -17,6 +18,7 @@ using Evergine.Platform;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Storage;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Windows;
 using Evergine.Xrv.ImageGallery.Helpers;
 using Microsoft.Extensions.Logging;
@@ -64,12 +66,18 @@ namespace Evergine.Xrv.ImageGallery.Components
 
         private Texture imageTexture = null;
         private int imageIndex = 0;
-        private CancellationTokenSource cancellationSource;
+        private CancellationTokenSource cancellationSource = null;
         private bool showNavigationButtons = true;
         private bool showNavigationSlider = true;
+        private bool isVisuallyEnabled = true;
         private List<FileItem> images = null;
         private WindowConfigurator windowConfigurator = null;
-        private ILogger logger;
+        private ILogger logger = null;
+
+        /// <summary>
+        /// Raised when presented image has changed.
+        /// </summary>
+        public event EventHandler CurrentImageChanged = null;
 
         /// <summary>
         /// Gets or sets the route of the Storage used to get and store the images listed in the gallery.
@@ -143,10 +151,16 @@ namespace Evergine.Xrv.ImageGallery.Components
                         this.imageIndex = value;
                         this.ReloadImage();
                         this.UpdateUIElements();
+                        this.CurrentImageChanged?.Invoke(this, EventArgs.Empty);
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// Gets gallery number of images.
+        /// </summary>
+        public int NumberOfImages { get => this.images?.Count ?? 0; }
 
         /// <summary>
         /// Gets or sets the width of the images shown.
@@ -167,6 +181,23 @@ namespace Evergine.Xrv.ImageGallery.Components
         /// Gets a value indicating whether gallery contains any image.
         /// </summary>
         public bool HasImages { get => this.images?.Any() == true; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gallery UI elements should
+        /// be enabled or disabled.
+        /// </summary>
+        public bool IsVisuallyEnabled
+        {
+            get => this.isVisuallyEnabled;
+            set
+            {
+                if (this.isVisuallyEnabled != value)
+                {
+                    this.isVisuallyEnabled = value;
+                    this.UpdateUIElements();
+                }
+            }
+        }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -343,7 +374,14 @@ namespace Evergine.Xrv.ImageGallery.Components
                 {
                     this.nextButtonEntity.IsEnabled = true;
                 }
+
+                this.nextButtonEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
+                this.previousButtonEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
             }
+
+            var sliderCollider = this.slider.Owner.FindComponentInChildren<Collider3D>(isExactType: false);
+            var sliderBody = this.slider.Owner.FindComponentInChildren<StaticBody3D>();
+            sliderCollider.IsEnabled = sliderBody.IsEnabled = this.isVisuallyEnabled;
         }
 
         private void LoadRawJPG(string filePath)
@@ -356,7 +394,7 @@ namespace Evergine.Xrv.ImageGallery.Components
                 async () =>
             {
                 AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
-                byte[] data;
+                byte[] data = null;
                 using (var fileStream = await this.FileAccess.GetFileAsync(filePath))
                 {
                     using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))

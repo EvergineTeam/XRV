@@ -19,6 +19,8 @@ using Evergine.Networking.Server;
 using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Menu;
+using Evergine.Xrv.Core.Modules;
+using Evergine.Xrv.Core.Modules.Networking;
 using Evergine.Xrv.Core.Networking.ControlRequest;
 using Evergine.Xrv.Core.Networking.Messaging;
 using Evergine.Xrv.Core.Networking.Properties.KeyRequest;
@@ -181,6 +183,26 @@ namespace Evergine.Xrv.Core.Networking
         /// <param name="entity">Entity.</param>
         public void AddNetworkingEntity(Entity entity) =>
             this.worldCenterEntity.AddChild(entity);
+
+        /// <summary>
+        /// Indicates that a module is aware of networking session. It will add
+        /// set of components required for module data synchronization. A module that
+        /// is aware of networking session, will behave in a different way that outside of
+        /// a session. For example, their associated hand menu button will be disabled
+        /// unless user takes session control.
+        /// </summary>
+        /// <typeparam name="TSessionData">Type of module session data.</typeparam>
+        /// <param name="module">Target module.</param>
+        /// <param name="sessionDataSync">Session data synchornization component.</param>
+        public void SetUpModuleSynchronization<TSessionData>(Module module, ModuleSessionSync<TSessionData> sessionDataSync)
+            where TSessionData : ModuleSessionData
+        {
+            var moduleEntity = new Entity($"{module.Name}_Networking")
+                .AddComponent(new ModuleActivationSync(module))
+                .AddComponent(sessionDataSync)
+                .AddComponent(new ModuleActivationNetworkKey<TSessionData>());
+            this.worldCenterEntity.AddChild(moduleEntity);
+        }
 
         /// <summary>
         /// Sets world center pose.

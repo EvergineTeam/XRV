@@ -41,7 +41,8 @@ namespace Evergine.Xrv.Core.Modules
         /// Invoked when hand menu button is released.
         /// </summary>
         /// <param name="turnOn">For toggle buttons, it indicates the state of the toggle (On = true, Off = false).
-        /// For standard buttons, it will always be true.</param>
+        /// For standard buttons, it will true most of the time, except in module that are involved
+        /// in networking sessions. In that case, it could be false depending on user interactions.</param>
         public abstract void Run(bool turnOn);
 
         /// <summary>

@@ -10,9 +10,12 @@ using Evergine.Mathematics;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
+using Evergine.Xrv.Core.Modules.Networking;
+using Evergine.Xrv.Core.Networking.Properties;
 using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
+using Evergine.Xrv.ImageGallery.Networking;
 
 namespace Evergine.Xrv.ImageGallery
 {
@@ -92,20 +95,37 @@ namespace Evergine.Xrv.ImageGallery
             controllersTransform.LocalPosition = new Vector3(0f, -(0.02f + (size.Y / 2)), 0f);
 
             // Gallery Window
-            this.window = this.xrv.WindowsSystem.CreateWindow((config) =>
-            {
-                config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
-                config.Size = size;
-                config.DisplayFrontPlate = false;
-                config.DisplayLogo = false;
-                config.Content = gallery;
-            });
+            this.window = this.xrv.WindowsSystem.CreateWindow(
+                out var windowEntity,
+                config =>
+                {
+                    config.LocalizedTitle = () => this.xrv.Localization.GetString(() => Resources.Strings.Window_Title);
+                    config.Size = size;
+                    config.DisplayFrontPlate = false;
+                    config.DisplayLogo = false;
+                    config.Content = gallery;
+                },
+                false);
+
+            this.xrv.Networking.AddNetworkingEntity(windowEntity);
+            windowEntity.AddComponent(new ModuleNetworkingWindowController(this));
+            windowEntity.AddComponent(new TransformSynchronization());
+
+            // Networking
+            this.xrv.Networking.SetUpModuleSynchronization(this, new GallerySessionSynchronization(windowEntity));
         }
 
         /// <inheritdoc/>
         public override void Run(bool turnOn)
         {
-            this.window.Open();
+            if (turnOn)
+            {
+                this.window.Open();
+            }
+            else
+            {
+                this.window.Close();
+            }
         }
 
         private Entity HelpContent()

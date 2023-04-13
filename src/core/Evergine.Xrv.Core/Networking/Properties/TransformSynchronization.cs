@@ -1,10 +1,11 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Common.Attributes;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Networking.Components;
-using System;
 using Evergine.Xrv.Core.Networking.Extensions;
 
 namespace Evergine.Xrv.Core.Networking.Properties
@@ -35,17 +36,6 @@ namespace Evergine.Xrv.Core.Networking.Properties
             : base()
         {
             this.PropertyKey = propertyKey;
-        }
-
-        /// <summary>
-        /// Gets or sets property key.
-        /// </summary>
-        [DontRenderProperty]
-        [IgnoreEvergine]
-        public new byte PropertyKey
-        {
-            get => base.PropertyKey;
-            set => base.PropertyKey = value;
         }
 
         /// <inheritdoc/>
@@ -113,9 +103,66 @@ namespace Evergine.Xrv.Core.Networking.Properties
         private void UpdatePropertyValue()
         {
             var session = this.xrvService.Networking.Session;
+            if (!session.CurrentUserIsPresenter)
+            {
+                return;
+            }
+
+            /*
+             * For Matrix4x4 sync properties we detected that it was not ready on
+             * time to send initial transformation value, which provokes incorrect
+             * positioning on non-presenter individuals, unless presenter provokes
+             * a local transform change for first time. As work around, we create
+             * a separated thread to check for property to be ready to send initial position.
+             */
+            var updateTransform = () => { this.PropertyValue = this.transform.LocalTransform; };
+            bool isReady = this.CalculateIsReadyAndInitialized();
+            if (isReady)
+            {
+                updateTransform();
+            }
+            else
+            {
+                _ = this.WaitUntilReadyAndExecuteAsync(updateTransform)
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsFaulted)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error waiting to property ready: {t.Exception}");
+                        }
+                    });
+            }
+
             if (this.IsReady && this.HasInitializedKey() && session.CurrentUserIsPresenter)
             {
                 this.PropertyValue = this.transform.LocalTransform;
+            }
+        }
+
+        private bool CalculateIsReadyAndInitialized() => this.IsReady && this.HasInitializedKey();
+
+        private async Task WaitUntilReadyAndExecuteAsync(Action action, CancellationToken cancellation = default)
+        {
+            const int CheckDelay = 20;
+            const int MaxWaitTime = 500;
+            bool isReady = this.CalculateIsReadyAndInitialized();
+            int currentWaitTime = 0;
+
+            while (!isReady && !cancellation.IsCancellationRequested)
+            {
+                await Task.Delay(CheckDelay).ConfigureAwait(false);
+                currentWaitTime += CheckDelay;
+
+                if (currentWaitTime >= MaxWaitTime)
+                {
+                    break;
+                }
+            }
+
+            isReady = this.CalculateIsReadyAndInitialized();
+            if (isReady && !cancellation.IsCancellationRequested)
+            {
+                action.Invoke();
             }
         }
     }

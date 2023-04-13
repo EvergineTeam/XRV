@@ -1,20 +1,16 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Networking;
+using Evergine.Xrv.Core.Modules.Networking;
 using Lidgren.Network;
+using System.Text;
 
 namespace Evergine.Xrv.Ruler.Networking
 {
     /// <summary>
     /// Networking session data relative to ruler module.
     /// </summary>
-    public class RulerSessionData : INetworkSerializable
+    public class RulerSessionData : ModuleSessionData
     {
-        /// <summary>
-        /// Gets property key assigned to ruler visibility.
-        /// </summary>
-        public byte VisibilityPropertyKey { get; internal set; }
-
         /// <summary>
         /// Gets property key assigned to first ruler handle.
         /// </summary>
@@ -26,19 +22,30 @@ namespace Evergine.Xrv.Ruler.Networking
         public byte Handle2PropertyKey { get; internal set; }
 
         /// <inheritdoc/>
-        public void Read(NetBuffer buffer)
+        public override void Read(NetBuffer buffer)
         {
-            this.VisibilityPropertyKey = buffer.ReadByte();
+            base.Read(buffer);
             this.Handle1PropertyKey = buffer.ReadByte();
             this.Handle2PropertyKey = buffer.ReadByte();
         }
 
         /// <inheritdoc/>
-        public void Write(NetBuffer buffer)
+        public override void Write(NetBuffer buffer)
         {
-            buffer.Write(this.VisibilityPropertyKey);
+            base.Write(buffer);
             buffer.Write(this.Handle1PropertyKey);
             buffer.Write(this.Handle2PropertyKey);
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            var builder = new StringBuilder()
+                .AppendLine(base.ToString())
+                .AppendLine($"- Handle1 key: {this.Handle1PropertyKey}")
+                .AppendLine($"- Handle2 key: {this.Handle2PropertyKey}");
+
+            return builder.ToString();
         }
     }
 }

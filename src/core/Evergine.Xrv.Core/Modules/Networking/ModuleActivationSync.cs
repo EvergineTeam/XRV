@@ -2,16 +2,14 @@
 
 using Evergine.Common.Attributes;
 using Evergine.Framework;
-using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Networking.Components;
 using System;
 using Evergine.Xrv.Core.Networking.Extensions;
 
-namespace Evergine.Xrv.Core.Modules
+namespace Evergine.Xrv.Core.Modules.Networking
 {
     /// <summary>
-    /// Synchronizes module activation status simulating the press of
-    /// associated hand menu button. It works for toggle buttons only.
+    /// Synchronizes module activation status when a module activation message is emitted.
     /// </summary>
     public class ModuleActivationSync : NetworkBooleanPropertySync<byte>
     {
@@ -19,14 +17,22 @@ namespace Evergine.Xrv.Core.Modules
         private XrvService xrvService = null;
 
         private ActivateModuleOnButtonPress activationOnPress = null;
-        private ToggleButton handMenuButton = null;
         private Guid subscription;
 
         /// <summary>
-        /// Gets or sets target module.
+        /// Initializes a new instance of the <see cref="ModuleActivationSync"/> class.
+        /// </summary>
+        /// <param name="module">Target module.</param>
+        public ModuleActivationSync(Module module)
+        {
+            this.Module = module;
+        }
+
+        /// <summary>
+        /// Gets target module.
         /// </summary>
         [IgnoreEvergine]
-        public Module Module { get; set; }
+        public Module Module { get; private set; }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -36,7 +42,6 @@ namespace Evergine.Xrv.Core.Modules
             {
                 var moduleButton = this.xrvService.HandMenu.GetModuleButtonEntity(this.Module);
                 this.activationOnPress = moduleButton?.FindComponent<ActivateModuleOnButtonPress>();
-                this.handMenuButton = moduleButton?.FindComponentInChildren<ToggleButton>();
                 this.subscription = this.xrvService.Services.Messaging.Subscribe<ActivateModuleMessage>(this.OnModuleActivationChange);
             }
 
@@ -54,7 +59,7 @@ namespace Evergine.Xrv.Core.Modules
         protected override void OnPropertyReadyToSet()
         {
             base.OnPropertyReadyToSet();
-            this.UpdatePropertyValue();
+            this.UpdatePropertyValue(false);
         }
 
         /// <inheritdoc/>
@@ -68,20 +73,25 @@ namespace Evergine.Xrv.Core.Modules
         {
         }
 
-        private void OnModuleActivationChange(ActivateModuleMessage message) => this.UpdatePropertyValue();
-
-        private void UpdatePropertyValue()
+        private void OnModuleActivationChange(ActivateModuleMessage message)
         {
-            if (Application.Current.IsEditor || this.PropertyKeyByte == default)
+            if (message.Module == this.Module)
+            {
+                this.UpdatePropertyValue(message.IsOn);
+            }
+        }
+
+        private void UpdatePropertyValue(bool isModuleOn)
+        {
+            if (Application.Current.IsEditor)
             {
                 return;
             }
 
-            // TODO we should consider user with session control is
             var session = this.xrvService.Networking.Session;
             if (this.IsReady && this.HasInitializedKey() && session.CurrentUserIsPresenter)
             {
-                this.PropertyValue = this.handMenuButton.IsOn;
+                this.PropertyValue = isModuleOn;
             }
         }
     }

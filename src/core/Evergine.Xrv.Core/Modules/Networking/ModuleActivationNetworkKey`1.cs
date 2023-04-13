@@ -1,15 +1,18 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Framework;
-using Evergine.Xrv.Core;
-using Evergine.Xrv.Core.Modules;
 using Evergine.Xrv.Core.Networking.Extensions;
 using Evergine.Xrv.Core.Networking.Properties.KeyRequest;
 using Microsoft.Extensions.Logging;
 
-namespace Evergine.Xrv.Ruler.Networking
+namespace Evergine.Xrv.Core.Modules.Networking
 {
-    internal class RulerModuleActivationKey : KeysAssignation
+    /// <summary>
+    /// It controls networking keys assignation for module activation/deactivation.
+    /// </summary>
+    /// <typeparam name="TModuleData">Module type.</typeparam>
+    public class ModuleActivationNetworkKey<TModuleData> : KeysAssignation
+        where TModuleData : ModuleSessionData
     {
         [BindService]
         private XrvService xrvService = null;
@@ -17,11 +20,12 @@ namespace Evergine.Xrv.Ruler.Networking
         [BindComponent]
         private ModuleActivationSync moduleActivation = null;
 
-        [BindComponent]
-        private RulerSessionSynchronization session = null;
+        [BindComponent(isExactType: false)]
+        private ModuleSessionSync<TModuleData> session = null;
 
         private ILogger logger;
 
+        /// <inheritdoc/>
         protected override bool OnAttached()
         {
             bool attached = base.OnAttached();
@@ -33,6 +37,7 @@ namespace Evergine.Xrv.Ruler.Networking
             return attached;
         }
 
+        /// <inheritdoc/>
         protected override void OnKeysAssigned(byte[] keys)
         {
             if (keys == null)
@@ -41,12 +46,18 @@ namespace Evergine.Xrv.Ruler.Networking
                 return;
             }
 
-            this.logger?.LogDebug($"Ruler module activation. Got result of {keys.Length} keys for visibility");
-            this.moduleActivation.PropertyKeyByte = keys[0];
+            var visibilityKey = keys[0];
+            this.logger?.LogDebug($"{this.moduleActivation.Module.Name} module activation: key {visibilityKey} assigned for visibility");
             this.session.UpdateData(data =>
             {
-                data.VisibilityPropertyKey = this.moduleActivation.PropertyKeyByte;
+                data.VisibilityPropertyKey = keys[0];
             });
+        }
+
+        /// <inheritdoc/>
+        protected override void AssignKeysToProperties()
+        {
+            this.moduleActivation.PropertyKeyByte = this.AssignedKeys[0];
         }
     }
 }

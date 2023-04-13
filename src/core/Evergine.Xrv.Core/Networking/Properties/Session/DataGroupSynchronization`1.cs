@@ -104,7 +104,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
         /// <summary>
         /// Invoked when session disconnection has been detected.
         /// </summary>
-        protected abstract void OnSessionDisconnection();
+        protected abstract void OnSessionDisconnected();
 
         private void OnSessionDataSynchronized(SessionDataSynchronizedMessage message)
         {
@@ -131,7 +131,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
             }
             else if (!this.IsEnabled)
             {
-                this.OnSessionDisconnection();
+                this.OnSessionDisconnected();
             }
         }
 

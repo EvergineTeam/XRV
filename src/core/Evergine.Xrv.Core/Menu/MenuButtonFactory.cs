@@ -154,10 +154,7 @@ namespace Evergine.Xrv.Core.Menu
             if (associatedModule != null)
             {
                 button
-                    .AddComponent(new ActivateModuleOnButtonPress
-                    {
-                        Module = associatedModule,
-                    })
+                    .AddComponent(new ActivateModuleOnButtonPress(associatedModule))
                     .AddComponent(new ButtonEnabledStateByControlStatus());
             }
             else

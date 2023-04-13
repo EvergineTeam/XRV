@@ -7,8 +7,13 @@ namespace Evergine.Xrv.Core.Modules
 {
     internal class ActivateModuleOnButtonPress : PubSubOnButtonPress<ActivateModuleMessage>
     {
+        public ActivateModuleOnButtonPress(Module module)
+        {
+            this.Module = module;
+        }
+
         [IgnoreEvergine]
-        public Module Module { get; set; }
+        public Module Module { get; private set; }
 
         internal void SetModuleActivationState(bool isOn) => this.NotifyChange(isOn);
 

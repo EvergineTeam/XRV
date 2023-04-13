@@ -27,9 +27,23 @@ Root:
       ImagePixelsHeight: 640
       ImagePixelsWidth: 640
       IsEnabled: true
+      IsVisuallyEnabled: true
       Name: null
       ShowNavigationButtons: true
       ShowNavigationSlider: true
+    - !Evergine.Xrv.ImageGallery.Networking.GalleryKeysAssignation,Evergine.Xrv.ImageGallery
+      Id: 07573b38-9a23-467f-a602-466846ad3e66
+      Filter: Room
+      IsEnabled: true
+      NumberOfRequiredKeys: 2
+    - !Evergine.Xrv.ImageGallery.Networking.CurrentImageSynchronization,Evergine.Xrv.ImageGallery
+      Id: e32bb281-e265-49db-bbda-d506292fe100
+      IsEnabled: true
+      PropertyKeyByte: 0
+      ProviderFilter: Any
+    - !Evergine.Xrv.ImageGallery.Networking.GallerySessionController,Evergine.Xrv.ImageGallery
+      Id: 3ba473be-c9b9-40e0-9da2-118069d7167b
+      IsEnabled: true
   Children:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: ImageFrame
@@ -575,6 +589,10 @@ Root:
               DictionaryKey: Gallery.Previous
               DictionaryName: Evergine.Xrv.ImageGallery.Resources.Strings
               IsEnabled: true
+            - !Evergine.Xrv.Core.UI.Buttons.VisuallyEnabledController,Evergine.Xrv.Core
+              Id: 98c1ffc3-cb4e-42b6-8577-6b82430f1fb7
+              IsEnabled: true
+              IsVisuallyEnabled: true
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot
@@ -1039,6 +1057,10 @@ Root:
               DictionaryKey: Gallery.Next
               DictionaryName: Evergine.Xrv.ImageGallery.Resources.Strings
               IsEnabled: true
+            - !Evergine.Xrv.Core.UI.Buttons.VisuallyEnabledController,Evergine.Xrv.Core
+              Id: 0a3a33de-1c80-4963-91c7-3cd8393d5388
+              IsEnabled: true
+              IsVisuallyEnabled: true
           Children:
             - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
               Name: PressableButtonPlatedRoot

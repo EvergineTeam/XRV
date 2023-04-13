@@ -16,6 +16,7 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
         private XrvService xrvService = null;
 
         private PubSub pubSub = null;
+        private NetworkSystem network = null;
         private Guid presenterSubscription;
         private Guid sessionStateSubscription;
 
@@ -26,6 +27,7 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
             if (attached)
             {
                 this.pubSub = this.xrvService.Services.Messaging;
+                this.network = this.xrvService.Networking;
                 this.presenterSubscription = this.pubSub.Subscribe<SessionPresenterUpdatedMessage>(this.OnPresenterChanged);
                 this.sessionStateSubscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStateChanged);
             }
@@ -41,6 +43,17 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
             this.pubSub.Unsubscribe(this.sessionStateSubscription);
         }
 
+        /// <inheritdoc/>
+        protected override void OnActivated()
+        {
+            base.OnActivated();
+
+            if (!Application.Current.IsEditor)
+            {
+                this.CheckSessionState();
+            }
+        }
+
         /// <summary>
         /// Invoked when session control is gained.
         /// </summary>
@@ -53,6 +66,18 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
         /// </summary>
         protected virtual void OnControlLost()
         {
+        }
+
+        private void CheckSessionState()
+        {
+            var session = this.network.Session;
+            if (session.Status != SessionStatus.Joined
+                || session.CurrentUserIsPresenter)
+            {
+                return;
+            }
+
+            this.OnControlLost();
         }
 
         private void OnPresenterChanged(SessionPresenterUpdatedMessage message)

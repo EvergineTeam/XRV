@@ -3,6 +3,7 @@
 using Evergine.Networking;
 using Lidgren.Network;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Evergine.Xrv.Core.Networking.Properties.Session
 {
@@ -45,6 +46,21 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            var builder = new StringBuilder()
+                .AppendLine($"{this.groups.Count} groups")
+                .AppendLine("Groups:");
+
+            foreach (var group in this.groups)
+            {
+                builder = builder.AppendLine(group.ToString());
+            }
+
+            return builder.ToString();
         }
 
         /// <inheritdoc/>

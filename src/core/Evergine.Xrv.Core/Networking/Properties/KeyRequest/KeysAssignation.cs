@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Evergine.Framework;
@@ -49,6 +50,20 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
         public bool HasAssignedKeys { get => this.AssignedKeys?.Length > 0; }
 
         /// <summary>
+        /// Sets key values associated to this assignation.
+        /// </summary>
+        /// <param name="keys">Keys array.</param>
+        public void SetKeys(byte[] keys)
+        {
+            this.AssignedKeys = keys;
+
+            if (this.IsAttached)
+            {
+                this.EvaluateAssignKeysToPropertiesInvoke();
+            }
+        }
+
+        /// <summary>
         /// Resets keys assignation.
         /// </summary>
         public void Reset()
@@ -56,6 +71,13 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
             this.AssignedKeys = null;
             this.OnKeysAssigned(null);
         }
+
+        /// <summary>
+        /// Invoked after keys assignation received from <see cref="SetKeys(byte[])"/>.
+        /// In this place, developer should assign provided key values to target
+        /// network properties.
+        /// </summary>
+        protected abstract void AssignKeysToProperties();
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -67,6 +89,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
                 this.logger = this.xrvService.Services.Logging;
                 this.pubSub = this.xrvService.Services.Messaging;
                 this.subscription = this.pubSub.Subscribe<SessionStatusChangeMessage>(this.OnSessionStatusChange);
+                this.EvaluateAssignKeysToPropertiesInvoke();
             }
 
             return attached;
@@ -103,6 +126,14 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
         /// </summary>
         /// <param name="keys">Assigned keys.</param>
         protected abstract void OnKeysAssigned(byte[] keys);
+
+        private void EvaluateAssignKeysToPropertiesInvoke()
+        {
+            if (this.HasAssignedKeys)
+            {
+                this.AssignKeysToProperties();
+            }
+        }
 
         private void OnSessionStatusChange(SessionStatusChangeMessage message)
         {
@@ -148,6 +179,17 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
                         this.NumberOfRequiredKeys,
                         this.Filter,
                         cancellationToken).ConfigureAwait(false);
+
+                    if (this.logger != null)
+                    {
+                        var builder = new StringBuilder();
+                        foreach (var key in this.AssignedKeys)
+                        {
+                            builder.Append($"{key}, ");
+                        }
+
+                        this.logger?.LogDebug($"Keys assignation response: {builder}");
+                    }
                 }
                 catch (OperationCanceledException)
                 {

@@ -3,6 +3,7 @@
 using Evergine.Networking;
 using Lidgren.Network;
 using System;
+using System.Text;
 
 namespace Evergine.Xrv.Core.Networking.Properties.Session
 {
@@ -33,6 +34,16 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
             buffer.Write(this.GroupName);
             buffer.Write(this.GroupData.GetType().AssemblyQualifiedName);
             this.GroupData.Write(buffer);
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder()
+                .AppendLine($"- Name: {this.GroupName}")
+                .AppendLine($"- Data: ")
+                .AppendLine(this.GroupData.ToString());
+
+            return builder.ToString();
         }
     }
 }

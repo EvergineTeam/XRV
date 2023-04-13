@@ -7,6 +7,7 @@ using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Xrv.Core.Help;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Menu;
@@ -53,7 +54,10 @@ namespace Evergine.Xrv.Core
             this.Services.Messaging = new PubSub();
             this.Services.Messaging.Subscribe<ActivateModuleMessage>(message =>
             {
-                message.Module.Run(message.IsOn);
+                _ = EvergineForegroundTask.Run(() =>
+                {
+                    message.Module.Run(message.IsOn);
+                });
             });
 
             this.voiceSystem = new VoiceCommandsSystem();
@@ -210,27 +214,27 @@ namespace Evergine.Xrv.Core
                     using (this.logger?.BeginScope("Module {ModuleName} initialization", module.Name))
                     {
                         // Modules initialization
-                        this.logger?.LogDebug($"Initializing module");
+                        this.logger?.LogDebug("Initializing module");
                         module.Initialize(scene);
 
                         // Adding hand menu button for module, if any
                         if (module.HandMenuButton != null)
                         {
-                            this.logger?.LogDebug($"Adding hand menu button");
+                            this.logger?.LogDebug("Adding hand menu button");
                             this.HandMenu.ButtonDescriptions.Add(module.HandMenuButton);
                         }
 
                         // Adding setting data
                         if (module.Help != null)
                         {
-                            this.logger?.LogDebug($"Adding help entry");
+                            this.logger?.LogDebug("Adding help entry");
                             this.HelpSystem.AddTabItem(module.Help);
                         }
 
                         // Adding setting data
                         if (module.Settings != null)
                         {
-                            this.logger?.LogDebug($"Adding settings entry");
+                            this.logger?.LogDebug("Adding settings entry");
                             this.Settings.AddTabItem(module.Settings);
                         }
 
@@ -238,14 +242,14 @@ namespace Evergine.Xrv.Core
                         var voiceCommands = module.VoiceCommands;
                         if (voiceCommands?.Any() == true)
                         {
-                            this.logger?.LogDebug($"Registering voice commands");
+                            this.logger?.LogDebug("Registering voice commands");
                             this.voiceSystem.RegisterCommands(voiceCommands);
                         }
                     }
                 }
 
                 // Initialize voice commands (after collecting keywords)
-                this.logger?.LogDebug($"Initializing voice system");
+                this.logger?.LogDebug("Initializing voice system");
                 this.voiceSystem.Initialize();
             }
         }

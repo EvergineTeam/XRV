@@ -59,18 +59,39 @@ namespace Evergine.Xrv.Core.UI.Windows
         /// Creates a window and adds it to <see cref="EntityManager" />.
         /// </summary>
         /// <param name="configure">Callback invoked to configure created window.</param>
+        /// <param name="addToScene">Indicates if item should be added to scene.</param>
         /// <returns><see cref="Window"/> component.</returns>
-        public Window CreateWindow(Action<WindowConfigurator> configure = null)
+        public Window CreateWindow(
+            Action<WindowConfigurator> configure = null,
+            bool addToScene = true) =>
+            this.CreateWindow(out var _, configure, addToScene);
+
+        /// <summary>
+        /// Creates a window and adds it to <see cref="EntityManager" />.
+        /// </summary>
+        /// <param name="windowEntity">Gets window owner entity. It's useful to retrieve
+        /// window owner before scene is fully loaded.</param>
+        /// <param name="configure">Callback invoked to configure created window.</param>
+        /// <param name="addToScene">Indicates if item should be added to scene.</param>
+        /// <returns><see cref="Window"/> component.</returns>
+        public Window CreateWindow(
+            out Entity windowEntity,
+            Action<WindowConfigurator> configure = null,
+            bool addToScene = true)
         {
             var window = new Window();
-            var windowEntity = this.BuildWindow(window, (BaseWindowConfigurator)null);
+            windowEntity = this.BuildWindow(window, (BaseWindowConfigurator)null);
             if (configure != null)
             {
                 var configurator = windowEntity.FindComponent<WindowConfigurator>();
                 configure.Invoke(configurator);
             }
 
-            this.entityManager.Add(windowEntity);
+            if (addToScene)
+            {
+                this.entityManager.Add(windowEntity);
+            }
+
             return window;
         }
 

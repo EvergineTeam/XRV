@@ -3,7 +3,6 @@
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using Evergine.Networking.Components;
 using System.Collections.Generic;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Menu;
@@ -92,16 +91,7 @@ namespace Evergine.Xrv.Ruler
             this.rulerBehavior.Settings = this.rulerSettings;
 
             // Networking
-            var networkingEntity = new Entity($"{nameof(RulerModule)}_Networking");
-            var moduleActivationSync = new ModuleActivationSync
-            {
-                Module = this,
-            };
-            networkingEntity.AddComponent(new NetworkRoomProvider()); // TODO: try to hide this
-            networkingEntity.AddComponent(moduleActivationSync);
-            networkingEntity.AddComponent(new RulerSessionSynchronization());
-            networkingEntity.AddComponent(new RulerModuleActivationKey());
-            scene.Managers.EntityManager.Add(networkingEntity);
+            xrvService.Networking.SetUpModuleSynchronization(this, new RulerSessionSynchronization(this.rulerEntity));
         }
 
         /// <inheritdoc/>

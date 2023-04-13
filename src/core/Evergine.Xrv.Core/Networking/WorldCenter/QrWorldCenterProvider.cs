@@ -59,7 +59,10 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         /// <inheritdoc/>
         public void CleanWorldCenterEntity(Entity worldCenter)
         {
-            this.marker.IsEnabled = false;
+            if (this.marker != null)
+            {
+                this.marker.IsEnabled = false;
+            }
         }
 
         private void EnsureMarkerIsCreated(Entity worldCenter)
