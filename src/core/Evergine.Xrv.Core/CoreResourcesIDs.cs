@@ -23,6 +23,15 @@ namespace Evergine.Xrv.Core
                 public static Guid Settings = new Guid("5bd38b6b-d4d8-4451-9e35-1892c7de20fa");
 
                 public static Guid ControlRequest = new Guid("15b023eb-a334-44b2-8cc1-d0d2ccae5b3c");
+
+                public static readonly Guid Direction = new Guid("e9e9dce3-3f5b-40a5-bc70-8860024dfccb");
+
+                public static readonly Guid Move = new Guid("68b9e5d2-e125-4e62-a804-963438a78df8");
+
+                public static readonly Guid Lock = new Guid("0808d20e-31ce-4344-af5d-f7c9ca5d80b3");
+
+                public static readonly Guid Unlock = new Guid("f59ad7f1-be68-4b4a-9fbe-0c9eb5d16459");
+
             }
 
             public static class Services

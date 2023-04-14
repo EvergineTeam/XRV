@@ -11,9 +11,10 @@ using Evergine.MRTK.Base.EventDatum.Input;
 using Evergine.MRTK.Base.Interfaces.InputSystem.Handlers;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.Emulation;
+using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Themes;
-using Evergine.Xrv.Core.Utils.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,10 +25,9 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
     /// Controller for manual world center user interface. It's in charge
     /// of placing world center marker, lock/unlock it and set its direction.
     /// </summary>
+    // This would require some refactoring once we created a reusable orbit menu.
     public class ManualWorldCenterController : Behavior, IMixedRealityPointerHandler, IMixedRealityTouchHandler
     {
-        private readonly TimeConditionChecker nonPinchTimeAfterInitialPinchChecker;
-
         [BindService]
         private XrvService xrv = null;
 
@@ -61,41 +61,29 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         [BindEntity(tag: "PART_Manual_Marker_LockIndicator")]
         private Entity lockIndicatorEntity = null;
 
-        [BindEntity(tag: "PART_Manual_Marker_Menu")]
-        private Entity menuEntity = null;
-
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_Manual_Marker_LockButton")]
-        private ToggleButton lockToggleButton = null;
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_Manual_Marker_Menu")]
+        private ManualWorldCenterMenu menu = null;
 
         private HoloGraphic plateHolographic = null;
         private HoloGraphic arrowHolographic = null;
         private HoloGraphic currentArrowHolographic = null;
 
-        private bool isSettingUpOrientation;
         private Cursor currentCursor = null;
         private Transform3D currentCursorTransform = null;
         private Transform3D rayTransform = null;
         private Matrix4x4 worldCenterPose;
 
         private bool isLocked;
-        private bool isCollidingWithPlate;
         private ThemesSystem themes = null;
         private IEnumerable<CursorTouch> cursors = null;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManualWorldCenterController"/> class.
-        /// </summary>
-        public ManualWorldCenterController()
-        {
-            this.nonPinchTimeAfterInitialPinchChecker = new TimeConditionChecker
-            {
-                DurationTime = TimeSpan.FromSeconds(0.5),
-                Policy = new NumberOfTimesPolicy
-                {
-                    NumberOfTimes = 1,
-                },
-            };
-        }
+        private ManipulationMode currentMode;
+        private Vector3? lastCursorPosition;
+        private bool pinchDetectedForDirectionSetup;
+
+        private ToggleButton menuLockToggle;
+        private PressableButton menuMoveButton;
+        private PressableButton menuDirectionButton;
 
         /// <summary>
         /// Raised when <see cref="IsLocked"/> value changes.
@@ -106,6 +94,12 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         /// Raised when <see cref="WorldCenterPose"/> changes.
         /// </summary>
         public event EventHandler WorldCenterPoseChanged;
+
+        private enum ManipulationMode
+        {
+            Position,
+            Direction,
+        }
 
         /// <summary>
         /// Gets a value indicating whether it's waiting for user to initially
@@ -162,19 +156,25 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 return;
             }
 
-            if (this.isLocked)
+            if (this.isLocked || this.currentCursor != null)
             {
+                // avoid a second cursor interacting
                 return;
             }
 
-            this.isCollidingWithPlate = true;
-            this.UpdateVisualColors();
-            this.StartOrientationSetup(eventData.Cursor);
+            this.currentCursor = eventData.Cursor;
+            this.RespondToInteractionByCurrentMode(eventData.Position, eventData.Cursor.Pinch);
         }
 
         /// <inheritdoc/>
         void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData eventData)
         {
+            if (this.currentCursor != null && this.currentCursor != eventData.Cursor)
+            {
+                return;
+            }
+
+            this.RespondToInteractionByCurrentMode(eventData.Position, eventData.Cursor.Pinch);
         }
 
         /// <inheritdoc/>
@@ -185,30 +185,15 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 return;
             }
 
-            if (this.isLocked)
-            {
-                return;
-            }
-
-            this.isCollidingWithPlate = false;
-            this.UpdateVisualColors();
-        }
-
-        /// <inheritdoc/>
-        void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
-        {
-            if (!this.CheckPlateIsTheTargetOfInteraction(eventData.CurrentTarget))
-            {
-                return;
-            }
+            this.EvaluateCurrentCursorResetWhenCursorCollisionEnds();
 
             if (this.isLocked)
             {
                 return;
             }
 
-            this.isCollidingWithPlate = false;
-            this.UpdateVisualColors();
+            this.ResetLastCursorPosition();
+            this.UpdateInteractionColors();
         }
 
         /// <inheritdoc/>
@@ -219,19 +204,43 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 return;
             }
 
-            if (this.isLocked)
+            if (this.isLocked || this.currentCursor != null)
             {
                 return;
             }
 
-            this.isCollidingWithPlate = true;
-            this.UpdateVisualColors();
-            this.StartOrientationSetup(eventData.Cursor);
+            this.currentCursor = eventData.Cursor;
+            this.RespondToInteractionByCurrentMode(eventData.Position, eventData.Cursor.Pinch);
         }
 
         /// <inheritdoc/>
         void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData eventData)
         {
+            if (!this.CheckPlateIsTheTargetOfInteraction(eventData.CurrentTarget))
+            {
+                return;
+            }
+
+            this.RespondToInteractionByCurrentMode(eventData.Position, eventData.Cursor.Pinch);
+        }
+
+        /// <inheritdoc/>
+        void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
+        {
+            if (!this.CheckPlateIsTheTargetOfInteraction(eventData.CurrentTarget))
+            {
+                return;
+            }
+
+            this.EvaluateCurrentCursorResetWhenCursorCollisionEnds();
+
+            if (this.isLocked)
+            {
+                return;
+            }
+
+            this.ResetLastCursorPosition();
+            this.UpdateInteractionColors();
         }
 
         /// <summary>
@@ -267,8 +276,6 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
 
                 this.rayMesh.LinePoints.Add(new LinePointInfo() { Position = Vector3.Zero, Thickness = 0.003f, Color = lineColors[0] });
                 this.rayMesh.LinePoints.Add(new LinePointInfo() { Position = -Vector3.UnitZ, Thickness = 0.003f, Color = lineColors[1] });
-
-                this.lockToggleButton.Toggled += this.LockToggleButton_Toggled;
             }
 
             return attached;
@@ -283,8 +290,6 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             {
                 this.themes.ThemeUpdated -= this.ThemesSystem_ThemeUpdated;
             }
-
-            this.lockToggleButton.Toggled -= this.LockToggleButton_Toggled;
         }
 
         /// <inheritdoc/>
@@ -292,10 +297,11 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         {
             base.OnActivated();
 
-            this.isCollidingWithPlate = false;
             this.plateHolographic = this.plateHolographic ?? new HoloGraphic(this.plateMaterial.Material);
             this.arrowHolographic = this.arrowHolographic ?? new HoloGraphic(this.arrowMaterial.Material);
             this.currentArrowHolographic = this.currentArrowHolographic ?? new HoloGraphic(this.currentArrowMaterial.Material);
+
+            this.SubscribeToMenu();
 
             if (!Application.Current.IsEditor)
             {
@@ -303,7 +309,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 this.arrowTransform.LocalTransform = this.currentArrowTransform.LocalTransform;
                 this.UpdateSetUpArrowVisibility(false);
                 this.UpdateRayVisibility(false);
-                this.plateEntity.IsEnabled = this.menuEntity.IsEnabled = false;
+                this.plateEntity.IsEnabled = this.menu.Owner.IsEnabled = false;
                 this.OnIsLockedChanged();
             }
 
@@ -312,34 +318,25 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         }
 
         /// <inheritdoc/>
+        protected override void OnDeactivated()
+        {
+            base.OnDeactivated();
+            this.UnsubscribeFromMenu();
+        }
+
+        /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
         {
             if (this.HandleInitialPinchDetection())
             {
-                this.nonPinchTimeAfterInitialPinchChecker.IsEnabled = true;
                 return;
             }
 
-            if (this.currentCursor == null || !this.isSettingUpOrientation)
+            if (this.currentMode == ManipulationMode.Direction
+                && this.pinchDetectedForDirectionSetup)
             {
-                return;
+                this.HandleOrientationSetup();
             }
-
-            /*
-             * User should do a pinch gesture to initially place the reference plate.
-             * Then, we want that users make pinch gesture again to interact with the plate.
-             * In runtime, we need to avoid situations like interaction is immediately activated
-             * once user positions the plate. For that, we want that user stops doing
-             * pinch gesture for a while, before considering pinch as an interaction start
-             * gesture.
-             */
-            if (!this.nonPinchTimeAfterInitialPinchChecker.Check(gameTime, () => !this.currentCursor.Pinch))
-            {
-                return;
-            }
-
-            this.nonPinchTimeAfterInitialPinchChecker.IsEnabled = false;
-            this.HandleOrientationSetup();
         }
 
         /*
@@ -360,7 +357,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 var pinchCursor = this.cursors.FirstOrDefault(cursor => cursor.Pinch);
                 if (pinchCursor != null)
                 {
-                    this.plateEntity.IsEnabled = this.menuEntity.IsEnabled = true;
+                    this.plateEntity.IsEnabled = this.menu.Owner.IsEnabled = true;
                     var cursorTransform = pinchCursor.Owner.FindComponent<Transform3D>();
                     var cameraTransform = this.Managers.RenderManager.ActiveCamera3D.Transform;
 
@@ -380,8 +377,74 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             return false;
         }
 
+        private void EvaluateStartOfDirectionSetup(bool isPinch)
+        {
+            if (!this.pinchDetectedForDirectionSetup)
+            {
+                this.pinchDetectedForDirectionSetup = isPinch;
+            }
+        }
+
+        private void RespondToInteractionByCurrentMode(Vector3 cursorPosition, bool isPinch)
+        {
+            switch (this.currentMode)
+            {
+                case ManipulationMode.Position:
+                    this.MoveMarker(cursorPosition, isPinch);
+                    break;
+                case ManipulationMode.Direction:
+                    this.EvaluateStartOfDirectionSetup(isPinch);
+                    break;
+                default:
+                    break;
+            }
+
+            this.UpdateInteractionColors();
+        }
+
+        private void EvaluateCurrentCursorResetWhenCursorCollisionEnds()
+        {
+            bool reset =
+                this.currentMode == ManipulationMode.Position
+                ||
+                (this.currentMode == ManipulationMode.Direction
+                 &&
+                 !this.pinchDetectedForDirectionSetup);
+
+            if (reset)
+            {
+                this.currentCursor = null;
+            }
+        }
+
+        private void MoveMarker(Vector3 position, bool isPinch)
+        {
+            if (!isPinch)
+            {
+                this.ResetLastCursorPosition();
+                return;
+            }
+
+            if (!this.lastCursorPosition.HasValue)
+            {
+                this.lastCursorPosition = position;
+                return;
+            }
+
+            var delta = position - this.lastCursorPosition.Value;
+            this.lastCursorPosition = position;
+            this.rootTransform.Position += delta;
+        }
+
+        private void ResetLastCursorPosition() => this.lastCursorPosition = null;
+
         private void HandleOrientationSetup()
         {
+            if (this.currentCursor == null)
+            {
+                return;
+            }
+
             /*
              * While user is doing pinch gesture, ray line will be moved
              * and direction arrow will modify its orientation. Once user stops
@@ -391,6 +454,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
              */
             if (this.currentCursor.Pinch)
             {
+                this.currentCursorTransform ??= this.currentCursor.Owner.FindComponent<Transform3D>();
                 this.UpdateRayTransform();
                 this.UpdateArrowTransform();
                 this.UpdateRayVisibility(true);
@@ -399,7 +463,8 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             else
             {
                 this.currentCursor = null;
-                this.isSettingUpOrientation = false;
+                this.currentCursorTransform = null;
+                this.pinchDetectedForDirectionSetup = false;
                 this.UpdateRayVisibility(false);
                 this.WorldCenterPose = Matrix4x4.CreateFromTRS(
                     this.rootTransform.Position,
@@ -407,19 +472,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                     Vector3.One);
             }
 
-            this.UpdateVisualColors();
-        }
-
-        private void StartOrientationSetup(Cursor cursor)
-        {
-            if (this.isLocked)
-            {
-                return;
-            }
-
-            this.currentCursor = cursor;
-            this.currentCursorTransform = this.currentCursor.Owner.FindComponent<Transform3D>();
-            this.isSettingUpOrientation = true;
+            this.UpdateInteractionColors();
         }
 
         private void UpdateArrowTransform()
@@ -463,6 +516,24 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             {
                 this.LockedChanged?.Invoke(this, EventArgs.Empty);
             }
+
+            if (!this.isLocked)
+            {
+                this.SetUpPositionMode();
+            }
+
+            this.UpdateMenuButtonStylesByMode();
+        }
+
+        private void UpdateInteractionColors()
+        {
+            var currentTheme = this.themes?.CurrentTheme;
+            if (currentTheme != null)
+            {
+                this.plateMaterial.Material = this.currentCursor != null
+                    ? this.themes.GetMaterialByColor(ThemeColor.SecondaryColor1)
+                    : this.themes.GetMaterialByColor(ThemeColor.PrimaryColor2);
+            }
         }
 
         private void UpdateVisualColors()
@@ -470,25 +541,128 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             var currentTheme = this.themes?.CurrentTheme;
             if (currentTheme != null)
             {
-                bool isCheckerRunning =
-                    this.nonPinchTimeAfterInitialPinchChecker.IsEnabled
-                    &&
-                    this.nonPinchTimeAfterInitialPinchChecker.IsInProgress;
-
-                bool interactionEnabled = this.isCollidingWithPlate || this.isSettingUpOrientation;
-
                 this.arrowHolographic.Albedo = currentTheme.SecondaryColor3;
                 this.currentArrowHolographic.Albedo = currentTheme.PrimaryColor1;
-                this.plateMaterial.Material = interactionEnabled && !isCheckerRunning
-                    ? this.themes.GetMaterialByColor(ThemeColor.SecondaryColor1)
-                    : this.themes.GetMaterialByColor(ThemeColor.PrimaryColor2);
+                this.UpdateInteractionColors();
+            }
+        }
+
+        private void SubscribeToMenu()
+        {
+            if (this.menuLockToggle == null)
+            {
+                this.menuLockToggle =
+                    this.menu.GetButtonEntity(this.menu.GetDescriptorForLockButton())
+                    .FindComponent<ToggleButton>();
+            }
+
+            if (this.menuMoveButton == null)
+            {
+                this.menuMoveButton =
+                    this.menu.GetButtonEntity(this.menu.GetDescriptorForMoveButton())
+                    .FindComponentInChildren<PressableButton>();
+            }
+
+            if (this.menuDirectionButton == null)
+            {
+                this.menuDirectionButton =
+                    this.menu.GetButtonEntity(this.menu.GetDescriptorForDirectionButton())
+                    .FindComponentInChildren<PressableButton>();
+            }
+
+            if (this.menuLockToggle != null)
+            {
+                this.menuLockToggle.Toggled += this.MenuLockToggle_Toggled;
+            }
+
+            if (this.menuMoveButton != null)
+            {
+                this.menuMoveButton.ButtonReleased += this.MenuMoveButton_ButtonReleased;
+            }
+
+            if (this.menuDirectionButton != null)
+            {
+                this.menuDirectionButton.ButtonReleased += this.MenuDirectionButton_ButtonReleased;
+            }
+        }
+
+        private void UnsubscribeFromMenu()
+        {
+            if (this.menuLockToggle != null)
+            {
+                this.menuLockToggle.Toggled -= this.MenuLockToggle_Toggled;
+            }
+
+            if (this.menuMoveButton != null)
+            {
+                this.menuMoveButton.ButtonReleased -= this.MenuMoveButton_ButtonReleased;
+            }
+
+            if (this.menuDirectionButton != null)
+            {
+                this.menuDirectionButton.ButtonReleased -= this.MenuDirectionButton_ButtonReleased;
+            }
+        }
+
+        private void SetUpPositionMode()
+        {
+            if (this.isLocked)
+            {
+                return;
+            }
+
+            this.currentMode = ManipulationMode.Position;
+            this.ResetLastCursorPosition();
+            this.UpdateMenuButtonStylesByMode();
+        }
+
+        private void SetUpDirectionMode()
+        {
+            if (this.isLocked)
+            {
+                return;
+            }
+
+            this.currentMode = ManipulationMode.Direction;
+            this.ResetLastCursorPosition();
+            this.UpdateMenuButtonStylesByMode();
+        }
+
+        private void UpdateMenuButtonStylesByMode()
+        {
+            // Temporary approach with some inline colors
+            var currentTheme = this.themes?.CurrentTheme;
+            if (currentTheme != null)
+            {
+                var activeColor = Color.Yellow;
+                var inactiveColor = currentTheme.PrimaryColor3;
+
+                if (this.menuMoveButton != null)
+                {
+                    var configurator = this.menuMoveButton.Owner.Parent.FindComponent<StandardButtonConfigurator>();
+                    configurator.PrimaryColor =
+                        this.currentMode == ManipulationMode.Position && !this.isLocked ? activeColor : inactiveColor;
+                }
+
+                if (this.menuDirectionButton != null)
+                {
+                    var configurator = this.menuDirectionButton.Owner.Parent.FindComponent<StandardButtonConfigurator>();
+                    configurator.PrimaryColor =
+                        this.currentMode == ManipulationMode.Direction && !this.isLocked ? activeColor : inactiveColor;
+                }
             }
         }
 
         private void ThemesSystem_ThemeUpdated(object sender, ThemeUpdatedEventArgs args) =>
             this.UpdateVisualColors();
 
-        private void LockToggleButton_Toggled(object sender, EventArgs args) =>
-            this.IsLocked = this.lockToggleButton.IsOn;
+        private void MenuMoveButton_ButtonReleased(object sender, EventArgs e) =>
+            this.SetUpPositionMode();
+
+        private void MenuDirectionButton_ButtonReleased(object sender, EventArgs e) =>
+            this.SetUpDirectionMode();
+
+        private void MenuLockToggle_Toggled(object sender, EventArgs e) =>
+            this.IsLocked = this.menuLockToggle.IsOn;
     }
 }

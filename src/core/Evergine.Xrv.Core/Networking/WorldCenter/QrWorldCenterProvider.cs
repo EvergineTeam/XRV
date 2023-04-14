@@ -96,7 +96,10 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             visualMarkerTransform.LocalPosition = markerLocalPosition;
 
             var pivotTransform = this.marker.FindComponent<Transform3D>();
-            pivotTransform.LocalScale = this.pose.Value.Scale; // Respect real-world scale
+            if (pivotTransform != null && this.pose.HasValue)
+            {
+                pivotTransform.LocalScale = this.pose.Value.Scale; // Respect real-world scale
+            }
         }
 
         private void ScanningFlow_Completed(object sender, EventArgs e)
