@@ -1,10 +1,10 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Framework;
-using Evergine.Framework.Graphics;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
+using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.UI.Windows;
@@ -56,7 +56,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             this.poseCompletionSource?.TrySetCanceled();
             this.poseCompletionSource = new TaskCompletionSource<Matrix4x4?>();
 
-            this.EnsureMarkerIsCreated();
+            await this.EnsureMarkerIsCreatedAsync().ConfigureEvergineAwait(EvergineTaskContinueOn.Foreground);
 
             this.windowsSystem.ShowAlertDialog(
                 () => this.localization.GetString(() => Resources.Strings.WorldCenter_Manual_InitialMessage_Title),
@@ -81,7 +81,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             }
         }
 
-        private void EnsureMarkerIsCreated()
+        private async Task EnsureMarkerIsCreatedAsync()
         {
             if (this.instance != null)
             {
@@ -89,13 +89,15 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 return;
             }
 
-            var markerPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Networking.ManualMarker_weprefab);
-            this.instance = markerPrefab.Instantiate();
-            this.instance.Name = "WorldCenterMarker";
-            this.controller = this.instance.FindComponent<ManualWorldCenterController>();
-            this.controller.LockedChanged += this.Controller_LockedChanged;
+            await EvergineBackgroundTask.Run(() =>
+            {
+                var markerPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Networking.ManualMarker_weprefab);
+                this.instance = markerPrefab.Instantiate();
+                this.instance.Name = "WorldCenterMarker";
+                this.controller = this.instance.FindComponent<ManualWorldCenterController>();
+                this.controller.LockedChanged += this.Controller_LockedChanged;
+            }).ConfigureEvergineAwait(EvergineTaskContinueOn.Foreground);
 
-            this.instance.FindComponent<Transform3D>().Position = new Vector3(0.5f, -0.2f, -0.5f); // TODO: ignore
             this.entityManager.Add(this.instance);
         }
 

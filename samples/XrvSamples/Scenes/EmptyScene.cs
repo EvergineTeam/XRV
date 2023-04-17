@@ -17,14 +17,17 @@ namespace XrvSamples.Scenes
             xrv.Initialize(this);
 
             // Networking
+            // Note: to use more than one client in desktop, ensure
+            // they use different ports. This will affect scan reachability.
             ////var configuration = new NetworkConfigurationBuilder()
             ////    .ForApplication(nameof(XrvSamples))
-            ////    .UsePort(DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? 12345 : 12344)
+            ////    .UsePort(12345)
+            ////    ////.UsePort(DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? 12345 : 12344)
             ////    .Build();
             ////xrv.Networking.Configuration = configuration;
-            ////xrv.Networking.OverrideScanningPort = 12345; // UWP client should be always the host
+            ////////xrv.Networking.OverrideScanningPort = 12345;
             ////xrv.Networking.NetworkingAvailable = true;
             ////xrv.Services.QrScanningFlow.ExpectedCodes = new[] { "This is XRV!" };
-        }       
+        }
     }
 }
