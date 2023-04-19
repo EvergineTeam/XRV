@@ -77,7 +77,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
 
         private void UpdateIsVisuallyEnabled()
         {
-            if (!this.IsAttached)
+            if (!this.IsAttached || Application.Current.IsEditor)
             {
                 return;
             }
