@@ -292,10 +292,13 @@ namespace Evergine.Xrv.Core.Networking
             this.Session.ActivelyClosedByHost = false;
             this.Server = new NetworkServer(this.server, this.Configuration, this.logger);
             await this.Server.StartAsync(serverName).ConfigureAwait(false);
+
             if (this.Server.IsStarted)
             {
                 await this.ConnectToSessionAsync(this.Server.Host).ConfigureAwait(false);
             }
+
+            this.worldCenterEntity.AddComponentIfNotExists(new SessionPresenterStillAlive());
 
             return this.Server?.IsStarted ?? false;
         }
@@ -411,6 +414,9 @@ namespace Evergine.Xrv.Core.Networking
             // Clean world-center stuff
             this.worldCenterEntity.FindComponent<WorldAnchor>().RemoveAnchor();
             this.WorldCenterProvider.CleanWorldCenterEntity(this.worldCenterEntity);
+
+            // Remove other session-related elements
+            this.worldCenterEntity.RemoveComponent<SessionPresenterStillAlive>();
 
             _ = EvergineForegroundTask.Run(() =>
             {

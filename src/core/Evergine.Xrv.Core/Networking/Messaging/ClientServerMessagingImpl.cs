@@ -50,7 +50,10 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             else
             {
                 var receiver = this.client.CurrentRoom?.RemotePlayers?.FirstOrDefault(player => player.Id == targetClientId);
-                this.client.SendToPlayer(message, receiver, DeliveryMethod.ReliableOrdered);
+                if (receiver != null)
+                {
+                    this.client.SendToPlayer(message, receiver, DeliveryMethod.ReliableOrdered);
+                }
             }
         }
 
