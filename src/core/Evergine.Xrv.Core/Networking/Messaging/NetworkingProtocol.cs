@@ -17,6 +17,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         /// </summary>
         protected readonly IClientServerMessaging ClientServer;
 
+        private readonly NetworkSystem networking;
         private readonly ILogger logger;
         private readonly ILifecycleMessaging lifecycle;
 
@@ -30,6 +31,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             this.logger = logger;
             this.ClientServer = network.ClientServerMessaging;
             this.lifecycle = network.ClientServerMessaging;
+            this.networking = network;
         }
 
         internal event EventHandler Ended;
@@ -105,7 +107,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             {
                 if (this.ProtocolStarter == null)
                 {
-                    this.ProtocolStarter = new ProtocolStarter(this, this.lifecycle);
+                    this.ProtocolStarter = new ProtocolStarter(this, this.networking, this.lifecycle);
                 }
 
                 this.ProtocolStarter.TargetClientId = this.TargetClientId;

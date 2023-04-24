@@ -23,6 +23,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
         [BindService]
         private XrvService xrvService = null;
 
+        private NetworkSystem networking = null;
         private TimeSpan lastFlushTime;
         private HashSet<byte> coreKeys;
         private ILogger logger;
@@ -81,7 +82,9 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
                                 Key = currentKey,
                                 CorrelationId = correlationId,
                                 ReservedByClientId = reservedByClientId,
-                                ExpiresOn = DateTime.UtcNow.Add(this.KeyReservationTime),
+                                ExpiresOn = this.networking?.DebuggingEnabled ?? false
+                                    ? DateTime.MaxValue
+                                    : DateTime.UtcNow.Add(this.KeyReservationTime),
                             };
                             reservedKeys[currentIndex++] = register;
                             dictionary[currentKey] = register;
@@ -241,6 +244,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
             if (attached)
             {
                 this.logger = this.xrvService.Services.Logging;
+                this.networking = this.xrvService.Networking;
             }
 
             return attached;

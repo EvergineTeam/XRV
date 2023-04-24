@@ -22,6 +22,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
         [BindService]
         private XrvService xrvService = null;
 
+        private NetworkSystem networking = null;
         private ClientServerProtocolEntry entryBeingUpdated;
         private TimeSpan currentCheckAliveProtocolsDelay;
         private ILogger logger;
@@ -129,6 +130,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             if (attached)
             {
                 this.logger = this.xrvService.Services.Logging;
+                this.networking = this.xrvService.Networking;
             }
 
             return attached;
@@ -174,7 +176,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             {
                 protocolInstance = this.protocolInstantiators[request.ProtocolName].Invoke();
                 protocolInstance.CorrelationId = correlationId;
-                protocolInstance.ProtocolStarter = new ProtocolStarter(protocolInstance, this.lifecycle)
+                protocolInstance.ProtocolStarter = new ProtocolStarter(protocolInstance, this.networking, this.lifecycle)
                 {
                     TargetClientId = message.Sender.Id,
                 };
@@ -329,7 +331,9 @@ namespace Evergine.Xrv.Core.Networking.Messaging
             {
                 // Remove previously entries detected as required to be check as alive
                 // that are still with a too old alive date
-                var lastValidAliveDate = DateTime.UtcNow - this.CheckAliveProtocolsDelay;
+                var lastValidAliveDate = this.networking?.DebuggingEnabled ?? false
+                    ? DateTime.MinValue
+                    : DateTime.UtcNow - this.CheckAliveProtocolsDelay;
 
                 for (int i = 0; i < this.entriesToCheckAlive.Count; i++)
                 {

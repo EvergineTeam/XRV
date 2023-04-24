@@ -246,7 +246,11 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
             this.ClientServer.SendProtocolMessageToServer(this, requestMessage);
             this.logger?.LogDebug($"Sent {requestMessage.Type} message");
 
-            if (await Task.WhenAny(this.protocolCompletionTcs.Task, Task.Delay(this.ProtocolTimeout)).ConfigureAwait(false) != this.protocolCompletionTcs.Task)
+            if (this.networking.DebuggingEnabled)
+            {
+                await this.protocolCompletionTcs.Task;
+            }
+            else if (await Task.WhenAny(this.protocolCompletionTcs.Task, Task.Delay(this.ProtocolTimeout)).ConfigureAwait(false) != this.protocolCompletionTcs.Task)
             {
                 throw new ProtocolTimeoutException();
             }

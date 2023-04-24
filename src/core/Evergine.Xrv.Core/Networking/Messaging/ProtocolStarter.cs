@@ -9,14 +9,17 @@ namespace Evergine.Xrv.Core.Networking.Messaging
     internal class ProtocolStarter
     {
         private readonly NetworkingProtocol protocol;
+        private readonly NetworkSystem networking;
         private readonly ILifecycleMessaging lifecycle;
         private TaskCompletionSource<bool> startLifecycleCompletion;
 
         public ProtocolStarter(
             NetworkingProtocol protocol,
+            NetworkSystem networking,
             ILifecycleMessaging lifecycle)
         {
             this.protocol = protocol;
+            this.networking = networking;
             this.lifecycle = lifecycle;
         }
 
@@ -47,7 +50,11 @@ namespace Evergine.Xrv.Core.Networking.Messaging
                 this.lifecycle.SendLifecycleMessageToClient(this.protocol.CorrelationId, LifecycleMessageType.StartProtocol, this.TargetClientId.Value, writeFunc);
             }
 
-            if (await Task.WhenAny(this.startLifecycleCompletion.Task, Task.Delay(this.StartTimeout)).ConfigureAwait(false) != this.startLifecycleCompletion.Task)
+            if (this.networking.DebuggingEnabled)
+            {
+                await this.startLifecycleCompletion.Task;
+            }
+            else if (await Task.WhenAny(this.startLifecycleCompletion.Task, Task.Delay(this.StartTimeout)).ConfigureAwait(false) != this.startLifecycleCompletion.Task)
             {
                 throw new ProtocolTimeoutException();
             }

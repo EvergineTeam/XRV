@@ -91,7 +91,7 @@ namespace Evergine.Xrv.Core.Tests.Networking.Messaging
         {
             const string ProtocolName = "Protocol1";
             var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
-            var protocolStarter = new Mock<ProtocolStarter>(protocolInstance1.Object, this.endpoint1.Lifecycle.Object);
+            var protocolStarter = new Mock<ProtocolStarter>(protocolInstance1.Object, this.endpoint1.NetworkSystem.Object, this.endpoint1.Lifecycle.Object);
             protocolInstance1
                 .Setup(p => p.ProtocolStarter)
                 .Returns(protocolStarter.Object);
@@ -179,7 +179,7 @@ namespace Evergine.Xrv.Core.Tests.Networking.Messaging
             const string ProtocolName = "Protocol1";
             var messageConverter = new Mock<INetworkingMessageConverter>();
             var protocolInstance1 = new Mock<NetworkingProtocol>(this.endpoint1.NetworkSystem.Object, new Mock<ILogger>().Object);
-            var protocolStarter = new Mock<ProtocolStarter>(protocolInstance1.Object, this.endpoint1.Lifecycle.Object);
+            var protocolStarter = new Mock<ProtocolStarter>(protocolInstance1.Object, this.endpoint1.NetworkSystem.Object, this.endpoint1.Lifecycle.Object);
             protocolInstance1
                 .Setup(p => p.ProtocolStarter)
                 .Returns(protocolStarter.Object);

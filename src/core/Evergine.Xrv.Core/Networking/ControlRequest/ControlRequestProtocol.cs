@@ -135,7 +135,11 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
             var session = this.network.Session;
             this.ClientServer.SendProtocolMessageToClient(this, new ControlRequestMessage(), session.Data.PresenterId);
 
-            if (await Task.WhenAny(this.controlRequestTcs.Task, Task.Delay(this.ProtocolTimeout)).ConfigureAwait(false) != this.controlRequestTcs.Task)
+            if (this.network.DebuggingEnabled)
+            {
+                await this.controlRequestTcs.Task;
+            }
+            else if (await Task.WhenAny(this.controlRequestTcs.Task, Task.Delay(this.ProtocolTimeout)).ConfigureAwait(false) != this.controlRequestTcs.Task)
             {
                 throw new ProtocolTimeoutException();
             }

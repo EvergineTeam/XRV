@@ -53,6 +53,7 @@ namespace Evergine.Xrv.Core.Networking
 
         private TabItem settingsItem;
         private bool networkingAvailable;
+        private bool debuggingEnabled = false;
         private NetworkConfiguration configuration;
         private Entity worldCenterEntity;
         private SessionDataSynchronization sessionDataSync;
@@ -112,10 +113,7 @@ namespace Evergine.Xrv.Core.Networking
                 if (this.configuration != value)
                 {
                     this.configuration = value;
-
-                    this.UnsubscribeClientEvents();
-                    this.Client = new NetworkClient(this.client, this.Configuration, this.logger);
-                    this.SubscribeClientEvents();
+                    this.CreateNetworkClientInstance();
                 }
             }
         }
@@ -156,6 +154,26 @@ namespace Evergine.Xrv.Core.Networking
                 {
                     this.networkingAvailable = value;
                     this.AddOrRemoveSettingItem();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether network debugging is enabled.
+        /// Debugging consist on specified connection timeout and ping values
+        /// to unlimited ones, to make it easier to debug applications while
+        /// connected to a networking session.
+        /// </summary>
+        public bool DebuggingEnabled
+        {
+            get => this.debuggingEnabled;
+
+            set
+            {
+                if (this.debuggingEnabled != value)
+                {
+                    this.debuggingEnabled = value;
+                    this.CreateNetworkClientInstance();
                 }
             }
         }
@@ -243,6 +261,12 @@ namespace Evergine.Xrv.Core.Networking
             {
                 this.AddOrRemoveSettingItem();
                 this.FixDefaultNetworkInterface();
+            }
+
+            if (this.DebuggingEnabled)
+            {
+                this.configuration.ConnectionTimeout = TimeSpan.MaxValue;
+                this.configuration.PingInterval = TimeSpan.MaxValue;
             }
 
             this.sessionDataSync = new SessionDataSynchronization();
@@ -563,6 +587,19 @@ namespace Evergine.Xrv.Core.Networking
             {
                 this.logger?.LogError(ex, "Control request error");
             }
+        }
+
+        private void CreateNetworkClientInstance()
+        {
+            if (this.DebuggingEnabled)
+            {
+                this.Configuration.ConnectionTimeout = TimeSpan.MaxValue;
+                this.Configuration.PingInterval = TimeSpan.MaxValue;
+            }
+
+            this.UnsubscribeClientEvents();
+            this.Client = new NetworkClient(this.client, this.Configuration, this.logger);
+            this.SubscribeClientEvents();
         }
 
         private void ThemesSystem_ThemeUpdated(object sender, ThemeUpdatedEventArgs args)

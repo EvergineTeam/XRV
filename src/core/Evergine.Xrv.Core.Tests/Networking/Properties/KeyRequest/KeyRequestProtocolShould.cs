@@ -40,7 +40,7 @@ namespace Evergine.Xrv.Core.Tests.Networking.Properties.KeyRequest
             this.networking.Object.Session = this.session;
 
             this.protocol = new KeyRequestProtocol(this.networking.Object, this.keyStore.Object, new Mock<ILogger>().Object);
-            this.protocolStarter = new Mock<ProtocolStarter>(this.protocol, this.clientServerImpl.Object);
+            this.protocolStarter = new Mock<ProtocolStarter>(this.protocol, this.networking.Object, this.clientServerImpl.Object);
             this.protocol.ProtocolStarter = this.protocolStarter.Object;
         }
 
