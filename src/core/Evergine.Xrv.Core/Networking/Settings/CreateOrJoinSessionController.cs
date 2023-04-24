@@ -6,6 +6,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Evergine.Xrv.Core.Networking.Settings
 {
@@ -93,17 +94,32 @@ namespace Evergine.Xrv.Core.Networking.Settings
         {
             this.sessionScanner.StopScanning();
 
+            bool succeeded = false;
+            Exception exception = null;
+
             try
             {
-                await this.networkSystem.StartSessionAsync(this.sessionNameText.Text);
-                this.sessionScanner.StartScanning();
+                succeeded = await this.networkSystem
+                    .StartSessionAsync(this.sessionNameText.Text)
+                    .ConfigureAwait(false);
+                if (succeeded)
+                {
+                    this.sessionScanner.StartScanning();
+                }
             }
             catch (Exception ex)
             {
+                succeeded = false;
+                exception = ex;
                 Trace.TraceError(ex.Message);
-                this.xrvService.WindowsSystem.ShowAlertDialog(
+            }
+
+            if (!succeeded)
+            {
+                await this.ClearSessionOnErrorAsync().ConfigureAwait(false);
+                var dialog = this.xrvService.WindowsSystem.ShowAlertDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Create_Error),
-                    ex.Message,
+                    exception?.Message ?? string.Empty,
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
             }
         }
@@ -117,6 +133,7 @@ namespace Evergine.Xrv.Core.Networking.Settings
             }
 
             var succeeded = false;
+            Exception exception = null;
 
             try
             {
@@ -124,19 +141,17 @@ namespace Evergine.Xrv.Core.Networking.Settings
             }
             catch (Exception ex)
             {
+                exception = ex;
                 Trace.TraceError(ex.Message);
-                this.xrvService.WindowsSystem.ShowAlertDialog(
-                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_Error),
-                    ex.Message,
-                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
             }
 
             if (!succeeded)
             {
                 Trace.TraceError("Could not join session");
+                await this.ClearSessionOnErrorAsync().ConfigureAwait(false);
                 this.xrvService.WindowsSystem.ShowAlertDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_Error),
-                    string.Empty,
+                    exception?.Message ?? string.Empty,
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
             }
         }
@@ -146,6 +161,13 @@ namespace Evergine.Xrv.Core.Networking.Settings
             this.selectedHost = this.sessionScanner.AvailableSessions.FirstOrDefault();
             this.selectedSessionText.Text = this.selectedHost?.Name
                 ?? this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_NoSessionsFound);
+        }
+
+        private Task ClearSessionOnErrorAsync()
+        {
+            var session = this.networkSystem.Session;
+            session.ActivelyClosedByClient = true;
+            return this.networkSystem.ClearSessionStatusAsync();
         }
     }
 }

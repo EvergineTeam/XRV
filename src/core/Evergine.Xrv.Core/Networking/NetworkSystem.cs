@@ -367,30 +367,7 @@ namespace Evergine.Xrv.Core.Networking
             this.Client.Disconnect();
         }
 
-        private void SubscribeClientEvents()
-        {
-            var internalClient = this.Client.InternalClient;
-            internalClient.ClientStateChanged += this.InternalClient_ClientStateChanged;
-        }
-
-        private void UnsubscribeClientEvents()
-        {
-            var internalClient = this.Client?.InternalClient;
-            if (internalClient == null)
-            {
-                return;
-            }
-
-            internalClient.ClientStateChanged -= this.InternalClient_ClientStateChanged;
-        }
-
-        private Entity GetSessionSettingsEntity()
-        {
-            var rulerSettingPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Networking.SessionSettings_weprefab);
-            return rulerSettingPrefab.Instantiate();
-        }
-
-        private async Task ClearSessionStatusAsync()
+        internal async Task ClearSessionStatusAsync()
         {
             this.Session.Host = null;
             this.Session.Status = SessionStatus.Disconnected;
@@ -435,6 +412,29 @@ namespace Evergine.Xrv.Core.Networking
                         this.localization.GetString(() => Resources.Strings.Global_Accept));
                 }
             });
+        }
+
+        private void SubscribeClientEvents()
+        {
+            var internalClient = this.Client.InternalClient;
+            internalClient.ClientStateChanged += this.InternalClient_ClientStateChanged;
+        }
+
+        private void UnsubscribeClientEvents()
+        {
+            var internalClient = this.Client?.InternalClient;
+            if (internalClient == null)
+            {
+                return;
+            }
+
+            internalClient.ClientStateChanged -= this.InternalClient_ClientStateChanged;
+        }
+
+        private Entity GetSessionSettingsEntity()
+        {
+            var rulerSettingPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Networking.SessionSettings_weprefab);
+            return rulerSettingPrefab.Instantiate();
         }
 
         private void AddOrRemoveSettingItem()
