@@ -3,8 +3,8 @@
 using Evergine.Components.Fonts;
 using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,6 +27,8 @@ namespace Evergine.Xrv.Core.Networking.Settings
         private PressableButton createSessionButton = null;
         private PressableButton joinToSessionButton = null;
         private SessionHostInfo selectedHost = null;
+
+        private ILogger logger = null;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -52,6 +54,7 @@ namespace Evergine.Xrv.Core.Networking.Settings
                     .First()
                     .FindComponentInChildren<PressableButton>();
                 this.sessionNameText.Text = this.CreateRandomSessionName();
+                this.logger = this.xrvService.Services.Logging;
             }
 
             return attached;
@@ -94,33 +97,41 @@ namespace Evergine.Xrv.Core.Networking.Settings
         {
             this.sessionScanner.StopScanning();
 
-            bool succeeded = false;
+            ConnectionResult result = null;
             Exception exception = null;
 
             try
             {
-                succeeded = await this.networkSystem
+                result = await this.networkSystem
                     .StartSessionAsync(this.sessionNameText.Text)
                     .ConfigureAwait(false);
-                if (succeeded)
+                if (result.Succeeded)
                 {
                     this.sessionScanner.StartScanning();
                 }
             }
             catch (Exception ex)
             {
-                succeeded = false;
+                result = new ConnectionResult
+                {
+                    Succeeded = false,
+                    CancelledByUser = true,
+                };
                 exception = ex;
-                Trace.TraceError(ex.Message);
+                this.logger?.LogError(ex, "Error creating session");
             }
 
-            if (!succeeded)
+            if (!result.Succeeded)
             {
                 await this.ClearSessionOnErrorAsync().ConfigureAwait(false);
-                var dialog = this.xrvService.WindowsSystem.ShowAlertDialog(
-                    this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Create_Error),
-                    exception?.Message ?? string.Empty,
-                    this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
+
+                if (!result.CancelledByUser)
+                {
+                    this.xrvService.WindowsSystem.ShowAlertDialog(
+                        this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Create_Error),
+                        exception?.Message ?? string.Empty,
+                        this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
+                }
             }
         }
 
@@ -132,27 +143,35 @@ namespace Evergine.Xrv.Core.Networking.Settings
                 return;
             }
 
-            var succeeded = false;
+            ConnectionResult result = null;
             Exception exception = null;
 
             try
             {
-                succeeded = await this.networkSystem.ConnectToSessionAsync(serverHost).ConfigureAwait(false);
+                result = await this.networkSystem.ConnectToSessionAsync(serverHost).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
+                result = new ConnectionResult
+                {
+                    Succeeded = false,
+                    CancelledByUser = true,
+                };
                 exception = ex;
-                Trace.TraceError(ex.Message);
+                this.logger?.LogError(ex, "Error connecting session");
             }
 
-            if (!succeeded)
+            if (!result.Succeeded)
             {
-                Trace.TraceError("Could not join session");
                 await this.ClearSessionOnErrorAsync().ConfigureAwait(false);
-                this.xrvService.WindowsSystem.ShowAlertDialog(
+
+                if (!result.CancelledByUser)
+                {
+                    this.xrvService.WindowsSystem.ShowAlertDialog(
                     this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Join_Error),
                     exception?.Message ?? string.Empty,
                     this.xrvService.Localization.GetString(() => Resources.Strings.Global_Ok));
+                }
             }
         }
 

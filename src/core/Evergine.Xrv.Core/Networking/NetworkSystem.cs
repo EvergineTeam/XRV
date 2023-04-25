@@ -286,8 +286,14 @@ namespace Evergine.Xrv.Core.Networking
             this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;
         }
 
-        internal async Task<bool> StartSessionAsync(string serverName)
+        internal async Task<ConnectionResult> StartSessionAsync(string serverName)
         {
+            var result = new ConnectionResult
+            {
+                Succeeded = false,
+                CancelledByUser = false,
+            };
+
             this.Session.ActivelyClosedByClient = false;
             this.Session.ActivelyClosedByHost = false;
             this.Server = new NetworkServer(this.server, this.Configuration, this.logger);
@@ -295,16 +301,22 @@ namespace Evergine.Xrv.Core.Networking
 
             if (this.Server.IsStarted)
             {
-                await this.ConnectToSessionAsync(this.Server.Host).ConfigureAwait(false);
+                result = await this.ConnectToSessionAsync(this.Server.Host).ConfigureAwait(false);
+                this.worldCenterEntity.AddComponentIfNotExists(new SessionPresenterStillAlive());
             }
 
-            this.worldCenterEntity.AddComponentIfNotExists(new SessionPresenterStillAlive());
-
-            return this.Server?.IsStarted ?? false;
+            result.Succeeded = result.Succeeded && this.Server.IsStarted;
+            return result;
         }
 
-        internal async Task<bool> ConnectToSessionAsync(SessionHostInfo host)
+        internal async Task<ConnectionResult> ConnectToSessionAsync(SessionHostInfo host)
         {
+            var result = new ConnectionResult
+            {
+                Succeeded = false,
+                CancelledByUser = false,
+            };
+
             this.Session.Host = host;
             this.Session.ActivelyClosedByClient = false;
             this.Session.ActivelyClosedByHost = false;
@@ -321,7 +333,9 @@ namespace Evergine.Xrv.Core.Networking
             if (worldCenterPose == null)
             {
                 await this.ClearSessionStatusAsync().ConfigureAwait(false);
-                return false;
+                result.CancelledByUser = true;
+
+                return result;
             }
 
             // Update world-center position and invoke provider update, that may show a visual indicator
@@ -331,14 +345,14 @@ namespace Evergine.Xrv.Core.Networking
             if (!succeeded)
             {
                 await this.ClearSessionStatusAsync().ConfigureAwait(false);
-                return false;
+                return result;
             }
 
             bool joined = await this.Client.JoinSessionAsync().ConfigureAwait(false);
             if (!joined)
             {
                 await this.ClearSessionStatusAsync().ConfigureAwait(false);
-                return false;
+                return result;
             }
 
             this.Session.Status = SessionStatus.Joined;
@@ -349,8 +363,9 @@ namespace Evergine.Xrv.Core.Networking
             controlRequestButton.AddComponentIfNotExists(new HandMenuButtonStateUpdater());
 
             this.EnableSessionDataSync(true);
+            result.Succeeded = true;
 
-            return true;
+            return result;
         }
 
         internal async Task LeaveSessionAsync()
