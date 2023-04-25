@@ -83,7 +83,7 @@ namespace Evergine.Xrv.ImageGallery.Networking
 
         private void WindowEntity_AttachableStateChanged(object sender, AttachableObjectState state)
         {
-            if (state == AttachableObjectState.Activated)
+            if (state == AttachableObjectState.Activated && this.pendingSyncData != null)
             {
                 this.FindKeysComponentAndAssign(this.pendingSyncData);
             }
