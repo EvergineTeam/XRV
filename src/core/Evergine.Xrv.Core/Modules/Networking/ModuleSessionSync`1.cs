@@ -56,6 +56,8 @@ namespace Evergine.Xrv.Core.Modules.Networking
         /// <inheritdoc/>
         protected override void OnSessionDisconnected()
         {
+            this.moduleActivationSync.Module.Run(false);
+
             var moduleActivationKey = this.Owner.FindComponent<ModuleActivationNetworkKey<TModuleData>>();
             moduleActivationKey?.Reset();
         }
