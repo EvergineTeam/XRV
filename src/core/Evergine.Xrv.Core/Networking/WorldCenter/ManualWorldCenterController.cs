@@ -358,16 +358,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 if (pinchCursor != null)
                 {
                     this.plateEntity.IsEnabled = this.menu.Owner.IsEnabled = true;
-                    var cursorTransform = pinchCursor.Owner.FindComponent<Transform3D>();
-                    var cameraTransform = this.Managers.RenderManager.ActiveCamera3D.Transform;
-
-                    var cameraProjection = Quaternion.ToEuler(cameraTransform.Orientation);
-                    cameraProjection.X = cameraProjection.Z = 0;
-
-                    this.rootTransform.WorldTransform = Matrix4x4.CreateFromTRS(
-                        cursorTransform.Position,
-                        cameraProjection,
-                        Vector3.One);
+                    this.UpdateWorldCenterPose();
                 }
 
                 return true;
@@ -434,6 +425,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             var delta = position - this.lastCursorPosition.Value;
             this.lastCursorPosition = position;
             this.rootTransform.Position += delta;
+            this.UpdateWorldCenterPose();
         }
 
         private void ResetLastCursorPosition() => this.lastCursorPosition = null;
@@ -466,10 +458,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 this.currentCursorTransform = null;
                 this.pinchDetectedForDirectionSetup = false;
                 this.UpdateRayVisibility(false);
-                this.WorldCenterPose = Matrix4x4.CreateFromTRS(
-                    this.rootTransform.Position,
-                    this.arrowTransform.Orientation,
-                    Vector3.One);
+                this.UpdateWorldCenterPose();
             }
 
             this.UpdateInteractionColors();
@@ -506,6 +495,14 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         private void UpdateRayVisibility(bool visible) => this.rayMesh.Owner.IsEnabled = visible;
 
         private void UpdateSetUpArrowVisibility(bool visible) => this.arrowTransform.Owner.IsEnabled = visible;
+
+        private void UpdateWorldCenterPose()
+        {
+            this.WorldCenterPose = Matrix4x4.CreateFromTRS(
+                this.rootTransform.Position,
+                this.arrowTransform.Orientation,
+                Vector3.One);
+        }
 
         private void OnIsLockedChanged()
         {
