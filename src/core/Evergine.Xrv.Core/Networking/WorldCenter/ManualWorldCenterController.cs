@@ -358,6 +358,16 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 if (pinchCursor != null)
                 {
                     this.plateEntity.IsEnabled = this.menu.Owner.IsEnabled = true;
+                    var cursorTransform = pinchCursor.Owner.FindComponent<Transform3D>();
+                    var cameraTransform = this.Managers.RenderManager.ActiveCamera3D.Transform;
+
+                    var cameraProjection = Quaternion.ToEuler(cameraTransform.Orientation);
+                    cameraProjection.X = cameraProjection.Z = 0;
+
+                    this.rootTransform.WorldTransform = Matrix4x4.CreateFromTRS(
+                        cursorTransform.Position,
+                        cameraProjection,
+                        Vector3.One);
                     this.UpdateWorldCenterPose();
                 }
 
