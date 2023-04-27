@@ -95,6 +95,15 @@ namespace Evergine.Xrv.Core
                 public static readonly Guid ManualMarker_weprefab = new Guid("6bb8a823-7660-45cf-b0bb-9555615ab6a9");
 
                 public static Guid SessionSettings_weprefab = new Guid("6c05a9e8-7b69-4c52-9bbd-223fed12ee83");
+
+                public sealed class Participants
+                {
+                    public static readonly Guid head_weprefab = new Guid("34b5a455-2449-4ccb-afad-91bbff013a01");
+
+                    public static readonly Guid leftPalm_weprefab = new Guid("1a475651-6e98-4a28-8462-c56902a20f87");
+
+                    public static readonly Guid rightPalm_weprefab = new Guid("f2cc2ae2-ed1b-4656-aff2-77367d3b525f");
+                }
             }
 
             public static class Services

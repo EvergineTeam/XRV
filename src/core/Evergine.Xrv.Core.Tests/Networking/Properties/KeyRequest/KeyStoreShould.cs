@@ -35,7 +35,7 @@ namespace Evergine.Xrv.Core.Tests.Networking.Properties.KeyRequest
         {
             var coreKeys = new byte[] { 0x00, 0x01, 0x02 };
             var correlationId = Guid.Empty;
-            this.keyStore.ReserveKeysForCore(coreKeys);
+            this.keyStore.ReserveKeysForCore(coreKeys, NetworkPropertyProviderFilter.Room);
 
             var internalDict = this.keyStore.GetDictionaryByCorrelationId(correlationId);
             Assert.Equal(coreKeys.Length, internalDict.Count());

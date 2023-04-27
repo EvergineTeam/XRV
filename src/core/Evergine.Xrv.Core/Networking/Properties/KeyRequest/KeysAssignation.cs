@@ -196,7 +196,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogError(ex, "Key assignation failed");
+                    this.logger?.LogError(ex, "Key assignation failed");
                 }
                 finally
                 {

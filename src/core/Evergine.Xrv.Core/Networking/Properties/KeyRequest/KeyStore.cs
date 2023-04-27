@@ -200,9 +200,10 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
             }
         }
 
-        internal void ReserveKeyForCore(byte key) => this.ReserveKeysForCore(new[] { key });
+        internal void ReserveKeyForCore(byte key, NetworkPropertyProviderFilter filter) =>
+            this.ReserveKeysForCore(new[] { key }, filter);
 
-        internal void ReserveKeysForCore(byte[] keys)
+        internal void ReserveKeysForCore(byte[] keys, NetworkPropertyProviderFilter filter)
         {
             if (this.coreKeys.Intersect(keys).Any())
             {
@@ -210,7 +211,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
             }
 
             this.coreKeys.AddRange(keys);
-            var dictionary = this.GetDictionaryByFilter(NetworkPropertyProviderFilter.Room);
+            var dictionary = this.GetDictionaryByFilter(filter);
             foreach (var key in keys)
             {
                 dictionary[key] = new KeyRegister

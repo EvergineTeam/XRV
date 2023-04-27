@@ -42,7 +42,7 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
                 this.CurrentValue = new SessionData();
                 this.PropertyValue = this.CurrentValue;
             }
-            else
+            else if (this.PropertyValue != null)
             {
                 this.NotifySessionDataChange();
             }

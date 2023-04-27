@@ -1,0 +1,103 @@
+!Evergine.Framework.Assets.AssetSources.Entities.SceneModel,Evergine.Framework
+Items:
+  - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+    Name: Head
+    Tag: null
+    IsEnabled: true
+    IsStatic: false
+    Components:
+      - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+        Id: df13fc27-2430-4f9d-8d46-8492f41cfe25
+        IsEnabled: true
+        LocalOrientation:
+          W: -4.37113883E-08
+          X: -0.0
+          Y: 1.0
+          Z: 0.0
+        LocalPosition:
+          X: 0.0
+          Y: -0.0187079906
+          Z: 0.0383599997
+        LocalScale:
+          X: 17.0
+          Y: 17.0
+          Z: 17.0
+    Children:
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: pCube8
+        Tag: null
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 4af7be57-7ff3-4632-beed-e7927ac41276
+            IsEnabled: true
+            LocalOrientation:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalPosition:
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+            Id: b9a19d24-02df-4f67-bfa2-2da1fa1c1b34
+            AsignedTo: pCube8Mat
+            IsEnabled: true
+            Material: 775c1c41-0d90-44b0-9b57-cb2dd54584b0
+            UseCopy: false
+          - !Evergine.Components.Graphics3D.MeshComponent,Evergine.Framework
+            Id: 4f63f3a4-61f6-467e-a7de-05f3c9a4cf36
+            IsEnabled: true
+            Model: 8ce592ba-b659-4325-88c2-6c74584bc0a5
+            ModelMeshName: pCube8
+          - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+            Id: 02687638-6214-41b1-8434-95ef2d9c3173
+            DebugBoundingbox: true
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+        Children: []
+        Id: 454cc29a-7d49-4e4e-9c42-f6592cc64bbb
+    Id: fc3d4d60-30eb-4b2b-bbfa-39819c6994ba
+Managers:
+  - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
+    Id: 0e2ef268-6507-4df9-bd72-a51cc4e12107
+    IsEnabled: true
+  - !Evergine.Framework.Managers.AssetSceneManager,Evergine.Framework
+    Id: 48a2f39d-80a3-45ee-9abc-e58bb5e30b38
+    IsEnabled: true
+  - !Evergine.Framework.Managers.BehaviorManager,Evergine.Framework
+    Id: 8e7299c5-171f-4efd-9743-5d6f2dc08897
+    IsEnabled: true
+  - !Evergine.Framework.Managers.RenderManager,Evergine.Framework
+    Id: 0a834cd0-2652-4228-92d4-5d87bd64f84e
+    DebugLines: false
+    IsEnabled: true
+  - !Evergine.Framework.Managers.VirtualScreenManager,Evergine.Framework
+    Id: 913b7bbe-0d02-4740-accb-f83913a25016
+    Expand: true
+    IsEnabled: false
+    Stretch: Uniform
+    VirtualHeight: 0.0
+    VirtualWidth: 0.0
+  - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
+    Id: da4d5c4c-5ee8-4dcf-b6cb-167fa0e5cc94
+    IBLReflectionProbe: 5e573d49-4e5c-41d6-a219-18e8d7df9118
+    IntensityMultiplier: 1.0
+    IsEnabled: false
+    Strategy: OnDemand
+  - !Evergine.Framework.Managers.ShadowMapManager,Evergine.Framework
+    Id: ade7fc05-7f99-4d2d-b5c9-1afd02437cf0
+    AutoDepthBounds: false
+    DirectionalResolution: Size_2048
+    IsEnabled: true
+    PunctualResolution: Size_512
+    ShadowFilter: PCF3x3
+    SpotResolution: Size_512

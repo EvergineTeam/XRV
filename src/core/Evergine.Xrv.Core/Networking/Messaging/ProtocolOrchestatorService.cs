@@ -78,7 +78,7 @@ namespace Evergine.Xrv.Core.Networking.Messaging
                     {
                         if (t.IsFaulted)
                         {
-                            this.logger.LogError($"Error checking protocol orchestator alive entries: {t.Exception}");
+                            this.logger?.LogError($"Error checking protocol orchestator alive entries: {t.Exception}");
                         }
                     });
         }

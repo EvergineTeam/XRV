@@ -23,6 +23,7 @@ using Evergine.Xrv.Core.Modules;
 using Evergine.Xrv.Core.Modules.Networking;
 using Evergine.Xrv.Core.Networking.ControlRequest;
 using Evergine.Xrv.Core.Networking.Messaging;
+using Evergine.Xrv.Core.Networking.Participants;
 using Evergine.Xrv.Core.Networking.Properties.KeyRequest;
 using Evergine.Xrv.Core.Networking.Properties.Session;
 using Evergine.Xrv.Core.Networking.SessionClosing;
@@ -32,7 +33,6 @@ using Evergine.Xrv.Core.Themes;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
 #if !ANDROID
-using Evergine.Xrv.Core.Utils;
 using Lidgren.Network;
 #endif
 using Microsoft.Extensions.Logging;
@@ -42,6 +42,7 @@ namespace Evergine.Xrv.Core.Networking
     /// <summary>
     /// Network system.
     /// </summary>
+    // TODO: refactoring to separate different concerns
     public class NetworkSystem
     {
         private readonly XrvService xrvService;
@@ -183,6 +184,11 @@ namespace Evergine.Xrv.Core.Networking
         /// </summary>
         public IWorldCenterProvider WorldCenterProvider { get; set; }
 
+        /// <summary>
+        /// Gets networking session participants system.
+        /// </summary>
+        public SessionParticipants Participants { get; private set; }
+
         internal IKeyStore KeyStore { get; private set; }
 
         /// <summary>
@@ -201,6 +207,13 @@ namespace Evergine.Xrv.Core.Networking
         /// <param name="entity">Entity.</param>
         public void AddNetworkingEntity(Entity entity) =>
             this.worldCenterEntity.AddChild(entity);
+
+        /// <summary>
+        /// Removes an entity from world-center.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        public void RemoveNetworkingEntity(Entity entity) =>
+            this.worldCenterEntity.RemoveChild(entity);
 
         /// <summary>
         /// Indicates that a module is aware of networking session. It will add
@@ -252,6 +265,10 @@ namespace Evergine.Xrv.Core.Networking
                 this.InitializeUpdateSessionDataProtocol();
                 this.InitializeControlRequestProtocol();
                 this.InitializeSessionClosingProtocol();
+
+                this.Participants = new SessionParticipants(
+                    this.KeyStore as KeyStore,
+                    this.assetsService);
             }
         }
 
@@ -284,6 +301,7 @@ namespace Evergine.Xrv.Core.Networking
             this.entityManager.Add(this.worldCenterEntity);
             this.xrvService.Services.Messaging.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
             this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;
+            this.Participants.Load(this.worldCenterEntity);
         }
 
         internal async Task<ConnectionResult> StartSessionAsync(string serverName)
@@ -506,7 +524,9 @@ namespace Evergine.Xrv.Core.Networking
             clientServerMessaging.IncomingMessageCallback = this.orchestator.HandleIncomingMessage; // TODO review this cycle reference :s
             clientServerMessaging.Orchestator = this.orchestator; // TODO review this cycle reference :s
             var keyStore = new KeyStore();
-            keyStore.ReserveKeysForCore(new byte[] { default, SessionDataSynchronization.NetworkingKey });
+            keyStore.ReserveKeysForCore(
+                new byte[] { default, SessionDataSynchronization.NetworkingKey },
+                NetworkPropertyProviderFilter.Room);
 
             container.RegisterInstance(clientServerMessaging);
             container.RegisterInstance(this.orchestator);
@@ -641,17 +661,12 @@ namespace Evergine.Xrv.Core.Networking
             // (internally used when creating server). We were struggling some days about what
             // was happening because HoloLens server was not reachable by other clients, and
             // we found this issue.
-            bool overrideDefaultNetworkInterface = !DeviceHelper.IsHoloLens();
-
-            if (overrideDefaultNetworkInterface)
+            NetworkInterface candidate = NetUtility
+                .GetNetworkInterfaces()
+                .FirstOrDefault(x => x?.GetIPProperties().GatewayAddresses.Count > 0);
+            if (candidate != null)
             {
-                NetworkInterface candidate = NetUtility
-                    .GetNetworkInterfaces()
-                    .FirstOrDefault(x => x?.GetIPProperties().GatewayAddresses.Count > 0);
-                if (candidate != null)
-                {
-                    NetUtility.DefaultNetworkInterface = candidate;
-                }
+                NetUtility.DefaultNetworkInterface = candidate;
             }
 #endif
         }

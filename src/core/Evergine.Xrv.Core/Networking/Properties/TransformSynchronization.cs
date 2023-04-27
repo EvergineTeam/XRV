@@ -79,6 +79,17 @@ namespace Evergine.Xrv.Core.Networking.Properties
         {
         }
 
+        /// <summary>
+        /// Evaluates if <see cref="NetworkPropertySync{K, V}.PropertyValue"/>
+        /// may be updated by running client.
+        /// </summary>
+        /// <returns>True if it should be updated; false otherwise.</returns>
+        protected virtual bool EvaluatePropertyValueUpdate()
+        {
+            var session = this.xrvService.Networking.Session;
+            return session.CurrentUserIsPresenter;
+        }
+
         private void SubscribeEvents()
         {
             if (this.transform != null)
@@ -102,8 +113,7 @@ namespace Evergine.Xrv.Core.Networking.Properties
 
         private void UpdatePropertyValue()
         {
-            var session = this.xrvService.Networking.Session;
-            if (!session.CurrentUserIsPresenter)
+            if (!this.EvaluatePropertyValueUpdate())
             {
                 return;
             }
@@ -131,11 +141,6 @@ namespace Evergine.Xrv.Core.Networking.Properties
                             System.Diagnostics.Debug.WriteLine($"Error waiting to property ready: {t.Exception}");
                         }
                     });
-            }
-
-            if (this.IsReady && this.HasInitializedKey() && session.CurrentUserIsPresenter)
-            {
-                this.PropertyValue = this.transform.LocalTransform;
             }
         }
 
