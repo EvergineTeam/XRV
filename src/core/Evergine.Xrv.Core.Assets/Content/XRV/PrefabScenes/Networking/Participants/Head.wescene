@@ -7,7 +7,7 @@ Items:
     IsStatic: false
     Components:
       - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-        Id: df13fc27-2430-4f9d-8d46-8492f41cfe25
+        Id: 540234c8-e13c-4eed-9844-499748029782
         IsEnabled: true
         LocalOrientation:
           W: -4.37113883E-08
@@ -16,56 +16,140 @@ Items:
           Z: 0.0
         LocalPosition:
           X: 0.0
-          Y: -0.0187079906
-          Z: 0.0383599997
+          Y: 0.0
+          Z: 0.0
         LocalScale:
-          X: 17.0
-          Y: 17.0
-          Z: 17.0
+          X: 1.0
+          Y: 1.0
+          Z: 1.0
     Children:
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-        Name: pCube8
+        Name: HP Reality Headset
         Tag: null
         IsEnabled: true
         IsStatic: false
         Components:
           - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
-            Id: 4af7be57-7ff3-4632-beed-e7927ac41276
+            Id: 82da9b35-351d-4dc8-a40a-73a4e0c9b816
             IsEnabled: true
             LocalOrientation:
-              W: 1.0
-              X: 0.0
-              Y: 0.0
-              Z: 0.0
+              W: 0.707106769
+              X: -0.707106769
+              Y: 5.11195211E-08
+              Z: 5.11195211E-08
             LocalPosition:
-              X: 0.0
-              Y: 0.0
-              Z: 0.0
+              X: 6.34402022E-05
+              Y: 0.0522911772
+              Z: 0.0123103838
             LocalScale:
               X: 1.0
               Y: 1.0
               Z: 1.0
           - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
-            Id: b9a19d24-02df-4f67-bfa2-2da1fa1c1b34
-            AsignedTo: pCube8Mat
+            Id: 25d62b69-e627-4b03-8892-4ce829a16854
+            AsignedTo: Microsoft_MR
             IsEnabled: true
-            Material: 775c1c41-0d90-44b0-9b57-cb2dd54584b0
+            Material: 503bcd65-d0f3-4892-80b8-93d65fd2aebc
             UseCopy: false
           - !Evergine.Components.Graphics3D.MeshComponent,Evergine.Framework
-            Id: 4f63f3a4-61f6-467e-a7de-05f3c9a4cf36
+            Id: ddede7b5-5e29-4268-907d-520461154243
             IsEnabled: true
-            Model: 8ce592ba-b659-4325-88c2-6c74584bc0a5
-            ModelMeshName: pCube8
+            Model: 5b493728-c000-40bf-9c02-60d87a9914d5
+            ModelMeshName: HP Reality Headset
           - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
-            Id: 02687638-6214-41b1-8434-95ef2d9c3173
+            Id: e25b466c-b39b-4e67-aa04-089832a78fe8
             DebugBoundingbox: true
             IsCullingEnabled: true
             IsEnabled: true
             OrderBias: 0
             RenderFlags: CastShadows
         Children: []
-        Id: 454cc29a-7d49-4e4e-9c42-f6592cc64bbb
-    Id: fc3d4d60-30eb-4b2b-bbfa-39819c6994ba
+        Id: fd6bec6a-969b-48a3-a9bc-b791645ad580
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: avatar
+        Tag: null
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 2ccdd984-7963-4e42-8a28-752dcfa6c418
+            IsEnabled: true
+            LocalOrientation:
+              W: 0.707106769
+              X: -0.707106769
+              Y: -0.0
+              Z: 0.0
+            LocalPosition:
+              X: -0.0014866048
+              Y: -0.0395314433
+              Z: -0.113008685
+            LocalScale:
+              X: 21.2923031
+              Y: 19.4591389
+              Z: 19.4591389
+          - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+            Id: 8663133d-92e6-445d-b8bd-e6dfe25d18fe
+            AsignedTo: Avatar
+            IsEnabled: true
+            Material: 28ba3efe-6baa-4afd-8603-065eef604fb3
+            UseCopy: false
+          - !Evergine.Components.Graphics3D.MeshComponent,Evergine.Framework
+            Id: 1fcb9c8b-1df0-446d-b700-ecb9ee4ffc78
+            IsEnabled: true
+            Model: 5b493728-c000-40bf-9c02-60d87a9914d5
+            ModelMeshName: avatar
+          - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+            Id: 56fdf687-35b8-4b27-b46d-6381ebf5f56b
+            DebugBoundingbox: true
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+        Children: []
+        Id: 22f1d3e2-1246-44b1-962f-4f7e7e23afde
+      - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+        Name: Visor
+        Tag: null
+        IsEnabled: true
+        IsStatic: false
+        Components:
+          - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+            Id: 1ddeba63-4820-48e9-b592-f7a274de8e1d
+            IsEnabled: true
+            LocalOrientation:
+              W: 0.707106769
+              X: -0.707106769
+              Y: 5.11195211E-08
+              Z: 5.11195211E-08
+            LocalPosition:
+              X: 6.34345415E-05
+              Y: 0.00306523917
+              Z: 0.0393558219
+            LocalScale:
+              X: 1.0
+              Y: 1.0
+              Z: 1.0
+          - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+            Id: e3fb8977-322f-48cb-b331-1b9f24172683
+            AsignedTo: Visor
+            IsEnabled: true
+            Material: 79f734df-d7ab-4c71-85c7-6e5d9fcede51
+            UseCopy: false
+          - !Evergine.Components.Graphics3D.MeshComponent,Evergine.Framework
+            Id: 95866bb1-da04-45d9-ae87-3ef77c8944d0
+            IsEnabled: true
+            Model: 5b493728-c000-40bf-9c02-60d87a9914d5
+            ModelMeshName: Visor
+          - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+            Id: d02c3989-2f7c-42b5-ac9a-6fd438bd69a3
+            DebugBoundingbox: true
+            IsCullingEnabled: true
+            IsEnabled: true
+            OrderBias: 0
+            RenderFlags: CastShadows
+        Children: []
+        Id: ccf47af1-6475-488d-8ca7-52c62c7d6287
+    Id: 3178275e-9936-4198-83f9-ae68e4b6b54c
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: 0e2ef268-6507-4df9-bd72-a51cc4e12107
@@ -89,7 +173,7 @@ Managers:
     VirtualWidth: 0.0
   - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
     Id: da4d5c4c-5ee8-4dcf-b6cb-167fa0e5cc94
-    IBLReflectionProbe: 5e573d49-4e5c-41d6-a219-18e8d7df9118
+    IBLReflectionProbe: f877e9be-e3c7-4757-a727-e697af263329
     IntensityMultiplier: 1.0
     IsEnabled: false
     Strategy: OnDemand
