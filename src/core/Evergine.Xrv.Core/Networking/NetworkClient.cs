@@ -45,6 +45,7 @@ namespace Evergine.Xrv.Core.Networking
             this.client.ClientApplicationVersion = configuration.ClientApplicationVersion;
             this.client.PingInterval = configuration.PingInterval;
             this.client.ConnectionTimeout = configuration.ConnectionTimeout;
+            this.client.LocalPlayer.Nickname = Guid.NewGuid().ToString().Substring(0, 6);
         }
 
         /// <summary>

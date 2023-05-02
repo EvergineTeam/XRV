@@ -59,6 +59,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
         {
             base.OnDetach();
 
+            this.CancelAndClearActionQueue();
             this.client.ClientStateChanged -= this.Client_ClientStateChanged;
             this.networking = null;
             this.sessionParticipants = null;
@@ -84,6 +85,12 @@ namespace Evergine.Xrv.Core.Networking.Participants
             }
         }
 
+        /*
+         * We use a separated queue in a separated thread to free main thread from extra work
+         * while creating avatars body parts. We just go back to main thread to finally add
+         * participant entities hierarchy to the scene. This processing is cancellable, for example,
+         * if user leaves the session.
+        */
         private async Task ProcessQueueAsync(CancellationToken cancellation = default)
         {
             while (this.actionQueue.Any() && !cancellation.IsCancellationRequested)
@@ -96,7 +103,8 @@ namespace Evergine.Xrv.Core.Networking.Participants
 
                 if (action.ActionType == ParticipantActionType.Add)
                 {
-                    await this.AddParticipantHierarchyAsync(action.ParticipantInfo).ConfigureAwait(false);
+                    await this.AddParticipantHierarchyAsync(action.ParticipantInfo, cancellation)
+                        .ConfigureAwait(false);
                 }
                 else
                 {
@@ -131,30 +139,35 @@ namespace Evergine.Xrv.Core.Networking.Participants
             using (this.logger?.BeginScope("Session participants queue"))
             {
                 this.logger?.LogDebug($"Adding local participant: ID={this.client.LocalPlayer.Id} to queue");
-                this.EnqueueParticipantAction(this.client.LocalPlayer.Id, true, ParticipantActionType.Add);
+                this.EnqueueParticipantAction(this.client.LocalPlayer.Id, ParticipantActionType.Add);
 
                 foreach (var remote in this.client.CurrentRoom.RemotePlayers)
                 {
                     this.logger?.LogDebug($"Adding remote participant: ID={remote.Id} to queue");
-                    this.EnqueueParticipantAction(remote.Id, false, ParticipantActionType.Add);
+                    this.EnqueueParticipantAction(remote.Id, ParticipantActionType.Add);
                 }
             }
         }
 
-        private void EnqueueParticipantAction(int clientId, bool isLocal, ParticipantActionType actionType)
+        private void EnqueueParticipantAction(int clientId, ParticipantActionType actionType)
         {
+            var configuration = this.sessionParticipants.Configuration;
+            var player = this.client.CurrentRoom.GetPlayer(clientId);
+
             this.actionQueue.Enqueue(new ParticipantAction
             {
                 ParticipantInfo = new ParticipantInfo
                 {
                     ClientId = clientId,
-                    IsLocalClient = isLocal,
+                    IsLocalClient = player.IsLocalPlayer,
+                    Nickname = player.Nickname,
+                    AvatarColor = configuration.AvatarTintColors[clientId % configuration.AvatarTintColors.Count],
                 },
                 ActionType = actionType,
             });
         }
 
-        private async Task AddParticipantHierarchyAsync(ParticipantInfo participant)
+        private async Task AddParticipantHierarchyAsync(ParticipantInfo participant, CancellationToken cancellation)
         {
             var playerProvider = new NetworkPlayerProvider()
             {
@@ -165,10 +178,14 @@ namespace Evergine.Xrv.Core.Networking.Participants
                 .AddComponent(new Transform3D())
                 .AddComponent(playerProvider);
 
-            await this.AddTrackingComponentsAsync(participant, participantEntity)
+            await this.AddTrackingComponentsAsync(participant, participantEntity, cancellation)
                 .ConfigureEvergineAwait(EvergineTaskContinueOn.Foreground);
-            this.participantEntities.Add(participant.ClientId, participantEntity);
-            this.networking.AddNetworkingEntity(participantEntity);
+
+            if (!cancellation.IsCancellationRequested)
+            {
+                this.participantEntities.Add(participant.ClientId, participantEntity);
+                this.networking.AddNetworkingEntity(participantEntity);
+            }
         }
 
         private void RemoveParticipantHierarchy(int clientId)
@@ -190,8 +207,18 @@ namespace Evergine.Xrv.Core.Networking.Participants
             }
         }
 
-        private async Task AddTrackingComponentsAsync(ParticipantInfo participant, Entity parent)
+        private async Task AddTrackingComponentsAsync(ParticipantInfo participant, Entity parent, CancellationToken cancellation)
         {
+            if (!participant.IsLocalClient)
+            {
+                await this.WaitForDeviceInfoDataAvailableAsync(participant, cancellation).ConfigureAwait(false);
+            }
+
+            if (cancellation.IsCancellationRequested)
+            {
+                return;
+            }
+
             var configuration = this.sessionParticipants.Configuration;
             if (configuration.TrackHead)
             {
@@ -226,6 +253,62 @@ namespace Evergine.Xrv.Core.Networking.Participants
             }
         }
 
+        /*
+         * Each participant synchronizes its own device information using DeviceInfoSynchronization
+         * component. This synchronization may be or not (mostly not) ready once user is detected as
+         * new member of the room, so we use this method to wait (for a while) until that information
+         * has been synchronized.
+         */
+        private async Task<bool> WaitForDeviceInfoDataAvailableAsync(ParticipantInfo participant, CancellationToken cancellation)
+        {
+            this.logger?.LogDebug($"Waiting for device info to be avalilabe for participant: {participant.ClientId}");
+
+            if (this.client.ClientState != ClientStates.Joined)
+            {
+                this.logger?.LogWarning("Client disconnected, could not retrieve partipant data");
+                return false;
+            }
+
+            if (cancellation.IsCancellationRequested)
+            {
+                return false;
+            }
+
+            DeviceInfo deviceInfo;
+            var delay = TimeSpan.FromMilliseconds(50);
+            var maxWaitTime = TimeSpan.FromSeconds(1);
+            var accWaitTime = TimeSpan.Zero;
+
+            bool infoSynchronized = false;
+            do
+            {
+                if (this.client.ClientState != ClientStates.Joined)
+                {
+                    break;
+                }
+
+                var player = this.client.CurrentRoom.GetPlayer(participant.ClientId);
+                player.CustomProperties.TryGetSerializable(SessionParticipants.DeviceInfoPropertyKey, out deviceInfo);
+                infoSynchronized = deviceInfo?.IsSynchronized ?? false;
+
+                if (infoSynchronized || accWaitTime >= maxWaitTime)
+                {
+                    this.logger?.LogDebug($"Participant {participant.ClientId} device data found");
+                    participant.DeviceInfo = deviceInfo;
+                    break;
+                }
+                else
+                {
+                    this.logger?.LogDebug($"Participant {participant.ClientId} device data not found. Waiting {delay}ms...");
+                    accWaitTime += delay;
+                    await Task.Delay(delay, cancellation).ConfigureAwait(false);
+                }
+            }
+            while (!infoSynchronized && !cancellation.IsCancellationRequested);
+
+            return infoSynchronized;
+        }
+
         private async Task AddTrackingComponentsByElementAsync(
             ParticipantInfo participant,
             Entity parent,
@@ -252,7 +335,8 @@ namespace Evergine.Xrv.Core.Networking.Participants
                 if (participant.IsLocalClient)
                 {
                     rootEntity
-                        .AddComponent(new HeadTracking());
+                        .AddComponent(new HeadTracking())
+                        .AddComponent(new DeviceInfoSynchronization());
                 }
             }
             else if (element.IsHandedness())
@@ -314,23 +398,33 @@ namespace Evergine.Xrv.Core.Networking.Participants
                     break;
                 case ClientStates.Leaving:
                     this.UnsubscribeFromRoomEvents();
-                    this.queueProcessingTcs?.Cancel();
-                    this.queueProcessingTcs = null;
+                    this.CancelAndClearActionQueue();
                     EvergineForegroundTask.Run(() => this.RemoveAllParticipantsFromHierarchy());
                     break;
+            }
+        }
+
+        private void CancelAndClearActionQueue()
+        {
+            this.queueProcessingTcs?.Cancel();
+            this.queueProcessingTcs = null;
+
+            while (this.actionQueue.Any())
+            {
+                this.actionQueue.TryDequeue(out var _);
             }
         }
 
         private void CurrentRoom_PlayerJoined(object sender, RemoteNetworkPlayer client)
         {
             this.logger?.LogDebug($"Adding remote participant: ID={client.Id} to queue");
-            this.EnqueueParticipantAction(client.Id, false, ParticipantActionType.Add);
+            this.EnqueueParticipantAction(client.Id, ParticipantActionType.Add);
         }
 
         private void CurrentRoom_PlayerLeaving(object sender, RemoteNetworkPlayer client)
         {
             this.logger?.LogDebug($"Removing remote participant: ID={client.Id}");
-            this.EnqueueParticipantAction(client.Id, false, ParticipantActionType.Remove);
+            this.EnqueueParticipantAction(client.Id, ParticipantActionType.Remove);
         }
 
         private class ParticipantAction

@@ -34,6 +34,17 @@ namespace Evergine.Xrv.Core
 
             }
 
+            public sealed class Networking
+            {
+
+                public sealed class Participants
+                {
+                    /// <summary> Asset Path (XRV/Materials/Networking/Participants/ControllerMarker.wemt) </summary>
+                    public static readonly Guid ControllerMarker = new Guid("4d072e00-be00-420c-a5ed-e657b6f89836");
+                }
+            }
+
+
             public static class Services
             {
                 public static class QR
@@ -98,7 +109,11 @@ namespace Evergine.Xrv.Core
 
                 public sealed class Participants
                 {
-                    public static readonly Guid head_weprefab = new Guid("34b5a455-2449-4ccb-afad-91bbff013a01");
+                    /// <summary> Asset Path (XRV/Prefabs/Networking/Participants/DefaultHead.weprefab.weprf) </summary>
+                    public static readonly Guid DefaultHead_weprefab = new Guid("34b5a455-2449-4ccb-afad-91bbff013a01");
+
+                    /// <summary> Asset Path (XRV/Prefabs/Networking/Participants/HoloLensHead.weprefab.weprf) </summary>
+                    public static readonly Guid HoloLensHead_weprefab = new Guid("c99aa11c-e668-419f-89c6-fcd910259b4d");
 
                     public static readonly Guid leftPalm_weprefab = new Guid("1a475651-6e98-4a28-8462-c56902a20f87");
 

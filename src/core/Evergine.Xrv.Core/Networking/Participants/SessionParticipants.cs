@@ -16,6 +16,8 @@ namespace Evergine.Xrv.Core.Networking.Participants
     /// </summary>
     public class SessionParticipants
     {
+        internal const byte DeviceInfoPropertyKey = 0x00;
+
         private readonly KeyStore keyStore;
         private readonly Dictionary<TrackedElement, byte> assignedKeys;
 

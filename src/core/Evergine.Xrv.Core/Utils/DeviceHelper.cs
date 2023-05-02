@@ -61,7 +61,7 @@ namespace Evergine.Xrv.Core.Utils
         public static async Task<bool> EnsureCameraPersmissionAsync()
         {
 #if UWP
-            const int NoCaptureDevicesHResult = -1072845856; // ‭0xC00DABE0
+            const int NoCaptureDevicesHResult = -1072845856; // 0xC00DABE0
             using (var mediaCapture = new Windows.Media.Capture.MediaCapture())
             {
                 try

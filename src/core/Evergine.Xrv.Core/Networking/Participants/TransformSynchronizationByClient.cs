@@ -7,6 +7,10 @@ using Evergine.Xrv.Core.Networking.Properties;
 
 namespace Evergine.Xrv.Core.Networking.Participants
 {
+    /*
+     * This is like a standard transform synchronization, but it ensures that
+     * only local device is allowed to change its value.
+     */
     internal class TransformSynchronizationByClient : TransformSynchronization
     {
         [BindService]

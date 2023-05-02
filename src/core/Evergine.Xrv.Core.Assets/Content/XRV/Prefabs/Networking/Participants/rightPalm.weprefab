@@ -39,5 +39,51 @@ Root:
       IsEnabled: true
       OrderBias: 0
       RenderFlags: CastShadows
-  Children: []
+  Children:
+    - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+      Name: wristband
+      Tag: null
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: 2d622552-0df4-4e52-b00e-09e6832a8e62
+          IsEnabled: true
+          LocalOrientation:
+            W: 0.707106769
+            X: 0.707106769
+            Y: 0.0
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalScale:
+            X: 0.180000022
+            Y: 0.180000022
+            Z: 0.180000022
+        - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+          Id: c6d90a01-b547-4a53-b9c7-a017390f6977
+          AsignedTo: Default
+          IsEnabled: true
+          Material: 8f11a5f1-fefd-47ae-a6d8-e2d6d5de6ee9
+          UseCopy: true
+        - !Evergine.Components.Graphics3D.TorusMesh,Evergine.Components
+          Id: 651fd6fa-1619-4b1e-8df6-7ce6c78fc6dd
+          Diameter: 1.0
+          IsEnabled: true
+          Tessellation: 16
+          Thickness: 0.333000004
+        - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+          Id: b8c719a0-d22a-4f37-9c33-49272fd85896
+          DebugBoundingbox: true
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: CastShadows
+        - !Evergine.Xrv.Core.Networking.Participants.AvatarTintColor,Evergine.Xrv.Core
+          Id: 0868b52c-da07-4e7d-9d8a-c16932113d37
+          IsEnabled: true
+      Children: []
+      Id: 0d060423-4011-48b5-b1b0-d2a71ea6fab9
   Id: eea5da36-6af6-44c0-b087-71406421a8b6

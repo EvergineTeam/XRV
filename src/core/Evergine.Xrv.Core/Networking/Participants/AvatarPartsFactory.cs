@@ -1,10 +1,12 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
+using Evergine.Mathematics;
 using Evergine.MRTK;
 using System;
 using System.Threading.Tasks;
@@ -40,7 +42,39 @@ namespace Evergine.Xrv.Core.Networking.Participants
             }
 
             var prefabId = this.GetPrefabIdByElement(participant, element);
-            var entity = await this.CreateEntityFromPrefabAsync(prefabId);
+            var entity = await this.CreateEntityFromPrefabAsync(prefabId).ConfigureAwait(false);
+
+            if (element == TrackedElement.Head)
+            {
+                entity.FindComponentInChildren<AvatarDisplayName>().Nickname = participant.Nickname;
+            }
+
+            // 3D elements tinting
+            if (element.IsController())
+            {
+                var colorMarkEntity = new Entity("colorMark")
+                    .AddComponent(new Transform3D
+                    {
+                        LocalPosition = new Vector3(0f, 0.045f, 0.032f),
+                        LocalScale = new Vector3(0.02f, 0.02f, 0.02f),
+                    })
+                    .AddComponent(new MaterialComponent
+                    {
+                        UseCopy = true,
+                        Material = this.AssetsService.Load<Material>(CoreResourcesIDs.Materials.Networking.Participants.ControllerMarker),
+                    })
+                    .AddComponent(new SphereMesh())
+                    .AddComponent(new MeshRenderer())
+                    .AddComponent(new AvatarTintColor());
+                entity.AddChild(colorMarkEntity);
+            }
+
+            var tintComponents = entity.FindComponentsInChildren<AvatarTintColor>();
+            foreach (var tint in tintComponents)
+            {
+                tint.TintColor = participant.AvatarColor;
+            }
+
             return entity;
         }
 
@@ -81,7 +115,9 @@ namespace Evergine.Xrv.Core.Networking.Participants
             switch (element)
             {
                 case TrackedElement.Head:
-                    return CoreResourcesIDs.Prefabs.Networking.Participants.head_weprefab;
+                    return participant.DeviceInfo?.IsHoloLens() ?? false
+                        ? CoreResourcesIDs.Prefabs.Networking.Participants.HoloLensHead_weprefab
+                        : CoreResourcesIDs.Prefabs.Networking.Participants.DefaultHead_weprefab;
                 case TrackedElement.LeftHand:
                     return CoreResourcesIDs.Prefabs.Networking.Participants.leftPalm_weprefab;
                 case TrackedElement.RightHand:
