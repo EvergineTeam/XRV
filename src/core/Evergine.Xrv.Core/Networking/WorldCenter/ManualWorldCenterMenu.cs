@@ -10,6 +10,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
+using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Menu;
 
 namespace Evergine.Xrv.Core.Networking.WorldCenter
@@ -201,7 +202,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             float start = extended ? 0 : 1;
             float end = extended ? 1 : 0;
 
-            this.extendedAnimation?.Cancel();
+            this.extendedAnimation?.TryCancel();
             this.extendedAnimation = new ActionWorkAction(() =>
             {
                 if (end == 1)
