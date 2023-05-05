@@ -59,9 +59,9 @@ namespace Evergine.Xrv.Core.Networking.Participants
         public AvatarPartsFactory PartsFactory { get; set; }
 
         /// <summary>
-        /// Gets available list of colors for avatar tinting. Collection can be
+        /// Gets or sets available list of colors for avatar tinting. Collection can be
         /// modified programmatically to change default color palette.
         /// </summary>
-        public List<Color> AvatarTintColors { get; private set; }
+        public List<Color> AvatarTintColors { get; set; }
     }
 }

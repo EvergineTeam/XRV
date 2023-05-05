@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Graphics;
 using Evergine.Components.XR;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -153,6 +154,9 @@ namespace Evergine.Xrv.Core.Networking.Participants
         {
             var configuration = this.sessionParticipants.Configuration;
             var player = this.client.CurrentRoom.GetPlayer(clientId);
+            var color = configuration.AvatarTintColors?.Any() ?? false
+                ? configuration.AvatarTintColors[clientId % configuration.AvatarTintColors.Count]
+                : Color.White;
 
             this.actionQueue.Enqueue(new ParticipantAction
             {
@@ -161,7 +165,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
                     ClientId = clientId,
                     IsLocalClient = player.IsLocalPlayer,
                     Nickname = player.Nickname,
-                    AvatarColor = configuration.AvatarTintColors[clientId % configuration.AvatarTintColors.Count],
+                    AvatarColor = color,
                 },
                 ActionType = actionType,
             });
