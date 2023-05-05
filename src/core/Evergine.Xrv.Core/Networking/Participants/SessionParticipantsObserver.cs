@@ -226,34 +226,19 @@ namespace Evergine.Xrv.Core.Networking.Participants
             var configuration = this.sessionParticipants.Configuration;
             if (configuration.TrackHead)
             {
-                await this.AddTrackingComponentsByElementAsync(
-                    participant,
-                    parent,
-                    TrackedElement.Head).ConfigureAwait(false);
+                this.AddTrackingComponentsByElement(participant, parent, TrackedElement.Head);
             }
 
             if (configuration.TrackHands)
             {
-                await this.AddTrackingComponentsByElementAsync(
-                    participant,
-                    parent,
-                    TrackedElement.LeftHand).ConfigureAwait(false);
-                await this.AddTrackingComponentsByElementAsync(
-                    participant,
-                    parent,
-                    TrackedElement.RightHand).ConfigureAwait(false);
+                this.AddTrackingComponentsByElement(participant, parent, TrackedElement.LeftHand);
+                this.AddTrackingComponentsByElement(participant, parent, TrackedElement.RightHand);
             }
 
             if (configuration.TrackControllers)
             {
-                await this.AddTrackingComponentsByElementAsync(
-                    participant,
-                    parent,
-                    TrackedElement.LeftController).ConfigureAwait(false);
-                await this.AddTrackingComponentsByElementAsync(
-                    participant,
-                    parent,
-                    TrackedElement.RightController).ConfigureAwait(false);
+                this.AddTrackingComponentsByElement(participant, parent, TrackedElement.LeftController);
+                this.AddTrackingComponentsByElement(participant, parent, TrackedElement.RightController);
             }
         }
 
@@ -313,7 +298,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
             return infoSynchronized;
         }
 
-        private async Task AddTrackingComponentsByElementAsync(
+        private void AddTrackingComponentsByElement(
             ParticipantInfo participant,
             Entity parent,
             TrackedElement element)
@@ -324,7 +309,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
             rootEntity.Name = element.ToString();
 
             var factory = configuration.PartsFactory;
-            Entity visibleEntity = await factory.InstantiateElementAsync(participant, element);
+            Entity visibleEntity = factory.InstantiateElement(participant, element);
             rootEntity.AddChild(visibleEntity);
 
             if (element == TrackedElement.Head)

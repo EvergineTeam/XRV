@@ -5,11 +5,9 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.MRTK;
 using System;
-using System.Threading.Tasks;
 
 namespace Evergine.Xrv.Core.Networking.Participants
 {
@@ -38,7 +36,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
         /// <param name="participant">Participant.</param>
         /// <param name="element">Tracked element.</param>
         /// <returns>Entity to be shown as tracked body part for participant avatar.</returns>
-        public virtual async Task<Entity> InstantiateElementAsync(ParticipantInfo participant, TrackedElement element)
+        public virtual Entity InstantiateElement(ParticipantInfo participant, TrackedElement element)
         {
             if (participant.IsLocalClient)
             {
@@ -48,7 +46,8 @@ namespace Evergine.Xrv.Core.Networking.Participants
             }
 
             var prefabId = this.GetPrefabIdByElement(participant, element);
-            var entity = await this.CreateEntityFromPrefabAsync(prefabId).ConfigureAwait(false);
+            var prefab = this.AssetsService.Load<Prefab>(prefabId);
+            var entity = prefab.Instantiate();
             this.AfterEntityInstantiation(entity, participant, element);
 
             return entity;
@@ -129,31 +128,6 @@ namespace Evergine.Xrv.Core.Networking.Participants
                 default:
                     throw new ArgumentOutOfRangeException(nameof(element));
             }
-        }
-
-        /// <summary>
-        /// Creates an entity from a prefab, in a background job.
-        /// </summary>
-        /// <param name="prefabId">Prefab ID.</param>
-        /// <returns>Instantiated prefab entity.</returns>
-        protected Task<Entity> CreateEntityFromPrefabAsync(Guid prefabId)
-        {
-            var taskCompletionSource = new TaskCompletionSource<Entity>();
-            EvergineBackgroundTask.Run(() =>
-            {
-                try
-                {
-                    var prefab = this.AssetsService.Load<Prefab>(prefabId);
-                    var entity = prefab.Instantiate();
-                    taskCompletionSource.TrySetResult(entity);
-                }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.TrySetException(ex);
-                }
-            });
-
-            return taskCompletionSource.Task;
         }
 
         /// <summary>
