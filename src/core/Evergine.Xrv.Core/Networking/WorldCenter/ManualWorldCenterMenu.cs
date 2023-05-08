@@ -150,11 +150,13 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             base.OnDeactivated();
 
             this.optionsButtonToggle.Toggled -= this.OptionsButtonToggle_Toggled;
+            this.ExtendedAnimation(false, false);
+            Workarounds.ChangeToggleButtonState(this.optionsButtonToggle.Owner, false);
         }
 
         private void OptionsButtonToggle_Toggled(object sender, EventArgs e)
         {
-            this.ExtendedAnimation(this.optionsButtonToggle.IsOn);
+            this.ExtendedAnimation(this.optionsButtonToggle.IsOn, true);
         }
 
         private void InternalAddButtons(IEnumerable<MenuButtonDescription> buttons)
@@ -189,7 +191,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             }
         }
 
-        private void ExtendedAnimation(bool extended)
+        private void ExtendedAnimation(bool extended, bool animate)
         {
             if (this.menuExtended == extended)
             {
@@ -219,7 +221,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 }
             })
             .ContinueWith(
-                new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
+                new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(animate ? 0.4f : 0f), EaseFunction.SineInOutEase, (f) =>
                 {
                     // Front and back plates animation
                     this.frontPlateTransform.Scale = Vector3.Lerp(new Vector3(1, 1, 1), new Vector3(this.numberOfButtons, 1, 1), f);
@@ -254,7 +256,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             }
 
             this.options.ChangeState(this.options.States.ElementAt(0));
-            this.ExtendedAnimation(false);
+            this.ExtendedAnimation(false, true);
         }
     }
 }

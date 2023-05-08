@@ -15,6 +15,7 @@ using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Themes;
+using Evergine.Xrv.Core.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,9 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_Manual_Marker_Menu")]
         private ManualWorldCenterMenu menu = null;
+
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_Manual_Marker_Menu")]
+        private OrbitMenu orbitMenu = null;
 
         private HoloGraphic plateHolographic = null;
         private HoloGraphic arrowHolographic = null;
@@ -264,8 +268,8 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 if (this.themes != null)
                 {
                     this.xrv.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;
-                    lineColors[0] = this.themes.CurrentTheme.PrimaryColor2;
-                    lineColors[1] = this.themes.CurrentTheme.SecondaryColor3;
+                    lineColors[0] = this.themes.CurrentTheme.SecondaryColor4;
+                    lineColors[1] = this.themes.CurrentTheme.PrimaryColor3;
                 }
                 else
                 {
@@ -273,6 +277,8 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                     lineColors[0] = Color.White;
                     lineColors[1] = Color.Green;
                 }
+
+                this.orbitMenu.CenterTransform = this.rootTransform;
 
                 this.rayMesh.LinePoints.Add(new LinePointInfo() { Position = Vector3.Zero, Thickness = 0.003f, Color = lineColors[0] });
                 this.rayMesh.LinePoints.Add(new LinePointInfo() { Position = -Vector3.UnitZ, Thickness = 0.003f, Color = lineColors[1] });
@@ -388,6 +394,11 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
 
         private void RespondToInteractionByCurrentMode(Vector3 cursorPosition, bool isPinch)
         {
+            if (this.isLocked)
+            {
+                return;
+            }
+
             switch (this.currentMode)
             {
                 case ManipulationMode.Position:
@@ -518,6 +529,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         {
             this.lockIndicatorEntity.IsEnabled = this.isLocked;
             this.currentArrowHolographic.Parameters_Alpha = this.isLocked ? 1f : 0.65f;
+            Workarounds.ChangeToggleButtonState(this.menuLockToggle.Owner, this.isLocked);
 
             if (this.IsActivated)
             {

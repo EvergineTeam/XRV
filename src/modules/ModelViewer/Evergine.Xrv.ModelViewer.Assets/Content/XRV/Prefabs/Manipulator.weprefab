@@ -202,7 +202,7 @@ Root:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: Menu
       Tag: PART_manipulator_menu
-      IsEnabled: true
+      IsEnabled: false
       IsStatic: false
       Components:
         - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
@@ -223,8 +223,9 @@ Root:
             Z: 1.0
         - !Evergine.Xrv.Core.UI.OrbitMenu,Evergine.Xrv.Core
           Id: 5417d3e3-72da-4830-99a1-a01fcd8bb647
+          ApplyVerticalOffset: true
           IsEnabled: true
-          ModelTransform: null
+          Radius: 0.200000003
           UpdateOrder: 0.5
       Children:
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework

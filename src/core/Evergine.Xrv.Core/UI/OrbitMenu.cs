@@ -33,10 +33,10 @@ namespace Evergine.Xrv.Core.UI
         public float Radius { get; set; } = 0.2f;
 
         /// <summary>
-        /// Gets or sets distance multiplier used as threshold to update
-        /// menu orientation.
+        /// Gets or sets a value indicating whether menu should be displaced vertically
+        /// when user moves around.
         /// </summary>
-        public float DistanceThreshold { get; set; } = 1.25f;
+        public bool ApplyVerticalOffset { get; set; } = true;
 
         /// <inheritdoc/>
         protected override void Update(TimeSpan gameTime)
@@ -61,20 +61,27 @@ namespace Evergine.Xrv.Core.UI
             cameraDir.Normalize();
 
             var offset = Vector3.Zero;
-            var threshold = rad * this.DistanceThreshold;
+            var threshold = rad * 1.25f;
             if (distance > threshold)
             {
                 offset = cameraDir * rad;
-                offset.Y -= rad * 0.5f;
+
+                if (this.ApplyVerticalOffset)
+                {
+                    offset.Y -= rad * 0.5f;
+                }
             }
             else
             {
                 offset = cameraDir * distance * 0.5f;
-                offset.Y -= distance * 0.5f;
+
+                if (this.ApplyVerticalOffset)
+                {
+                    offset.Y -= distance * 0.5f;
+                }
             }
 
             var to = from + offset;
-
             var toPosition = Vector3.SmoothDamp(this.transform.Position, to, ref this.velocity, this.dampVelocitySeconds, (float)gameTime.TotalSeconds);
             this.transform.Position = toPosition;
         }
