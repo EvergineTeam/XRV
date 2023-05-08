@@ -467,7 +467,7 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You have joined #{0}.
+        ///   Looks up a localized string similar to You have joined {0} with name {1}.
         /// </summary>
         public static string Settings_Sessions_Joined_StatusTextAsClient {
             get {
@@ -476,7 +476,7 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You have created and joined #{0}.
+        ///   Looks up a localized string similar to You have created and joined {0} with name {1}.
         /// </summary>
         public static string Settings_Sessions_Joined_StatusTextAsServer {
             get {

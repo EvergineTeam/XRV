@@ -255,11 +255,12 @@ Do you agree?</value>
     <value>Select a session</value>
   </data>
   <data name="Settings.Sessions.Joined.StatusTextAsClient" xml:space="preserve">
-    <value>You have joined #{0}</value>
+    <value>You have joined {0} with name {1}</value>
+    <comment>0: Session name, 1: Nickname</comment>
   </data>
   <data name="Settings.Sessions.Joined.StatusTextAsServer" xml:space="preserve">
-    <value>You have created and joined #{0}</value>
-    <comment>0: Session name</comment>
+    <value>You have created and joined {0} with name {1}</value>
+    <comment>0: Session name, 1: Nickname</comment>
   </data>
   <data name="Settings.Sessions.Joining.CreationInProgress" xml:space="preserve">
     <value>Creating session...</value>

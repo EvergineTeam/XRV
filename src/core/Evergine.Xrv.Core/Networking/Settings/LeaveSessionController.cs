@@ -5,6 +5,7 @@ using System.Linq;
 using Evergine.Components.Fonts;
 using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
+using Evergine.Networking.Client;
 using Evergine.Xrv.Core.UI.Dialogs;
 using Microsoft.Extensions.Logging;
 using WindowsSystem = Evergine.Xrv.Core.UI.Windows.WindowsSystem;
@@ -18,6 +19,9 @@ namespace Evergine.Xrv.Core.Networking.Settings
     {
         [BindService]
         private XrvService xrvService = null;
+
+        [BindService]
+        private MatchmakingClientService client = null;
 
         private ILogger logger;
         private Text3DMesh joinedStateText = null;
@@ -61,14 +65,7 @@ namespace Evergine.Xrv.Core.Networking.Settings
 
             if (this.joinedStateText != null)
             {
-                var session = this.xrvService.Networking.Session;
-                this.joinedStateText.Text = session.CurrentUserIsHost
-                    ? string.Format(
-                        this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joined_StatusTextAsServer),
-                        session.Host.Name)
-                    : string.Format(
-                        this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joined_StatusTextAsClient),
-                        session.Host.Name);
+                this.SetConnectionInformationText();
             }
         }
 
@@ -81,6 +78,16 @@ namespace Evergine.Xrv.Core.Networking.Settings
             {
                 this.endSessionButton.ButtonReleased -= this.EndSessionButton_ButtonReleased;
             }
+        }
+
+        private void SetConnectionInformationText()
+        {
+            var session = this.xrvService.Networking.Session;
+            var formatMessage = session.CurrentUserIsHost
+                ? this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joined_StatusTextAsServer)
+                : this.xrvService.Localization.GetString(() => Resources.Strings.Settings_Sessions_Joined_StatusTextAsClient);
+
+            this.joinedStateText.Text = string.Format(formatMessage, session.Host.Name, this.client.LocalPlayer.Nickname);
         }
 
         private void EndSessionButton_ButtonReleased(object sender, EventArgs e)
