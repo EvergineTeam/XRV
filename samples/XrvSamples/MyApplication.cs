@@ -60,8 +60,9 @@ namespace XrvSamples
         private void ConfigureXrv()
         {
             // Repositories
-            var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://waveengineagentdiag159.file.core.windows.net/models?st=2022-10-26T11%3A46%3A02Z&se=2028-10-27T18%3A46%3A00Z&sp=rl&sv=2018-03-28&sr=s&sig=dOR9IQtYCPMYfoP7TouKuh9UXjPQUMABAFLYkSbaPR0%3D"));
+            var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvdevelopment.file.core.windows.net/samples?sv=2021-10-04&st=2023-05-10T11%3A25%3A13Z&se=2080-05-11T11%3A25%3A00Z&sr=s&sp=rl&sig=%2F0XeYMPfPfRf1zLQvbu97RZgaPoX9NBqnaLruuQygY4%3D"));
             loadModelFileAccess.Cache = new DiskCache("models");
+            loadModelFileAccess.BaseDirectory = "models";
 
             var imageGalleryFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvgallerystorage.file.core.windows.net/galleryimages/?sv=2021-06-08&ss=f&srt=sco&sp=rwdlc&se=2024-11-03T21:21:33Z&st=2020-11-03T13:21:33Z&spr=https&sig=Xh73u%2FIVcw00vCm%2BN3z5EbyaxaIuISfCUUk0mdCiDnI%3D"));
             imageGalleryFileAccess.Cache = new DiskCache("images");
