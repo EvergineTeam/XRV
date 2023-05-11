@@ -59,13 +59,16 @@ namespace XrvSamples
 
         private void ConfigureXrv()
         {
+            var sharedFileUri = new Uri("https://xrvdevelopment.file.core.windows.net/samples?sv=2021-10-04&st=2023-05-10T11%3A25%3A13Z&se=2080-05-11T11%3A25%3A00Z&sr=s&sp=rl&sig=%2F0XeYMPfPfRf1zLQvbu97RZgaPoX9NBqnaLruuQygY4%3D");
+
             // Repositories
-            var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvdevelopment.file.core.windows.net/samples?sv=2021-10-04&st=2023-05-10T11%3A25%3A13Z&se=2080-05-11T11%3A25%3A00Z&sr=s&sp=rl&sig=%2F0XeYMPfPfRf1zLQvbu97RZgaPoX9NBqnaLruuQygY4%3D"));
+            var loadModelFileAccess = AzureFileShareFileAccess.CreateFromUri(sharedFileUri);
             loadModelFileAccess.Cache = new DiskCache("models");
             loadModelFileAccess.BaseDirectory = "models";
 
-            var imageGalleryFileAccess = AzureFileShareFileAccess.CreateFromUri(new Uri("https://xrvgallerystorage.file.core.windows.net/galleryimages/?sv=2021-06-08&ss=f&srt=sco&sp=rwdlc&se=2024-11-03T21:21:33Z&st=2020-11-03T13:21:33Z&spr=https&sig=Xh73u%2FIVcw00vCm%2BN3z5EbyaxaIuISfCUUk0mdCiDnI%3D"));
+            var imageGalleryFileAccess = AzureFileShareFileAccess.CreateFromUri(sharedFileUri);
             imageGalleryFileAccess.Cache = new DiskCache("images");
+            imageGalleryFileAccess.BaseDirectory = "images";
 
             // XRV service
             var xrv = new XrvService()
@@ -92,8 +95,8 @@ namespace XrvSamples
                 })
                 .AddModule(new StreamingViewerModule()
                 {
-                    SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
-                    //SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
+                    //SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
+                    SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
                     //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
                 })
                 .AddModule(new PainterModule());
