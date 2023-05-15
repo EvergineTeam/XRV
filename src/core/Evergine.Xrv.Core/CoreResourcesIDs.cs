@@ -32,6 +32,7 @@ namespace Evergine.Xrv.Core
 
                 public static readonly Guid Unlock = new Guid("f59ad7f1-be68-4b4a-9fbe-0c9eb5d16459");
 
+                public static readonly Guid info = new Guid("41710758-d61f-47ef-b81b-b273d15ae602");
             }
 
             public sealed class Networking
@@ -129,6 +130,19 @@ namespace Evergine.Xrv.Core
 
                     public static Guid QrScanner_weprefab = new Guid("1a3917ef-322f-4563-9be5-68690e539f71");
                 }
+            }
+
+            public sealed class Windows
+            {
+
+                /// <summary> Asset Path (XRV/Prefabs/Windows/BaseDialogContents.weprefab.weprf) </summary>
+                public static readonly Guid BaseDialogContents_weprefab = new Guid("a3566fc1-12f4-4545-93a7-8f7e1da22a36");
+
+                /// <summary> Asset Path (XRV/Prefabs/Windows/NotificationHub.weprefab.weprf) </summary>
+                public static readonly Guid NotificationHub_weprefab = new Guid("b93120ee-a1b5-4305-a344-c9efc5a7eda8");
+
+                /// <summary> Asset Path (XRV/Prefabs/Windows/window.weprefab.weprf) </summary>
+                public static readonly Guid window_weprefab = new Guid("76a3430f-9ddd-4536-abef-d51e7d67e444");
             }
         }
 

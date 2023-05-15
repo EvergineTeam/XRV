@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Evergine.Xrv.Core.UI.Dialogs;
+using Evergine.Xrv.Core.UI.Notifications;
 
 namespace Evergine.Xrv.Core.UI.Windows
 {
@@ -23,6 +24,7 @@ namespace Evergine.Xrv.Core.UI.Windows
 
         private AlertDialog alertDialog;
         private ConfirmationDialog confirmationDialog;
+        private NotificationsHub notificationsHub;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSystem"/> class.
@@ -192,10 +194,33 @@ namespace Evergine.Xrv.Core.UI.Windows
             return windowEntity;
         }
 
+        /// <summary>
+        /// Shows a notification message that will disappear automatically after a given time.
+        /// </summary>
+        /// <param name="title">Notification title.</param>
+        /// <param name="message">Notification message text.</param>
+        public void ShowNotification(string title, string message) =>
+            this.ShowNotification(title, message, CoreResourcesIDs.Materials.Icons.info);
+
+        /// <summary>
+        /// Shows a notification message that will disappear automatically after a given time.
+        /// </summary>
+        /// <param name="title">Notification title.</param>
+        /// <param name="message">Notification message text.</param>
+        /// <param name="icon">Notification icon material. This icon will be tinted following theming settings.</param>
+        public void ShowNotification(string title, string message, Guid icon) =>
+            this.notificationsHub.AddNotification(new NotificationConfiguration
+            {
+                IconMaterial = icon,
+                Title = title,
+                Text = message,
+            });
+
         internal void Load()
         {
             this.CreateAlertDialogInstance();
             this.CreateConfirmDialogInstance();
+            this.CreateNotificationsHub();
         }
 
         private void CreateAlertDialogInstance()
@@ -231,6 +256,16 @@ namespace Evergine.Xrv.Core.UI.Windows
             acceptConfig.Plate = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor3);
 
             owner.IsEnabled = false;
+        }
+
+        private void CreateNotificationsHub()
+        {
+            var prefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.Windows.NotificationHub_weprefab);
+            var hubEntity = prefab.Instantiate();
+            hubEntity.Name = "Notifications-Hub";
+
+            this.notificationsHub = hubEntity.FindComponent<NotificationsHub>();
+            this.entityManager.Add(hubEntity);
         }
 
         private Entity CreateDialogAux<TDialog>(TDialog dialog, string title, string text)

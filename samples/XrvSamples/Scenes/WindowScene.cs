@@ -9,6 +9,8 @@ using System.Linq;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.UI.Dialogs;
 using Evergine.Xrv.Core.UI.Windows;
+using System.Threading.Tasks;
+using System.Diagnostics.Metrics;
 
 namespace XrvSamples.Scenes
 {
@@ -29,14 +31,17 @@ namespace XrvSamples.Scenes
         private Text3DMesh dialogMessageText;
 
         private AssetsService assetsService;
+        private XrvService xrv;
+
+        private bool notificationAutoRunning;
 
         protected override void OnPostCreateXRScene()
         {
-            var xrv = Application.Current.Container.Resolve<XrvService>();
-            xrv.Initialize(this);
+            this.xrv = Application.Current.Container.Resolve<XrvService>();
+            this.xrv.Initialize(this);
 
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
-            this.windowsSystem = xrv.WindowsSystem;
+            this.windowsSystem = this.xrv.WindowsSystem;
             this.windowsSystem.Distances.SetDistance(this.customDistanceKey, 0.5f);
             this.windowsSystem.OverrideIconMaterial = this.assetsService.Load<Material>(EvergineContent.Materials.EvergineLogo);
             this.messageText = this.Managers.EntityManager.FindAllByTag("message").First().FindComponent<Text3DMesh>();
@@ -87,6 +92,12 @@ namespace XrvSamples.Scenes
             this.window2.DistanceKey = this.customDistanceKey;
             this.window2.Opened += this.Window2_Opened;
             this.window2.Closed += this.Window2_Closed;
+
+            // Notifications
+            var notifAuto = entityManager.FindAllByTag("notificationauto").First().FindComponentInChildren<PressableButton>();
+            var notifAdd = entityManager.FindAllByTag("notificationadd").First().FindComponentInChildren<PressableButton>();
+            notifAuto.ButtonReleased += NotifAuto_ButtonReleased;
+            notifAdd.ButtonReleased += NotifAdd_ButtonReleased;
         }
 
         private void CreateAlert_ButtonReleased(object sender, EventArgs e)
@@ -175,5 +186,39 @@ namespace XrvSamples.Scenes
                 Origin = new Vector2(0.5f, 0.5f),
             })
             .AddComponent(new Text3DRenderer());
+
+        private void NotifAuto_ButtonReleased(object sender, EventArgs e)
+        {
+            if (this.notificationAutoRunning)
+            {
+                return;
+            }
+
+            this.notificationAutoRunning = true;
+
+            Task.Run(async () =>
+            {
+                int counter = 0;
+                await Task.Delay(3000);
+
+                this.xrv.WindowsSystem.ShowNotification($"Title #{counter}", $"This is the notification #{counter++}");
+                await Task.Delay(1000);
+
+                this.xrv.WindowsSystem.ShowNotification($"Title #{counter}", $"This is the notification #{counter++}", EvergineContent.XRV.Materials.LockedIcon);
+                this.xrv.WindowsSystem.ShowNotification($"Title #{counter}", $"This is the notification #{counter++}", EvergineContent.XRV.Materials.ColorWheel);
+                await Task.Delay(9500);
+
+                this.xrv.WindowsSystem.ShowNotification($"Title #{counter}", $"This is the notification #{counter++}");
+                await Task.Delay(2000);
+                this.xrv.WindowsSystem.ShowNotification($"Title #{counter}", $"This is the notification #{counter++}", EvergineContent.XRV.Materials.CircleHoverMaterial);
+
+                this.notificationAutoRunning = false;
+            });
+        }
+
+        private void NotifAdd_ButtonReleased(object sender, EventArgs e)
+        {
+            this.xrv.WindowsSystem.ShowNotification($"Title at {DateTime.Now.ToLongTimeString()}", $"This is the notification at {DateTime.Now.ToLongTimeString()}");
+        }
     }
 }
