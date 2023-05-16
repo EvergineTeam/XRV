@@ -214,20 +214,56 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Session host has taken session control.
+        ///   Looks up a localized string similar to Your control request has been denied.
         /// </summary>
-        public static string Sessions_Control_LostDialogMessage {
+        public static string Sessions_Control_Notifications_Denied_Text {
             get {
-                return ResourceManager.GetString("Sessions.Control.LostDialogMessage", resourceCulture);
+                return ResourceManager.GetString("Sessions.Control.Notifications.Denied.Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Control lost.
+        ///   Looks up a localized string similar to Control change.
         /// </summary>
-        public static string Sessions_Control_LostDialogTitle {
+        public static string Sessions_Control_Notifications_Denied_Title {
             get {
-                return ResourceManager.GetString("Sessions.Control.LostDialogTitle", resourceCulture);
+                return ResourceManager.GetString("Sessions.Control.Notifications.Denied.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have gained session control.
+        /// </summary>
+        public static string Sessions_Control_Notifications_Gained_Text {
+            get {
+                return ResourceManager.GetString("Sessions.Control.Notifications.Gained.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Control change.
+        /// </summary>
+        public static string Sessions_Control_Notifications_Gained_Title {
+            get {
+                return ResourceManager.GetString("Sessions.Control.Notifications.Gained.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have lost session control.
+        /// </summary>
+        public static string Sessions_Control_Notifications_Lost_Text {
+            get {
+                return ResourceManager.GetString("Sessions.Control.Notifications.Lost.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Control change.
+        /// </summary>
+        public static string Sessions_Control_Notifications_Lost_Title {
+            get {
+                return ResourceManager.GetString("Sessions.Control.Notifications.Lost.Title", resourceCulture);
             }
         }
         

@@ -109,12 +109,16 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
             if (message is ControlRequestResultMessage result)
             {
                 this.controlRequestTcs.TrySetResult(result.Accepted);
+                if (!result.Accepted)
+                {
+                    this.NotifyAboutDeniedControlRequest();
+                }
             }
             else if (message is ControlRequestMessage controlRequest)
             {
                 if (controlRequest.Type == ControlRequestMessageType.ControlTaken)
                 {
-                    this.HandleControlTakenFromHost();
+                    return;
                 }
                 else
                 {
@@ -225,10 +229,9 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
             return updateSessionProtocol.UpdateDataAsync(nameof(SessionData.PresenterId), newPresenterId);
         }
 
-        private void HandleControlTakenFromHost() =>
-            this.windows.ShowAlertDialog(
-                this.localization.GetString(() => Resources.Strings.Sessions_Control_LostDialogTitle),
-                this.localization.GetString(() => Resources.Strings.Sessions_Control_LostDialogMessage),
-                this.localization.GetString(() => Resources.Strings.Global_Ok));
+        private void NotifyAboutDeniedControlRequest() =>
+            this.windows.ShowNotification(
+                this.localization.GetString(() => Resources.Strings.Sessions_Control_Notifications_Denied_Title),
+                this.localization.GetString(() => Resources.Strings.Sessions_Control_Notifications_Denied_Text));
     }
 }

@@ -304,7 +304,8 @@ namespace Evergine.Xrv.Core.Networking
                 .AddComponent(this.sessionDataUpdater)
                 .AddComponent(new SessionPresenterObserver())
                 .AddComponent(new WorldAnchor())
-                .AddComponent(new NetworkNotifications());
+                .AddComponent(new NetworkNotifications())
+                .AddComponent(new ControlRequestNotifications());
             this.entityManager.Add(this.worldCenterEntity);
             this.xrvService.Services.Messaging.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
             this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;

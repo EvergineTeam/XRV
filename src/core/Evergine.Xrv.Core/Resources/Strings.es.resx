@@ -168,11 +168,23 @@
   <data name="Sessions.ConnectionLost.Title" xml:space="preserve">
     <value>¡Uy! Conexión perdida</value>
   </data>
-  <data name="Sessions.Control.LostDialogMessage" xml:space="preserve">
-    <value>El propietario de la sesión ha tomado el control</value>
+  <data name="Sessions.Control.Notifications.Denied.Text" xml:space="preserve">
+    <value>Tu solicitud de control se ha denegado</value>
   </data>
-  <data name="Sessions.Control.LostDialogTitle" xml:space="preserve">
-    <value>Control perdido</value>
+  <data name="Sessions.Control.Notifications.Denied.Title" xml:space="preserve">
+    <value>Cambio de control</value>
+  </data>
+  <data name="Sessions.Control.Notifications.Gained.Text" xml:space="preserve">
+    <value>Has ganado el control de la sesión</value>
+  </data>
+  <data name="Sessions.Control.Notifications.Gained.Title" xml:space="preserve">
+    <value>Cambio de control</value>
+  </data>
+  <data name="Sessions.Control.Notifications.Lost.Text" xml:space="preserve">
+    <value>Has perdido el control de la sesión</value>
+  </data>
+  <data name="Sessions.Control.Notifications.Lost.Title" xml:space="preserve">
+    <value>Cambio de control</value>
   </data>
   <data name="Sessions.Control.RequestDialogMessage" xml:space="preserve">
     <value>Alguien ha solicitado tomar el control.
@@ -186,6 +198,34 @@
   </data>
   <data name="Sessions.HostFinishedSession.Title" xml:space="preserve">
     <value>Sesión finalizada</value>
+  </data>
+  <data name="Sessions.Notifications.CreatedSession.Text" xml:space="preserve">
+    <value>Has creado y te has unido a {0} con nombre {1}</value>
+    <comment>0: Session name, 1: Nickname</comment>
+  </data>
+  <data name="Sessions.Notifications.CreatedSession.Title" xml:space="preserve">
+    <value>Sesión creada</value>
+  </data>
+  <data name="Sessions.Notifications.JoinedSession.Text" xml:space="preserve">
+    <value>Te has unido a {0} con nombre {1}</value>
+    <comment>0: Session name, 1: Nickname</comment>
+  </data>
+  <data name="Sessions.Notifications.JoinedSession.Title" xml:space="preserve">
+    <value>Unido a la sesión</value>
+  </data>
+  <data name="Sessions.Notifications.ParticipantJoined.Text" xml:space="preserve">
+    <value>El participante con nombre {0} se ha unido a {1}</value>
+    <comment>0: Nickname, 1: Session name</comment>
+  </data>
+  <data name="Sessions.Notifications.ParticipantJoined.Title" xml:space="preserve">
+    <value>Nuevo participante</value>
+  </data>
+  <data name="Sessions.Notifications.ParticipantLeft.Text" xml:space="preserve">
+    <value>El participante con nombre {0} ha salido de {1}</value>
+    <comment>0: Nickname, 1: Session name</comment>
+  </data>
+  <data name="Sessions.Notifications.ParticipantLeft.Title" xml:space="preserve">
+    <value>Participate se marchó</value>
   </data>
   <data name="Settings.General.Passthrough.Activated" xml:space="preserve">
     <value>Activado</value>
