@@ -157,7 +157,11 @@ namespace Evergine.Xrv.Core.UI.Notifications
         protected override void OnDeactivated()
         {
             base.OnDeactivated();
-            this.xrv.ThemesSystem.ThemeUpdated -= this.ThemesSystem_ThemeUpdated;
+
+            if (!Application.Current.IsEditor)
+            {
+                this.xrv.ThemesSystem.ThemeUpdated -= this.ThemesSystem_ThemeUpdated;
+            }
         }
 
         /// <inheritdoc/>
@@ -237,6 +241,11 @@ namespace Evergine.Xrv.Core.UI.Notifications
         private void ChangeHubVisibility(bool show, bool immediate, bool skipItem)
         {
             this.isDisplayingHub = show;
+            if (show)
+            {
+                this.plateMaterial.Owner.IsEnabled = true;
+            }
+
             this.displayHubAnimation?.TryCancel();
             this.displayHubAnimation = new FloatAnimationWorkAction(
                     this.Owner,
@@ -278,6 +287,8 @@ namespace Evergine.Xrv.Core.UI.Notifications
                     })
                 .ContinueWithAction(() =>
                 {
+                    this.plateMaterial.Owner.IsEnabled = show;
+
                     if (show)
                     {
                         this.StartItemAnimation(true);
@@ -319,9 +330,12 @@ namespace Evergine.Xrv.Core.UI.Notifications
                         this.titleMesh.Color = color;
                         this.textMesh.Color = color;
 
-                        color = this.iconHoloGraphic.Albedo;
-                        color.A = alpha;
-                        this.iconHoloGraphic.Albedo = color;
+                        if (this.iconHoloGraphic != null)
+                        {
+                            color = this.iconHoloGraphic.Albedo;
+                            color.A = alpha;
+                            this.iconHoloGraphic.Albedo = color;
+                        }
                     }))
 
                 // we are experiencing some access violation exceptions in UWP Hololens

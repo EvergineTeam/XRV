@@ -1,10 +1,4 @@
-﻿-----------------------------
-Networking has been temporary disabled, because we plan to offer XRV in next Evergine release. 
-To undo this and continue working with networking, remove NetworkSystem.NetworkSystemEnabled and any related code. 
-Also remove this comment :)
------------------------------
-
-To make your app discoverable, you need to disable isolation in UWP to make it work
+﻿To make your app discoverable, you need to disable isolation in UWP to make it work
 https://docs.microsoft.com/en-us/windows/uwp/communication/interprocess-communication
 
 We provide necessary commands below, but if you want to have a different package working, read the following.

@@ -106,6 +106,35 @@ Root:
           IsEnabled: true
           OrderBias: 0
           RenderFlags: CastShadows
+        - !Evergine.Framework.Physics3D.StaticBody3D,Evergine.Framework
+          Id: 66dc8f32-fe7d-428e-a09b-97c514ea61ce
+          CcdMotionThreshold: 0.0
+          CcdSweptSphereRadius: 0.200000003
+          CollisionCategories: Cat1
+          Friction: 0.5
+          IsEnabled: true
+          IsSensor: true
+          MaskBits: All
+          Restitution: 0.0
+          RollingFriction: 0.0
+          UpdateOrder: 0.5
+        - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
+          Id: d58b7e4c-efb9-42c2-995c-fc3dd2ada3ec
+          IsEnabled: true
+          Margin: 0.0399999991
+          Offset:
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          OrientationOffset:
+            W: 1.0
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          Size:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
       Children:
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
           Name: plate

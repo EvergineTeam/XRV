@@ -185,6 +185,12 @@ namespace Evergine.Xrv.Core.Networking
         public IWorldCenterProvider WorldCenterProvider { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether notifications will be displayed when
+        /// participants join or leave the session.
+        /// </summary>
+        public bool EnableNotifications { get; set; } = true;
+
+        /// <summary>
         /// Gets networking session participants system.
         /// </summary>
         public SessionParticipants Participants { get; private set; }
@@ -297,7 +303,8 @@ namespace Evergine.Xrv.Core.Networking
                 .AddComponent(this.sessionDataSync)
                 .AddComponent(this.sessionDataUpdater)
                 .AddComponent(new SessionPresenterObserver())
-                .AddComponent(new WorldAnchor());
+                .AddComponent(new WorldAnchor())
+                .AddComponent(new NetworkNotifications());
             this.entityManager.Add(this.worldCenterEntity);
             this.xrvService.Services.Messaging.Subscribe<HandMenuActionMessage>(this.OnHandMenuButtonPressed);
             this.xrvService.ThemesSystem.ThemeUpdated += this.ThemesSystem_ThemeUpdated;

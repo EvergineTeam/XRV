@@ -37,6 +37,8 @@ namespace Evergine.Xrv.Core
 
             public sealed class Networking
             {
+                /// <summary> Asset Path (XRV/Materials/Networking/notification-icon.wemt) </summary>
+                public static readonly Guid notification_icon = new Guid("8d98f911-dbff-43a9-9b53-585407156f1f");
 
                 public sealed class Participants
                 {

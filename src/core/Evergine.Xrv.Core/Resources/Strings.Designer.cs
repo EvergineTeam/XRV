@@ -269,6 +269,78 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have created and joined {0} with name {1}.
+        /// </summary>
+        public static string Sessions_Notifications_CreatedSession_Text {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.CreatedSession.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Session created.
+        /// </summary>
+        public static string Sessions_Notifications_CreatedSession_Title {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.CreatedSession.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have joined {0} with name {1}.
+        /// </summary>
+        public static string Sessions_Notifications_JoinedSession_Text {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.JoinedSession.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Joined to session.
+        /// </summary>
+        public static string Sessions_Notifications_JoinedSession_Title {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.JoinedSession.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Participant with name {0} has joined to {1}.
+        /// </summary>
+        public static string Sessions_Notifications_ParticipantJoined_Text {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.ParticipantJoined.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New participant.
+        /// </summary>
+        public static string Sessions_Notifications_ParticipantJoined_Title {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.ParticipantJoined.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Participant with name {0} has left {1}.
+        /// </summary>
+        public static string Sessions_Notifications_ParticipantLeft_Text {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.ParticipantLeft.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Participant left.
+        /// </summary>
+        public static string Sessions_Notifications_ParticipantLeft_Title {
+            get {
+                return ResourceManager.GetString("Sessions.Notifications.ParticipantLeft.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Activated.
         /// </summary>
         public static string Settings_General_Passthrough_Activated {
