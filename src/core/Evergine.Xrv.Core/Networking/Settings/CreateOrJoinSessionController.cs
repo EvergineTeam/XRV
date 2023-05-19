@@ -105,17 +105,13 @@ namespace Evergine.Xrv.Core.Networking.Settings
                 result = await this.networkSystem
                     .StartSessionAsync(this.sessionNameText.Text)
                     .ConfigureAwait(false);
-                if (result.Succeeded)
-                {
-                    this.sessionScanner.StartScanning();
-                }
             }
             catch (Exception ex)
             {
                 result = new ConnectionResult
                 {
                     Succeeded = false,
-                    CancelledByUser = true,
+                    CancelledByUser = false,
                 };
                 exception = ex;
                 this.logger?.LogError(ex, "Error creating session");

@@ -42,5 +42,11 @@ namespace Evergine.Xrv.Core.Networking
         /// Gets scan time for clients while looking for a network server.
         /// </summary>
         public TimeSpan ServerScanInterval { get; internal set; }
+
+        /// <summary>
+        /// Gets code to be scanned by QR scanning flow for
+        /// session connection.
+        /// </summary>
+        public string QrSessionCode { get; internal set; }
     }
 }

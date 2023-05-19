@@ -106,6 +106,17 @@ namespace Evergine.Xrv.Core.Networking
         }
 
         /// <summary>
+        /// Sets QR code to be scanned to join an existing session.
+        /// </summary>
+        /// <param name="qrCode">Target QR code.</param>
+        /// <returns>Builder.</returns>
+        public NetworkConfigurationBuilder SetQrCodeForSession(string qrCode)
+        {
+            this.configuration.QrSessionCode = qrCode;
+            return this;
+        }
+
+        /// <summary>
         /// Builds the configuration.
         /// </summary>
         /// <returns>Network configuration.</returns>

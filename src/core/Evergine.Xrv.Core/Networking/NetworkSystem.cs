@@ -99,7 +99,10 @@ namespace Evergine.Xrv.Core.Networking
                 this.localization,
                 this);
 #else
-            this.WorldCenterProvider = new QrWorldCenterProvider(this.xrvService.Services.QrScanningFlow, this.assetsService);
+            this.WorldCenterProvider = new QrWorldCenterProvider(
+                this.xrvService.Services.QrScanningFlow,
+                this,
+                this.assetsService);
 #endif
         }
 

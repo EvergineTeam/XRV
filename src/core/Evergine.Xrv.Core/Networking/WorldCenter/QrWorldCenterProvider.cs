@@ -17,6 +17,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
     public class QrWorldCenterProvider : IWorldCenterProvider
     {
         private readonly QRScanningFlow scanningFlow;
+        private readonly NetworkSystem networkSystem;
         private readonly AssetsService assetsService;
 
         private Entity marker;
@@ -26,9 +27,11 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         /// Initializes a new instance of the <see cref="QrWorldCenterProvider"/> class.
         /// </summary>
         /// <param name="scanningFlow">QR scanning flow.</param>
+        /// <param name="networkSystem">Network system.</param>
         /// <param name="assetsService">Assets service.</param>
         public QrWorldCenterProvider(
             QRScanningFlow scanningFlow,
+            NetworkSystem networkSystem,
             AssetsService assetsService)
         {
             this.scanningFlow = scanningFlow;
@@ -37,12 +40,21 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 this.scanningFlow.Completed += this.ScanningFlow_Completed;
             }
 
+            this.networkSystem = networkSystem;
             this.assetsService = assetsService;
         }
 
         /// <inheritdoc/>
         public async Task<Matrix4x4?> GetWorldCenterPoseAsync(CancellationToken cancellationToken = default)
         {
+            var configuration = this.networkSystem.Configuration;
+            var code = configuration.QrSessionCode;
+            if (string.IsNullOrEmpty(code))
+            {
+                throw new InvalidOperationException($"You should specify a value for {nameof(configuration.QrSessionCode)}");
+            }
+
+            this.scanningFlow.ExpectedCodes = new[] { code };
             this.scanningFlow.HideMarkerAutomatically = true;
 
             var result = await this.scanningFlow.ExecuteFlowAsync(cancellationToken).ConfigureAwait(false);

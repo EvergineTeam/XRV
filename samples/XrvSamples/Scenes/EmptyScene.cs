@@ -1,5 +1,4 @@
 using Evergine.Framework;
-using Evergine.Platform;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Networking;
 
@@ -23,11 +22,13 @@ namespace XrvSamples.Scenes
             ////    .ForApplication(nameof(XrvSamples))
             ////    .UsePort(12345)
             ////    ////.UsePort(DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? 12345 : 12344)
+            ////    .SetQrCodeForSession("This is XRV!")
             ////    .Build();
             ////xrv.Networking.Configuration = configuration;
             ////////xrv.Networking.OverrideScanningPort = 12345;
             ////xrv.Networking.NetworkingAvailable = true;
-            ////xrv.Services.QrScanningFlow.ExpectedCodes = new[] { "This is XRV!" };
+            
+            xrv.Services.Passthrough.EnablePassthrough = true;
         }
     }
 }
