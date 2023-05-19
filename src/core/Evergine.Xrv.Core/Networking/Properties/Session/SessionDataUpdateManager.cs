@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using Evergine.Framework;
+using Evergine.Xrv.Core.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -30,6 +31,12 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
             => this.updateQueue.Enqueue(new UpdateGlobalAction(propertyName, propertyValue));
 
         public void UpdateSession(SessionDataGroup update) => this.updateQueue.Enqueue(new UpdateGroupAction(update));
+
+        public void ClearSession()
+        {
+            this.updateQueue.ClearImpl();
+            this.synchronization.SetData(null);
+        }
 
         protected override bool OnAttached()
         {

@@ -8,6 +8,7 @@ using Evergine.Framework.Threading;
 using Evergine.Networking.Client;
 using Evergine.Networking.Client.Players;
 using Evergine.Networking.Components;
+using Evergine.Xrv.Core.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -404,11 +405,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
         {
             this.queueProcessingTcs?.Cancel();
             this.queueProcessingTcs = null;
-
-            while (this.actionQueue.Any())
-            {
-                this.actionQueue.TryDequeue(out var _);
-            }
+            this.actionQueue.ClearImpl();
         }
 
         private void CurrentRoom_PlayerJoined(object sender, RemoteNetworkPlayer client)

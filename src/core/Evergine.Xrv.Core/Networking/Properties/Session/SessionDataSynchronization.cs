@@ -25,8 +25,12 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
         internal void SetData(SessionData sessionData)
         {
             this.CurrentValue = sessionData;
-            this.PropertyValue = sessionData;
-            this.NotifySessionDataChange();
+
+            if (this.IsReady)
+            {
+                this.PropertyValue = sessionData;
+                this.NotifySessionDataChange();
+            }
         }
 
         internal void NotifySessionDataChange() =>

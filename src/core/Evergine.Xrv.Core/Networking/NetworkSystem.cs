@@ -435,6 +435,7 @@ namespace Evergine.Xrv.Core.Networking
 
             // Remove other session-related elements
             this.worldCenterEntity.RemoveComponent<SessionPresenterStillAlive>();
+            this.sessionDataUpdater.ClearSession();
 
             _ = EvergineForegroundTask.Run(() =>
             {
