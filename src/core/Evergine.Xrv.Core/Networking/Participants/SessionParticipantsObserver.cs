@@ -11,7 +11,6 @@ using Evergine.Networking.Components;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
 {
     internal class SessionParticipantsObserver : Behavior
     {
-        private readonly Dictionary<int, Entity> participantEntities = new Dictionary<int, Entity>();
+        private readonly ConcurrentDictionary<int, Entity> participantEntities = new ConcurrentDictionary<int, Entity>();
         private readonly ConcurrentQueue<ParticipantAction> actionQueue = new ConcurrentQueue<ParticipantAction>();
 
         [BindService]
@@ -196,27 +195,26 @@ namespace Evergine.Xrv.Core.Networking.Participants
 
             if (!cancellation.IsCancellationRequested)
             {
-                this.participantEntities.Add(participant.ClientId, participantEntity);
-                this.networking.AddNetworkingEntity(participantEntity);
+                if (this.participantEntities.TryAdd(participant.ClientId, participantEntity))
+                {
+                    this.networking.AddNetworkingEntity(participantEntity);
+                }
             }
         }
 
         private void RemoveParticipantHierarchy(int clientId)
         {
-            if (this.participantEntities.ContainsKey(clientId))
+            if (this.participantEntities.TryRemove(clientId, out var participantEntity))
             {
-                var participantEntity = this.participantEntities[clientId];
-                this.participantEntities.Remove(clientId);
                 this.networking.RemoveNetworkingEntity(participantEntity);
             }
         }
 
         private void RemoveAllParticipantsFromHierarchy()
         {
-            var allParticipants = this.participantEntities.Keys;
-            foreach (var clientId in allParticipants)
+            foreach (var entry in this.participantEntities)
             {
-                this.RemoveParticipantHierarchy(clientId);
+                this.RemoveParticipantHierarchy(entry.Key);
             }
         }
 
