@@ -131,7 +131,7 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
                 desiredDirection.Normalize();
 
                 this.transform.LocalPosition = desiredPosition;
-                this.transform.LookAt(desiredPosition + desiredDirection);
+                this.transform.LookAt(this.transform.Position + desiredDirection);
             }
         }
 
