@@ -18,6 +18,9 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
         [BindService(isRequired: false)]
         private XRPlatform xrPlatform = null;
 
+        [BindComponent(source: BindComponentSource.ParentsSkipOwner)]
+        private Transform3D parentTransform3D;
+
         private XRTrackedDevice lastTrackedDevice;
         private bool lastButtonState;
         private bool menuToggleState;
@@ -51,14 +54,14 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
                 {
                     if (this.lastTrackedDevice.TryGetArticulatedHandJoint(XRHandJointKind.MiddleProximal, out var middleProximalJoint))
                     {
-                        return middleProximalJoint.Pose.Position;
+                        return Vector3.Transform(middleProximalJoint.Pose.Position, this.parentTransform3D.WorldTransform);
                     }
                 }
                 else if (this.lastTrackedDevice.DeviceType == XRTrackedDeviceType.Controller)
                 {
                     if (this.lastTrackedDevice.GetTrackingState(out var trackingState))
                     {
-                        return trackingState.Pose.Position;
+                        return Vector3.Transform(trackingState.Pose.Position, this.parentTransform3D.WorldTransform);
                     }
                 }
             }
@@ -101,13 +104,11 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
                 return false;
             }
 
-            var worldTransform = this.transform.WorldTransform;
-
             // Get the positions for the joints that will be used to determine if the palm is open
-            var middleMetacarpalPosition = Vector3.TransformCoordinate(middleMetacarpalJoint.Pose.Position, worldTransform);
-            var middleMetacarpalOrientation = middleMetacarpalJoint.Pose.Orientation * worldTransform.Orientation;
-            var indexTipPosition = Vector3.TransformCoordinate(indexTipJoint.Pose.Position, worldTransform);
-            var ringTipPosition = Vector3.TransformCoordinate(ringTipJoint.Pose.Position, worldTransform);
+            var middleMetacarpalPosition = Vector3.Transform(middleMetacarpalJoint.Pose.Position, this.parentTransform3D.WorldTransform);
+            var middleMetacarpalOrientation = middleMetacarpalJoint.Pose.Orientation * this.parentTransform3D.WorldTransform.Orientation;
+            var indexTipPosition = Vector3.Transform(indexTipJoint.Pose.Position, this.parentTransform3D.WorldTransform);
+            var ringTipPosition = Vector3.Transform(ringTipJoint.Pose.Position, this.parentTransform3D.WorldTransform);
 
             // Calculate hand plane
             var handPlane = trackedDevice.Handedness == XRHandedness.LeftHand ?
@@ -136,7 +137,7 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
                 lineBatch.DrawPoint(indexTipPosition, 0.01f, Color.Green);
                 lineBatch.DrawPoint(ringTipPosition, 0.01f, Color.Blue);
 
-                var palmPosition = Vector3.TransformCoordinate(palm.Pose.Position, worldTransform);
+                var palmPosition = Vector3.Transform(palm.Pose.Position, this.parentTransform3D.WorldTransform);
 
                 lineBatch.DrawRay(palmPosition, palmNormal * 0.02f, Color.Cyan);
                 lineBatch.DrawRay(palmPosition, cameraNormal * 0.02f, Color.Magenta);

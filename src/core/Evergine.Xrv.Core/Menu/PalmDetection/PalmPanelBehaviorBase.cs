@@ -130,8 +130,8 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
                 var desiredDirection = cameraPosition - desiredPosition;
                 desiredDirection.Normalize();
 
-                this.transform.LocalPosition = desiredPosition;
-                this.transform.LookAt(this.transform.Position + desiredDirection);
+                this.transform.Position = desiredPosition;
+                this.transform.LookAt(desiredPosition + desiredDirection);
             }
         }
 
