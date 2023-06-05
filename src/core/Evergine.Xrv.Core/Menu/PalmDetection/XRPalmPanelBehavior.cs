@@ -19,7 +19,7 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
         private XRPlatform xrPlatform = null;
 
         [BindComponent(source: BindComponentSource.ParentsSkipOwner)]
-        private Transform3D parentTransform3D;
+        private Transform3D parentTransform3D = null;
 
         private XRTrackedDevice lastTrackedDevice;
         private bool lastButtonState;
