@@ -285,13 +285,15 @@ namespace Evergine.Xrv.Painter.Components
             foreach (var cursor in cursors)
             {
                 var parent = cursor.Owner;
-                while (parent.Parent != null)
+                TrackXRController trackXRController = null;
+
+                while (trackXRController == null)
                 {
                     parent = parent.Parent;
+                    trackXRController = parent?.FindComponent<TrackXRController>(isExactType: false);
                 }
 
-                var trackXRController = parent.FindComponentInChildren<TrackXRController>(isExactType: false);
-                if (trackXRController.Handedness == this.Hand)
+                if (trackXRController?.Handedness == this.Hand)
                 {
                     if (trackXRController is TrackXRArticulatedHand)
                     {
