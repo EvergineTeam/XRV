@@ -29,7 +29,7 @@
 		<ProjectReference Include="$(MSBuildThisFileDirectory)submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
     </ItemGroup>
     <ItemGroup Condition="'$(UseMRTKNuget)'=='true' And '$(ReferenceMRTK)'=='true'">
-		<PackageReference Include="Evergine.MRTK" Version="2023.9.25.3-nightly" />
+		<PackageReference Include="Evergine.MRTK" Version="2023.9.25.9-nightly" />
     </ItemGroup>
 	
 	<!-- Add-ons packaging -->
