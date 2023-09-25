@@ -164,7 +164,7 @@ namespace Evergine.Xrv.Core
 
             if (Application.Current?.IsEditor == false)
             {
-                Application.Current.Container.RegisterType<LocalizationService>();
+                Application.Current.Container.Register<LocalizationService>();
                 this.Localization = Application.Current.Container.Resolve<LocalizationService>();
             }
 
