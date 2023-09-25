@@ -73,7 +73,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
             {
                 this.queueProcessingTcs?.Cancel();
                 this.queueProcessingTcs = new CancellationTokenSource();
-                this.queueProcessingTask = Task.Run(async () => await this.ProcessQueueAsync(this.queueProcessingTcs.Token)
+                this.queueProcessingTask = EvergineBackgroundTask.Run(async () => await this.ProcessQueueAsync(this.queueProcessingTcs.Token))
                     .ContinueWith(t =>
                     {
                         this.queueProcessingTask = null;
@@ -82,7 +82,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
                         {
                             this.logger?.LogError(t.Exception, "Error processing participants queue");
                         }
-                    }));
+                    });
             }
         }
 
@@ -111,15 +111,6 @@ namespace Evergine.Xrv.Core.Networking.Participants
                 {
                     await EvergineForegroundTask.Run(() => this.RemoveParticipantHierarchy(action.ParticipantInfo.ClientId))
                         .ConfigureAwait(false);
-                }
-
-                // It looks like Android-based devices are under "pressure" when processing
-                // avatar parts load in different threads (maybe related with AssetsService not
-                // being thread-safe?). We give it some extra time, that seems to reduce the number
-                // of crashes in Quest 2 devices.
-                if (Platform.DeviceInfo.PlatformType == Common.PlatformType.Android)
-                {
-                    await Task.Delay(100).ConfigureAwait(false);
                 }
             }
         }
