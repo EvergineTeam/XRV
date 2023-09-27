@@ -287,7 +287,7 @@ namespace Evergine.Xrv.Painter.Components
                 var parent = cursor.Owner;
                 TrackXRController trackXRController = null;
 
-                while (trackXRController == null)
+                while (parent != null && trackXRController == null)
                 {
                     parent = parent.Parent;
                     trackXRController = parent?.FindComponent<TrackXRController>(isExactType: false);
