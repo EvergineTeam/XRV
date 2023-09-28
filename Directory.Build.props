@@ -29,7 +29,7 @@
 		<ProjectReference Include="$(MSBuildThisFileDirectory)submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
     </ItemGroup>
     <ItemGroup Condition="'$(UseMRTKNuget)'=='true' And '$(ReferenceMRTK)'=='true'">
-		<PackageReference Include="Evergine.MRTK" Version="2023.9.27.1-nightly" />
+		<PackageReference Include="Evergine.MRTK" Version="2023.9.28.1" />
     </ItemGroup>
 	
 	<!-- Add-ons packaging -->
@@ -38,7 +38,7 @@
 		<IsAddOnProject Condition="'$(IsAddOnProject)'==''">false</IsAddOnProject>
 	</PropertyGroup>	
 	<ItemGroup Condition="'$(IsAddOnProject)'=='true'">
-		<PackageReference Include="Evergine.Packages.Targets" Version="2023.9.27.597-nightly" />
+		<PackageReference Include="Evergine.Packages.Targets" Version="2023.9.28.510" />
 	</ItemGroup>
 	
 	<!-- Stylecop -->
