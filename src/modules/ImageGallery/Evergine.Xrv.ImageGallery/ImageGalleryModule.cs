@@ -15,7 +15,7 @@ using Evergine.Xrv.Core.Networking.Properties;
 using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
-using Evergine.Xrv.ImageGallery.Networking;
+////using Evergine.Xrv.ImageGallery.Networking;
 
 namespace Evergine.Xrv.ImageGallery
 {
@@ -24,10 +24,25 @@ namespace Evergine.Xrv.ImageGallery
     /// </summary>
     public class ImageGalleryModule : Module
     {
+        /// <summary>
+        /// Gets or sets the window.
+        /// </summary>
+        protected Window window;
+
+        /// <summary>
+        /// Gets or sets the window entity.
+        /// </summary>
+        protected Entity windowEntity;
+
+        /// <summary>
+        /// Gets or sets the image gallery.
+        /// </summary>
+        protected ImageGallery.Components.ImageGallery imageGallery;
+
         private AssetsService assetsService;
         private XrvService xrv;
         private Entity imageGalleryHelp;
-        private Window window;
+
 
         /// <summary>
         /// Gets or sets the width of the images listed in the gallery.
@@ -58,6 +73,7 @@ namespace Evergine.Xrv.ImageGallery
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
+
 
         /// <inheritdoc/>
         public override void Initialize(Scene scene)
@@ -107,12 +123,14 @@ namespace Evergine.Xrv.ImageGallery
                 },
                 false);
 
-            this.xrv.Networking.AddNetworkingEntity(windowEntity);
+            ////this.xrv.Networking.AddNetworkingEntity(windowEntity);
             windowEntity.AddComponent(new ModuleNetworkingWindowController(this));
             windowEntity.AddComponent(new TransformSynchronization());
+            this.windowEntity = windowEntity;
+            this.imageGallery = imageGallery;
 
             // Networking
-            this.xrv.Networking.SetUpModuleSynchronization(this, new GallerySessionSynchronization(windowEntity));
+            ////this.xrv.Networking.SetUpModuleSynchronization(this, new GallerySessionSynchronization(windowEntity));
         }
 
         /// <inheritdoc/>
