@@ -43,7 +43,6 @@ namespace Evergine.Xrv.ImageGallery
         private XrvService xrv;
         private Entity imageGalleryHelp;
 
-
         /// <summary>
         /// Gets or sets the width of the images listed in the gallery.
         /// </summary>
@@ -73,7 +72,6 @@ namespace Evergine.Xrv.ImageGallery
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
-
 
         /// <inheritdoc/>
         public override void Initialize(Scene scene)
