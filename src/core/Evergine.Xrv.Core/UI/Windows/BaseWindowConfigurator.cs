@@ -85,13 +85,11 @@ namespace Evergine.Xrv.Core.UI.Windows
         private Vector2 frontPlateSize;
         private string title;
         private Func<string> localizedTitle;
-        private Entity logoEntity;
         private Entity contentEntity;
         private Entity content;
 
         private bool displayBackPlate = true;
         private bool displayFrontPlate = true;
-        private bool displayLogo = true;
 
         /// <summary>
         /// Gets or sets window contents.
@@ -231,23 +229,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             }
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether bottom left icon should be displayed or not.
-        /// </summary>
-        public bool DisplayLogo
-        {
-            get => this.displayLogo;
-
-            set
-            {
-                if (this.displayLogo != value)
-                {
-                    this.displayLogo = value;
-                    this.UpdateDisplayLogo();
-                }
-            }
-        }
-
         internal void UpdateContent()
         {
             if (this.contentEntity == null)
@@ -282,7 +263,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             if (attached)
             {
                 this.contentEntity = this.Owner.FindChildrenByTag("PART_window_content", isRecursive: true).First();
-                this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
 
                 if (this.localizedTitle != null && this.titleLocalization != null)
                 {
@@ -304,7 +284,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             this.UpdateFrontPlateOffsets();
             this.UpdateContent();
             this.UpdateTitle();
-            this.UpdateDisplayLogo();
             this.UpdateDisplayBackPlate();
             this.UpdateDisplayFrontPlate();
         }
@@ -385,14 +364,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             this.titleMesh.Text = this.localizedTitle != null
                 ? this.localizedTitle.Invoke()
                 : this.title;
-
-        private void UpdateDisplayLogo()
-        {
-            if (this.IsAttached)
-            {
-                this.logoEntity.IsEnabled = this.displayLogo;
-            }
-        }
 
         private void UpdateDisplayFrontPlate()
         {
