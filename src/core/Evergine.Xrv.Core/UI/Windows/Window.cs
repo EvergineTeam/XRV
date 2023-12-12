@@ -25,6 +25,7 @@ namespace Evergine.Xrv.Core.UI.Windows
 
         private Entity closeButton = null;
         private Entity followButton = null;
+        private Entity logoEntity = null;
         private bool allowPin = true;
         private bool enableManipulation = true;
 
@@ -158,6 +159,7 @@ namespace Evergine.Xrv.Core.UI.Windows
             {
                 this.closeButton = this.Owner.FindChildrenByTag("PART_window_close", true).First();
                 this.followButton = this.Owner.FindChildrenByTag("PART_window_follow", true).First();
+                this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
                 this.SubscribeEvents();
                 this.UpdateFollowBehavior(false);
             }
@@ -189,6 +191,12 @@ namespace Evergine.Xrv.Core.UI.Windows
             var distances = this.xrvService.WindowsSystem.Distances;
             return distances.GetDistanceOrAlternative(this.DistanceKey, Distances.MediumKey);
         }
+
+        /// <summary>
+        /// Changes window logo visibility.
+        /// </summary>
+        /// <param name="visible">True to make it visible; false otherwise.</param>
+        protected void UpdateLogoVisibility(bool visible) => this.logoEntity.IsEnabled = visible;
 
         private void SubscribeEvents()
         {

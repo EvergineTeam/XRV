@@ -72,6 +72,7 @@ namespace XrvSamples.Scenes
                     Text,
                     new Vector2(0.3f, 0.2f),
                     new Vector3(0.01f, -0.01f, 0f));
+                configurator.DisplayLogo = false;
             });
 
             this.window1.Opened += this.Window1_Opened;

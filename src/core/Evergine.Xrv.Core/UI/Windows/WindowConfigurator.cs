@@ -4,6 +4,7 @@ using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
+using System.Linq;
 
 namespace Evergine.Xrv.Core.UI.Windows
 {
@@ -14,6 +15,8 @@ namespace Evergine.Xrv.Core.UI.Windows
     {
         private Vector2 logoOffsets = new Vector2(0.03f, 0.025f);
         private Material logoMaterial;
+        private Entity logoEntity;
+        private bool displayLogo = true;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_window_logo")]
         private Transform3D logoTransform = null;
@@ -37,6 +40,35 @@ namespace Evergine.Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether bottom left icon should be displayed or not.
+        /// </summary>
+        public bool DisplayLogo
+        {
+            get => this.displayLogo;
+
+            set
+            {
+                if (this.displayLogo != value)
+                {
+                    this.displayLogo = value;
+                    this.UpdateDisplayLogo();
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override bool OnAttached()
+        {
+            bool attached = base.OnAttached();
+            if (attached)
+            {
+                this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
+            }
+
+            return attached;
+        }
+
         /// <inheritdoc/>
         protected override void OnActivated()
         {
@@ -58,8 +90,16 @@ namespace Evergine.Xrv.Core.UI.Windows
 
         private void UpdateLogoMaterial()
         {
-            this.logoMaterialComponent.Owner.IsEnabled = this.logoMaterial != null;
             this.logoMaterialComponent.Material = this.logoMaterial;
+            this.UpdateDisplayLogo();
+        }
+
+        private void UpdateDisplayLogo()
+        {
+            if (this.IsAttached)
+            {
+                this.logoEntity.IsEnabled = this.displayLogo && this.logoMaterial != null;
+            }
         }
     }
 }

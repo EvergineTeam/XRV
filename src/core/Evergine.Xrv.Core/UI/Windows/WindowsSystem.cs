@@ -292,7 +292,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             offset.X = 0;
             offset.Y = 0;
             dialogConfigurator.FrontPlateOffsets = offset;
-            dialogConfigurator.DisplayLogo = false;
 
             return owner;
         }
