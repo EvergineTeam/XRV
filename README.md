@@ -1,5 +1,11 @@
 # XRV
 
+## Prerequisites
+
+- Follow the installation instructions at https://learn.microsoft.com/en-us/windows/mixed-reality/develop/install-the-tools
+- Install the matching Windows 10 SDK: look for the tag `<TargetPlatformVersion>[...]</TargetPlatformVersion>` at src/core/Evergine.Xrv.Core/Evergine.Xrv.Core.csproj, close to UWP constant definition
+  - You may not find such in Visual Studio Installer, but Microsoft's website
+
 ## How to update to newer Engine version
 
 1. Ensure MRTK is updated to new Evergine version.
