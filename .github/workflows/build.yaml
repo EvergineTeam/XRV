@@ -86,6 +86,11 @@ jobs:
         run: |
           Write-Host "Installing powershell-yaml module"
           Install-Module -Name powershell-yaml -Force -Repository PSGallery -Scope CurrentUser
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '11'
       - name: Install Windows SDK
         uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.8
         with:

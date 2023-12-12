@@ -29,7 +29,7 @@ namespace Evergine.Xrv.Core.Help
 #elif ANDROID
             Context ctx = Application.Context.ApplicationContext;
             PackageManager packageManager = ctx.PackageManager;
-            PackageInfo info = packageManager.GetPackageInfo(ctx.PackageName, 0);
+            PackageInfo info = packageManager.GetPackageInfo(ctx.PackageName, PackageManager.PackageInfoFlags.Of(0));
             return info.VersionName;
 #else
             return Assembly.GetExecutingAssembly().GetName().Version.ToString();
