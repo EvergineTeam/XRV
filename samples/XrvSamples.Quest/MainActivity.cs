@@ -13,7 +13,7 @@ using Evergine.OpenXR;
 using Activity = Android.App.Activity;
 using Evergine.AndroidView;
 
-namespace XrvSamples.Quest.NET6
+namespace XrvSamples.Quest
 {
     [Activity(Label = "@string/app_name",
         ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.ScreenLayout | ConfigChanges.UiMode | ConfigChanges.Navigation | ConfigChanges.Keyboard,

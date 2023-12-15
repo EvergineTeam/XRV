@@ -2082,9 +2082,9 @@ Items:
   - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
     Id: bbe53e9f-5e52-4806-b751-8926e87d2816
     Source: 7bbcca2b-4383-4fcb-b577-bd191867a7bd
-    entityLinks: {}
-    modificationList: []
-    removedComponentList: []
+    EntityLinks: {}
+    Modifications: []
+    RemovedComponents: []
 Managers:
   - !Evergine.Framework.Managers.EntityManager,Evergine.Framework
     Id: d3bce9ba-ddcf-4084-a09d-975ecba6b541
@@ -2099,13 +2099,6 @@ Managers:
     Id: d967159d-77d4-437d-8fee-ec287b70d5ce
     DebugLines: false
     IsEnabled: true
-  - !Evergine.Framework.Managers.VirtualScreenManager,Evergine.Framework
-    Id: f608ccaf-7170-4094-a168-14f7663d78f1
-    Expand: true
-    IsEnabled: false
-    Stretch: Uniform
-    VirtualHeight: 0.0
-    VirtualWidth: 0.0
   - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
     Id: 04c70e10-af0d-4b80-9094-5f33f1af3fc0
     IBLReflectionProbe: 5e6aade8-160e-4dd2-915d-5ea726b9d287
@@ -2120,3 +2113,4 @@ Managers:
     PunctualResolution: Size_512
     ShadowFilter: PCF3x3
     SpotResolution: Size_512
+

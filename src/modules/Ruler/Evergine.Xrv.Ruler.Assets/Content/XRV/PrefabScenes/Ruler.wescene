@@ -25,7 +25,6 @@ Items:
       - !Evergine.Xrv.Ruler.RulerBehavior,Evergine.Xrv.Ruler
         Id: ca0966c9-f3b8-4af4-82e4-ebe609f8700c
         IsEnabled: true
-        Settings: null
         Units: Meters
         UpdateOrder: 0.5
       - !Evergine.Xrv.Ruler.Networking.RulerKeysAssignation,Evergine.Xrv.Ruler
@@ -537,13 +536,6 @@ Managers:
     Id: 4766af55-a187-4f98-ab06-f92875752e85
     DebugLines: false
     IsEnabled: true
-  - !Evergine.Framework.Managers.VirtualScreenManager,Evergine.Framework
-    Id: 14eafe18-2945-43f2-9399-dad0469190d2
-    Expand: true
-    IsEnabled: false
-    Stretch: Uniform
-    VirtualHeight: 0.0
-    VirtualWidth: 0.0
   - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
     Id: 3acd6892-69be-4e05-af40-6d97e636deba
     IBLReflectionProbe: 37bf5e7b-6685-4e11-afea-bed47cd04bb1
@@ -558,3 +550,4 @@ Managers:
     PunctualResolution: Size_512
     ShadowFilter: PCF3x3
     SpotResolution: Size_512
+
