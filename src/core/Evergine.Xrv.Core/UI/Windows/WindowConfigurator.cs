@@ -17,6 +17,8 @@ namespace Evergine.Xrv.Core.UI.Windows
         private Material logoMaterial;
         private Entity logoEntity;
         private bool displayLogo = true;
+        private Entity closeButtonEntity;
+        private bool showCloseButton = true;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_window_logo")]
         private Transform3D logoTransform = null;
@@ -57,6 +59,22 @@ namespace Evergine.Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether top right close window button should be displayed or not.
+        /// </summary>
+        public bool ShowCloseButton
+        {
+            get => this.showCloseButton;
+
+            set
+            {
+                if (this.showCloseButton != value)
+                {
+                    this.showCloseButton = value;
+                }
+            }
+        }
+
         /// <inheritdoc/>
         protected override bool OnAttached()
         {
@@ -64,6 +82,8 @@ namespace Evergine.Xrv.Core.UI.Windows
             if (attached)
             {
                 this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
+                this.closeButtonEntity = this.Owner.FindChildrenByTag("PART_window_close", isRecursive: true).First();
+                this.UpdateShowCloseButton();
             }
 
             return attached;
@@ -99,6 +119,14 @@ namespace Evergine.Xrv.Core.UI.Windows
             if (this.IsAttached)
             {
                 this.logoEntity.IsEnabled = this.displayLogo && this.logoMaterial != null;
+            }
+        }
+
+        private void UpdateShowCloseButton()
+        {
+            if (this.closeButtonEntity != null)
+            {
+                this.closeButtonEntity.IsEnabled = this.ShowCloseButton;
             }
         }
     }
