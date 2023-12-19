@@ -26,10 +26,10 @@ namespace Evergine.Xrv.Core.Help
 #if UWP
             PackageVersion version = Package.Current.Id.Version;
             return string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
-#elif ANDROID
+#elif NET8_0_ANDROID
             Context ctx = Application.Context.ApplicationContext;
             PackageManager packageManager = ctx.PackageManager;
-            PackageInfo info = packageManager.GetPackageInfo(ctx.PackageName, PackageManager.PackageInfoFlags.Of(0));
+            PackageInfo info = packageManager.GetPackageInfo(ctx.PackageName, 0);
             return info.VersionName;
 #else
             return Assembly.GetExecutingAssembly().GetName().Version.ToString();

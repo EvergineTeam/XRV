@@ -6,10 +6,10 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
-using Evergine.Platform;
 using System;
 using System.Threading.Tasks;
 using Evergine.Xrv.Core.UI.Windows;
+using Evergine.Xrv.Core.Utils;
 
 namespace Evergine.Xrv.Core.Menu.Tutorial
 {
@@ -53,7 +53,7 @@ namespace Evergine.Xrv.Core.Menu.Tutorial
             handTutorialEntity.AddComponent(new PingPongAnimation() { AnimationName = "Take 001" });
             var handMesh = handTutorialEntity.Find("[this].L_Hand.MeshL");
             handMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.HandTutorial);
-            handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = DeviceInfo.PlatformType == Evergine.Common.PlatformType.UWP ? false : true;
+            handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = DeviceHelper.PlatformType == Evergine.Common.PlatformType.UWP ? false : true;
             var panelMesh = handTutorialEntity.Find("[this].Panel");
             panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor4);
 

@@ -22,6 +22,6 @@ param (
 )
 
 for (;$numberOfInstances -gt 0;$numberOfInstances--) {
-    $cmd = "& ./bin/$configuration/net6.0-windows/XrvSamples.Windows.exe -Port=$($initialPort + $numberOfInstances - 1)"
+    $cmd = "& ./bin/$configuration/net8.0-windows/XrvSamples.Windows.exe -Port=$($initialPort + $numberOfInstances - 1)"
     Invoke-Expression $cmd &
 }

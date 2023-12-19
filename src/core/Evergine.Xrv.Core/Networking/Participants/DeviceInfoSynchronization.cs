@@ -7,7 +7,6 @@ using Evergine.Networking.Components;
 #if UWP
 using Evergine.Xrv.Core.Utils;
 #endif
-using EDeviceInfo = Evergine.Platform.DeviceInfo;
 
 namespace Evergine.Xrv.Core.Networking.Participants
 {
@@ -23,12 +22,13 @@ namespace Evergine.Xrv.Core.Networking.Participants
         {
             base.OnPropertyReadyToSet();
 
+            var implementation = new DeviceInfoImplementation();
             var deviceInfo = new DeviceInfo
             {
-                Name = EDeviceInfo.Name,
-                Model = EDeviceInfo.Model,
-                Manufacturer = EDeviceInfo.Manufacturer,
-                PlatformType = EDeviceInfo.PlatformType,
+                Name = implementation.Name,
+                Model = implementation.Model,
+                Manufacturer = implementation.Manufacturer,
+                PlatformType = implementation.PlatformType,
             };
 #if ANDROID
             deviceInfo.Extras.Add(DeviceInfo.ProductKey, Build.Product);

@@ -1,5 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
+using System.Collections.Generic;
+using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Fonts;
 using Evergine.Components.Primitives;
@@ -7,8 +10,6 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using System;
-using System.Collections.Generic;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Themes;
 
@@ -102,6 +103,7 @@ namespace Evergine.Xrv.Ruler
         /// <summary>
         /// Gets or sets settings entity.
         /// </summary>
+        [IgnoreEvergine]
         public Entity Settings
         {
             get => this.settings;

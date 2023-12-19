@@ -1,6 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Platform;
+using Evergine.Common;
+using Evergine.Xrv.Core.Networking.Participants;
 using System;
 using System.IO;
 using System.Reflection;
@@ -14,6 +15,17 @@ namespace Evergine.Xrv.Core.Utils
     public static class DeviceHelper
     {
         private static bool? isHoloLens;
+        private static DeviceInfoImplementation deviceInfo;
+
+        static DeviceHelper()
+        {
+            deviceInfo = new DeviceInfoImplementation();
+        }
+
+        /// <summary>
+        /// Gets platform type.
+        /// </summary>
+        public static PlatformType PlatformType { get => deviceInfo.PlatformType; }
 
         /// <summary>
         /// Gets platform application folder path.
@@ -21,7 +33,7 @@ namespace Evergine.Xrv.Core.Utils
         /// <returns>Application folder path.</returns>
         public static string GetLocalApplicationFolderPath()
         {
-            if (DeviceInfo.PlatformType == Evergine.Common.PlatformType.Windows
+            if (PlatformType == Evergine.Common.PlatformType.Windows
                 &&
                 Assembly.GetEntryAssembly() is Assembly entryAssembly)
             {
