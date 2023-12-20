@@ -448,6 +448,5 @@ namespace Evergine.Xrv.ModelViewer
 
             return sb.ToString();
         }
-
     }
 }
