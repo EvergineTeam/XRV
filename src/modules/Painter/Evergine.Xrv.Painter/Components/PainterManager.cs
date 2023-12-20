@@ -181,7 +181,7 @@ namespace Evergine.Xrv.Painter.Components
                 }
                 else if (last.Mode == PainterModes.Eraser)
                 {
-                    var line = this.CreateEntity(this.Color);
+                    var line = this.CreateEntity(last.Line[0].Color);
                     this.Owner.EntityManager.Add(line.entity);
                     line.mesh.LinePoints = last.Line;
                     line.mesh.RefreshMeshes();
