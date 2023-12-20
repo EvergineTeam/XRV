@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Evergine.Common.Graphics;
 using Evergine.Framework;
@@ -222,6 +223,7 @@ namespace Evergine.Xrv.ModelViewer
                     {
                         var filePath = modelSelected[0];
                         var extension = Path.GetExtension(filePath);
+                        var fileName = Path.GetFileNameWithoutExtension(filePath);
 
                         if (this.loaders.TryGetValue(extension, out var loaderRuntime))
                         {
@@ -240,6 +242,8 @@ namespace Evergine.Xrv.ModelViewer
                             // Root Entity
                             root = new Entity()
                                 .AddComponent(new Transform3D());
+
+                            root.Name = string.Concat(this.RemoveSpecialCharacters(fileName), root.Name);
 
                             root.AddChild(modelEntity);
 
@@ -430,5 +434,20 @@ namespace Evergine.Xrv.ModelViewer
 
             return material.Material;
         }
+
+        private string RemoveSpecialCharacters(string str)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString();
+        }
+
     }
 }
