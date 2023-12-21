@@ -19,6 +19,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         private bool displayLogo = true;
         private Entity closeButtonEntity;
         private bool showCloseButton = true;
+        private Window window;
 
         [BindComponent(source: BindComponentSource.Children, tag: "PART_window_logo")]
         private Transform3D logoTransform = null;
@@ -83,6 +84,7 @@ namespace Evergine.Xrv.Core.UI.Windows
             {
                 this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
                 this.closeButtonEntity = this.Owner.FindChildrenByTag("PART_window_close", isRecursive: true).First();
+                this.window = this.Owner.FindComponent<Window>(); // TODO: review this reference, maybe refactoring required?
                 this.UpdateShowCloseButton();
             }
 
@@ -107,6 +109,9 @@ namespace Evergine.Xrv.Core.UI.Windows
             logoTransform.Y = -halfSize.Y + this.logoOffsets.Y;
             this.logoTransform.LocalPosition = logoTransform;
         }
+
+        /// <inheritdoc/>
+        protected override float GetNumberOfActionButtons() => this.window.AllowPin ? 2 : 1;
 
         private void UpdateLogoMaterial()
         {

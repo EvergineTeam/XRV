@@ -1,5 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
+using System.Linq;
 using Evergine.Common.Attributes;
 using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
@@ -7,11 +9,9 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Physics3D;
 using Evergine.Mathematics;
-using System;
-using System.Linq;
+using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.UI.Buttons;
-using Evergine.Xrv.Core.Extensions;
 
 namespace Evergine.Xrv.Core.UI.Windows
 {
@@ -361,6 +361,7 @@ namespace Evergine.Xrv.Core.UI.Windows
             var titleText = this.titleTextContainerTransform.LocalPosition;
             titleText.X = -halfSize.X;
             this.titleTextContainerTransform.LocalPosition = titleText;
+            this.UpdateTitleTextMeshSize();
 
             var buttonContainer = this.titleButtonContainerTransform.LocalPosition;
             buttonContainer.X = halfSize.X;
@@ -377,6 +378,19 @@ namespace Evergine.Xrv.Core.UI.Windows
                 colliderOffset.Y = ButtonConstants.SquareButtonSize / 2;
                 this.manipulationCollider.Offset = colliderOffset;
             }
+        }
+
+        /// <summary>
+        /// Get number of action buttons.
+        /// </summary>
+        /// <returns>Number of action buttons.</returns>
+        protected virtual float GetNumberOfActionButtons() => 1;
+
+        private void UpdateTitleTextMeshSize()
+        {
+            var titleMeshSize = this.titleMesh.Size;
+            titleMeshSize.X = this.size.X - (ButtonConstants.SquareButtonSize * this.GetNumberOfActionButtons()) - 0.02f;
+            this.titleMesh.Size = titleMeshSize;
         }
 
         private bool CheckCorrectSizes() =>
