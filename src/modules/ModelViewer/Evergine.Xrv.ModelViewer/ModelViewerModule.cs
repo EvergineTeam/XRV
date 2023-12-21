@@ -23,6 +23,7 @@ using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
+using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.ModelViewer.Effects;
 using Evergine.Xrv.ModelViewer.Importers;
@@ -138,20 +139,22 @@ namespace Evergine.Xrv.ModelViewer
 
             // Repositories list view
             this.repositoriesListView = repositoryWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_repositories", true, true);
-            this.repositoriesListView.DataSource = new ListViewData(2);
-            this.repositoriesListView.Render = new ListViewRender()
-                .AddColumn("Name", 0.7f, TextCellRenderer.Instance)
-                .AddColumn("Models", 0.3f, TextCellRenderer.Instance);
+            this.repositoriesListView.Columns =
+            [
+                new ColumnDefinition { Title = "Name", PercentageSize = 0.7f },
+                new ColumnDefinition { Title = "Models", PercentageSize = 0.3f },
+            ];
 
             this.repositoriesListView.SelectedChanged += (s, e) => { this.RefreshModelList(); };
             this.repositoriesLoading = repositoryWindowEntity.FindChildrenByTag("PART_repositories_loading", true, true).First();
 
             // Models list view
             this.modelsListView = repositoryWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_models", true, true);
-            this.modelsListView.DataSource = new ListViewData(2);
-            this.modelsListView.Render = new ListViewRender()
-                .AddColumn("Name", 0.7f, TextCellRenderer.Instance)
-                .AddColumn("Last update", 0.3f, TextCellRenderer.Instance);
+            this.modelsListView.Columns =
+            [
+                new ColumnDefinition { Title = "Name", PercentageSize = 0.7f },
+                new ColumnDefinition { Title = "Last update", PercentageSize = 0.3f },
+            ];
             this.modelsLoading = repositoryWindowEntity.FindChildrenByTag("PART_models_loading", true, true).First();
 
             // Buttons
@@ -211,57 +214,49 @@ namespace Evergine.Xrv.ModelViewer
                 // Read glb stream
                 Model model = null;
 
-                var selectedRepo = this.repositoriesListView.Selected;
-                if (selectedRepo != null)
+                if (this.repositoriesListView.SelectedItem is Tuple<Repository, int> selectedRepo &&
+                    this.modelsListView.SelectedItem is FileItem modelSelected)
                 {
-                    var repoName = selectedRepo[0];
-                    var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
-                    var modelSelected = this.modelsListView.Selected;
-
-                    if (modelSelected != null)
+                    var extension = Path.GetExtension(modelSelected.Path);
+                    if (this.loaders.TryGetValue(extension, out var loaderRuntime))
                     {
-                        var filePath = modelSelected[0];
-                        var extension = Path.GetExtension(filePath);
-
-                        if (this.loaders.TryGetValue(extension, out var loaderRuntime))
+                        using (var stream = await selectedRepo.Item1.FileAccess.GetFileAsync(modelSelected.Path))
+                        using (var memoryStream = new MemoryStream())
                         {
-                            using (var stream = await repo.FileAccess.GetFileAsync(filePath))
-                            using (var memoryStream = new MemoryStream())
-                            {
-                                stream.CopyTo(memoryStream);
-                                memoryStream.Position = 0;
-                                var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
-                                model = await loaderRuntime.Read(memoryStream, materialAssignerFunc);
-                            }
-
-                            // Instantiate model
-                            var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
-
-                            // Root Entity
-                            root = new Entity()
-                                .AddComponent(new Transform3D());
-
-                            root.Tag = filePath;
-
-                            root.AddChild(modelEntity);
-
-                            // BoundingBox
-                            BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
-                            boundingBox.Transform(modelEntity.FindComponent<Transform3D>().WorldTransform);
-
-                            // Normalizing size
-                            if (this.NormalizedModelEnabled)
-                            {
-                                root.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / boundingBox.HalfExtent.Length());
-                            }
-
-                            // Add additional components
-                            this.AddManipulatorComponents(root, boundingBox);
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Position = 0;
+                            var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
+                            model = await loaderRuntime.Read(memoryStream, materialAssignerFunc);
                         }
-                        else
+
+                        // Instantiate model
+                        var modelEntity = model.InstantiateModelHierarchy(this.assetsService);
+
+                        // Root Entity
+                        root = new Entity()
                         {
-                            throw new NotSupportedException($"3D format {extension} not supported.");
+                            Tag = Path.GetFileName(modelSelected.Path),
                         }
+                        .AddComponent(new Transform3D());
+
+                        root.AddChild(modelEntity);
+
+                        // BoundingBox
+                        BoundingBox boundingBox = model.BoundingBox.HasValue ? model.BoundingBox.Value : default;
+                        boundingBox.Transform(modelEntity.FindComponent<Transform3D>().WorldTransform);
+
+                        // Normalizing size
+                        if (this.NormalizedModelEnabled)
+                        {
+                            root.FindComponent<Transform3D>().Scale = Vector3.One * (this.NormalizedModelSize / boundingBox.HalfExtent.Length());
+                        }
+
+                        // Add additional components
+                        this.AddManipulatorComponents(root, boundingBox);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException($"3D format {extension} not supported.");
                     }
                 }
             });
@@ -296,50 +291,39 @@ namespace Evergine.Xrv.ModelViewer
 
         private async Task ConnectToRepositoriesAsync()
         {
-            this.repositoriesListView.ClearData();
-            var repositoriesDataSource = this.repositoriesListView.DataSource;
             this.repositoriesLoading.IsEnabled = true;
+            this.modelsLoading.IsEnabled = false;
+
+            var repositoriesData = new List<Tuple<Repository, int>>();
 
             if (this.Repositories != null)
             {
                 foreach (var repo in this.Repositories)
                 {
-                    var name = repo.Name;
                     var models = await repo.FileAccess.EnumerateFilesAsync();
-                    repositoriesDataSource.Add(name, models.Count().ToString());
+                    repositoriesData.Add(Tuple.Create(repo, models.Count()));
                 }
 
                 this.repositoriesListView.Refresh();
-
-                this.RefreshModelList();
             }
 
-            this.modelsLoading.IsEnabled = false;
+            this.repositoriesListView.DataSource = new ModelRepositoriesAdapter(repositoriesData.ToArray());
             this.repositoriesLoading.IsEnabled = false;
+            this.repositoriesListView.SelectedIndex = 0;
         }
 
         private async void RefreshModelList()
         {
-            this.modelsListView.ClearData();
             this.modelsLoading.IsEnabled = true;
 
-            var repoSelected = this.repositoriesListView.Selected;
-            if (repoSelected != null)
+            if (this.repositoriesListView.SelectedItem is Tuple<Repository, int> repoSelected)
             {
-                var repoName = repoSelected[0];
-                var repo = this.Repositories.FirstOrDefault(r => r.Name == repoName);
-                var models = await repo.FileAccess.EnumerateFilesAsync();
-
-                var modelsDataSource = this.modelsListView.DataSource;
-                foreach (var modelFile in models)
-                {
-                    modelsDataSource.Add(modelFile.Name, modelFile.ModificationTime.Value.ToString("dd-MM-yyyy"));
-                }
-
+                var models = await repoSelected.Item1.FileAccess.EnumerateFilesAsync();
+                this.modelsListView.DataSource = new ModelsAdapter(models.ToList());
                 this.modelsListView.Refresh();
-
-                this.modelsLoading.IsEnabled = false;
             }
+
+            this.modelsLoading.IsEnabled = false;
         }
 
         private void AddManipulatorComponents(Entity root, BoundingBox boundingBox)
@@ -431,6 +415,40 @@ namespace Evergine.Xrv.ModelViewer
             }
 
             return material.Material;
+        }
+
+        private class ModelRepositoriesAdapter : ArrayAdapter<Tuple<Repository, int>>
+        {
+            public ModelRepositoriesAdapter(IList<Tuple<Repository, int>> data)
+                : base(data)
+            {
+            }
+
+            public override CellRenderer GetRenderer(int rowIndex, int columnIndex)
+            {
+                var repositoryData = this.Data.ElementAt(rowIndex);
+                var renderer = TextCellRenderer.Instance;
+                renderer.Text = columnIndex == 0 ? repositoryData.Item1.Name : repositoryData.Item2.ToString();
+
+                return renderer;
+            }
+        }
+
+        private class ModelsAdapter : ArrayAdapter<FileItem>
+        {
+            public ModelsAdapter(IList<FileItem> data)
+                : base(data)
+            {
+            }
+
+            public override CellRenderer GetRenderer(int rowIndex, int columnIndex)
+            {
+                var fileItem = this.Data.ElementAt(rowIndex);
+                var renderer = TextCellRenderer.Instance;
+                renderer.Text = columnIndex == 0 ? fileItem.Name : fileItem.ModificationTime?.ToString("dd-MM-yyyy") ?? "-";
+
+                return renderer;
+            }
         }
     }
 }

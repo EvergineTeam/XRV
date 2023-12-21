@@ -111,7 +111,15 @@ namespace Evergine.Xrv.Core.UI.Windows
         }
 
         /// <inheritdoc/>
-        protected override float GetNumberOfActionButtons() => this.window.AllowPin ? 2 : 1;
+        protected override float GetNumberOfActionButtons()
+        {
+            if (this.window == null)
+            {
+                return 0;
+            }
+
+            return this.window.AllowPin ? 2 : 1;
+        }
 
         private void UpdateLogoMaterial()
         {
