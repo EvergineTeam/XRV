@@ -16,7 +16,6 @@ using System.Linq;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.UI.Dialogs;
-using System.Text.RegularExpressions;
 
 namespace Evergine.Xrv.ModelViewer
 {
@@ -330,7 +329,7 @@ namespace Evergine.Xrv.ModelViewer
             }
 
             var localization = this.xrvService.Localization;
-            var confirmDialogTitle = Regex.Replace(this.modelEntity.Name, "Entity_\\d+", string.Empty);
+            var confirmDialogTitle = this.modelEntity.Tag;
             var confirmDialog = this.xrvService.WindowsSystem.ShowConfirmationDialog(
                 () => confirmDialogTitle,
                 () => localization.GetString(() => Resources.Strings.Model_Close_Confirmation_Message),
