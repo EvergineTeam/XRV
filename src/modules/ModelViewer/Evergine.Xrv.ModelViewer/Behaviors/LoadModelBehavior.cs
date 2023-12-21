@@ -329,8 +329,9 @@ namespace Evergine.Xrv.ModelViewer
             }
 
             var localization = this.xrvService.Localization;
+            var confirmDialogTitle = this.modelEntity.Tag;
             var confirmDialog = this.xrvService.WindowsSystem.ShowConfirmationDialog(
-                () => this.modelEntity.Name,
+                () => confirmDialogTitle,
                 () => localization.GetString(() => Resources.Strings.Model_Close_Confirmation_Message),
                 () => localization.GetString(() => Core.Resources.Strings.Global_No),
                 () => localization.GetString(() => Core.Resources.Strings.Global_Yes));

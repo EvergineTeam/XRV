@@ -241,6 +241,8 @@ namespace Evergine.Xrv.ModelViewer
                             root = new Entity()
                                 .AddComponent(new Transform3D());
 
+                            root.Tag = filePath;
+
                             root.AddChild(modelEntity);
 
                             // BoundingBox
