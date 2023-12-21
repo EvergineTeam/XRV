@@ -36,6 +36,7 @@ Items:
           Y: 0.159999996
         IsEnabled: true
         LogoMaterial: db59d1e4-43a8-4e6b-94c8-bf5bf44a7d7b
+        ShowCloseButton: true
         Size:
           X: 0.300000012
           Y: 0.200000003
@@ -283,6 +284,30 @@ Items:
                     TextStyleKey: Xrv.Primary1.Size1
                 Children: []
                 Id: 2a42ad98-d652-4429-b017-078f9099fda0
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: customViewHolder
+                Tag: PART_window_title_custom_holder
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: e0389751-5b62-41c3-99de-4413a1795800
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalScale:
+                      X: 1.0
+                      Y: 1.0
+                      Z: 1.0
+                Children: []
+                Id: f8f45619-71b9-4878-adb1-fa7a00e71dda
             Id: a3d6c2e1-f042-4ef4-a663-f49efe440120
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: buttonContainer
@@ -1440,7 +1465,7 @@ Managers:
     IsEnabled: true
   - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
     Id: 6f26e283-1f38-4e88-beab-0f95800e91ed
-    IBLReflectionProbe: adf03a71-330c-4f49-8bf9-cb4e930855fc
+    IBLReflectionProbe: d658a9b6-21e4-40b3-9b85-846c608d40fc
     IntensityMultiplier: 1.0
     IsEnabled: true
     Strategy: OnDemand
@@ -1452,4 +1477,3 @@ Managers:
     PunctualResolution: Size_512
     ShadowFilter: PCF3x3
     SpotResolution: Size_512
-

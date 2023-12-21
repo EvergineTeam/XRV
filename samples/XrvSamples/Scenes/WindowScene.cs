@@ -10,7 +10,7 @@ using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.UI.Dialogs;
 using Evergine.Xrv.Core.UI.Windows;
 using System.Threading.Tasks;
-using System.Diagnostics.Metrics;
+using Evergine.Framework.Prefabs;
 
 namespace XrvSamples.Scenes
 {
@@ -34,6 +34,9 @@ namespace XrvSamples.Scenes
         private XrvService xrv;
 
         private bool notificationAutoRunning;
+        private Window customTitleWindow;
+        private PressableButton customTitleButton;
+        private PressableButton customTitleDialogButton;
 
         protected override void OnPostCreateXRScene()
         {
@@ -99,6 +102,23 @@ namespace XrvSamples.Scenes
             var notifAdd = entityManager.FindAllByTag("notificationadd").First().FindComponentInChildren<PressableButton>();
             notifAuto.ButtonReleased += NotifAuto_ButtonReleased;
             notifAdd.ButtonReleased += NotifAdd_ButtonReleased;
+
+            // Custom title
+            this.customTitleWindow = this.windowsSystem.CreateWindow(configurator =>
+            {
+                var titleContents = this.assetsService.Load<Prefab>(EvergineContent.Prefabs.WindowTitleView_weprefab);
+                configurator.TitleView = titleContents.Instantiate();
+                configurator.Content = this.CreateText3D(
+                    Text,
+                    new Vector2(0.3f, 0.2f),
+                    new Vector3(0.01f, -0.01f, 0f));
+                configurator.DisplayLogo = false;
+            });
+
+            this.customTitleButton = entityManager.FindAllByTag("customTitleWindowButton").First().FindComponentInChildren<PressableButton>();
+            this.customTitleButton.ButtonPressed += this.CustomTitleButton_ButtonPressed;
+            this.customTitleDialogButton = entityManager.FindAllByTag("customTitleDialogButton").First().FindComponentInChildren<PressableButton>();
+            this.customTitleDialogButton.ButtonPressed += this.CustomTitleDialogButton_ButtonPressed;
         }
 
         private void CreateAlert_ButtonReleased(object sender, EventArgs e)
@@ -220,6 +240,35 @@ namespace XrvSamples.Scenes
         private void NotifAdd_ButtonReleased(object sender, EventArgs e)
         {
             this.xrv.WindowsSystem.ShowNotification($"Title at {DateTime.Now.ToLongTimeString()}", $"This is the notification at {DateTime.Now.ToLongTimeString()}");
+        }
+
+        private void CustomTitleButton_ButtonPressed(object sender, EventArgs e)
+        {
+            if (this.customTitleWindow.IsOpened)
+            {
+                this.customTitleWindow.Close();
+            }
+            else
+            {
+                this.customTitleWindow.Open();
+            }
+        }
+
+        private void CustomTitleDialogButton_ButtonPressed(object sender, EventArgs e)
+        {
+            var titleContents = this.assetsService.Load<Prefab>(EvergineContent.Prefabs.WindowTitleView_weprefab);
+            var alertDialog = this.windowsSystem.ShowAlertDialog(string.Empty, "Message here", "OK");
+            alertDialog.Configurator.TitleView = titleContents.Instantiate();
+            alertDialog.Closed += this.CustomTitleDialogButton_Closed;
+        }
+
+        private void CustomTitleDialogButton_Closed(object sender, EventArgs e)
+        {
+            if (sender is AlertDialog alertDialog)
+            {
+                alertDialog.Configurator.TitleView = null;
+                alertDialog.Closed -= this.CustomTitleDialogButton_Closed;
+            }
         }
     }
 }

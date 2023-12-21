@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.UI.Buttons;
+using Evergine.Xrv.Core.Extensions;
 
 namespace Evergine.Xrv.Core.UI.Windows
 {
@@ -74,6 +75,12 @@ namespace Evergine.Xrv.Core.UI.Windows
         protected Transform3D titleButtonContainerTransform;
 
         /// <summary>
+        /// Title view holder entity.
+        /// </summary>
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_window_title_custom_holder")]
+        protected Entity titleViewHolderEntity;
+
+        /// <summary>
         /// Box collider for window manipulation.
         /// </summary>
         [BindComponent(isRequired: false)]
@@ -85,6 +92,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         private Vector2 frontPlateSize;
         private string title;
         private Func<string> localizedTitle;
+        private Entity titleView;
         private Entity contentEntity;
         private Entity content;
 
@@ -143,6 +151,22 @@ namespace Evergine.Xrv.Core.UI.Windows
                 if (this.IsAttached)
                 {
                     this.UpdateTitle();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets window custom title view. When set, <see cref="Title"/> and <see cref="LocalizedTitle"/> are not applied.
+        /// </summary>
+        public Entity TitleView
+        {
+            get => this.titleView;
+            set
+            {
+                this.titleView = value;
+                if (this.IsAttached)
+                {
+                    this.UpdateTitleView();
                 }
             }
         }
@@ -284,6 +308,7 @@ namespace Evergine.Xrv.Core.UI.Windows
             this.UpdateFrontPlateOffsets();
             this.UpdateContent();
             this.UpdateTitle();
+            this.UpdateTitleView();
             this.UpdateDisplayBackPlate();
             this.UpdateDisplayFrontPlate();
         }
@@ -378,6 +403,23 @@ namespace Evergine.Xrv.Core.UI.Windows
             if (this.IsAttached)
             {
                 this.backPlate.Owner.IsEnabled = this.displayBackPlate;
+            }
+        }
+
+        private void UpdateTitleView()
+        {
+            this.titleMesh.Owner.IsEnabled = this.titleView == null;
+
+            if (this.titleView != null && this.titleViewHolderEntity.ChildEntities.FirstOrDefault() == this.titleView)
+            {
+                return;
+            }
+
+            this.titleViewHolderEntity.RemoveAllChildren();
+
+            if (this.titleView != null)
+            {
+                this.titleViewHolderEntity.AddChild(this.titleView);
             }
         }
     }
