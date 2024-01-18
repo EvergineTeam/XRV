@@ -24,6 +24,7 @@ using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
 using Evergine.Xrv.Core.Storage;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.ModelViewer.Effects;
 using Evergine.Xrv.ModelViewer.Importers;
@@ -50,6 +51,9 @@ namespace Evergine.Xrv.ModelViewer
         private ListView modelsListView;
         private Entity repositoriesLoading;
         private Entity modelsLoading;
+        private Entity loadButton;
+
+        private FileItem selectedModel;
 
         private RenderLayerDescription opaqueLayer;
         private RenderLayerDescription alphaLayer;
@@ -155,18 +159,22 @@ namespace Evergine.Xrv.ModelViewer
                 new ColumnDefinition { Title = "Name", PercentageSize = 0.7f },
                 new ColumnDefinition { Title = "Last update", PercentageSize = 0.3f },
             ];
+            this.modelsListView.SelectedChanged += (s, e) => this.UpdateSelectedModel();
             this.modelsLoading = repositoryWindowEntity.FindChildrenByTag("PART_models_loading", true, true).First();
 
             // Buttons
             var loadButton = this.CreateButton(
                 () => this.localization.GetString(() => Resources.Strings.Window_Load),
-                this.LoadModel);
+                this.LoadModel,
+                false);
             var loadHolder = repositoryWindowEntity.FindChildrenByTag("PART_loadbutton", true, true).First();
             loadHolder.AddChild(loadButton);
+            this.loadButton = loadButton;
 
             var cancelButton = this.CreateButton(
                 () => this.localization.GetString(() => Core.Resources.Strings.Global_Cancel),
-                () => { this.window.Close(); });
+                () => { this.window.Close(); },
+                true);
             var cancelHolder = repositoryWindowEntity.FindChildrenByTag("PART_cancelbutton", true, true).First();
             cancelHolder.AddChild(cancelButton);
 
@@ -215,12 +223,12 @@ namespace Evergine.Xrv.ModelViewer
                 Model model = null;
 
                 if (this.repositoriesListView.SelectedItem is Tuple<Repository, int> selectedRepo &&
-                    this.modelsListView.SelectedItem is FileItem modelSelected)
+                    this.selectedModel != null)
                 {
-                    var extension = Path.GetExtension(modelSelected.Path);
+                    var extension = Path.GetExtension(this.selectedModel.Path);
                     if (this.loaders.TryGetValue(extension, out var loaderRuntime))
                     {
-                        using (var stream = await selectedRepo.Item1.FileAccess.GetFileAsync(modelSelected.Path))
+                        using (var stream = await selectedRepo.Item1.FileAccess.GetFileAsync(this.selectedModel.Path))
                         using (var memoryStream = new MemoryStream())
                         {
                             stream.CopyTo(memoryStream);
@@ -235,7 +243,7 @@ namespace Evergine.Xrv.ModelViewer
                         // Root Entity
                         root = new Entity()
                         {
-                            Tag = Path.GetFileName(modelSelected.Path),
+                            Tag = Path.GetFileName(this.selectedModel.Path),
                         }
                         .AddComponent(new Transform3D());
 
@@ -271,7 +279,7 @@ namespace Evergine.Xrv.ModelViewer
             }
         }
 
-        private Entity CreateButton(Func<string> buttonText, Action releasedAction)
+        private Entity CreateButton(Func<string> buttonText, Action releasedAction, bool enabled)
         {
             var localization = this.xrv.Localization;
             var buttonPrefab = this.assetsService.Load<Prefab>(CoreResourcesIDs.Prefabs.TextButton);
@@ -283,6 +291,10 @@ namespace Evergine.Xrv.ModelViewer
             button.AddComponent(new ButtonLocalization
             {
                 LocalizationFunc = buttonText,
+            });
+            button.AddComponent(new VisuallyEnabledController
+            {
+                IsVisuallyEnabled = enabled,
             });
             button.FindComponentInChildren<PressableButton>().ButtonReleased += (s, e) => releasedAction.Invoke();
 
@@ -324,6 +336,20 @@ namespace Evergine.Xrv.ModelViewer
             }
 
             this.modelsLoading.IsEnabled = false;
+        }
+
+        private void UpdateSelectedModel()
+        {
+            if (this.modelsListView.SelectedItem is FileItem selected)
+            {
+                // Enable button if first time model selected
+                if (this.selectedModel == null)
+                {
+                    this.loadButton.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = true;
+                }
+
+                this.selectedModel = selected;
+            }
         }
 
         private void AddManipulatorComponents(Entity root, BoundingBox boundingBox)
