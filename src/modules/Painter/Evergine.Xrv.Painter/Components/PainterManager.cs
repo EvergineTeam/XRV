@@ -177,22 +177,14 @@ namespace Evergine.Xrv.Painter.Components
 
                 if (last.Mode == PainterModes.Painter)
                 {
-                    this.Owner.EntityManager.Remove(last.Entity);
+                    this.Owner.EntityManager.Remove(this.Owner.EntityManager.Find(last.Entity.Name));
                 }
                 else if (last.Mode == PainterModes.Eraser)
                 {
-                    var line = this.CreateEntity(last.Line[0].Color);
+                    var line = this.CreateEntity(last.Line[0].Color, last.Entity.Name);
                     this.Owner.EntityManager.Add(line.entity);
                     line.mesh.LinePoints = last.Line;
                     line.mesh.RefreshMeshes();
-
-                    // Add line so it can be removed again with undo.
-                    this.actions.Add(new PainterAction()
-                    {
-                        Mode = PainterModes.Painter,
-                        Line = last.Line,
-                        Entity = line.entity,
-                    });
                 }
 
                 this.actions.RemoveAt(index);
@@ -232,6 +224,7 @@ namespace Evergine.Xrv.Painter.Components
                 {
                     Mode = this.Mode,
                     Line = lineData,
+                    Entity = collision,
                 });
             }
         }
@@ -470,11 +463,11 @@ namespace Evergine.Xrv.Painter.Components
             }
         }
 
-        private (Entity entity, PencilMesh mesh) CreateEntity(ColorEnum color)
+        private (Entity entity, PencilMesh mesh) CreateEntity(ColorEnum color, string entityName = null)
         {
             var mesh = new PencilMesh(); // { IsDebugMode = true, };
 
-            var entity = new Entity($"line_{Guid.NewGuid()}")
+            var entity = new Entity(entityName == null ? $"line_{Guid.NewGuid()}" : entityName)
             {
                 Tag = LINETAG,
             }
