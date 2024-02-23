@@ -14,8 +14,6 @@ namespace Evergine.Xrv.Core.Networking.Participants
     /// </summary>
     public class DeviceInfo : INetworkSerializable
     {
-        private static readonly Lazy<DeviceInfo> current = new Lazy<DeviceInfo>(() => From(new DeviceInfoImplementation()));
-
         /// <summary>
         /// Product key for <see cref="Extras"/>. Applies for Android-based
         /// devices.
@@ -27,6 +25,8 @@ namespace Evergine.Xrv.Core.Networking.Participants
         /// devices.
         /// </summary>
         public const string IsHoloLensKey = "isHoloLens";
+
+        private static readonly Lazy<DeviceInfo> current = new Lazy<DeviceInfo>(() => From(new DeviceInfoImplementation()));
 
         /// <summary>
         /// Gets device name.
