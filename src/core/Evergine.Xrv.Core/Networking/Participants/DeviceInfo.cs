@@ -14,6 +14,8 @@ namespace Evergine.Xrv.Core.Networking.Participants
     /// </summary>
     public class DeviceInfo : INetworkSerializable
     {
+        private static readonly Lazy<DeviceInfo> current = new Lazy<DeviceInfo>(() => From(new DeviceInfoImplementation()));
+
         /// <summary>
         /// Product key for <see cref="Extras"/>. Applies for Android-based
         /// devices.
@@ -55,6 +57,11 @@ namespace Evergine.Xrv.Core.Networking.Participants
         /// Gets a value indicating whether device information is synchronized.
         /// </summary>
         public bool IsSynchronized { get => !string.IsNullOrEmpty(this.Model); }
+
+        /// <summary>
+        /// Gets host <see cref="DeviceInfo"/> data.
+        /// </summary>
+        public static DeviceInfo Current { get => current.Value; }
 
         /// <summary>
         /// Checks if device is a HoloLens.
@@ -109,5 +116,14 @@ namespace Evergine.Xrv.Core.Networking.Participants
                 this.Extras.Add(key, value);
             }
         }
+
+        internal static DeviceInfo From(DeviceInfoImplementation implementation) =>
+            new DeviceInfo
+            {
+                Name = implementation.Name,
+                Model = implementation.Model,
+                Manufacturer = implementation.Manufacturer,
+                PlatformType = implementation.PlatformType,
+            };
     }
 }

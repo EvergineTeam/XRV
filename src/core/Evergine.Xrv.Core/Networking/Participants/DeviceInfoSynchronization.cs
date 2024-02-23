@@ -23,13 +23,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
             base.OnPropertyReadyToSet();
 
             var implementation = new DeviceInfoImplementation();
-            var deviceInfo = new DeviceInfo
-            {
-                Name = implementation.Name,
-                Model = implementation.Model,
-                Manufacturer = implementation.Manufacturer,
-                PlatformType = implementation.PlatformType,
-            };
+            var deviceInfo = DeviceInfo.From(implementation);
 #if ANDROID
             deviceInfo.Extras.Add(DeviceInfo.ProductKey, Build.Product);
 #elif UWP
