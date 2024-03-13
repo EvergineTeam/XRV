@@ -71,7 +71,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         /// <summary>
         /// Title button container transform.
         /// </summary>
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_button_container")]
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_buttons_container")]
         protected Transform3D titleButtonContainerTransform;
 
         /// <summary>
@@ -158,6 +158,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         /// <summary>
         /// Gets or sets window custom title view. When set, <see cref="Title"/> and <see cref="LocalizedTitle"/> are not applied.
         /// </summary>
+        [IgnoreEvergine]
         public Entity TitleView
         {
             get => this.titleView;

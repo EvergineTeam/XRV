@@ -8,6 +8,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.UI.Cursors;
 
@@ -29,6 +30,9 @@ namespace Evergine.Xrv.Core.UI.Buttons
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Icon", isRequired: false)]
         private Transform3D iconTransform = null;
 
+        [BindComponent(source: BindComponentSource.Children, isRequired: false)]
+        private ToggleButton toogleButton = null;
+
         private IWorkAction animation;
         private Vector3 textDefaultPosition;
         private Vector3 textHoverPosition;
@@ -39,6 +43,12 @@ namespace Evergine.Xrv.Core.UI.Buttons
         /// Gets or sets offset for the text.
         /// </summary>
         public float TextPositionOffset { get; set; } = 0f;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether button text should be hidden once cursor is not over
+        /// the button.
+        /// </summary>
+        public bool HideTextOnCursorLeave { get; set; } = true;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -54,27 +64,29 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 this.textHoverPosition = this.textDefaultPosition - (Vector3.Forward * 0.01f);
                 this.iconDefaultPosition = this.iconTransform.LocalPosition;
                 this.iconHoverPosition = this.iconDefaultPosition - (Vector3.Forward * 0.01f);
+
+                if (this.collider3D is BoxCollider3D boxCollider)
+                {
+                    boxCollider.Size = new Vector3(ButtonConstants.SquareButtonSize);
+                }
+
+                if (this.toogleButton != null)
+                {
+                    this.toogleButton.Toggled += this.ToogleButton_Toggled;
+                }
             }
 
             return attached;
         }
 
         /// <inheritdoc/>
-        protected override void SetTargetCollider()
+        protected override void OnDetach()
         {
-            if (Application.Current.IsEditor)
-            {
-                return;
-            }
+            base.OnDetach();
 
-            if (this.Owner.FindComponent<Collider3D>(isExactType: false) == null)
+            if (this.toogleButton != null)
             {
-                this.collider3D = new BoxCollider3D()
-                {
-                    Size = new Vector3(ButtonConstants.SquareButtonSize),
-                    Offset = new Vector3(0f, 0f, 0.02f),
-                };
-                this.Owner.AddComponent(this.collider3D);
+                this.toogleButton.Toggled -= this.ToogleButton_Toggled;
             }
         }
 
@@ -88,19 +100,18 @@ namespace Evergine.Xrv.Core.UI.Buttons
 
             if (isDetected)
             {
-                this.AnimateHover();
+                this.AnimateHover(TimeSpan.FromMilliseconds(300));
             }
             else
             {
-                this.AnimateLeave();
+                this.AnimateLeave(TimeSpan.FromMilliseconds(300));
             }
         }
 
-        private void AnimateHover()
+        private void AnimateHover(TimeSpan animationDuration)
         {
             this.animation?.TryCancel();
 
-            var animationDuration = TimeSpan.FromMilliseconds(300);
             var textTransformAction = new Vector3AnimationWorkAction(
                 this.Owner,
                 this.textDefaultPosition,
@@ -136,11 +147,10 @@ namespace Evergine.Xrv.Core.UI.Buttons
             this.animation.Run();
         }
 
-        private void AnimateLeave()
+        private void AnimateLeave(TimeSpan animationDuration)
         {
             this.animation?.TryCancel();
 
-            var animationDuration = TimeSpan.FromMilliseconds(300);
             var textTransformAction = new Vector3AnimationWorkAction(
                 this.Owner,
                 this.textTransform.LocalPosition,
@@ -158,7 +168,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
             var textColorAnimation = new FloatAnimationWorkAction(
                 this.Owner,
                 this.textMesh.Color.A,
-                0,
+                this.HideTextOnCursorLeave ? 0 : byte.MaxValue,
                 animationDuration,
                 EaseFunction.CubicOutEase,
                 @value =>
@@ -184,5 +194,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
             position.Z = vector.Z;
             targetTransform.LocalPosition = position;
         }
+
+        private void ToogleButton_Toggled(object sender, EventArgs e) => this.AnimateLeave(TimeSpan.Zero);
     }
 }

@@ -1,12 +1,12 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System.Collections.Generic;
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using System.Collections.Generic;
 using Evergine.Xrv.Core;
-using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Ruler.Networking;
 
@@ -29,7 +29,7 @@ namespace Evergine.Xrv.Ruler
         public override string Name => "Ruler";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton { get; protected set; }
+        public override ButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
         public override TabItem Help { get; protected set; }
@@ -51,7 +51,7 @@ namespace Evergine.Xrv.Ruler
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
 
             // Menu, settings and help entries
-            this.HandMenuButton = new MenuButtonDescription()
+            this.HandMenuButton = new ButtonDescription()
             {
                 IconOff = RulerResourceIDs.Materials.Icons.Measure,
                 IconOn = RulerResourceIDs.Materials.Icons.Measure,

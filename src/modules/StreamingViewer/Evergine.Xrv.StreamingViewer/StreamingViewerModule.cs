@@ -1,13 +1,13 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System.Collections.Generic;
 using Evergine.Framework;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
-using System.Collections.Generic;
 using Evergine.Xrv.Core;
-using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
 using Evergine.Xrv.StreamingViewer.Components;
@@ -32,7 +32,7 @@ namespace Evergine.Xrv.StreamingViewer
         public override string Name => "Streaming Viewer";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton { get; protected set; }
+        public override ButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
         public override TabItem Help { get; protected set; }
@@ -49,7 +49,7 @@ namespace Evergine.Xrv.StreamingViewer
             this.assetsService = Application.Current.Container.Resolve<AssetsService>();
             this.xrv = Application.Current.Container.Resolve<XrvService>();
 
-            this.HandMenuButton = new MenuButtonDescription()
+            this.HandMenuButton = new ButtonDescription()
             {
                 IconOn = StreamingViewerResourceIDs.Materials.Icons.StreamingViewer,
                 IsToggle = false,

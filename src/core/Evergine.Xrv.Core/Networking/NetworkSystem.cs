@@ -30,6 +30,7 @@ using Evergine.Xrv.Core.Networking.SessionClosing;
 using Evergine.Xrv.Core.Networking.WorldCenter;
 using Evergine.Xrv.Core.Settings;
 using Evergine.Xrv.Core.Themes;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
 #if !ANDROID
@@ -62,7 +63,7 @@ namespace Evergine.Xrv.Core.Networking
         private MatchmakingServerService server;
         private MatchmakingClientService client;
         private ProtocolOrchestatorService orchestator;
-        private MenuButtonDescription controlRequestButtonDescription;
+        private ButtonDescription controlRequestButtonDescription;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkSystem"/> class.
@@ -84,7 +85,7 @@ namespace Evergine.Xrv.Core.Networking
             this.logger = logger;
 
             this.windowsSystem = xrvService.WindowsSystem;
-            this.controlRequestButtonDescription = new MenuButtonDescription
+            this.controlRequestButtonDescription = new ButtonDescription
             {
                 TextOn = () => this.localization.GetString(() => Resources.Strings.Networking_Menu_RequestControl),
                 IconOn = CoreResourcesIDs.Materials.Icons.ControlRequest,

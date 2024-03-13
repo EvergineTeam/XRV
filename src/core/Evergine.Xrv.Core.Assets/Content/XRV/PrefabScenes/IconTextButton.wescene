@@ -1,7 +1,7 @@
 !Evergine.Framework.Assets.AssetSources.Entities.SceneModel,Evergine.Framework
 Items:
   - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
-    Name: textButton
+    Name: iconTextButton
     Tag: null
     IsEnabled: true
     IsStatic: false
@@ -103,6 +103,23 @@ Items:
             MinCompressRatio: 0.5
             MovementScale: 1.0
             PressedMaterial: null
+          - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
+            Id: ac0d001c-a90d-493d-8f33-65e17b6bc85e
+            IsEnabled: true
+            Margin: 0.0399999991
+            Offset:
+              X: 0.0
+              Y: 0.0
+              Z: 0.0120000001
+            OrientationOffset:
+              W: 1.0
+              X: 0.0
+              Y: 0.0
+              Z: 0.0
+            Size:
+              X: 0.0700000003
+              Y: 0.0320000015
+              Z: 0.0500000007
           - !Evergine.Xrv.Core.UI.Buttons.TextButtonCursorAnimation,Evergine.Xrv.Core
             Id: 09153270-3966-4e19-8ba7-465ff0df19d1
             IsEnabled: true
@@ -144,11 +161,11 @@ Items:
                       W: 1.0
                       X: 0.0
                       Y: 0.0
-                      Z: -0.0
-                    LocalPosition:
-                      X: 0.0
-                      Y: 0.0
                       Z: 0.0
+                    LocalPosition:
+                      X: 0.0104445312
+                      Y: 0.0
+                      Z: 1.2450887E-09
                     LocalScale:
                       X: 1.0
                       Y: 1.0
@@ -162,7 +179,7 @@ Items:
                       R: 255
                     Ellipsis: true
                     Font: 1c6e2929-d555-4c02-af49-50b4ecb01ce3
-                    HorizontalAlignment: Center
+                    HorizontalAlignment: Left
                     IsEnabled: true
                     Layer: e35c59a9-26ab-4b4c-8210-4b1f21c31530
                     LineSpacing: 0.0
@@ -171,7 +188,7 @@ Items:
                       Y: 0.5
                     ScaleFactor: 0.00600000005
                     Size:
-                      X: 0.0700000003
+                      X: 0.0399999991
                       Y: 0.0199999996
                     Softness: 0.75
                     Text: Text
@@ -187,6 +204,59 @@ Items:
                     RenderFlags: CastShadows
                 Children: []
                 Id: 66be61a6-09a0-4ea5-9d1f-20cf5645afdf
+              - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
+                Name: plane
+                Tag: PART_Icon
+                IsEnabled: true
+                IsStatic: false
+                Components:
+                  - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+                    Id: 953d6022-f7a6-408b-b762-c171e714b17f
+                    IsEnabled: true
+                    LocalOrientation:
+                      W: 1.0
+                      X: 0.0
+                      Y: 0.0
+                      Z: 0.0
+                    LocalPosition:
+                      X: -0.0222051553
+                      Y: 0.0
+                      Z: -2.64705813E-09
+                    LocalScale:
+                      X: 0.020000007
+                      Y: 0.020000007
+                      Z: 0.00100000005
+                  - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+                    Id: 611eb228-33ad-4d0d-9811-f6aafb92beaa
+                    AsignedTo: Default
+                    IsEnabled: true
+                    Material: 7ebdc624-1d13-4b18-b38e-d5cce9bf64ce
+                    UseCopy: false
+                  - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+                    Id: ecec26a0-44b9-4149-9952-ede7655b550f
+                    Height: 1.0
+                    IsEnabled: true
+                    Origin:
+                      X: 0.5
+                      Y: 0.5
+                    PlaneNormal: ZPositive
+                    TwoSides: false
+                    UMirror: false
+                    UOffset: 0.0
+                    UTile: 1.0
+                    VMirror: false
+                    VOffset: 0.0
+                    VTile: 1.0
+                    Width: 1.0
+                  - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+                    Id: ac1d8123-8694-442f-9be9-c234a0e35bad
+                    DebugBoundingbox: true
+                    IsCullingEnabled: true
+                    IsEnabled: true
+                    OrderBias: 0
+                    RenderFlags: CastShadows
+                Children: []
+                Id: 11b5cd73-999a-46fb-891b-d37fb2e0d8ef
             Id: 4b32c51a-e319-4d86-99b8-830b33e8201a
           - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
             Name: cage
@@ -201,7 +271,7 @@ Items:
                   W: 1.0
                   X: 0.0
                   Y: 0.0
-                  Z: -0.0
+                  Z: 0.0
                 LocalPosition:
                   X: 0.0
                   Y: 0.0
@@ -301,9 +371,9 @@ Managers:
     IsEnabled: true
   - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
     Id: c1f44b61-a208-44fb-9793-05728128a090
-    IBLReflectionProbe: 36699b9e-5bf5-40f6-a827-68517484010c
+    IBLReflectionProbe: cb1a506b-cd99-4dcc-a035-1f1ba1c0f82c
     IntensityMultiplier: 1.0
-    IsEnabled: true
+    IsEnabled: false
     Strategy: OnDemand
   - !Evergine.Framework.Managers.ShadowMapManager,Evergine.Framework
     Id: 54639e21-bbda-4bca-aecc-6eaff9316a43
@@ -313,4 +383,3 @@ Managers:
     PunctualResolution: Size_512
     ShadowFilter: PCF3x3
     SpotResolution: Size_512
-

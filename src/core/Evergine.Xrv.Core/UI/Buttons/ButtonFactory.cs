@@ -11,31 +11,26 @@ using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Localization;
-using Evergine.Xrv.Core.Modules;
-using Evergine.Xrv.Core.Networking.ControlRequest;
 using Evergine.Xrv.Core.Themes.Texts;
-using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.VoiceCommands;
+using System;
 
-namespace Evergine.Xrv.Core.Menu
+namespace Evergine.Xrv.Core.UI.Buttons
 {
     /// <summary>
     /// Create menu button factory.
     /// </summary>
-    public class MenuButtonFactory
+    public class ButtonFactory
     {
         private const float TextPositionHover = -0.002f;
-        private readonly XrvService xrvService;
         private readonly AssetsService assetsService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MenuButtonFactory"/> class.
+        /// Initializes a new instance of the <see cref="ButtonFactory"/> class.
         /// </summary>
-        /// <param name="xrvService">XRV service.</param>
         /// <param name="assetsService">Assets Service.</param>
-        public MenuButtonFactory(XrvService xrvService, AssetsService assetsService)
+        public ButtonFactory(AssetsService assetsService)
         {
-            this.xrvService = xrvService;
             this.assetsService = assetsService;
         }
 
@@ -44,12 +39,20 @@ namespace Evergine.Xrv.Core.Menu
         /// </summary>
         /// <param name="description">Button description.</param>
         /// <returns>Button entity.</returns>
-        public Entity CreateInstance(MenuButtonDescription description) =>
-            description.IsToggle ? this.CreateToggleButton(description) : this.CreateStandardButton(description);
+        public Entity CreateInstance(ButtonDescription description) => this.CreateInstance(description, MRTKResourceIDs.Prefabs.PressableButtonPlated);
 
-        private Entity CreateStandardButton(MenuButtonDescription description)
+        /// <summary>
+        /// Creates an instance of a button from its description.
+        /// </summary>
+        /// <param name="description">Button description.</param>
+        /// <param name="prefabId">Prefab identifier to create button instance.</param>
+        /// <returns>Button entity.</returns>
+        public Entity CreateInstance(ButtonDescription description, Guid prefabId) =>
+            description.IsToggle ? this.CreateToggleButton(description, prefabId) : this.CreateStandardButton(description, prefabId);
+
+        private Entity CreateStandardButton(ButtonDescription description, Guid prefabId)
         {
-            var prefab = this.GetButtonPrefab();
+            var prefab = this.assetsService.Load<Prefab>(prefabId);
             var button = prefab.Instantiate();
             button.Flags = HideFlags.DontSave | HideFlags.DontShow;
             button
@@ -80,14 +83,14 @@ namespace Evergine.Xrv.Core.Menu
                 });
             }
 
-            this.AssociateActivationPublishers(description, button);
+            this.AddCommonComponents(button);
 
             return button;
         }
 
-        private Entity CreateToggleButton(MenuButtonDescription description)
+        private Entity CreateToggleButton(ButtonDescription description, Guid prefabId)
         {
-            var prefab = this.GetButtonPrefab();
+            var prefab = this.assetsService.Load<Prefab>(prefabId);
             var button = prefab.Instantiate();
             button.Flags = HideFlags.DontSave | HideFlags.DontShow;
             button
@@ -96,6 +99,7 @@ namespace Evergine.Xrv.Core.Menu
                 {
                     TargetState = ToggleState.Off,
                     Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff),
+                    AllowBackPlateNullMaterial = true,
                 })
                 .AddComponent(new ToggleButtonLocalization
                 {
@@ -141,32 +145,14 @@ namespace Evergine.Xrv.Core.Menu
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
                 });
 
-            this.AssociateActivationPublishers(description, button);
+            this.AddCommonComponents(button);
 
             return button;
         }
 
-        private void AssociateActivationPublishers(MenuButtonDescription description, Entity button)
+        private void AddCommonComponents(Entity button)
         {
             button.AddComponent(new VisuallyEnabledController());
-
-            var associatedModule = this.xrvService.GetModuleForHandButton(description);
-            if (associatedModule != null)
-            {
-                button
-                    .AddComponent(new ActivateModuleOnButtonPress(associatedModule))
-                    .AddComponent(new ButtonEnabledStateByControlStatus());
-            }
-            else
-            {
-                button.AddComponent(new HandMenuButtonPress
-                {
-                    Description = description,
-                });
-            }
         }
-
-        private Prefab GetButtonPrefab() =>
-            this.assetsService.Load<Prefab>(MRTKResourceIDs.Prefabs.PressableButtonPlated);
     }
 }

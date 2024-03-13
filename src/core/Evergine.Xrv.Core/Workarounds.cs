@@ -18,7 +18,18 @@ namespace Evergine.Xrv.Core
         /// <param name="setOn">Toggle status.</param>
         public static void ChangeToggleButtonState(Entity button, bool setOn)
         {
-            var toggleStateManager = button.FindComponentInChildren<ToggleStateManager>();
+            var toggle = button.FindComponentInChildren<ToggleButton>();
+            ChangeToggleButtonState(toggle, setOn);
+        }
+
+        /// <summary>
+        /// Change toggle button state to a given <see cref="ToggleButton.IsOn"/> status.
+        /// </summary>
+        /// <param name="toggle">Target toggle button.</param>
+        /// <param name="setOn">Value indicating its status.</param>
+        public static void ChangeToggleButtonState(ToggleButton toggle, bool setOn)
+        {
+            var toggleStateManager = toggle.Owner.FindComponentInChildren<ToggleStateManager>();
             var toggleStates = toggleStateManager.States;
             if (toggleStates != null)
             {

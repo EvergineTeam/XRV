@@ -6,6 +6,7 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Menu;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
 using System;
@@ -21,7 +22,7 @@ namespace Evergine.Xrv.Core.Help
         private readonly XrvService xrvService;
         private readonly LocalizationService localization;
 
-        private MenuButtonDescription handMenuButtonDescription;
+        private ButtonDescription handMenuButtonDescription;
 
         private Entity generalHelp;
         private Entity about;
@@ -117,7 +118,7 @@ namespace Evergine.Xrv.Core.Help
 
         private void SetUpHandMenu()
         {
-            this.handMenuButtonDescription = new MenuButtonDescription
+            this.handMenuButtonDescription = new ButtonDescription
             {
                 IsToggle = false,
                 IconOn = CoreResourcesIDs.Materials.Icons.Help,

@@ -11,7 +11,7 @@ using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Extensions;
-using Evergine.Xrv.Core.Menu;
+using Evergine.Xrv.Core.UI.Buttons;
 
 namespace Evergine.Xrv.Core.Networking.WorldCenter
 {
@@ -24,16 +24,16 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
 
-        private readonly ObservableCollection<MenuButtonDescription> buttonDescriptions;
+        private readonly ObservableCollection<ButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
 
         private bool menuExtended = false;
         private IWorkAction extendedAnimation;
         private int numberOfButtons;
 
-        private MenuButtonDescription lockButtonDesc;
-        private MenuButtonDescription moveButtonDesc;
-        private MenuButtonDescription directionButtonDesc;
+        private ButtonDescription lockButtonDesc;
+        private ButtonDescription moveButtonDesc;
+        private ButtonDescription directionButtonDesc;
         private bool animating;
 
         [BindService]
@@ -65,20 +65,20 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         /// </summary>
         public ManualWorldCenterMenu()
         {
-            this.buttonDescriptions = new ObservableCollection<MenuButtonDescription>();
+            this.buttonDescriptions = new ObservableCollection<ButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
         }
 
         /// <summary>
         /// Gets the Button descriptions list.
         /// </summary>
-        public IList<MenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
+        public IList<ButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
 
         // TODO: Create a generic horizontal menu component that we can reuse (mix with
         // OrbitMenu). It would be great that MenuButtonDescription supports ICommand,
         // so user can have an easy way to have a callback. Will add this as new
         // PBI to backlog.
-        internal Entity GetButtonEntity(MenuButtonDescription descriptor)
+        internal Entity GetButtonEntity(ButtonDescription descriptor)
         {
             if (!this.instantiatedButtons.ContainsKey(descriptor.Id))
             {
@@ -88,11 +88,11 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             return this.instantiatedButtons[descriptor.Id];
         }
 
-        internal MenuButtonDescription GetDescriptorForLockButton() => this.lockButtonDesc;
+        internal ButtonDescription GetDescriptorForLockButton() => this.lockButtonDesc;
 
-        internal MenuButtonDescription GetDescriptorForMoveButton() => this.moveButtonDesc;
+        internal ButtonDescription GetDescriptorForMoveButton() => this.moveButtonDesc;
 
-        internal MenuButtonDescription GetDescriptorForDirectionButton() => this.directionButtonDesc;
+        internal ButtonDescription GetDescriptorForDirectionButton() => this.directionButtonDesc;
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -101,7 +101,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             if (attached)
             {
                 // Lock button
-                this.lockButtonDesc = new MenuButtonDescription
+                this.lockButtonDesc = new ButtonDescription
                 {
                     IsToggle = true,
                     IconOn = CoreResourcesIDs.Materials.Icons.Unlock,
@@ -112,7 +112,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 this.buttonDescriptions.Add(this.lockButtonDesc);
 
                 // Move button
-                this.moveButtonDesc = new MenuButtonDescription
+                this.moveButtonDesc = new ButtonDescription
                 {
                     IsToggle = false,
                     IconOn = CoreResourcesIDs.Materials.Icons.Move,
@@ -121,7 +121,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 this.buttonDescriptions.Add(this.moveButtonDesc);
 
                 // Direction button
-                this.directionButtonDesc = new MenuButtonDescription
+                this.directionButtonDesc = new ButtonDescription
                 {
                     IsToggle = false,
                     IconOn = CoreResourcesIDs.Materials.Icons.Direction,
@@ -159,9 +159,9 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             this.ExtendedAnimation(this.optionsButtonToggle.IsOn, true);
         }
 
-        private void InternalAddButtons(IEnumerable<MenuButtonDescription> buttons)
+        private void InternalAddButtons(IEnumerable<ButtonDescription> buttons)
         {
-            var buttonsFactory = new MenuButtonFactory(this.xrvService, this.assetsService);
+            var buttonsFactory = new ButtonFactory(this.assetsService);
 
             foreach (var definition in buttons)
             {

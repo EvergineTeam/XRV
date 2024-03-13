@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Menu;
+using Evergine.Xrv.Core.UI.Buttons;
 
 namespace XrvSamples.Scenes
 {
@@ -94,7 +95,7 @@ namespace XrvSamples.Scenes
 
         private void DecreaseNumberOfButtons_ButtonReleased(object sender, EventArgs e)
         {
-            if (this.handMenu.ButtonDescriptions.LastOrDefault() is MenuButtonDescription definition)
+            if (this.handMenu.ButtonDescriptions.LastOrDefault() is ButtonDescription definition)
             {
                 this.handMenu.ButtonDescriptions.Remove(definition);
                 this.UpdateCounts();
@@ -104,7 +105,7 @@ namespace XrvSamples.Scenes
         private void AddButton()
         {
             bool isToggle = DateTime.Now.Millisecond % 2 == 0;
-            this.handMenu.ButtonDescriptions.Add(new MenuButtonDescription
+            this.handMenu.ButtonDescriptions.Add(new ButtonDescription
             {
                 IsToggle = isToggle,
                 TextOn = () => $"{(isToggle ? "T_" : string.Empty)}{DateTime.Now.Millisecond}",

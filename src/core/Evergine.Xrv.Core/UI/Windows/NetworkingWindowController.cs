@@ -3,8 +3,6 @@
 using Evergine.Framework;
 using Evergine.Xrv.Core.Networking.ControlRequest;
 using Evergine.Xrv.Core.UI.Buttons;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Evergine.Xrv.Core.UI.Windows
 {
@@ -27,31 +25,13 @@ namespace Evergine.Xrv.Core.UI.Windows
         [BindComponent]
         protected Window window = null;
 
-        private Entity closeButton;
-        private Entity followButton;
-        private List<Entity> allButtons;
-
-        /// <inheritdoc/>
-        protected override bool OnAttached()
-        {
-            bool attached = base.OnAttached();
-            if (attached)
-            {
-                this.closeButton = this.Owner.FindChildrenByTag("PART_window_close", true).First();
-                this.followButton = this.Owner.FindChildrenByTag("PART_window_follow", true).First();
-                this.allButtons = new List<Entity> { this.closeButton, this.followButton };
-            }
-
-            return attached;
-        }
-
         /// <inheritdoc/>
         protected override void OnControlGained()
         {
             base.OnControlGained();
             this.window.EnableManipulation = true;
             this.window.PlaceInFrontOfUserWhenOpened = true;
-            this.UpdateButtonEnableState(true);
+            this.UpdateButtonsEnableState(true);
         }
 
         /// <inheritdoc/>
@@ -60,16 +40,26 @@ namespace Evergine.Xrv.Core.UI.Windows
             base.OnControlLost();
             this.window.EnableManipulation = false;
             this.window.PlaceInFrontOfUserWhenOpened = false;
-            this.UpdateButtonEnableState(false);
+            this.UpdateButtonsEnableState(false);
         }
 
-        private void UpdateButtonEnableState(bool enable)
+        private void UpdateButtonsEnableState(bool enable)
         {
-            this.allButtons.ForEach(button =>
+            foreach (var button in this.window.ButtonsOrganizer.ActionBarButtons)
             {
-                var visualController = button.FindComponent<VisuallyEnabledController>();
-                visualController.IsVisuallyEnabled = enable;
-            });
+                this.UpdateButtonState(button, enable);
+            }
+
+            foreach (var button in this.window.ButtonsOrganizer.MoreActionButtons)
+            {
+                this.UpdateButtonState(button, enable);
+            }
+        }
+
+        private void UpdateButtonState(Entity buttonEntity, bool enable)
+        {
+            var visualController = buttonEntity.FindComponent<VisuallyEnabledController>();
+            visualController.IsVisuallyEnabled = enable;
         }
     }
 }

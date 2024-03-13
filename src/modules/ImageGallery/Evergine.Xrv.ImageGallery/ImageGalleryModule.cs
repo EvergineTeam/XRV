@@ -8,11 +8,11 @@ using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.Xrv.Core;
-using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
 using Evergine.Xrv.Core.Modules.Networking;
 using Evergine.Xrv.Core.Networking.Properties;
 using Evergine.Xrv.Core.Storage;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
 using Evergine.Xrv.ImageGallery.Networking;
@@ -48,7 +48,7 @@ namespace Evergine.Xrv.ImageGallery
         public override string Name => "Image Gallery";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton { get; protected set; }
+        public override ButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
         public override TabItem Help { get; protected set; }
@@ -66,7 +66,7 @@ namespace Evergine.Xrv.ImageGallery
             this.xrv = Application.Current.Container.Resolve<XrvService>();
 
             // Hand menu and help entries
-            this.HandMenuButton = new MenuButtonDescription()
+            this.HandMenuButton = new ButtonDescription()
             {
                 IconOn = ImageGalleryResourceIDs.Materials.Icons.ImageGallery,
                 IsToggle = false,

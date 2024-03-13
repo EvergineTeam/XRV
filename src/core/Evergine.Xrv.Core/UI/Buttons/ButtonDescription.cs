@@ -2,17 +2,17 @@
 
 using System;
 
-namespace Evergine.Xrv.Core.Menu
+namespace Evergine.Xrv.Core.UI.Buttons
 {
     /// <summary>
     /// Button description.
     /// </summary>
-    public class MenuButtonDescription
+    public class ButtonDescription
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MenuButtonDescription"/> class.
+        /// Initializes a new instance of the <see cref="ButtonDescription"/> class.
         /// </summary>
-        public MenuButtonDescription()
+        public ButtonDescription()
         {
             this.Id = Guid.NewGuid();
         }
@@ -21,6 +21,11 @@ namespace Evergine.Xrv.Core.Menu
         /// Gets description identifier.
         /// </summary>
         public Guid Id { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a name for the button. This can help to identify button while debugging.
+        /// </summary>
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether button should be created as a toggle button.

@@ -2,6 +2,7 @@
 
 using Evergine.Common.Attributes;
 using Evergine.Xrv.Core.Services.Messaging;
+using Evergine.Xrv.Core.UI.Buttons;
 
 namespace Evergine.Xrv.Core.Menu
 {
@@ -14,7 +15,7 @@ namespace Evergine.Xrv.Core.Menu
         /// Gets or sets button description.
         /// </summary>
         [IgnoreEvergine]
-        public MenuButtonDescription Description { get; set; }
+        public ButtonDescription Description { get; set; }
 
         /// <inheritdoc/>
         protected override HandMenuActionMessage GetPublishData(bool isOn) => new HandMenuActionMessage

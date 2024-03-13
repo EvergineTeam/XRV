@@ -1,11 +1,11 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Fonts;
 using Evergine.Components.WorkActions;
@@ -19,7 +19,9 @@ using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Menu.PalmDetection;
 using Evergine.Xrv.Core.Modules;
+using Evergine.Xrv.Core.Networking.ControlRequest;
 using Evergine.Xrv.Core.Themes.Texts;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Windows;
 
 namespace Evergine.Xrv.Core.Menu
@@ -33,9 +35,9 @@ namespace Evergine.Xrv.Core.Menu
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
 
-        private readonly ObservableCollection<MenuButtonDescription> buttonDescriptions;
+        private readonly ObservableCollection<ButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
-        private readonly ButtonsIterator buttonsIterator;
+        private readonly OrderedButtonsIterator buttonsIterator;
 
         private IWorkAction appearAnimation;
         private IWorkAction extendedAnimation;
@@ -98,9 +100,9 @@ namespace Evergine.Xrv.Core.Menu
         /// </summary>
         public HandMenu()
         {
-            this.buttonDescriptions = new ObservableCollection<MenuButtonDescription>();
+            this.buttonDescriptions = new ObservableCollection<ButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
-            this.buttonsIterator = new ButtonsIterator(this.buttonDescriptions, this.instantiatedButtons);
+            this.buttonsIterator = new OrderedButtonsIterator(this.buttonDescriptions, this.instantiatedButtons);
         }
 
         /// <summary>
@@ -140,7 +142,8 @@ namespace Evergine.Xrv.Core.Menu
         /// <summary>
         /// Gets button descriptions.
         /// </summary>
-        public IList<MenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
+        [IgnoreEvergine]
+        public IList<ButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
 
         /// <summary>
         /// Gets a value indicating whether menu is in a detached state.
@@ -162,7 +165,7 @@ namespace Evergine.Xrv.Core.Menu
         /// <param name="descriptor">Search button descriptor.</param>
         /// <returns>Button entity.</returns>
         /// <exception cref="ArgumentException">Raised when matching descriptor is not found.</exception>
-        public Entity GetButtonEntity(MenuButtonDescription descriptor)
+        public Entity GetButtonEntity(ButtonDescription descriptor)
         {
             if (!this.instantiatedButtons.ContainsKey(descriptor.Id))
             {
@@ -261,10 +264,10 @@ namespace Evergine.Xrv.Core.Menu
             switch (args.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    this.InternalAddButtons(args.NewItems.OfType<MenuButtonDescription>());
+                    this.InternalAddButtons(args.NewItems.OfType<ButtonDescription>());
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    this.InternalRemoveButtons(args.OldItems.OfType<MenuButtonDescription>());
+                    this.InternalRemoveButtons(args.OldItems.OfType<ButtonDescription>());
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     this.InternalClearButtons();
@@ -274,19 +277,34 @@ namespace Evergine.Xrv.Core.Menu
             this.UpdateLayoutImmediately();
         }
 
-        private void InternalAddButtons(IEnumerable<MenuButtonDescription> buttons)
+        private void InternalAddButtons(IEnumerable<ButtonDescription> buttons)
         {
-            var buttonsFactory = new MenuButtonFactory(this.xrvService, this.assetsService);
+            var buttonsFactory = new ButtonFactory(this.assetsService);
 
             foreach (var definition in buttons)
             {
                 var buttonInstance = buttonsFactory.CreateInstance(definition);
+                var associatedModule = this.xrvService.GetModuleForHandButton(definition);
+                if (associatedModule != null)
+                {
+                    buttonInstance
+                        .AddComponent(new ActivateModuleOnButtonPress(associatedModule))
+                        .AddComponent(new ButtonEnabledStateByControlStatus());
+                }
+                else
+                {
+                    buttonInstance.AddComponent(new HandMenuButtonPress
+                    {
+                        Description = definition,
+                    });
+                }
+
                 this.buttonsContainer.AddChild(buttonInstance);
                 this.instantiatedButtons.Add(definition.Id, buttonInstance);
             }
         }
 
-        private void InternalRemoveButtons(IEnumerable<MenuButtonDescription> buttons)
+        private void InternalRemoveButtons(IEnumerable<ButtonDescription> buttons)
         {
             var entityManager = this.Managers.EntityManager;
 
@@ -430,28 +448,6 @@ namespace Evergine.Xrv.Core.Menu
             this.tagAlong.IsEnabled = followEnabled;
             this.manipulationHandler.IsEnabled = !followEnabled;
             Workarounds.ChangeToggleButtonState(this.followButtonToggle.Owner, followEnabled);
-        }
-
-        internal class ButtonsIterator : IEnumerable<Entity>
-        {
-            private readonly IEnumerable<MenuButtonDescription> descriptors;
-            private readonly Dictionary<Guid, Entity> instances;
-
-            public ButtonsIterator(IEnumerable<MenuButtonDescription> descriptors, Dictionary<Guid, Entity> instances)
-            {
-                this.descriptors = descriptors;
-                this.instances = instances;
-            }
-
-            public IEnumerator<Entity> GetEnumerator()
-            {
-                foreach (var descriptor in this.descriptors.OrderBy(d => d.Order))
-                {
-                    yield return this.instances[descriptor.Id];
-                }
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
         }
 
         internal static class VoiceCommands

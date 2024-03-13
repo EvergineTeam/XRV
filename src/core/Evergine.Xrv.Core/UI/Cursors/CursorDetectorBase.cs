@@ -17,7 +17,8 @@ namespace Evergine.Xrv.Core.UI.Cursors
         /// <summary>
         /// Detection collider.
         /// </summary>
-        protected Collider3D collider3D;
+        [BindComponent(source: BindComponentSource.Children, isExactType: false)]
+        protected Collider3D collider3D = null;
 
         private int detectedCursorIndex;
 
@@ -27,35 +28,6 @@ namespace Evergine.Xrv.Core.UI.Cursors
         /// Gets a value indicating whether hover is detected.
         /// </summary>
         public bool IsDetected => this.detectedCursorIndex >= 0;
-
-        /// <inheritdoc/>
-        protected override bool OnAttached()
-        {
-            if (!base.OnAttached())
-            {
-                return false;
-            }
-
-            if (Application.Current.IsEditor)
-            {
-                return true;
-            }
-
-            this.SetTargetCollider();
-
-            var physicBody = this.Owner.FindComponent<PhysicBody3D>(isExactType: false);
-            if (physicBody == null)
-            {
-                physicBody = new StaticBody3D();
-                this.Owner.AddComponent(physicBody);
-            }
-
-            physicBody.IsSensor = true;
-            physicBody.CollisionCategories = CollisionCategory3D.None;
-            physicBody.MaskBits = CollisionCategory3D.None;
-
-            return true;
-        }
 
         /// <inheritdoc/>
         protected override void OnActivated()
@@ -109,14 +81,6 @@ namespace Evergine.Xrv.Core.UI.Cursors
             {
                 this.OnCursorDetected(detected);
             }
-        }
-
-        /// <summary>
-        /// Sets target <see cref="Collider3D"/> to be considered for collisions.
-        /// </summary>
-        protected virtual void SetTargetCollider()
-        {
-            this.collider3D = this.Owner.FindComponentInChildren<Collider3D>(isExactType: false);
         }
 
         /// <summary>

@@ -1,5 +1,9 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -9,12 +13,8 @@ using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Evergine.Xrv.Core;
-using Evergine.Xrv.Core.Menu;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Dialogs;
 
 namespace Evergine.Xrv.ModelViewer
@@ -27,7 +27,7 @@ namespace Evergine.Xrv.ModelViewer
         private const float ButtonWidth = 0.032f;
         private const float ButtonWidthOverTwo = ButtonWidth * 0.5f;
 
-        private readonly ObservableCollection<MenuButtonDescription> buttonDescriptions;
+        private readonly ObservableCollection<ButtonDescription> buttonDescriptions;
         private readonly Dictionary<Guid, Entity> instantiatedButtons;
 
         private Entity modelEntity;
@@ -36,10 +36,10 @@ namespace Evergine.Xrv.ModelViewer
         private IWorkAction extendedAnimation;
         private int numberOfButtons;
 
-        private MenuButtonDescription lockButtonDesc;
+        private ButtonDescription lockButtonDesc;
         private Entity lockButton;
-        private MenuButtonDescription resetButtonDesc;
-        private MenuButtonDescription deleteButtonDesc;
+        private ButtonDescription resetButtonDesc;
+        private ButtonDescription deleteButtonDesc;
         private bool animating;
 
         [BindService]
@@ -83,7 +83,7 @@ namespace Evergine.Xrv.ModelViewer
         /// </summary>
         public LoadModelBehavior()
         {
-            this.buttonDescriptions = new ObservableCollection<MenuButtonDescription>();
+            this.buttonDescriptions = new ObservableCollection<ButtonDescription>();
             this.instantiatedButtons = new Dictionary<Guid, Entity>();
         }
 
@@ -118,7 +118,7 @@ namespace Evergine.Xrv.ModelViewer
         /// <summary>
         /// Gets the Button descriptions list.
         /// </summary>
-        public IList<MenuButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
+        public IList<ButtonDescription> ButtonDescriptions { get => this.buttonDescriptions; }
 
         /// <inheritdoc/>
         protected override bool OnAttached()
@@ -127,7 +127,7 @@ namespace Evergine.Xrv.ModelViewer
             if (attached)
             {
                 // Lock button
-                this.lockButtonDesc = new MenuButtonDescription
+                this.lockButtonDesc = new ButtonDescription
                 {
                     IsToggle = true,
                     IconOn = ModelViewerResourceIDs.Materials.Icons.locked,
@@ -138,7 +138,7 @@ namespace Evergine.Xrv.ModelViewer
                 this.buttonDescriptions.Add(this.lockButtonDesc);
 
                 // Reset button
-                this.resetButtonDesc = new MenuButtonDescription
+                this.resetButtonDesc = new ButtonDescription
                 {
                     IsToggle = false,
                     IconOn = ModelViewerResourceIDs.Materials.Icons.reset,
@@ -147,7 +147,7 @@ namespace Evergine.Xrv.ModelViewer
                 this.buttonDescriptions.Add(this.resetButtonDesc);
 
                 // Delete button
-                this.deleteButtonDesc = new MenuButtonDescription
+                this.deleteButtonDesc = new ButtonDescription
                 {
                     IsToggle = false,
                     IconOn = ModelViewerResourceIDs.Materials.Icons.delete,
@@ -186,9 +186,9 @@ namespace Evergine.Xrv.ModelViewer
             this.ExtendedAnimation(this.optionsButtonToggle.IsOn);
         }
 
-        private void InternalAddButtons(IEnumerable<MenuButtonDescription> buttons)
+        private void InternalAddButtons(IEnumerable<ButtonDescription> buttons)
         {
-            var buttonsFactory = new MenuButtonFactory(this.xrvService, this.assetsService);
+            var buttonsFactory = new ButtonFactory(this.assetsService);
 
             foreach (var definition in buttons)
             {

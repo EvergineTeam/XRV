@@ -8,8 +8,8 @@ using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Xrv.Core;
-using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.UI.Windows;
 using Evergine.Xrv.Painter.Components;
@@ -30,7 +30,7 @@ namespace Evergine.Xrv.Painter
         public override string Name => "Painter";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton { get; protected set; }
+        public override ButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
         public override TabItem Help { get; protected set; }
@@ -48,7 +48,7 @@ namespace Evergine.Xrv.Painter
             this.xrv = Application.Current.Container.Resolve<XrvService>();
 
             // Menu and help entries
-            this.HandMenuButton = new MenuButtonDescription()
+            this.HandMenuButton = new ButtonDescription()
             {
                 IconOn = PainterResourceIDs.Materials.Icons.Painter,
                 IsToggle = false,

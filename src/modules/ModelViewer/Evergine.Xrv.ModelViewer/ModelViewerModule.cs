@@ -21,7 +21,6 @@ using Evergine.MRTK.SDK.Features.UX.Components.Lists;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Localization;
-using Evergine.Xrv.Core.Menu;
 using Evergine.Xrv.Core.Modules;
 using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Buttons;
@@ -78,7 +77,7 @@ namespace Evergine.Xrv.ModelViewer
         public override string Name => "LoadModel";
 
         /// <inheritdoc/>
-        public override MenuButtonDescription HandMenuButton { get; protected set; }
+        public override ButtonDescription HandMenuButton { get; protected set; }
 
         /// <inheritdoc/>
         public override TabItem Help { get; protected set; }
@@ -130,7 +129,7 @@ namespace Evergine.Xrv.ModelViewer
             this.localization = this.xrv.Localization;
             this.scene = scene;
 
-            this.HandMenuButton = new MenuButtonDescription()
+            this.HandMenuButton = new ButtonDescription()
             {
                 IsToggle = false,
                 IconOn = ModelViewerResourceIDs.Materials.Icons.addModel,

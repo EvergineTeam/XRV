@@ -79,6 +79,15 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to More.
+        /// </summary>
+        public static string Global_More {
+            get {
+                return ResourceManager.GetString("Global.More", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
         public static string Global_No {

@@ -1,5 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Xrv.Core.UI.Buttons;
+
 namespace Evergine.Xrv.Core.Menu
 {
     /// <summary>
@@ -10,6 +12,6 @@ namespace Evergine.Xrv.Core.Menu
         /// <summary>
         /// Gets or sets button description.
         /// </summary>
-        public MenuButtonDescription Description { get; set; }
+        public ButtonDescription Description { get; set; }
     }
 }
