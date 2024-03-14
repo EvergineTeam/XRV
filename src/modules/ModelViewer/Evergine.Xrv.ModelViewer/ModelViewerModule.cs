@@ -48,8 +48,6 @@ namespace Evergine.Xrv.ModelViewer
 
         private ListView repositoriesListView;
         private ListView modelsListView;
-        private Entity repositoriesLoading;
-        private Entity modelsLoading;
         private Entity loadButton;
 
         private FileItem selectedModel;
@@ -149,7 +147,6 @@ namespace Evergine.Xrv.ModelViewer
             ];
 
             this.repositoriesListView.SelectedChanged += (s, e) => { this.RefreshModelList(); };
-            this.repositoriesLoading = repositoryWindowEntity.FindChildrenByTag("PART_repositories_loading", true, true).First();
 
             // Models list view
             this.modelsListView = repositoryWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_models", true, true);
@@ -159,7 +156,6 @@ namespace Evergine.Xrv.ModelViewer
                 new ColumnDefinition { Title = "Last update", PercentageSize = 0.3f },
             ];
             this.modelsListView.SelectedChanged += (s, e) => this.UpdateSelectedModel();
-            this.modelsLoading = repositoryWindowEntity.FindChildrenByTag("PART_models_loading", true, true).First();
 
             // Buttons
             var loadButton = this.CreateButton(
@@ -302,8 +298,8 @@ namespace Evergine.Xrv.ModelViewer
 
         private async Task ConnectToRepositoriesAsync()
         {
-            this.repositoriesLoading.IsEnabled = true;
-            this.modelsLoading.IsEnabled = false;
+            this.repositoriesListView.IsEnabled = true;
+            this.repositoriesListView.ShowLoadingIndicator = true;
 
             var repositoriesData = new List<Tuple<Repository, int>>();
 
@@ -319,13 +315,13 @@ namespace Evergine.Xrv.ModelViewer
             }
 
             this.repositoriesListView.DataSource = new ModelRepositoriesAdapter(repositoriesData.ToArray());
-            this.repositoriesLoading.IsEnabled = false;
+            this.repositoriesListView.ShowLoadingIndicator = false;
             this.repositoriesListView.SelectedIndex = 0;
         }
 
         private async void RefreshModelList()
         {
-            this.modelsLoading.IsEnabled = true;
+            this.modelsListView.ShowLoadingIndicator = true;
 
             if (this.repositoriesListView.SelectedItem is Tuple<Repository, int> repoSelected)
             {
@@ -334,7 +330,7 @@ namespace Evergine.Xrv.ModelViewer
                 this.modelsListView.Refresh();
             }
 
-            this.modelsLoading.IsEnabled = false;
+            this.modelsListView.ShowLoadingIndicator = false;
         }
 
         private void UpdateSelectedModel()
