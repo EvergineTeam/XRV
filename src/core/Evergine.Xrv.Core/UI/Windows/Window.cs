@@ -309,9 +309,9 @@ namespace Evergine.Xrv.Core.UI.Windows
 
             this.buttonsOrganizer.OrganizationUpdated -= this.ButtonsOrganizer_OrganizationUpdated;
 
-            if (this.moreActionsButtonToggle?.Owner != null)
+            if (this.moreActionsButtonToggle != null)
             {
-                Workarounds.ChangeToggleButtonState(this.moreActionsButtonToggle, false);
+                this.moreActionsButtonToggle.IsOn = false;
             }
         }
 
@@ -472,7 +472,7 @@ namespace Evergine.Xrv.Core.UI.Windows
             if (this.moreActionsButtonToggle != null &&
                 this.moreActionsBehavior == MoreActionsPanelBehavior.HideAutomatically)
             {
-                Workarounds.ChangeToggleButtonState(this.moreActionsButtonToggle, false);
+                this.moreActionsButtonToggle.IsOn = false;
             }
         }
 
@@ -550,9 +550,9 @@ namespace Evergine.Xrv.Core.UI.Windows
 
         private void UpdateFollowButtonState()
         {
-            if (this.followButtonToggle?.Owner != null)
+            if (this.followButtonToggle != null)
             {
-                Workarounds.ChangeToggleButtonState(this.followButtonToggle, this.followEnabled);
+                this.followButtonToggle.IsOn = this.followEnabled;
             }
         }
 

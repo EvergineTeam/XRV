@@ -2,7 +2,6 @@
 
 using Evergine.Framework;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using System.Linq;
 
 namespace Evergine.Xrv.Core
 {
@@ -19,28 +18,7 @@ namespace Evergine.Xrv.Core
         public static void ChangeToggleButtonState(Entity button, bool setOn)
         {
             var toggle = button.FindComponentInChildren<ToggleButton>();
-            ChangeToggleButtonState(toggle, setOn);
-        }
-
-        /// <summary>
-        /// Change toggle button state to a given <see cref="ToggleButton.IsOn"/> status.
-        /// </summary>
-        /// <param name="toggle">Target toggle button.</param>
-        /// <param name="setOn">Value indicating its status.</param>
-        public static void ChangeToggleButtonState(ToggleButton toggle, bool setOn)
-        {
-            var toggleStateManager = toggle.Owner.FindComponentInChildren<ToggleStateManager>();
-            var toggleStates = toggleStateManager.States;
-            if (toggleStates != null)
-            {
-                var newToggleState = setOn ? ToggleState.On : ToggleState.Off;
-                var newState = toggleStates.Where(s => s.Value == newToggleState).FirstOrDefault();
-
-                if (newState != null)
-                {
-                    toggleStateManager.ChangeState(newState);
-                }
-            }
+            toggle.IsOn = setOn;
         }
     }
 }
