@@ -3,6 +3,7 @@
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Framework;
+using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Framework.XR;
 using Evergine.Framework.XR.TrackedDevices;
@@ -16,6 +17,9 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
     {
         [BindService(isRequired: false)]
         private XRPlatform xrPlatform = null;
+
+        [BindComponent(source: BindComponentSource.ParentsSkipOwner)]
+        private Transform3D parentTransform3D = null;
 
         private XRTrackedDevice lastTrackedDevice;
         private bool lastButtonState;
@@ -50,14 +54,14 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
                 {
                     if (this.lastTrackedDevice.TryGetArticulatedHandJoint(XRHandJointKind.MiddleProximal, out var middleProximalJoint))
                     {
-                        return middleProximalJoint.Pose.Position;
+                        return Vector3.Transform(middleProximalJoint.Pose.Position, this.parentTransform3D.WorldTransform);
                     }
                 }
                 else if (this.lastTrackedDevice.DeviceType == XRTrackedDeviceType.Controller)
                 {
                     if (this.lastTrackedDevice.GetTrackingState(out var trackingState))
                     {
-                        return trackingState.Pose.Position;
+                        return Vector3.Transform(trackingState.Pose.Position, this.parentTransform3D.WorldTransform);
                     }
                 }
             }
@@ -101,10 +105,10 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
             }
 
             // Get the positions for the joints that will be used to determine if the palm is open
-            var middleMetacarpalPosition = middleMetacarpalJoint.Pose.Position;
-            var middleMetacarpalOrientation = middleMetacarpalJoint.Pose.Orientation;
-            var indexTipPosition = indexTipJoint.Pose.Position;
-            var ringTipPosition = ringTipJoint.Pose.Position;
+            var middleMetacarpalPosition = Vector3.Transform(middleMetacarpalJoint.Pose.Position, this.parentTransform3D.WorldTransform);
+            var middleMetacarpalOrientation = middleMetacarpalJoint.Pose.Orientation * this.parentTransform3D.WorldTransform.Orientation;
+            var indexTipPosition = Vector3.Transform(indexTipJoint.Pose.Position, this.parentTransform3D.WorldTransform);
+            var ringTipPosition = Vector3.Transform(ringTipJoint.Pose.Position, this.parentTransform3D.WorldTransform);
 
             // Calculate hand plane
             var handPlane = trackedDevice.Handedness == XRHandedness.LeftHand ?
@@ -125,14 +129,19 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
 
             if (this.Managers.RenderManager.DebugLines)
             {
-                var lineBatch = this.Managers.RenderManager.LineBatch3D;
                 trackedDevice.TryGetArticulatedHandJoint(XRHandJointKind.Palm, out var palm);
+
+                var lineBatch = this.Managers.RenderManager.LineBatch3D;
+
                 lineBatch.DrawPoint(middleMetacarpalPosition, 0.01f, Color.Red);
                 lineBatch.DrawPoint(indexTipPosition, 0.01f, Color.Green);
                 lineBatch.DrawPoint(ringTipPosition, 0.01f, Color.Blue);
-                lineBatch.DrawRay(palm.Pose.Position, palmNormal * 0.02f, Color.Cyan);
-                lineBatch.DrawRay(palm.Pose.Position, cameraNormal * 0.02f, Color.Magenta);
-                lineBatch.DrawRay(palm.Pose.Position, fingersNormal * 0.02f, Color.Yellow);
+
+                var palmPosition = Vector3.Transform(palm.Pose.Position, this.parentTransform3D.WorldTransform);
+
+                lineBatch.DrawRay(palmPosition, palmNormal * 0.02f, Color.Cyan);
+                lineBatch.DrawRay(palmPosition, cameraNormal * 0.02f, Color.Magenta);
+                lineBatch.DrawRay(palmPosition, fingersNormal * 0.02f, Color.Yellow);
             }
 
             if ((!this.IsPalmUp && !allVectorsOverUpperThreshold) || (this.IsPalmUp && anyVectorUnderLowerThreshold))

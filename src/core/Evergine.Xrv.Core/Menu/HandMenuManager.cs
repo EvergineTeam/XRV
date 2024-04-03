@@ -9,11 +9,14 @@ using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features;
 using Evergine.Xrv.Core.Menu.PalmDetection;
 using Evergine.Xrv.Core.Menu.Tutorial;
+using System.Linq;
 
 namespace Evergine.Xrv.Core.Menu
 {
     internal class HandMenuManager
     {
+        private const string MRTKRootTag = "MRTKRoot";
+
         private readonly EntityManager entityManager;
         private readonly AssetsService assetsService;
         private PalmPanelBehaviorBase palmPanelBehavior;
@@ -72,8 +75,10 @@ namespace Evergine.Xrv.Core.Menu
             var menuEntityRotation = this.menuEntity.FindComponent<Transform3D>();
             menuEntityRotation.LocalRotation = new Vector3(0, MathHelper.Pi, 0);
 
-            this.entityManager.Add(palmMenuAnchor);
-            this.entityManager.Add(menuRoot);
+            // Add entities as children to the MRTKRoot entity
+            var mrtkRootEntity = this.entityManager.FindAllByTag(MRTKRootTag).First();
+            mrtkRootEntity.AddChild(palmMenuAnchor);
+            mrtkRootEntity.AddChild(menuRoot);
 
             return handMenu;
         }
