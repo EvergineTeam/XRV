@@ -95,9 +95,7 @@ namespace XrvSamples
                 })
                 .AddModule(new StreamingViewerModule()
                 {
-                    //SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
-                    SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
-                    //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
+                    SourceURL = "http://94.124.210.59:8083/mjpg/video.mjpg"
                 })
                 .AddModule(new PainterModule());
 
