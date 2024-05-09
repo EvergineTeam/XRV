@@ -468,7 +468,6 @@ namespace Evergine.Xrv.ModelViewer.Importers.GLB
                                 data++;
                             }
                         }
-
                     }
                 }
 
@@ -493,8 +492,8 @@ namespace Evergine.Xrv.ModelViewer.Importers.GLB
                 Buffer iBuffer = this.graphicsContext.Factory.CreateBuffer(indicesPointer, ref iBufferDesc);
                 indexBuffer = new IndexBuffer(iBuffer, indexFormatInfo.format, flipWinding: true);
             }
-            else // draco compression
-            {
+            else
+            { // draco compression
                 var dracoMesh = this.decodedBufferViews[dracoBufferViewId];
                 var indices = dracoMesh.GetIndices();
 
