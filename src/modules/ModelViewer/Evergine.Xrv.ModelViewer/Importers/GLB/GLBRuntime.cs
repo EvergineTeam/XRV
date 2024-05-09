@@ -445,8 +445,7 @@ namespace Evergine.Xrv.ModelViewer.Importers.GLB
                     BufferFlags.ShaderResource | BufferFlags.VertexBuffer,
                     ResourceUsage.Default,
                     ResourceCpuAccess.None,
-                    (int)attribSize
-                );
+                    (int)attribSize);
                 Buffer buffer = this.graphicsContext.Factory.CreateBuffer(dracoData.data, ref bufferDesc);
                 var layout = new LayoutDescription().Add(elementDesc);
                 vertexBuffersList.Add(new VertexBuffer(buffer, layout));
