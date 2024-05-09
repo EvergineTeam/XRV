@@ -17,7 +17,7 @@ namespace Evergine.Xrv.ModelViewer.Importers
         /// <summary>
         /// Gets the 3d format extension.
         /// </summary>
-        public abstract string Extentsion { get; }
+        public abstract string Extension { get; }
 
         /// <summary>
         /// Read a 3D format file from stream and return a model asset.

@@ -51,7 +51,7 @@ namespace Evergine.Xrv.ModelViewer.Importers.STL
         }
 
         /// <inheritdoc/>
-        public override string Extentsion => ".stl";
+        public override string Extension => ".stl";
 
         /// <summary>
         /// Read a STL from file Path.
