@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Evergine.Bindings.Draco;
 using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -15,7 +17,6 @@ using Evergine.Framework.Threading;
 using Evergine.Mathematics;
 using Evergine.Platform;
 using Evergine.Xrv.ModelViewer.Importers.Images;
-using Evergine.Bindings.Draco;
 using glTFLoader;
 using glTFLoader.Schema;
 using Newtonsoft.Json.Linq;
@@ -25,7 +26,6 @@ using Buffer = Evergine.Common.Graphics.Buffer;
 using Material = Evergine.Framework.Graphics.Material;
 using Mesh = Evergine.Framework.Graphics.Mesh;
 using Texture = Evergine.Common.Graphics.Texture;
-using System.Diagnostics;
 
 namespace Evergine.Xrv.ModelViewer.Importers.GLB
 {
@@ -361,7 +361,7 @@ namespace Evergine.Xrv.ModelViewer.Importers.GLB
                 }
             }
 
-            var normalAttributes = attributes.Where(KV => !dracoAttributes.ContainsKey(KV.Key)).ToArray(); // the attributes which are not draco-compressed
+            var normalAttributes = attributes.Where(kv => !dracoAttributes.ContainsKey(kv.Key)).ToArray(); // the attributes which are not draco-compressed
             var sortedAttributes = this.SortAttributes(normalAttributes);
 
             BoundingBox meshBounding = default;
@@ -553,7 +553,7 @@ namespace Evergine.Xrv.ModelViewer.Importers.GLB
             return sortedAttributes.ToArray();
         }
 
-        private ElementDescription GetElementFromAttribute(string name, Accessor accessor) { return this.GetElementFromAttribute(name, accessor.ComponentType, accessor.Type, accessor.Normalized); }
+        private ElementDescription GetElementFromAttribute(string name, Accessor accessor) => this.GetElementFromAttribute(name, accessor.ComponentType, accessor.Type, accessor.Normalized);
 
         private ElementDescription GetElementFromAttribute(string name, Accessor.ComponentTypeEnum componentType, Accessor.TypeEnum type, bool normalized)
         {
