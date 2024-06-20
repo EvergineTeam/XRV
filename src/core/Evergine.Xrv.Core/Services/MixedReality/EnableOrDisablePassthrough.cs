@@ -31,7 +31,6 @@ namespace Evergine.Xrv.Core.Services.MixedReality
             if (attached)
             {
                 this.passthroughService = this.xrv.Services.Passthrough;
-                this.UpdateButtonStatus();
             }
 
             this.ignoreToggleStateChanges = true;
@@ -43,6 +42,8 @@ namespace Evergine.Xrv.Core.Services.MixedReality
         protected override void OnActivated()
         {
             base.OnActivated();
+
+            this.UpdateButtonStatus();
             this.toggleButton.Toggled += this.ToggleButton_Toggled;
         }
 
