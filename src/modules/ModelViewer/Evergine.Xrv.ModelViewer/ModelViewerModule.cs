@@ -66,8 +66,8 @@ namespace Evergine.Xrv.ModelViewer
             // 3D format supported.
             this.loaders = new Dictionary<string, ModelRuntime>
             {
-                { GLBRuntime.Instance.Extentsion, GLBRuntime.Instance },
-                { STLRuntime.Instance.Extentsion, STLRuntime.Instance },
+                { GLBRuntime.Instance.Extension, GLBRuntime.Instance },
+                { STLRuntime.Instance.Extension, STLRuntime.Instance },
             };
         }
 

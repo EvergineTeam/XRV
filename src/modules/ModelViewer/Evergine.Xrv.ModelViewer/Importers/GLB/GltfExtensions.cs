@@ -17,7 +17,7 @@ namespace Evergine.Xrv.ModelViewer.Importers.GLB
     internal static class GltfExtensions
     {
         /// <summary>
-        /// Component counts by tipe.
+        /// Component counts by type.
         /// </summary>
         private static readonly int[] componentCountForType = { 1, 2, 3, 4, 4, 9, 16 };
 
