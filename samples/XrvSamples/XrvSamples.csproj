@@ -4,16 +4,17 @@
     <GenerateEvergineContent>True</GenerateEvergineContent>
     <GenerateEvergineAssets>False</GenerateEvergineAssets>
     <GenerateEvergineScenesCode>True</GenerateEvergineScenesCode>
+	<ReferenceMRTK>true</ReferenceMRTK>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Evergine.Common" Version="2023.12.13.791-nightly" />
-    <PackageReference Include="Evergine.Components" Version="2023.12.13.791-nightly" />
-    <PackageReference Include="Evergine.Framework" Version="2023.12.13.791-nightly" />
-    <PackageReference Include="Evergine.Mathematics" Version="2023.12.13.791-nightly" />
-    <PackageReference Include="Evergine.Platform" Version="2023.12.13.791-nightly" />
-    <PackageReference Include="Evergine.Bullet" Version="2023.12.13.791-nightly" />
-    <PackageReference Include="Evergine.Targets" Version="2023.12.13.791-nightly" />
-    <PackageReference Include="Evergine.CodeScenes" Version="2023.12.13.791-nightly" />
+    <PackageReference Include="Evergine.Common" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.Components" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.Framework" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.Mathematics" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.Platform" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.Bullet" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.Targets" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.CodeScenes" Version="2024.6.28.10" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
@@ -24,6 +25,5 @@
     <ProjectReference Include="..\..\src\modules\Painter\Evergine.Xrv.Painter\Evergine.Xrv.Painter.csproj" />
     <ProjectReference Include="..\..\src\modules\Ruler\Evergine.Xrv.Ruler\Evergine.Xrv.Ruler.csproj" />
     <ProjectReference Include="..\..\src\modules\StreamingViewer\Evergine.Xrv.StreamingViewer\Evergine.Xrv.StreamingViewer.csproj" />
-    <ProjectReference Include="..\..\submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
   </ItemGroup>
 </Project>

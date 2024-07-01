@@ -20,9 +20,8 @@ using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Windows;
-using Evergine.Xrv.ImageGallery.Helpers;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 
 namespace Evergine.Xrv.ImageGallery.Components
 {
@@ -394,15 +393,22 @@ namespace Evergine.Xrv.ImageGallery.Components
                 async () =>
             {
                 AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
-                byte[] data = null;
                 using (var fileStream = await this.FileAccess.GetFileAsync(filePath))
+                using (var codec = SKCodec.Create(fileStream))
                 {
-                    using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
+                    var info = new SKImageInfo
                     {
-                        RawImageLoader.CopyImageToArrayPool(image, out _, out data);
-                    }
+                        Width = codec.Info.Width,
+                        Height = codec.Info.Height,
+                        AlphaType = codec.Info.AlphaType,
+                        ColorType = SKColorType.Rgba8888,
+                    };
 
-                    await EvergineForegroundTask.Run(() => this.graphicsContext.UpdateTextureData(this.imageTexture, data));
+                    using (var bitmap = SKBitmap.Decode(codec, info))
+                    {
+                        var pixelsPtr = bitmap.GetPixels();
+                        await EvergineForegroundTask.Run(() => this.graphicsContext.UpdateTextureData(this.imageTexture, pixelsPtr, (uint)info.BytesSize, 0));
+                    }
                 }
 
                 this.spinnerEntity.IsEnabled = false;

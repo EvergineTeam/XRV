@@ -14,8 +14,8 @@ using Evergine.Mathematics;
 using Evergine.MRTK.Effects;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.UI.Windows;
-using Evergine.Xrv.StreamingViewer.Helpers;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 using Application = Evergine.Framework.Application;
 using PixelFormat = Evergine.Common.Graphics.PixelFormat;
 
@@ -51,7 +51,6 @@ namespace Evergine.Xrv.StreamingViewer.Components
 
         private Texture imageTexture = null;
         private bool initializedTexture = false;
-        private byte[] textureBuffer;
         private bool stop;
 
         private ILogger logger;
@@ -190,62 +189,71 @@ namespace Evergine.Xrv.StreamingViewer.Components
         {
             try
             {
-                using (var image = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(bytes))
+                using (var stream = new MemoryStream(bytes))
+                using (var codec = SKCodec.Create(stream))
                 {
-                    // Option 1
-                    RawImageLoader.CopyImageToArrayPool(image, out var size, out this.textureBuffer);
-
-                    // Option 2
-                    ////var iMemoryGroup = image.GetPixelMemoryGroup();
-                    ////var memoryGroup = iMemoryGroup.ToArray()[0];
-                    ////var data = MemoryMarshal.AsBytes(memoryGroup.Span).ToArray();
-
-                    await EvergineForegroundTask.Run(() =>
+                    var info = new SKImageInfo
                     {
-                        if (!this.initializedTexture)
+                        Width = codec.Info.Width,
+                        Height = codec.Info.Height,
+                        AlphaType = codec.Info.AlphaType,
+                        ColorType = SKColorType.Rgba8888,
+                    };
+
+                    using (var bitmap = SKBitmap.Decode(codec, info))
+                    {
+                        var pixelsPtr = bitmap.GetPixels();
+                        await EvergineForegroundTask.Run(() =>
                         {
-                            // Create texture
-                            var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
-                            var desc = new TextureDescription()
-                            {
-                                Type = TextureType.Texture2D,
-                                Width = (uint)image.Width,
-                                Height = (uint)image.Height,
-                                Depth = 1,
-                                ArraySize = 1,
-                                Faces = 1,
-                                Usage = ResourceUsage.Default,
-                                CpuAccess = ResourceCpuAccess.None,
-                                Flags = TextureFlags.ShaderResource | TextureFlags.RenderTarget,
-                                Format = PixelFormat.R8G8B8A8_UNorm,
-                                MipLevels = 1,
-                                SampleCount = TextureSampleCount.None,
-                            };
-
-                            this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
-                            holographicEffect.Texture = this.imageTexture;
-                            holographicEffect.Albedo = Color.White;
-
-                            // Set Window Size
-                            this.videoFramePlaneMesh.Width = image.Width / PixelsInAMeter;
-                            this.videoFramePlaneMesh.Height = image.Height / PixelsInAMeter;
-                            this.windowConfigurator.Size = new Vector2(image.Width / PixelsInAMeter, (image.Height / PixelsInAMeter) + BottomMarginForLogo);
-                            this.windowConfigurator.DisplayFrontPlate = false;
-
-                            // Give space to plain concepts logo
-                            this.transform.LocalPosition = new Vector3(this.transform.LocalPosition.X, this.transform.LocalPosition.Y + (BottomMarginForLogo / 2), this.transform.LocalPosition.Z);
-
-                            this.spinnerEntity.IsEnabled = false;
-                            this.initializedTexture = true;
-                        }
-
-                        this.graphicsContext.UpdateTextureData(this.imageTexture, this.textureBuffer);
-                    });
+                            this.EnsureVideoTextureIsReady((uint)codec.Info.Width, (uint)codec.Info.Height);
+                            this.graphicsContext.UpdateTextureData(this.imageTexture, pixelsPtr, (uint)info.BytesSize, 0);
+                        });
+                    }
                 }
             }
             catch (Exception ex)
             {
                 this.logger?.LogError(ex, "Streaming texture set error");
+            }
+        }
+
+        private void EnsureVideoTextureIsReady(uint imageWidth, uint imageHeight)
+        {
+            if (!this.initializedTexture)
+            {
+                // Create texture
+                var holographicEffect = new HoloGraphic(this.videoFrameMaterial.Material);
+                var desc = new TextureDescription()
+                {
+                    Type = TextureType.Texture2D,
+                    Width = imageWidth,
+                    Height = imageHeight,
+                    Depth = 1,
+                    ArraySize = 1,
+                    Faces = 1,
+                    Usage = ResourceUsage.Default,
+                    CpuAccess = ResourceCpuAccess.None,
+                    Flags = TextureFlags.ShaderResource | TextureFlags.RenderTarget,
+                    Format = PixelFormat.R8G8B8A8_UNorm,
+                    MipLevels = 1,
+                    SampleCount = TextureSampleCount.None,
+                };
+
+                this.imageTexture = this.graphicsContext.Factory.CreateTexture(ref desc);
+                holographicEffect.Texture = this.imageTexture;
+                holographicEffect.Albedo = Color.White;
+
+                // Set Window Size
+                this.videoFramePlaneMesh.Width = imageWidth / PixelsInAMeter;
+                this.videoFramePlaneMesh.Height = imageHeight / PixelsInAMeter;
+                this.windowConfigurator.Size = new Vector2(imageWidth / PixelsInAMeter, (imageHeight / PixelsInAMeter) + BottomMarginForLogo);
+                this.windowConfigurator.DisplayFrontPlate = false;
+
+                // Give space to plain concepts logo
+                this.transform.LocalPosition = new Vector3(this.transform.LocalPosition.X, this.transform.LocalPosition.Y + (BottomMarginForLogo / 2), this.transform.LocalPosition.Z);
+
+                this.spinnerEntity.IsEnabled = false;
+                this.initializedTexture = true;
             }
         }
     }

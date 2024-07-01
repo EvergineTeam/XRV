@@ -11,6 +11,7 @@ using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
 using Evergine.Framework.Physics3D;
 using Evergine.Framework.Prefabs;
+using Evergine.Framework.Runtimes;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
@@ -19,6 +20,8 @@ using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.Lists;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
+using Evergine.Runtimes.GLB;
+using Evergine.Runtimes.STL;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Modules;
@@ -26,10 +29,6 @@ using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.ModelViewer.Effects;
-using Evergine.Xrv.ModelViewer.Importers;
-using Evergine.Xrv.ModelViewer.Importers.GLB;
-using Evergine.Xrv.ModelViewer.Importers.STL;
-using static glTFLoader.Schema.Material;
 using Window = Evergine.Xrv.Core.UI.Windows.Window;
 
 namespace Evergine.Xrv.ModelViewer
@@ -114,7 +113,7 @@ namespace Evergine.Xrv.ModelViewer
         /// <summary>
         /// Gets or sets the material created by the loader.
         /// </summary>
-        public Func<Color, Texture, SamplerState, AlphaModeEnum, float, float, bool, Material> MaterialAssigner { get; set; }
+        public Func<MaterialData, Task<Material>> MaterialAssigner { get; set; }
 
         /// <inheritdoc/>
         public override IEnumerable<string> VoiceCommands => null;
@@ -146,7 +145,7 @@ namespace Evergine.Xrv.ModelViewer
                 new ColumnDefinition { Title = "Models", PercentageSize = 0.3f },
             ];
 
-            this.repositoriesListView.SelectedChanged += (s, e) => { this.RefreshModelList(); };
+            this.repositoriesListView.SelectedItemChanged += (s, e) => { this.RefreshModelList(); };
 
             // Models list view
             this.modelsListView = repositoryWindowEntity.FindComponentInChildren<ListView>(true, tag: "PART_models", true, true);
@@ -155,7 +154,7 @@ namespace Evergine.Xrv.ModelViewer
                 new ColumnDefinition { Title = "Name", PercentageSize = 0.7f },
                 new ColumnDefinition { Title = "Last update", PercentageSize = 0.3f },
             ];
-            this.modelsListView.SelectedChanged += (s, e) => this.UpdateSelectedModel();
+            this.modelsListView.SelectedItemChanged += (s, e) => this.UpdateSelectedModel();
 
             // Buttons
             var loadButton = this.CreateButton(
@@ -224,12 +223,9 @@ namespace Evergine.Xrv.ModelViewer
                     if (this.loaders.TryGetValue(extension, out var loaderRuntime))
                     {
                         using (var stream = await selectedRepo.Item1.FileAccess.GetFileAsync(this.selectedModel.Path))
-                        using (var memoryStream = new MemoryStream())
                         {
-                            stream.CopyTo(memoryStream);
-                            memoryStream.Position = 0;
                             var materialAssignerFunc = this.MaterialAssigner == null ? this.MaterialAssignerToSolidEffect : this.MaterialAssigner;
-                            model = await loaderRuntime.Read(memoryStream, materialAssignerFunc);
+                            model = await loaderRuntime.Read(stream, materialAssignerFunc);
                         }
 
                         // Instantiate model
@@ -393,7 +389,7 @@ namespace Evergine.Xrv.ModelViewer
             });
         }
 
-        private Material MaterialAssignerToSolidEffect(Color baseColor, Texture baseColorTexture, SamplerState baseColorSampler, AlphaModeEnum alphaMode, float alpha, float alphaCutOff, bool vertexColorEnabled)
+        private async Task<Material> MaterialAssignerToSolidEffect(MaterialData data)
         {
             if (this.alphaLayer == null || this.opaqueLayer == null)
             {
@@ -402,35 +398,35 @@ namespace Evergine.Xrv.ModelViewer
             }
 
             RenderLayerDescription layer;
-            switch (alphaMode)
+            switch (data.AlphaMode)
             {
-                default:
-                case AlphaModeEnum.MASK:
-                case AlphaModeEnum.OPAQUE:
-                    layer = this.opaqueLayer;
+                case AlphaMode.Blend:
+                    layer = data.BaseColor.A < 1.0f ? this.alphaLayer : this.opaqueLayer;
                     break;
-                case AlphaModeEnum.BLEND:
-                    layer = alpha < 1.0f ? this.alphaLayer : this.opaqueLayer;
+                default:
+                    layer = this.opaqueLayer;
                     break;
             }
 
             var effect = this.assetsService.Load<Effect>(ModelViewerResourceIDs.Effects.SolidEffect);
+            var baseColorTexAndSampler = await data.GetBaseColorTextureAndSampler();
+
             SolidEffect material = new SolidEffect(effect)
             {
-                Parameters_Color = baseColor.ToVector3(),
-                Parameters_Alpha = alpha,
-                BaseColorTexture = baseColorTexture,
-                BaseColorSampler = baseColorSampler,
+                Parameters_Color = data.BaseColor.ToVector3(),
+                Parameters_Alpha = data.BaseColor.A,
+                BaseColorTexture = baseColorTexAndSampler.Texture,
+                BaseColorSampler = baseColorTexAndSampler.Sampler,
                 LayerDescription = layer,
-                Parameters_AlphaCutOff = alphaCutOff,
+                Parameters_AlphaCutOff = data.AlphaCutoff,
             };
 
-            if (vertexColorEnabled)
+            if (data.HasVertexColor)
             {
                 material.ActiveDirectivesNames = new string[] { "VERTEXCOLOR" };
             }
 
-            if (baseColorTexture != null)
+            if (baseColorTexAndSampler.Texture != null && baseColorTexAndSampler.Sampler != null)
             {
                 material.ActiveDirectivesNames = new string[] { "TEXTURECOLOR" };
             }
