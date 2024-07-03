@@ -16,7 +16,6 @@ namespace Evergine.Xrv.Core.Storage
     public class ApplicationDataFileAccess : FileAccess
     {
         private const int FileBufferSize = 4096;
-        private string rootPath;
         private string basePath;
 
         /// <summary>
@@ -24,8 +23,22 @@ namespace Evergine.Xrv.Core.Storage
         /// </summary>
         public ApplicationDataFileAccess()
         {
-            this.basePath = this.rootPath = DeviceHelper.GetLocalApplicationFolderPath();
+            this.basePath = this.ApplicationFolderPath = DeviceHelper.GetLocalApplicationFolderPath();
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationDataFileAccess"/> class.
+        /// </summary>
+        /// <param name="rootPath">Root path.</param>
+        public ApplicationDataFileAccess(string rootPath)
+        {
+            this.basePath = this.ApplicationFolderPath = rootPath;
+        }
+
+        /// <summary>
+        /// Gets application data folder path.
+        /// </summary>
+        public string ApplicationFolderPath { get; private set; }
 
         /// <inheritdoc/>
         protected override Task InternalCreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
@@ -48,7 +61,7 @@ namespace Evergine.Xrv.Core.Storage
                     .Select(file => new DirectoryInfo(file))
                 : Enumerable.Empty<DirectoryInfo>();
 
-            return Task.FromResult(directories.Select(item => ConvertToDirectoryItem(item, relativePath)));
+            return Task.FromResult(directories.Select(item => ConvertToDirectoryItem(item, Path.Combine(relativePath, item.Name))));
         }
 
         /// <inheritdoc/>
@@ -61,7 +74,7 @@ namespace Evergine.Xrv.Core.Storage
                     .Select(file => new FileInfo(file))
                 : Enumerable.Empty<FileInfo>();
 
-            return Task.FromResult(files.Select(item => ConvertToFileItem(item, relativePath)));
+            return Task.FromResult(files.Select(item => ConvertToFileItem(item, Path.Combine(relativePath, item.Name))));
         }
 
         /// <inheritdoc/>
@@ -95,6 +108,8 @@ namespace Evergine.Xrv.Core.Storage
         protected override async Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
             var fullPath = this.GetFullPath(relativePath);
+            await this.CreateDirectoryAsync(Path.GetDirectoryName(relativePath));
+
             using (var fileStream = new FileStream(fullPath, FileMode.Create, IOFileAccess.Write, FileShare.Read, FileBufferSize, true))
             {
                 await stream.CopyToAsync(fileStream, FileBufferSize, cancellationToken).ConfigureAwait(false);
@@ -136,27 +151,27 @@ namespace Evergine.Xrv.Core.Storage
         {
             var fullPath = this.GetFullPath(relativePath);
             bool exists = await this.ExistsFileAsync(fullPath, cancellationToken).ConfigureAwait(false);
-            return exists ? ConvertToFileItem(new FileInfo(fullPath), relativePath.GetDirectoryName()) : null;
+            return exists ? ConvertToFileItem(new FileInfo(fullPath), relativePath) : null;
         }
 
         /// <inheritdoc/>
         protected override void OnBaseDirectoryUpdate()
         {
             base.OnBaseDirectoryUpdate();
-            this.basePath = string.IsNullOrEmpty(this.BaseDirectory) ? this.rootPath : Path.Combine(this.rootPath, this.BaseDirectory);
+            this.basePath = string.IsNullOrEmpty(this.BaseDirectory) ? this.ApplicationFolderPath : Path.Combine(this.ApplicationFolderPath, this.BaseDirectory);
         }
 
         private string GetFullPath(string relativePath) => Path.Combine(this.basePath, relativePath);
 
-        private static DirectoryItem ConvertToDirectoryItem(DirectoryInfo directory, string basePath) =>
-            new DirectoryItem(Path.Combine(basePath ?? string.Empty, directory.Name))
+        private static DirectoryItem ConvertToDirectoryItem(DirectoryInfo directory, string relativePath) =>
+            new DirectoryItem(relativePath)
             {
                 CreationTime = directory.CreationTime,
                 ModificationTime = directory.LastWriteTime,
             };
 
-        private static FileItem ConvertToFileItem(FileInfo file, string basePath) =>
-            new FileItem(Path.Combine(basePath ?? string.Empty, file.Name))
+        private static FileItem ConvertToFileItem(FileInfo file, string relativePath) =>
+            new FileItem(relativePath)
             {
                 CreationTime = file.CreationTime,
                 ModificationTime = file.LastWriteTime,

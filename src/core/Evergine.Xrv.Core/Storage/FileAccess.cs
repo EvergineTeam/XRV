@@ -38,6 +38,11 @@ namespace Evergine.Xrv.Core.Storage
         }
 
         /// <summary>
+        /// Gets a value indicating whether file access has a base directory.
+        /// </summary>
+        public bool HasBaseDirectory { get => !string.IsNullOrEmpty(this.baseDirectory); }
+
+        /// <summary>
         /// Gets or sets disk cache.
         /// </summary>
         public virtual DiskCache Cache

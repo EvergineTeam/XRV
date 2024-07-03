@@ -1,26 +1,26 @@
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Evergine.Xrv.Core.Storage;
+using Evergine.Xrv.Core.Utils;
 using Xunit;
 
 namespace Evergine.Xrv.Core.Tests.Storage
 {
-    public class ApplicationDataFileAccessShould
+    public class ApplicationDataFileAccessShould : IAsyncLifetime
     {
-        private const string TestDirectory = "test";
         private readonly ApplicationDataFileAccess fileAccess;
 
         public ApplicationDataFileAccessShould()
         {
-            this.fileAccess = new ApplicationDataFileAccess()
-            {
-                BaseDirectory = TestDirectory,
-            };
-            this.CleanTestFolder();
+            string roothPath = Path.Combine(DeviceHelper.GetLocalApplicationFolderPath(), "tests");
+            this.fileAccess = new ApplicationDataFileAccess(roothPath);
         }
+
+        Task IAsyncLifetime.InitializeAsync() => this.fileAccess.ClearAsync();
+
+        Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask;
 
         [Fact]
         public async Task CreateADirectory()
@@ -62,7 +62,7 @@ namespace Evergine.Xrv.Core.Tests.Storage
             await TestHelpers.PrepareTestFileSystemAsync(this.fileAccess, numberOfDirectories, numberOfFilesPerDirectory);
 
             var rootFolderFiles = await this.fileAccess.EnumerateFilesAsync();
-            Assert.Single(rootFolderFiles);
+            Assert.Equal(numberOfFilesPerDirectory, rootFolderFiles.Count());
 
             var rootFolderDirectories = await this.fileAccess.EnumerateDirectoriesAsync();
             Assert.Equal(numberOfDirectories, rootFolderDirectories.Count());
@@ -95,6 +95,56 @@ namespace Evergine.Xrv.Core.Tests.Storage
         }
 
         [Fact]
+        public async Task EnsureOnlyBaseDirectoryItemsAreEnumerated()
+        {
+            this.fileAccess.BaseDirectory = "base";
+
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "file2.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder/file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder/file2.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder2/file1.txt");
+
+            var files = await this.fileAccess.EnumerateFilesAsync();
+            var directories = await this.fileAccess.EnumerateDirectoriesAsync();
+
+            Assert.Equal(2, files.Count());
+            Assert.Equal(2, directories.Count());
+        }
+
+        [Fact]
+        public async Task EnsureOnlySpecificDirectoryItemsAreEnumerated()
+        {
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "file1.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder/file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder/file2.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder/folder/file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder/folder/file2.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "folder/folder2/file1.txt");
+
+            var files = await this.fileAccess.EnumerateFilesAsync("folder");
+            var directories = await this.fileAccess.EnumerateDirectoriesAsync("folder");
+
+            Assert.Equal(2, files.Count());
+            Assert.Equal(2, directories.Count());
+        }
+
+        [Fact]
+        public async Task DeleteADirectoryInDepth()
+        {
+            const string directoryName = "todelete";
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "todelete1/file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "todelete1/file2.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "todelete1/folder/file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "todelete1/folder/file2.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "todelete1/folder2/file1.txt");
+            await this.fileAccess.DeleteDirectoryAsync(directoryName);
+
+            bool exists = await fileAccess.ExistsDirectoryAsync(directoryName);
+            Assert.False(exists);
+        }
+
+        [Fact]
         public async Task RetrieveDirectoryDates()
         {
             const string directoryName = "dates";
@@ -115,26 +165,88 @@ namespace Evergine.Xrv.Core.Tests.Storage
         }
 
         [Fact]
+        public async Task RetrieveFileMetadata()
+        {
+            this.fileAccess.BaseDirectory = "base";
+            string filePath = await TestHelpers.CreateTestFileAsync(this.fileAccess, "file.txt");
+            var targetFile = await fileAccess.GetFileItemAsync("file.txt");
+
+            Assert.NotNull(targetFile);
+            Assert.Equal("file.txt", targetFile.Name);
+            Assert.Equal("file.txt", targetFile.Path);
+            Assert.NotNull(targetFile.CreationTime);
+            Assert.NotNull(targetFile.ModificationTime);
+            Assert.NotNull(targetFile.Size);
+        }
+
+        [Fact]
         public async Task RetrieveFileItem()
         {
+            this.fileAccess.BaseDirectory = "base";
+
             string filePath = await TestHelpers.CreateTestFileAsync(this.fileAccess, "file.txt");
             var file = await this.fileAccess.GetFileItemAsync(filePath);
             Assert.NotNull(file);
             Assert.True(file.CreationTime != null);
             Assert.True(file.ModificationTime != null);
             Assert.NotNull(file.Size);
+            Assert.Equal("file.txt", file.Name);
+            Assert.Equal("file.txt", file.Path);
         }
 
-        private void CleanTestFolder()
+        [Fact]
+        public async Task RetrieveFileItemInDeepFolder()
         {
-            var executingFolderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var testFolderPath = Path.Combine(executingFolderPath, TestDirectory);
-            if (Directory.Exists(testFolderPath))
-            {
-                Directory.Delete(testFolderPath, true);
-            }
+            this.fileAccess.BaseDirectory = "base";
 
-            Directory.CreateDirectory(testFolderPath);
+            const string filePath = "path/to/the/file.txt";
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, filePath);
+            var file = await this.fileAccess.GetFileItemAsync(filePath);
+            Assert.NotNull(file);
+            Assert.True(file.CreationTime != null);
+            Assert.True(file.ModificationTime != null);
+            Assert.NotNull(file.Size);
+            Assert.Equal("file.txt", file.Name);
+            Assert.Equal(filePath, file.Path);
+        }
+
+        [Fact]
+        public async Task CreateDirectoriesStructureBySingleCall()
+        {
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "level1_1/level2/file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "level1_2/level2/file.txt");
+
+            var directories = await this.fileAccess.EnumerateDirectoriesAsync();
+            Assert.Equal(2, directories.Count());
+
+            for (int i = 1; i <= directories.Count(); i++)
+            {
+                var directory = directories.ElementAt(i - 1);
+                Assert.Equal($"level1_{i}", directory.Path);
+                var subDirectories = await this.fileAccess.EnumerateDirectoriesAsync(directory.Path);
+                Assert.Single(subDirectories);
+                Assert.Equal($"level1_{i}/level2", subDirectories.ElementAt(0).Path);
+            }
+        }
+
+        [Fact]
+        public async Task CreateDirectoriesStructureWithBasePathBySingleCall()
+        {
+            this.fileAccess.BaseDirectory = "base";
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "level1_1/level2/file.txt");
+            await TestHelpers.CreateTestFileAsync(this.fileAccess, "level1_2/level2/file.txt");
+
+            var directories = await this.fileAccess.EnumerateDirectoriesAsync();
+            Assert.Equal(2, directories.Count());
+
+            for (int i = 1; i <= directories.Count(); i++)
+            {
+                var directory = directories.ElementAt(i - 1);
+                Assert.Equal($"level1_{i}", directory.Path);
+                var subDirectories = await this.fileAccess.EnumerateDirectoriesAsync(directory.Path);
+                Assert.Single(subDirectories);
+                Assert.Equal($"level1_{i}/level2", subDirectories.ElementAt(0).Path);
+            }
         }
     }
 }

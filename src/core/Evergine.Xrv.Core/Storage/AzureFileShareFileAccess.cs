@@ -75,6 +75,11 @@ namespace Evergine.Xrv.Core.Storage
         /// <inheritdoc/>
         protected override Task InternalCreateBaseDirectoryIfNotExistsAsync(CancellationToken cancellationToken = default)
         {
+            if (!this.HasBaseDirectory)
+            {
+                return Task.CompletedTask;
+            }
+
             ShareDirectoryClient directory = this.client.GetDirectoryClient(this.BaseDirectory);
             return directory.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
         }
@@ -83,9 +88,9 @@ namespace Evergine.Xrv.Core.Storage
         protected override async Task InternalCreateDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var directories = relativePath.Split(Path.DirectorySeparatorChar);
-            ShareDirectoryClient directory = string.IsNullOrEmpty(this.BaseDirectory)
-                ? this.client.GetRootDirectoryClient()
-                : this.client.GetDirectoryClient(this.BaseDirectory);
+            ShareDirectoryClient directory = this.HasBaseDirectory
+                ? this.client.GetDirectoryClient(this.BaseDirectory)
+                : this.client.GetRootDirectoryClient();
 
             for (int i = 0; i < directories.Length; i++)
             {
@@ -108,7 +113,7 @@ namespace Evergine.Xrv.Core.Storage
 
             // Recursively delete directories, as SDK does not support it
             var directoryPath = directory.Path;
-            if (!string.IsNullOrEmpty(this.BaseDirectory))
+            if (this.HasBaseDirectory)
             {
                 var parts = directory.Path
                     .FixSlashes()
@@ -120,7 +125,7 @@ namespace Evergine.Xrv.Core.Storage
 
             foreach (var subDirectoryItem in await this.EnumerateDirectoriesAsync(directoryPath).ConfigureAwait(false))
             {
-                await this.DeleteDirectoryAsync(Path.Combine(relativePath, subDirectoryItem.Name)).ConfigureAwait(false);
+                await this.DeleteDirectoryAsync(subDirectoryItem.Path).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
             }
 
@@ -197,6 +202,12 @@ namespace Evergine.Xrv.Core.Storage
         {
             string directoryPath = Path.GetDirectoryName(relativePath);
             string fileName = Path.GetFileName(relativePath);
+
+            if (!string.IsNullOrEmpty(directoryPath))
+            {
+                await this.InternalCreateDirectoryAsync(directoryPath).ConfigureAwait(false);
+            }
+
             ShareDirectoryClient directory = this.CreateDirectoryClient(directoryPath);
             ShareFileClient file = await directory
                 .CreateFileAsync(fileName, stream.Length, cancellationToken: cancellationToken)
@@ -264,7 +275,7 @@ namespace Evergine.Xrv.Core.Storage
 
         private string GetFullPath(string relativePath)
         {
-            if (!string.IsNullOrEmpty(this.BaseDirectory))
+            if (this.HasBaseDirectory)
             {
                 relativePath = Path.Combine(this.BaseDirectory, relativePath);
             }

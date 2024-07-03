@@ -103,13 +103,13 @@ namespace Evergine.Xrv.Core.Storage
         protected override async Task InternalDeleteDirectoryAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             bool isRoot = string.IsNullOrEmpty(relativePath);
-            relativePath = this.GetFullPath(relativePath);
             if (!isRoot && !relativePath.EndsWith(DirectoryItem.PathSeparator))
             {
                 relativePath += DirectoryItem.PathSeparator;
             }
 
-            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: DirectoryItem.PathSeparator, prefix: relativePath).ConfigureAwait(false);
+            var absolutePath = this.GetFullPath(relativePath);
+            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: DirectoryItem.PathSeparator, prefix: absolutePath).ConfigureAwait(false);
             var enumerator = pageable.GetAsyncEnumerator();
 
             while (!cancellationToken.IsCancellationRequested && await enumerator.MoveNextAsync())
@@ -117,7 +117,8 @@ namespace Evergine.Xrv.Core.Storage
                 var item = enumerator.Current;
                 if (item.IsPrefix)
                 {
-                    await this.DeleteDirectoryAsync(item.Prefix, cancellationToken).ConfigureAwait(false);
+                    var itemRelativePath = this.GetRelativePath(item.Prefix);
+                    await this.DeleteDirectoryAsync(itemRelativePath, cancellationToken).ConfigureAwait(false);
                 }
                 else if (item.IsBlob)
                 {
@@ -129,9 +130,8 @@ namespace Evergine.Xrv.Core.Storage
         /// <inheritdoc/>
         protected override Task InternalDeleteFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.GetFullPath(relativePath);
-
-            var file = this.container.GetBlobClient(relativePath);
+            var absolutePath = this.GetFullPath(relativePath);
+            var file = this.container.GetBlobClient(absolutePath);
             return file.DeleteIfExistsAsync(cancellationToken: cancellationToken);
         }
 
@@ -139,14 +139,14 @@ namespace Evergine.Xrv.Core.Storage
         protected override async Task<IEnumerable<DirectoryItem>> InternalEnumerateDirectoriesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var items = await this.EnumerateItemsAuxAsync(relativePath, true, cancellationToken).ConfigureAwait(false);
-            return items.Select(item => ConvertToDirectoryItem(item, relativePath));
+            return items.Select(item => ConvertToDirectoryItem(item, this.GetRelativePath));
         }
 
         /// <inheritdoc/>
         protected override async Task<IEnumerable<FileItem>> InternalEnumerateFilesAsync(string relativePath, CancellationToken cancellationToken = default)
         {
             var items = await this.EnumerateItemsAuxAsync(relativePath, false, cancellationToken).ConfigureAwait(false);
-            return items.Select(item => ConvertToFileItem(item.Blob, string.IsNullOrEmpty(relativePath) ? relativePath : Path.GetDirectoryName(relativePath)));
+            return items.Select(item => ConvertToFileItem(item.Blob, this.GetRelativePath));
         }
 
         /// <inheritdoc/>
@@ -157,9 +157,8 @@ namespace Evergine.Xrv.Core.Storage
                 return true;
             }
 
-            relativePath = this.GetFullPath(relativePath);
-
-            var pathParts = relativePath.Split(DirectoryItem.SplitSeparators, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var absolutePath = this.GetFullPath(relativePath);
+            var pathParts = absolutePath.Split(DirectoryItem.SplitSeparators, StringSplitOptions.RemoveEmptyEntries).ToArray();
             var parent = pathParts.Length > 1 ? string.Join(DirectoryItem.PathSeparator, pathParts.Take(pathParts.Length - 1)) : pathParts[0];
             parent += DirectoryItem.PathSeparator;
             var directory = pathParts.Last();
@@ -186,9 +185,8 @@ namespace Evergine.Xrv.Core.Storage
         /// <inheritdoc/>
         protected override async Task<bool> InternalExistsFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.GetFullPath(relativePath);
-
-            var file = this.container.GetBlobClient(relativePath);
+            var absolutePath = this.GetFullPath(relativePath);
+            var file = this.container.GetBlobClient(absolutePath);
             bool exists = await file.ExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return exists;
         }
@@ -196,9 +194,8 @@ namespace Evergine.Xrv.Core.Storage
         /// <inheritdoc/>
         protected override async Task<Stream> InternalGetFileAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.GetFullPath(relativePath);
-
-            var file = this.container.GetBlobClient(relativePath);
+            var absolutePath = this.GetFullPath(relativePath);
+            var file = this.container.GetBlobClient(absolutePath);
             var contents = await file.DownloadContentAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             return contents.Value.Content.ToStream();
         }
@@ -206,19 +203,18 @@ namespace Evergine.Xrv.Core.Storage
         /// <inheritdoc/>
         protected override Task InternalWriteFileAsync(string relativePath, Stream stream, CancellationToken cancellationToken = default)
         {
-            relativePath = this.GetFullPath(relativePath);
-
-            var blob = this.container.GetBlobClient(relativePath);
+            var absolutePath = this.GetFullPath(relativePath);
+            var blob = this.container.GetBlobClient(absolutePath);
             return blob.UploadAsync(stream, true, cancellationToken);
         }
 
         /// <inheritdoc/>
         protected override async Task<FileItem> InternalGetFileItemAsync(string relativePath, CancellationToken cancellationToken = default)
         {
-            relativePath = this.GetFullPath(relativePath);
-            var blob = this.container.GetBlobClient(relativePath);
+            var absolutePath = this.GetFullPath(relativePath);
+            var blob = this.container.GetBlobClient(absolutePath);
             var properties = await blob.GetPropertiesAsync();
-            var fileItem = ConvertToFileItem(Path.GetFileName(relativePath), properties);
+            var fileItem = ConvertToFileItem(relativePath, properties);
             return fileItem;
         }
 
@@ -228,15 +224,14 @@ namespace Evergine.Xrv.Core.Storage
 
         private async Task<IEnumerable<BlobHierarchyItem>> EnumerateItemsAuxAsync(string relativePath, bool directoriesOnly, CancellationToken cancellationToken = default)
         {
-            relativePath = this.GetFullPath(relativePath);
-
-            var items = new List<BlobHierarchyItem>();
-            if (!string.IsNullOrEmpty(relativePath))
+            var absolutePath = this.GetFullPath(relativePath);
+            if (!string.IsNullOrEmpty(absolutePath))
             {
-                relativePath += DirectoryItem.PathSeparator;
+                absolutePath += DirectoryItem.PathSeparator;
             }
 
-            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: DirectoryItem.PathSeparator, prefix: relativePath);
+            var items = new List<BlobHierarchyItem>();
+            var pageable = this.container.GetBlobsByHierarchyAsync(delimiter: DirectoryItem.PathSeparator, prefix: absolutePath);
             var enumerator = pageable.GetAsyncEnumerator();
 
             while (!cancellationToken.IsCancellationRequested && await enumerator.MoveNextAsync())
@@ -257,7 +252,7 @@ namespace Evergine.Xrv.Core.Storage
 
         private string GetFullPath(string relativePath)
         {
-            if (!string.IsNullOrEmpty(this.BaseDirectory))
+            if (this.HasBaseDirectory)
             {
                 relativePath = Path.Combine(this.BaseDirectory, relativePath);
             }
@@ -265,13 +260,29 @@ namespace Evergine.Xrv.Core.Storage
             return relativePath.FixSlashes();
         }
 
-        private static DirectoryItem ConvertToDirectoryItem(BlobHierarchyItem item, string basePath)
+        private string GetRelativePath(string absolutePath)
         {
-            return new DirectoryItem(item.Prefix);
+            if (this.HasBaseDirectory)
+            {
+                absolutePath = absolutePath.Substring(this.BaseDirectory.Length + 1);
+            }
+
+            if (absolutePath.EndsWith(DirectoryItem.PathSeparator))
+            {
+                absolutePath = absolutePath.Substring(0, absolutePath.Length - 1);
+            }
+
+            return absolutePath.FixSlashes();
         }
 
-        private static FileItem ConvertToFileItem(BlobItem item, string basePath) =>
-            new FileItem(Path.Combine(basePath ?? string.Empty, item.Name))
+        private static DirectoryItem ConvertToDirectoryItem(BlobHierarchyItem item, Func<string, string> getRelativePath)
+        {
+            var itemRelativePath = getRelativePath(item.Prefix);
+            return new DirectoryItem(itemRelativePath);
+        }
+
+        private static FileItem ConvertToFileItem(BlobItem item, Func<string, string> getRelativePath) =>
+            new FileItem(getRelativePath(item.Name))
             {
                 CreationTime = item.Properties.CreatedOn?.UtcDateTime,
                 ModificationTime = item.Properties.LastModified?.UtcDateTime,
@@ -279,8 +290,8 @@ namespace Evergine.Xrv.Core.Storage
                 Md5Hash = item.Properties.ContentHash,
             };
 
-        private static FileItem ConvertToFileItem(string blobPath, BlobProperties properties) =>
-            new FileItem(blobPath)
+        private static FileItem ConvertToFileItem(string blobRelativePath, BlobProperties properties) =>
+            new FileItem(blobRelativePath)
             {
                 CreationTime = properties.CreatedOn.UtcDateTime,
                 ModificationTime = properties.LastModified.UtcDateTime,

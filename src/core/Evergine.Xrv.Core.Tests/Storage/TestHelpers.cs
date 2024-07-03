@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Microsoft.Extensions.Configuration;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,20 @@ namespace Evergine.Xrv.Core.Tests.Storage
 {
     internal static class TestHelpers
     {
+        public static StorageConfiguration GetTestConfiguration()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddUserSecrets<TestsConfiguration>()
+                .Build();
+
+            StorageConfiguration storageConfig = configuration
+                .GetSection(nameof(TestsConfiguration.Storage))
+                .Get<StorageConfiguration>();
+
+            return storageConfig;
+        }
+
         public static async Task<string> CreateTestFileAsync(FileAccess fileAccess, string filePath, string contents = null)
         {
             var originalFileContents = contents ?? "This is a secret message!";
@@ -27,6 +42,16 @@ namespace Evergine.Xrv.Core.Tests.Storage
         {
             string filePath;
 
+            for (int fileIndex = 0; fileIndex < numberOfFilesPerDirectory; fileIndex++)
+            {
+                filePath = $"file_{fileIndex}.txt";
+                byte[] data = Encoding.UTF8.GetBytes(filePath);
+                using (var stream = new MemoryStream(data))
+                {
+                    await fileAccess.WriteFileAsync(filePath, stream);
+                }
+            }
+
             for (int directoryIndex = 0; directoryIndex < numberOfDirectories; directoryIndex++)
             {
                 string directoryName = $"directory_{directoryIndex}";
@@ -41,12 +66,6 @@ namespace Evergine.Xrv.Core.Tests.Storage
                         await fileAccess.WriteFileAsync(filePath, stream);
                     }
                 }
-            }
-
-            filePath = "file.txt";
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(filePath)))
-            {
-                await fileAccess.WriteFileAsync(filePath, stream);
             }
         }
 
