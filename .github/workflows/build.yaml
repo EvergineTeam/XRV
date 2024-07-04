@@ -70,7 +70,7 @@ jobs:
             $suffix = "-$suffix";
           }
         
-          $version = "$(Get-Date -Format "yyyy.M.dd").$env:GITHUB_RUN_NUMBER$suffix"
+          $version = "$(Get-Date -Format "yyyy.M.d").$env:GITHUB_RUN_NUMBER$suffix"
           
           echo "BUILD_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           echo "version=$version" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
