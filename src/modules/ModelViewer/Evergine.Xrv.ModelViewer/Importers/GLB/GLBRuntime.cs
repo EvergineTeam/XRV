@@ -204,6 +204,8 @@ namespace Evergine.Xrv.ModelViewer.Importers.GLB
             {
                 this.bufferInfos[i] = new BufferInfo(this.glbModel.LoadBinaryBuffer(i, this.GetExternalFileSolver));
             }
+
+            this.decodedBufferViews = new Dictionary<int, Draco.Mesh>();
         }
 
         private async Task ReadDefaultScene()
