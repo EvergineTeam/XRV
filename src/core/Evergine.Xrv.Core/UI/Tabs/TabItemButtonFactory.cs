@@ -32,7 +32,7 @@ namespace Evergine.Xrv.Core.UI.Tabs
                 LocalizationFunc = item.Name,
             });
 
-            var cage = button.FindChildrenByTag("PART_text_button_cage", true).First();
+            var cage = button.FindChildrenByTag("PART_Visuals", true).First();
             cage.IsEnabled = false;
 
             return button;

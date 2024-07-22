@@ -21,7 +21,9 @@ namespace Evergine.Xrv.ImageGallery.Networking
         [BindComponent]
         private Components.ImageGallery gallery = null;
 
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_slider")]
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_image_gallery_slider")]
+        private Entity sliderEntity = null;
+
         private PinchSlider slider = null;
 
         /// <inheritdoc/>
@@ -30,6 +32,7 @@ namespace Evergine.Xrv.ImageGallery.Networking
             bool attached = base.OnAttached();
             if (attached)
             {
+                this.slider = this.sliderEntity.FindComponentInChildren<PinchSlider>(isRecursive: true);
                 this.gallery.CurrentImageChanged += this.Gallery_CurrentImageChanged;
             }
 

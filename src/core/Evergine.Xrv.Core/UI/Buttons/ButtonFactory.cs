@@ -4,7 +4,6 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.Input.Handlers;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -22,7 +21,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
     /// </summary>
     public class ButtonFactory
     {
-        private const float TextPositionHover = -0.002f;
         private readonly AssetsService assetsService;
 
         /// <summary>
@@ -39,7 +37,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
         /// </summary>
         /// <param name="description">Button description.</param>
         /// <returns>Button entity.</returns>
-        public Entity CreateInstance(ButtonDescription description) => this.CreateInstance(description, MRTKResourceIDs.Prefabs.PressableButtonPlated);
+        public Entity CreateInstance(ButtonDescription description) => this.CreateInstance(description, CoreResourcesIDs.Prefabs.baseButton_weprefab);
 
         /// <summary>
         /// Creates an instance of a button from its description.
@@ -68,10 +66,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 .AddComponent(new ButtonTextStyle
                 {
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
-                })
-                .AddComponent(new XrvPressableButtonLookAndFeel
-                {
-                    TextPositionOffset = TextPositionHover,
                 });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn))
@@ -82,8 +76,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
                     SpeechKeywords = new[] { description.VoiceCommandOn },
                 });
             }
-
-            this.AddCommonComponents(button);
 
             return button;
         }
@@ -110,10 +102,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 {
                     TargetState = ToggleState.Off,
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
-                })
-                .AddComponent(new XrvPressableButtonLookAndFeel
-                {
-                    TextPositionOffset = TextPositionHover,
                 });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn)
@@ -145,14 +133,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
                 });
 
-            this.AddCommonComponents(button);
-
             return button;
-        }
-
-        private void AddCommonComponents(Entity button)
-        {
-            button.AddComponent(new VisuallyEnabledController());
         }
     }
 }

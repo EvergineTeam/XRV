@@ -25,7 +25,7 @@ namespace Evergine.Xrv.Core.UI.Dialogs
         protected override void InstantiateOptions()
         {
             var acceptButton = this.CreateButtonInstance(this.AcceptOption);
-            this.AddOption(acceptButton.FindComponent<PressableButton>(), this.AcceptOption);
+            this.AddOption(acceptButton.FindComponentInChildren<PressableButton>(), this.AcceptOption);
             this.singleButtonHolder?.AddChild(acceptButton);
         }
     }

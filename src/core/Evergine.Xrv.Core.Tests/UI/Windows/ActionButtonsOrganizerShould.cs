@@ -20,7 +20,7 @@ namespace Evergine.Xrv.Core.Tests.UI.Windows
                 AvailableActionSlots = 3,
             };
             this.organizer.Initialize(
-                (_, __) => new Entity().AddComponent(new XrvPressableButtonLookAndFeel()), 
+                (_, __) => new Entity().AddComponent(new ButtonCursorFeedback()), 
                 this.localization.Object);
         }
 

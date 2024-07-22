@@ -58,7 +58,7 @@ namespace Evergine.Xrv.Core.UI.Windows
 
         private void UpdateButtonState(Entity buttonEntity, bool enable)
         {
-            var visualController = buttonEntity.FindComponent<VisuallyEnabledController>();
+            var visualController = buttonEntity.FindComponentInChildren<VisuallyEnabledController>();
             visualController.IsVisuallyEnabled = enable;
         }
     }

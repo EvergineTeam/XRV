@@ -169,6 +169,15 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        public static string Menu_Options {
+            get {
+                return ResourceManager.GetString("Menu.Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pin.
         /// </summary>
         public static string Menu_Pin {

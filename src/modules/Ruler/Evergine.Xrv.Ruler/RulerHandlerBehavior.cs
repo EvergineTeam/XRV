@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Common.Attributes;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
@@ -40,6 +41,13 @@ namespace Evergine.Xrv.Ruler
 
         [BindService]
         private XrvService xrvService = null;
+
+        /// <summary>
+        /// Gets handle transform component.
+        /// </summary>
+        [IgnoreEvergine]
+        [DontRenderProperty]
+        public Transform3D HandleTransform { get => this.transform; }
 
         /// <inheritdoc/>
         public void OnPointerClicked(MixedRealityPointerEventData eventData)

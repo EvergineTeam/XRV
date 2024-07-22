@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Evergine.Framework;
-using Evergine.MRTK;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.UI.Buttons;
 
@@ -283,7 +282,7 @@ namespace Evergine.Xrv.Core.UI.Windows
 
                 if (!this.instantiatedActionBarButtons.ContainsKey(description.Id))
                 {
-                    Entity buttonInstance = this.CreateButtonEntity(description, MRTKResourceIDs.Prefabs.PressableButtonPlated);
+                    Entity buttonInstance = this.CreateButtonEntity(description, CoreResourcesIDs.Prefabs.baseButton_weprefab);
                     this.instantiatedActionBarButtons.Add(description.Id, buttonInstance);
                 }
 
@@ -301,7 +300,7 @@ namespace Evergine.Xrv.Core.UI.Windows
                 if (!this.instantiatedMoreActionButtons.ContainsKey(description.Id))
                 {
                     Entity buttonInstance = this.CreateButtonEntity(description, CoreResourcesIDs.Prefabs.iconTextButton_weprefab);
-                    buttonInstance.FindComponent<XrvPressableButtonLookAndFeel>().HideTextOnCursorLeave = false;
+                    buttonInstance.FindComponentInChildren<ButtonCursorFeedback>().HideTextOnCursorLeave = false;
                     this.instantiatedMoreActionButtons.Add(description.Id, buttonInstance);
                 }
 
