@@ -282,7 +282,9 @@ namespace Evergine.Xrv.Core.UI.Windows
 
                 if (!this.instantiatedActionBarButtons.ContainsKey(description.Id))
                 {
-                    Entity buttonInstance = this.CreateButtonEntity(description, CoreResourcesIDs.Prefabs.baseButton_weprefab);
+                    Entity buttonInstance = this.CreateButtonEntity(
+                        description,
+                        description.IsToggle ? CoreResourcesIDs.Prefabs.baseToggleButton_weprefab : CoreResourcesIDs.Prefabs.baseButton_weprefab);
                     this.instantiatedActionBarButtons.Add(description.Id, buttonInstance);
                 }
 

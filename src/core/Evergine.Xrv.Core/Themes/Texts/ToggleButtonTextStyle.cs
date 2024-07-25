@@ -48,7 +48,7 @@ namespace Evergine.Xrv.Core.Themes.Texts
         private ToggleButtonConfigurator FindConfiguratorForThisState()
         {
             var configurator = this.Owner
-                .FindComponents<ToggleButtonConfigurator>(isExactType: false)
+                .FindComponentsInChildren<ToggleButtonConfigurator>(isExactType: false)
                 .FirstOrDefault(configurator => configurator.TargetState == this.TargetState);
 
             return configurator;

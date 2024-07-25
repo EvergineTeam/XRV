@@ -114,6 +114,8 @@ namespace Evergine.Xrv.Core
 
             public static readonly Guid baseButton_weprefab = new Guid("9a0dfc46-87b5-49bb-b040-2f29cf3dc6aa");
 
+            public static readonly Guid baseToggleButton_weprefab = new Guid("9b0dfc46-87b5-49bb-b040-2f29cf3dc6aa");
+
             public static readonly Guid iconTextButton_weprefab = new Guid("6c2abc65-102e-4516-b8c2-f2886322f5a3");
 
             public static class Networking

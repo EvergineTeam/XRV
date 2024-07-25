@@ -572,7 +572,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             {
                 this.menuLockToggle =
                     this.menu.GetButtonEntity(this.menu.GetDescriptorForLockButton())
-                    .FindComponent<ToggleButton>();
+                    .FindComponentInChildren<ToggleButton>();
             }
 
             if (this.menuMoveButton == null)

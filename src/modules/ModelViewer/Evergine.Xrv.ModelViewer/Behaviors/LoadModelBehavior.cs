@@ -69,14 +69,14 @@ namespace Evergine.Xrv.ModelViewer
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_buttonsContainer", isRecursive: true)]
         private Entity buttonsContainer = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
-        private ToggleButton optionsButtonToggle = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
-        private ToggleStateManager options = null;
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_manipulator_optionsButton")]
+        private Entity optionsButtonEntity = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_manipulator_menu")]
         private Core.UI.OrbitMenu orbitMenu = null;
+
+        private ToggleButton optionsButtonToggle = null;
+        private ToggleStateManager options = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadModelBehavior"/> class.
@@ -166,6 +166,8 @@ namespace Evergine.Xrv.ModelViewer
         {
             base.OnActivated();
 
+            this.optionsButtonToggle = this.optionsButtonEntity.FindComponentInChildren<ToggleButton>();
+            this.options = this.optionsButtonEntity.FindComponentInChildren<ToggleStateManager>();
             this.lockedIcon.IsEnabled = false;
             this.orbitMenu.Owner.IsEnabled = false;
             this.optionsButtonToggle.Toggled += this.OptionsButtonToggle_Toggled;
@@ -198,7 +200,7 @@ namespace Evergine.Xrv.ModelViewer
             }
 
             this.lockButton = this.instantiatedButtons[this.lockButtonDesc.Id];
-            this.lockButton.FindComponent<ToggleButton>().Toggled += this.LockButton_Toggled;
+            this.lockButton.FindComponentInChildren<ToggleButton>().Toggled += this.LockButton_Toggled;
 
             var resetButton = this.instantiatedButtons[this.resetButtonDesc.Id];
             resetButton.FindComponentInChildren<PressableButton>().ButtonReleased += this.ResetButton_Released;

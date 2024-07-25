@@ -418,7 +418,7 @@ namespace Evergine.Xrv.Painter.Components
         {
             // TODO change this Parent.Parent!
             if (sender is PressableButton pressable
-                && pressable.Owner.Parent.Parent is Entity button)
+                && pressable.Owner.Parent.Parent.Parent is Entity button)
             {
                 if (Enum.TryParse<PainterModes>(button.Name, out var mode))
                 {
@@ -435,7 +435,7 @@ namespace Evergine.Xrv.Painter.Components
         {
             // TODO change this Parent.Parent!
             if (sender is PressableButton pressable
-                && pressable.Owner.Parent.Parent is Entity button)
+                && pressable.Owner.Parent.Parent.Parent is Entity button)
             {
                 if (Enum.TryParse<PainterThickness>(button.Name, out var thickness))
                 {
