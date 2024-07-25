@@ -6,6 +6,7 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
+using Evergine.MRTK.Emulation;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.Xrv.Core.Extensions;
 using System;
@@ -41,14 +42,25 @@ namespace Evergine.Xrv.Core.UI.Buttons
         /// </summary>
         public bool HideTextOnCursorLeave { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether feedback should be applied on gaze.
+        /// </summary>
+        public bool ApplyFeedbackOnGaze { get; set; } = false;
+
         /// <inheritdoc/>
         void IPressableButtonFeedback.Feedback(Vector3 pushVector, float pressRatio, bool pressed)
         {
         }
 
         /// <inheritdoc/>
-        void IPressableButtonFeedback.FocusChanged(bool focus)
+        void IPressableButtonFeedback.FocusChanged(Cursor cursor, bool focus)
         {
+            // When gaze acts as focus origin, cursor parameter is passed as null
+            if (cursor == null && !this.ApplyFeedbackOnGaze)
+            {
+                return;
+            }
+
             if (focus)
             {
                 this.AnimateHover(animationDuration);
