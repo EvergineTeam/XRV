@@ -488,11 +488,25 @@ namespace Evergine.Xrv.Core.UI.Windows
                 this.moreActionsButtonToggle = null;
             }
 
-            this.followButtonToggle = this.buttonsOrganizer.FollowButtonEntity.FindComponentInChildren<ToggleButton>();
-            this.followButtonToggle.Toggled += this.FollowButtonToggled;
+            if (this.buttonsOrganizer.FollowButtonEntity != null)
+            {
+                this.followButtonToggle = this.buttonsOrganizer.FollowButtonEntity.FindComponentInChildren<ToggleButton>();
+                this.followButtonToggle.Toggled += this.FollowButtonToggled;
+            }
+            else
+            {
+                this.followButtonToggle = null;
+            }
 
-            this.closeButtonPressable = this.buttonsOrganizer.CloseButtonEntity.FindComponentInChildren<PressableButton>();
-            this.closeButtonPressable.ButtonReleased += this.CloseButtonReleased;
+            if (this.buttonsOrganizer.CloseButtonEntity != null)
+            {
+                this.closeButtonPressable = this.buttonsOrganizer.CloseButtonEntity.FindComponentInChildren<PressableButton>();
+                this.closeButtonPressable.ButtonReleased += this.CloseButtonReleased;
+            }
+            else
+            {
+                this.closeButtonPressable = null;
+            }
         }
 
         private void UnsubscribeBuiltInButtonEvents()

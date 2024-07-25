@@ -258,10 +258,18 @@ namespace Evergine.Xrv.Core.UI.Windows
             {
                 this.CreateButtonInstanceForContainer(this.followButtonDescription, true);
             }
+            else
+            {
+                this.RemoveButtonInstanceForContainer(this.followButtonDescription, true);
+            }
 
             if (this.includeCloseButton)
             {
                 this.CreateButtonInstanceForContainer(this.closeButtonDescription, true);
+            }
+            else
+            {
+                this.RemoveButtonInstanceForContainer(this.closeButtonDescription, true);
             }
 
             this.OrganizationUpdated?.Invoke(this, EventArgs.Empty);
@@ -308,6 +316,18 @@ namespace Evergine.Xrv.Core.UI.Windows
 
                 this.instantiatedActionBarButtons.Remove(description.Id);
                 this.moreActionsButtons.Add(this.instantiatedMoreActionButtons[description.Id]);
+            }
+        }
+
+        private void RemoveButtonInstanceForContainer(ButtonDescription buttonDescription, bool isActionBarButton)
+        {
+            if (isActionBarButton)
+            {
+                this.instantiatedActionBarButtons.Remove(buttonDescription.Id);
+            }
+            else
+            {
+                this.instantiatedMoreActionButtons.Remove(buttonDescription.Id);
             }
         }
 

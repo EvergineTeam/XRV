@@ -195,5 +195,12 @@ namespace Evergine.Xrv.Core.Tests.UI.Windows
 
             Assert.Same(expectedDescription, foundDescription);
         }
+
+        [Fact]
+        public void NotReturnCloseButtonEntityWhenNotIncluded()
+        {
+            this.organizer.IncludeCloseButton = false;
+            Assert.Null(this.organizer.CloseButtonEntity);
+        }
     }
 }
