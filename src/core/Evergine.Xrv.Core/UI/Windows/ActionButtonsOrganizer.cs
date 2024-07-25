@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Evergine.Framework;
+using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.UI.Buttons;
 
@@ -311,6 +312,13 @@ namespace Evergine.Xrv.Core.UI.Windows
                 {
                     Entity buttonInstance = this.CreateButtonEntity(description, CoreResourcesIDs.Prefabs.iconTextButton_weprefab);
                     buttonInstance.FindComponentInChildren<ButtonCursorFeedback>().HideTextOnCursorLeave = false;
+
+                    foreach (var configurator in buttonInstance.FindComponentsInChildren<StandardButtonConfigurator>())
+                    {
+                        configurator.AllowBackPlateNullMaterial = true;
+                        configurator.Plate = null;
+                    }
+
                     this.instantiatedMoreActionButtons.Add(description.Id, buttonInstance);
                 }
 

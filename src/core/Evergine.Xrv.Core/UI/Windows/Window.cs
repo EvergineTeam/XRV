@@ -455,7 +455,8 @@ namespace Evergine.Xrv.Core.UI.Windows
             var senderEntity = (sender as Component)?.Owner;
             if (senderEntity?.FindComponentInParents<ToggleButton>() is ToggleButton toggle)
             {
-                senderEntity = toggle.Owner;
+                // TODO change this, not resistent to hierarchy changes
+                senderEntity = toggle.Owner.Parent?.Parent;
             }
 
             if (senderEntity == null)
