@@ -20,9 +20,8 @@ using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Storage;
 using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Windows;
-using Evergine.Xrv.ImageGallery.Helpers;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 
 namespace Evergine.Xrv.ImageGallery.Components
 {
@@ -40,15 +39,6 @@ namespace Evergine.Xrv.ImageGallery.Components
         [BindService]
         private XrvService xrvService = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_next_pressable_button")]
-        private PressableButton nextButton = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_previous_pressable_button")]
-        private PressableButton previousButton = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
-        private PinchSlider slider = null;
-
         [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
         private MaterialComponent galleryFrameMaterial = null;
 
@@ -63,6 +53,10 @@ namespace Evergine.Xrv.ImageGallery.Components
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_spinner", isRecursive: true)]
         private Entity spinnerEntity = null;
+
+        private PinchSlider slider = null;
+        private PressableButton nextButton = null;
+        private PressableButton previousButton = null;
 
         private Texture imageTexture = null;
         private int imageIndex = 0;
@@ -206,6 +200,10 @@ namespace Evergine.Xrv.ImageGallery.Components
             if (attached)
             {
                 this.logger = this.xrvService.Services.Logging;
+
+                this.nextButton = this.nextButtonEntity.FindComponentInChildren<PressableButton>(isRecursive: true);
+                this.previousButton = this.previousButtonEntity.FindComponentInChildren<PressableButton>(isRecursive: true);
+                this.slider = this.sliderEntity.FindComponentInChildren<PinchSlider>(isRecursive: true);
 
                 var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
@@ -375,8 +373,8 @@ namespace Evergine.Xrv.ImageGallery.Components
                     this.nextButtonEntity.IsEnabled = true;
                 }
 
-                this.nextButtonEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
-                this.previousButtonEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
+                this.nextButtonEntity.FindComponentInChildren<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
+                this.previousButtonEntity.FindComponentInChildren<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
             }
 
             var sliderCollider = this.slider.Owner.FindComponentInChildren<Collider3D>(isExactType: false);
@@ -394,15 +392,22 @@ namespace Evergine.Xrv.ImageGallery.Components
                 async () =>
             {
                 AssetsDirectory assetDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
-                byte[] data = null;
                 using (var fileStream = await this.FileAccess.GetFileAsync(filePath))
+                using (var codec = SKCodec.Create(fileStream))
                 {
-                    using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(fileStream))
+                    var info = new SKImageInfo
                     {
-                        RawImageLoader.CopyImageToArrayPool(image, out _, out data);
-                    }
+                        Width = codec.Info.Width,
+                        Height = codec.Info.Height,
+                        AlphaType = codec.Info.AlphaType,
+                        ColorType = SKColorType.Rgba8888,
+                    };
 
-                    await EvergineForegroundTask.Run(() => this.graphicsContext.UpdateTextureData(this.imageTexture, data));
+                    using (var bitmap = SKBitmap.Decode(codec, info))
+                    {
+                        var pixelsPtr = bitmap.GetPixels();
+                        await EvergineForegroundTask.Run(() => this.graphicsContext.UpdateTextureData(this.imageTexture, pixelsPtr, (uint)info.BytesSize, 0));
+                    }
                 }
 
                 this.spinnerEntity.IsEnabled = false;

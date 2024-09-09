@@ -572,7 +572,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             {
                 this.menuLockToggle =
                     this.menu.GetButtonEntity(this.menu.GetDescriptorForLockButton())
-                    .FindComponent<ToggleButton>();
+                    .FindComponentInChildren<ToggleButton>();
             }
 
             if (this.menuMoveButton == null)
@@ -658,14 +658,16 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
 
                 if (this.menuMoveButton != null)
                 {
-                    var configurator = this.menuMoveButton.Owner.Parent.FindComponent<StandardButtonConfigurator>();
+                    // TODO change this!
+                    var configurator = this.menuMoveButton.Owner.Parent?.Parent?.FindComponent<StandardButtonConfigurator>();
                     configurator.PrimaryColor =
                         this.currentMode == ManipulationMode.Position && !this.isLocked ? activeColor : inactiveColor;
                 }
 
                 if (this.menuDirectionButton != null)
                 {
-                    var configurator = this.menuDirectionButton.Owner.Parent.FindComponent<StandardButtonConfigurator>();
+                    // TODO change this!
+                    var configurator = this.menuDirectionButton.Owner.Parent?.Parent?.FindComponent<StandardButtonConfigurator>();
                     configurator.PrimaryColor =
                         this.currentMode == ManipulationMode.Direction && !this.isLocked ? activeColor : inactiveColor;
                 }

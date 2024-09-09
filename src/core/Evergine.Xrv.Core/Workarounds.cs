@@ -1,8 +1,9 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Components.XR;
 using Evergine.Framework;
+using Evergine.MRTK.Emulation;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using System.Linq;
 
 namespace Evergine.Xrv.Core
 {
@@ -18,18 +19,20 @@ namespace Evergine.Xrv.Core
         /// <param name="setOn">Toggle status.</param>
         public static void ChangeToggleButtonState(Entity button, bool setOn)
         {
-            var toggleStateManager = button.FindComponentInChildren<ToggleStateManager>();
-            var toggleStates = toggleStateManager.States;
-            if (toggleStates != null)
-            {
-                var newToggleState = setOn ? ToggleState.On : ToggleState.Off;
-                var newState = toggleStates.Where(s => s.Value == newToggleState).FirstOrDefault();
+            var toggle = button.FindComponentInChildren<ToggleButton>();
+            toggle.IsOn = setOn;
+        }
 
-                if (newState != null)
-                {
-                    toggleStateManager.ChangeState(newState);
-                }
-            }
+        /// <summary>
+        /// Gets controller associated to a <see cref="Cursor"/>.
+        /// </summary>
+        /// <param name="cursor">Target cursor.</param>
+        /// <returns>Associated controller.</returns>
+        public static TrackXRController GetControllerForCursor(Cursor cursor)
+        {
+            var root = cursor.Owner.Parent.Parent;
+            TrackXRController controller = root.FindComponentInChildren<TrackXRController>(isExactType: false);
+            return controller;
         }
     }
 }

@@ -5,7 +5,7 @@ using Evergine.Components.XR;
 using Evergine.Framework;
 using Evergine.Framework.Managers;
 using Evergine.Framework.Services;
-using Evergine.Platform;
+using Evergine.Xrv.Core.Utils;
 
 namespace Evergine.Xrv.Core.Services.MixedReality
 {
@@ -89,7 +89,7 @@ namespace Evergine.Xrv.Core.Services.MixedReality
             // Currently, this only has sense in Android-based devices. HoloLens always
             // works with a "passthrough", so it's not an option in that platform.
             bool isXR = Application.Current.Container.Resolve<XRPlatform>() != null;
-            return isXR && DeviceInfo.PlatformType == PlatformType.Android;
+            return isXR && DeviceHelper.PlatformType == PlatformType.Android;
         }
     }
 }

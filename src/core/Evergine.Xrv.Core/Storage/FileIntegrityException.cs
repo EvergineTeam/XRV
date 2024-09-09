@@ -1,7 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
 using System;
-using System.Runtime.Serialization;
 
 namespace Evergine.Xrv.Core.Storage
 {
@@ -33,16 +32,6 @@ namespace Evergine.Xrv.Core.Storage
         /// <param name="innerException">Inner exception.</param>
         public FileIntegrityException(string message, Exception innerException)
             : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileIntegrityException"/> class.
-        /// </summary>
-        /// <param name="info">Serialization info.</param>
-        /// <param name="context">Streaming context.</param>
-        protected FileIntegrityException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
     }

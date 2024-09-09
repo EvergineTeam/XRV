@@ -33,6 +33,14 @@ namespace Evergine.Xrv.Core
                 public static readonly Guid Unlock = new Guid("f59ad7f1-be68-4b4a-9fbe-0c9eb5d16459");
 
                 public static readonly Guid info = new Guid("41710758-d61f-47ef-b81b-b273d15ae602");
+
+                public static readonly Guid close = new Guid("55b023eb-a334-44b2-8cc1-d0d2ccae5b3c");
+
+                public static readonly Guid follow = new Guid("fc03c81e-dc30-460b-be14-bf92963b12c3");
+
+                public static readonly Guid pin = new Guid("6a3f5a9e-4c70-4a29-9e2b-a2ff3171b257");
+
+                public static readonly Guid dots = new Guid("dd562e05-03e6-45f5-b79e-d32b8bd8f9e7");
             }
 
             public sealed class Networking
@@ -103,6 +111,12 @@ namespace Evergine.Xrv.Core
             public static Guid TextButton = new Guid("69925256-16a0-4938-81fb-2810f6afa4eb");
 
             public static Guid Window = new Guid("76a3430f-9ddd-4536-abef-d51e7d67e444");
+
+            public static readonly Guid baseButton_weprefab = new Guid("9a0dfc46-87b5-49bb-b040-2f29cf3dc6aa");
+
+            public static readonly Guid baseToggleButton_weprefab = new Guid("9b0dfc46-87b5-49bb-b040-2f29cf3dc6aa");
+
+            public static readonly Guid iconTextButton_weprefab = new Guid("6c2abc65-102e-4516-b8c2-f2886322f5a3");
 
             public static class Networking
             {

@@ -20,6 +20,7 @@ using Evergine.Xrv.Core.Services.MixedReality;
 using Evergine.Xrv.Core.Services.QR;
 using Evergine.Xrv.Core.Settings;
 using Evergine.Xrv.Core.Themes;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 using Evergine.Xrv.Core.VoiceCommands;
 using Microsoft.Extensions.Logging;
@@ -164,7 +165,7 @@ namespace Evergine.Xrv.Core
 
             if (Application.Current?.IsEditor == false)
             {
-                Application.Current.Container.RegisterType<LocalizationService>();
+                Application.Current.Container.Register<LocalizationService>();
                 this.Localization = Application.Current.Container.Resolve<LocalizationService>();
             }
 
@@ -268,7 +269,7 @@ namespace Evergine.Xrv.Core
             return this;
         }
 
-        internal Module GetModuleForHandButton(MenuButtonDescription definition)
+        internal Module GetModuleForHandButton(ButtonDescription definition)
         {
             foreach (var kvp in this.modules)
             {

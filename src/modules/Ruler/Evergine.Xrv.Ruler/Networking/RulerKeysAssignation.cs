@@ -17,14 +17,17 @@ namespace Evergine.Xrv.Ruler.Networking
         [BindService]
         private XrvService xrvService = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle1")]
-        private TransformSynchronization handle1Sync = null;
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_ruler_handle1")]
+        private Entity handle1Entity = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle2")]
-        private TransformSynchronization handle2Sync = null;
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_ruler_handle2")]
+        private Entity handle2Entity = null;
 
         [BindComponent(source: BindComponentSource.Scene, isRequired: false)]
         private RulerSessionSynchronization session = null;
+
+        private TransformSynchronization handle1Sync = null;
+        private TransformSynchronization handle2Sync = null;
 
         private ILogger logger = null;
 
@@ -34,6 +37,8 @@ namespace Evergine.Xrv.Ruler.Networking
             bool attached = base.OnAttached();
             if (attached)
             {
+                this.handle1Sync = this.handle1Entity.FindComponentInChildren<TransformSynchronization>(isRecursive: true);
+                this.handle2Sync = this.handle2Entity.FindComponentInChildren<TransformSynchronization>(isRecursive: true);
                 this.logger = this.xrvService.Services.Logging;
             }
 

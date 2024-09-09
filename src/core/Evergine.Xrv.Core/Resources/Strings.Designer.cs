@@ -79,6 +79,15 @@ namespace Evergine.Xrv.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to More.
+        /// </summary>
+        public static string Global_More {
+            get {
+                return ResourceManager.GetString("Global.More", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
         public static string Global_No {
@@ -156,6 +165,15 @@ namespace Evergine.Xrv.Core.Resources {
         public static string Menu_Follow {
             get {
                 return ResourceManager.GetString("Menu.Follow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        public static string Menu_Options {
+            get {
+                return ResourceManager.GetString("Menu.Options", resourceCulture);
             }
         }
         

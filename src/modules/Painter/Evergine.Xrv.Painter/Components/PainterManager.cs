@@ -177,22 +177,14 @@ namespace Evergine.Xrv.Painter.Components
 
                 if (last.Mode == PainterModes.Painter)
                 {
-                    this.Owner.EntityManager.Remove(last.Entity);
+                    this.Owner.EntityManager.Remove(this.Owner.EntityManager.Find(last.Entity.Name));
                 }
                 else if (last.Mode == PainterModes.Eraser)
                 {
-                    var line = this.CreateEntity(this.Color);
+                    var line = this.CreateEntity(last.Line[0].Color, last.Entity.Name);
                     this.Owner.EntityManager.Add(line.entity);
                     line.mesh.LinePoints = last.Line;
                     line.mesh.RefreshMeshes();
-
-                    // Add line so it can be removed again with undo.
-                    this.actions.Add(new PainterAction()
-                    {
-                        Mode = PainterModes.Painter,
-                        Line = last.Line,
-                        Entity = line.entity,
-                    });
                 }
 
                 this.actions.RemoveAt(index);
@@ -232,6 +224,7 @@ namespace Evergine.Xrv.Painter.Components
                 {
                     Mode = this.Mode,
                     Line = lineData,
+                    Entity = collision,
                 });
             }
         }
@@ -423,8 +416,9 @@ namespace Evergine.Xrv.Painter.Components
 
         private void ModeButton_ButtonReleased(object sender, EventArgs e)
         {
+            // TODO change this Parent.Parent!
             if (sender is PressableButton pressable
-                && pressable.Owner.Parent is Entity button)
+                && pressable.Owner.Parent.Parent.Parent is Entity button)
             {
                 if (Enum.TryParse<PainterModes>(button.Name, out var mode))
                 {
@@ -439,8 +433,9 @@ namespace Evergine.Xrv.Painter.Components
 
         private void ThicknessButtonsButton_ButtonReleased(object sender, EventArgs e)
         {
+            // TODO change this Parent.Parent!
             if (sender is PressableButton pressable
-                && pressable.Owner.Parent is Entity button)
+                && pressable.Owner.Parent.Parent.Parent is Entity button)
             {
                 if (Enum.TryParse<PainterThickness>(button.Name, out var thickness))
                 {
@@ -455,8 +450,9 @@ namespace Evergine.Xrv.Painter.Components
 
         private void CommandsButtonsButtonsButton_ButtonReleased(object sender, EventArgs e)
         {
+            // TODO change this Parent.Parent!
             if (sender is PressableButton pressable
-                && pressable.Owner.Parent is Entity button)
+                && pressable.Owner.Parent?.Parent is Entity button)
             {
                 var name = button.Name;
                 if (name == "Undo")
@@ -470,11 +466,11 @@ namespace Evergine.Xrv.Painter.Components
             }
         }
 
-        private (Entity entity, PencilMesh mesh) CreateEntity(ColorEnum color)
+        private (Entity entity, PencilMesh mesh) CreateEntity(ColorEnum color, string entityName = null)
         {
             var mesh = new PencilMesh(); // { IsDebugMode = true, };
 
-            var entity = new Entity($"line_{Guid.NewGuid()}")
+            var entity = new Entity(entityName == null ? $"line_{Guid.NewGuid()}" : entityName)
             {
                 Tag = LINETAG,
             }
@@ -524,14 +520,16 @@ namespace Evergine.Xrv.Painter.Components
                 foreach (var button in this.commandsButtons)
                 {
                     var enabledController = button.Owner.FindComponentInParents<VisuallyEnabledController>();
-                    enabledController.IsVisuallyEnabled = button.Owner.Parent?.Name == "Undo" ? hasAnyAction : hasAnyLine;
+
+                    // TODO change this Parent.Parent!!
+                    enabledController.IsVisuallyEnabled = button.Owner.Parent?.Parent?.Name == "Undo" ? hasAnyAction : hasAnyLine;
                 }
             }
 
             var eraserController = this.modeButtons?
                 .Select(button => button.Owner.FindComponentInParents<VisuallyEnabledController>())
                 .Where(controller => controller != null)
-                .FirstOrDefault(controller => controller.Owner.Name == "Eraser");
+                .FirstOrDefault(controller => controller.Owner.Parent?.Parent?.Name == "Eraser"); // TODO change this!
             if (eraserController != null)
             {
                 eraserController.IsVisuallyEnabled = hasAnyLine;

@@ -1,5 +1,7 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
+using System.Linq;
 using Evergine.Common.Attributes;
 using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
@@ -7,8 +9,7 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Physics3D;
 using Evergine.Mathematics;
-using System;
-using System.Linq;
+using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.UI.Buttons;
 
@@ -70,8 +71,14 @@ namespace Evergine.Xrv.Core.UI.Windows
         /// <summary>
         /// Title button container transform.
         /// </summary>
-        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_button_container")]
+        [BindComponent(source: BindComponentSource.Children, tag: "PART_window_title_buttons_container")]
         protected Transform3D titleButtonContainerTransform;
+
+        /// <summary>
+        /// Title view holder entity.
+        /// </summary>
+        [BindEntity(source: BindEntitySource.Children, tag: "PART_window_title_custom_holder")]
+        protected Entity titleViewHolderEntity;
 
         /// <summary>
         /// Box collider for window manipulation.
@@ -85,13 +92,12 @@ namespace Evergine.Xrv.Core.UI.Windows
         private Vector2 frontPlateSize;
         private string title;
         private Func<string> localizedTitle;
-        private Entity logoEntity;
+        private Entity titleView;
         private Entity contentEntity;
         private Entity content;
 
         private bool displayBackPlate = true;
         private bool displayFrontPlate = true;
-        private bool displayLogo = true;
 
         /// <summary>
         /// Gets or sets window contents.
@@ -145,6 +151,23 @@ namespace Evergine.Xrv.Core.UI.Windows
                 if (this.IsAttached)
                 {
                     this.UpdateTitle();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets window custom title view. When set, <see cref="Title"/> and <see cref="LocalizedTitle"/> are not applied.
+        /// </summary>
+        [IgnoreEvergine]
+        public Entity TitleView
+        {
+            get => this.titleView;
+            set
+            {
+                this.titleView = value;
+                if (this.IsAttached)
+                {
+                    this.UpdateTitleView();
                 }
             }
         }
@@ -231,23 +254,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             }
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether bottom left icon should be displayed or not.
-        /// </summary>
-        public bool DisplayLogo
-        {
-            get => this.displayLogo;
-
-            set
-            {
-                if (this.displayLogo != value)
-                {
-                    this.displayLogo = value;
-                    this.UpdateDisplayLogo();
-                }
-            }
-        }
-
         internal void UpdateContent()
         {
             if (this.contentEntity == null)
@@ -282,7 +288,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             if (attached)
             {
                 this.contentEntity = this.Owner.FindChildrenByTag("PART_window_content", isRecursive: true).First();
-                this.logoEntity = this.Owner.FindChildrenByTag("PART_window_logo", isRecursive: true).First();
 
                 if (this.localizedTitle != null && this.titleLocalization != null)
                 {
@@ -304,7 +309,7 @@ namespace Evergine.Xrv.Core.UI.Windows
             this.UpdateFrontPlateOffsets();
             this.UpdateContent();
             this.UpdateTitle();
-            this.UpdateDisplayLogo();
+            this.UpdateTitleView();
             this.UpdateDisplayBackPlate();
             this.UpdateDisplayFrontPlate();
         }
@@ -357,6 +362,7 @@ namespace Evergine.Xrv.Core.UI.Windows
             var titleText = this.titleTextContainerTransform.LocalPosition;
             titleText.X = -halfSize.X;
             this.titleTextContainerTransform.LocalPosition = titleText;
+            this.UpdateTitleTextMeshSize();
 
             var buttonContainer = this.titleButtonContainerTransform.LocalPosition;
             buttonContainer.X = halfSize.X;
@@ -375,6 +381,19 @@ namespace Evergine.Xrv.Core.UI.Windows
             }
         }
 
+        /// <summary>
+        /// Get number of action buttons.
+        /// </summary>
+        /// <returns>Number of action buttons.</returns>
+        protected virtual float GetNumberOfActionButtons() => 1;
+
+        private void UpdateTitleTextMeshSize()
+        {
+            var titleMeshSize = this.titleMesh.Size;
+            titleMeshSize.X = this.size.X - (ButtonConstants.SquareButtonSize * this.GetNumberOfActionButtons()) - 0.02f;
+            this.titleMesh.Size = titleMeshSize;
+        }
+
         private bool CheckCorrectSizes() =>
             this.size.X != 0
             && this.size.Y != 0
@@ -385,14 +404,6 @@ namespace Evergine.Xrv.Core.UI.Windows
             this.titleMesh.Text = this.localizedTitle != null
                 ? this.localizedTitle.Invoke()
                 : this.title;
-
-        private void UpdateDisplayLogo()
-        {
-            if (this.IsAttached)
-            {
-                this.logoEntity.IsEnabled = this.displayLogo;
-            }
-        }
 
         private void UpdateDisplayFrontPlate()
         {
@@ -407,6 +418,23 @@ namespace Evergine.Xrv.Core.UI.Windows
             if (this.IsAttached)
             {
                 this.backPlate.Owner.IsEnabled = this.displayBackPlate;
+            }
+        }
+
+        private void UpdateTitleView()
+        {
+            this.titleMesh.Owner.IsEnabled = this.titleView == null;
+
+            if (this.titleView != null && this.titleViewHolderEntity.ChildEntities.FirstOrDefault() == this.titleView)
+            {
+                return;
+            }
+
+            this.titleViewHolderEntity.RemoveAllChildren();
+
+            if (this.titleView != null)
+            {
+                this.titleViewHolderEntity.AddChild(this.titleView);
             }
         }
     }

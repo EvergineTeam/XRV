@@ -106,24 +106,6 @@ namespace Evergine.Xrv.ModelViewer.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Close.
-        /// </summary>
-        internal static string Model_Menu_Close {
-            get {
-                return ResourceManager.GetString("Model.Menu.Close", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Options.
-        /// </summary>
-        internal static string Model_Menu_Options {
-            get {
-                return ResourceManager.GetString("Model.Menu.Options", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Reset.
         /// </summary>
         internal static string Reset {

@@ -284,14 +284,8 @@ namespace Evergine.Xrv.Painter.Components
             var cursors = this.Owner.EntityManager.FindComponentsOfType<CursorTouch>(isExactType: false);
             foreach (var cursor in cursors)
             {
-                var parent = cursor.Owner;
-                while (parent.Parent != null)
-                {
-                    parent = parent.Parent;
-                }
-
-                var trackXRController = parent.FindComponentInChildren<TrackXRController>(isExactType: false);
-                if (trackXRController.Handedness == this.Hand)
+                TrackXRController trackXRController = Workarounds.GetControllerForCursor(cursor);
+                if (trackXRController?.Handedness == this.Hand)
                 {
                     if (trackXRController is TrackXRArticulatedHand)
                     {

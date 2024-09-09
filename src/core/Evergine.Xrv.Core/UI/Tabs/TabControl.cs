@@ -486,8 +486,8 @@ namespace Evergine.Xrv.Core.UI.Tabs
             if (!hasSpaceForAllItems)
             {
                 updatePositionFunc(this.moreItemsContainer, visibleItemsRange.MaxIndex - visibleItemsRange.MinIndex + 1);
-                this.moreItemsDownEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.HasMoreItemsDown();
-                this.moreItemsUpEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.HasMoreItemsUp();
+                this.moreItemsDownEntity.FindComponentInChildren<VisuallyEnabledController>().IsVisuallyEnabled = this.HasMoreItemsDown();
+                this.moreItemsUpEntity.FindComponentInChildren<VisuallyEnabledController>().IsVisuallyEnabled = this.HasMoreItemsUp();
             }
         }
 

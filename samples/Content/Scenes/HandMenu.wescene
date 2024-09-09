@@ -215,10 +215,10 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
         Id: 1112751d-3df8-49de-b3d3-86f811841cea
         Source: dabe9073-b1d1-42c5-99b9-ebc0cb4a7430
-        entityLinks:
+        EntityLinks:
           a395de9a-85d9-4313-be9b-84d142b99e01:
-            additionalChildrenList: []
-            additionalComponentList:
+            AdditionalChildren: []
+            AdditionalComponents:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: d2aa125b-d62b-4ed7-a9ae-623e7ab9ac1f
                 AllowBackPlateNullMaterial: false
@@ -236,7 +236,7 @@ Items:
                   R: 255
                 Text: Increase
                 TextScale: 0.00600000005
-        modificationList:
+        Modifications:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
             Target: a395de9a-85d9-4313-be9b-84d142b99e01
@@ -257,14 +257,14 @@ Items:
             Name: Text
             Target: a7c5a62f-b112-4c25-bb9e-eaec97942a6f
             TypedValue: Increase
-        removedComponentList: []
+        RemovedComponents: []
       - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
         Id: f5aee632-7700-4ae9-b620-90733438b8c8
         Source: dabe9073-b1d1-42c5-99b9-ebc0cb4a7430
-        entityLinks:
+        EntityLinks:
           a395de9a-85d9-4313-be9b-84d142b99e01:
-            additionalChildrenList: []
-            additionalComponentList:
+            AdditionalChildren: []
+            AdditionalComponents:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: e494f5b5-1f85-46a9-8cba-756da4eef49d
                 AllowBackPlateNullMaterial: false
@@ -282,7 +282,7 @@ Items:
                   R: 255
                 Text: Reduce
                 TextScale: 0.00600000005
-        modificationList:
+        Modifications:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
             Target: a395de9a-85d9-4313-be9b-84d142b99e01
@@ -310,7 +310,7 @@ Items:
             Name: Text
             Target: a7c5a62f-b112-4c25-bb9e-eaec97942a6f
             TypedValue: Reduce
-        removedComponentList: []
+        RemovedComponents: []
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: text3D
         Tag: message
@@ -450,10 +450,10 @@ Items:
       - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
         Id: 2355626a-3457-45fb-9d08-3357add544f6
         Source: dabe9073-b1d1-42c5-99b9-ebc0cb4a7430
-        entityLinks:
+        EntityLinks:
           a395de9a-85d9-4313-be9b-84d142b99e01:
-            additionalChildrenList: []
-            additionalComponentList:
+            AdditionalChildren: []
+            AdditionalComponents:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: 2748546d-92a4-4a2f-92fe-166f68f5dd6b
                 AllowBackPlateNullMaterial: false
@@ -471,7 +471,7 @@ Items:
                   R: 255
                 Text: Increase
                 TextScale: 0.00600000005
-        modificationList:
+        Modifications:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
             Target: a395de9a-85d9-4313-be9b-84d142b99e01
@@ -492,14 +492,14 @@ Items:
             Name: Text
             Target: a7c5a62f-b112-4c25-bb9e-eaec97942a6f
             TypedValue: Increase
-        removedComponentList: []
+        RemovedComponents: []
       - !Evergine.Framework.Assets.AssetSources.Entities.PrefabInstanceModel,Evergine.Framework
         Id: 7ffa312f-cf29-4345-af49-759eb6363c43
         Source: dabe9073-b1d1-42c5-99b9-ebc0cb4a7430
-        entityLinks:
+        EntityLinks:
           a395de9a-85d9-4313-be9b-84d142b99e01:
-            additionalChildrenList: []
-            additionalComponentList:
+            AdditionalChildren: []
+            AdditionalComponents:
               - !Evergine.MRTK.SDK.Features.UX.Components.Configurators.StandardButtonConfigurator,Evergine.MRTK
                 Id: c4514bf2-a4cc-4090-99a0-26bffc925629
                 AllowBackPlateNullMaterial: false
@@ -517,7 +517,7 @@ Items:
                   R: 255
                 Text: Reduce
                 TextScale: 0.00600000005
-        modificationList:
+        Modifications:
           - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.String,System.Private.CoreLib]],Evergine.Framework
             Name: Name
             Target: a395de9a-85d9-4313-be9b-84d142b99e01
@@ -545,7 +545,7 @@ Items:
             Name: Text
             Target: a7c5a62f-b112-4c25-bb9e-eaec97942a6f
             TypedValue: Reduce
-        removedComponentList: []
+        RemovedComponents: []
       - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
         Name: text3D
         Tag: message
@@ -809,13 +809,6 @@ Managers:
     Id: dd8b9649-2c3a-4cff-b3ad-0f79ea540c1b
     DebugLines: false
     IsEnabled: true
-  - !Evergine.Framework.Managers.VirtualScreenManager,Evergine.Framework
-    Id: 75ed17eb-df3b-44ee-9eec-7b005e55fe75
-    Expand: true
-    IsEnabled: false
-    Stretch: Uniform
-    VirtualHeight: 0.0
-    VirtualWidth: 0.0
   - !Evergine.Framework.Managers.EnvironmentManager,Evergine.Framework
     Id: a13729a3-698a-43dc-8ab9-df3325480972
     IBLReflectionProbe: 78a59f02-3344-4e32-b0f0-4232058c3213
@@ -830,3 +823,4 @@ Managers:
     PunctualResolution: Size_512
     ShadowFilter: PCF3x3
     SpotResolution: Size_512
+

@@ -10,7 +10,11 @@ using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.UI.Dialogs;
 using Evergine.Xrv.Core.UI.Windows;
 using System.Threading.Tasks;
-using System.Diagnostics.Metrics;
+using Evergine.Framework.Prefabs;
+using System.Collections.Generic;
+using Evergine.Xrv.Core.UI.Buttons;
+using Evergine.Framework.Threading;
+using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 
 namespace XrvSamples.Scenes
 {
@@ -34,6 +38,24 @@ namespace XrvSamples.Scenes
         private XrvService xrv;
 
         private bool notificationAutoRunning;
+        private Window customTitleWindow;
+        private PressableButton customTitleButton;
+        private PressableButton customTitleDialogButton;
+
+        private Window actionButtonsWindow;
+        private PressableButton actionButtonsShowWindowButton;
+        private List<ButtonDescription> actionButtonsDescriptors;
+        private PressableButton actionButtonsLessActionsButton;
+        private PressableButton actionButtonsMoreActionsButton;
+        private PressableButton actionButtonsLessSlotsButton;
+        private PressableButton actionButtonsMoreSlotsButton;
+        private Text3DMesh actionButtonActionsCountText;
+        private Text3DMesh actionButtonSlotsCountText;
+        private Text3DMesh actionButtonsCallbackText;
+        private ToggleButton actionButtonsCloseToggle;
+        private PressableButton actionButtonsToggleChange;
+        private ToggleButton actionButtonsTogglePlacement;
+        private ToggleButton actionButtonsToggleBehavior;
 
         protected override void OnPostCreateXRScene()
         {
@@ -72,6 +94,7 @@ namespace XrvSamples.Scenes
                     Text,
                     new Vector2(0.3f, 0.2f),
                     new Vector3(0.01f, -0.01f, 0f));
+                configurator.DisplayLogo = false;
             });
 
             this.window1.Opened += this.Window1_Opened;
@@ -98,6 +121,67 @@ namespace XrvSamples.Scenes
             var notifAdd = entityManager.FindAllByTag("notificationadd").First().FindComponentInChildren<PressableButton>();
             notifAuto.ButtonReleased += NotifAuto_ButtonReleased;
             notifAdd.ButtonReleased += NotifAdd_ButtonReleased;
+
+            // Custom title
+            this.customTitleWindow = this.windowsSystem.CreateWindow(configurator =>
+            {
+                var titleContents = this.assetsService.Load<Prefab>(EvergineContent.Prefabs.WindowTitleView_weprefab);
+                configurator.TitleView = titleContents.Instantiate();
+                configurator.Content = this.CreateText3D(
+                    Text,
+                    new Vector2(0.3f, 0.2f),
+                    new Vector3(0.01f, -0.01f, 0f));
+                configurator.DisplayLogo = false;
+            });
+
+            this.customTitleButton = entityManager.FindAllByTag("customTitleWindowButton").First().FindComponentInChildren<PressableButton>();
+            this.customTitleButton.ButtonPressed += this.CustomTitleButton_ButtonPressed;
+            this.customTitleDialogButton = entityManager.FindAllByTag("customTitleDialogButton").First().FindComponentInChildren<PressableButton>();
+            this.customTitleDialogButton.ButtonPressed += this.CustomTitleDialogButton_ButtonPressed;
+
+            // Action buttons
+            this.actionButtonsWindow = this.windowsSystem.CreateWindow(configurator =>
+            {
+                configurator.Content = this.CreateText3D(
+                    "Here the window contents",
+                    new Vector2(0.3f, 0.2f),
+                    new Vector3(0.01f, -0.01f, 0f));
+            });
+            this.actionButtonsShowWindowButton = entityManager.FindAllByTag("actionButtonsShowButton").First().FindComponentInChildren<PressableButton>();
+            this.actionButtonsShowWindowButton.ButtonPressed += this.ActionButtonsShowWindowButton_ButtonPressed;
+            this.actionButtonsDescriptors = new List<ButtonDescription>();
+            this.actionButtonsLessActionsButton = entityManager.FindAllByTag("actionButtonsLessActionsButton").First().FindComponentInChildren<PressableButton>();
+            this.actionButtonsLessActionsButton.ButtonPressed += this.ActionButtonsLessActionsButton_ButtonPressed;
+            this.actionButtonsMoreActionsButton = entityManager.FindAllByTag("actionButtonsMoreActionsButton").First().FindComponentInChildren<PressableButton>();
+            this.actionButtonsMoreActionsButton.ButtonPressed += this.ActionButtonsMoreActionsButton_ButtonPressed;
+            this.actionButtonsLessSlotsButton = entityManager.FindAllByTag("actionButtonsLessSlotsButton").First().FindComponentInChildren<PressableButton>();
+            this.actionButtonsLessSlotsButton.ButtonPressed += this.ActionButtonsLessSlotsButton_ButtonPressed;
+            this.actionButtonsMoreSlotsButton = entityManager.FindAllByTag("actionButtonsMoreSlotsButton").First().FindComponentInChildren<PressableButton>();
+            this.actionButtonsMoreSlotsButton.ButtonPressed += this.ActionButtonsMoreSlotsButton_ButtonPressed;
+
+            this.actionButtonActionsCountText = entityManager.FindAllByTag("actionButtonActionsCountText").First().FindComponentInChildren<Text3DMesh>();
+            this.actionButtonSlotsCountText = entityManager.FindAllByTag("actionButtonsSlotsCountText").First().FindComponentInChildren<Text3DMesh>();
+            this.actionButtonsCallbackText = entityManager.FindAllByTag("actionButtonsCallbackText").First().FindComponentInChildren<Text3DMesh>();
+            this.actionButtonsCloseToggle = entityManager.FindAllByTag("actionButtonsToggleClose").First().FindComponentInChildren<ToggleButton>();
+            this.actionButtonsCloseToggle.Toggled += this.ActionButtonsCloseToggle_Toggled;
+
+            this.actionButtonsToggleChange = entityManager.FindAllByTag("actionButtonsToggleChange").First().FindComponentInChildren<PressableButton>();
+            this.actionButtonsToggleChange.ButtonPressed += this.ActionButtonsToggleChange_ButtonPressed;
+            
+            this.actionButtonsTogglePlacement = entityManager.FindAllByTag("actionButtonsTogglePlacement").First().FindComponentInChildren<ToggleButton>();
+            this.actionButtonsTogglePlacement.Toggled += this.ActionButtonsTogglePlacement_Toggled;
+
+            this.actionButtonsToggleBehavior = entityManager.FindAllByTag("actionButtonsToggleMoreBehavior").First().FindComponentInChildren<ToggleButton>();
+            this.actionButtonsToggleBehavior.Toggled += this.ActionButtonsToggleBehavior_Toggled;
+
+            this.actionButtonsWindow.ActionButtonPressed += this.ActionButtonsWindow_ActionButtonPressed;
+
+            EvergineForegroundTask.Run(() =>
+            {
+                this.AddSampleActionButton();
+                this.AddSampleActionButton();
+                this.UpdateActionButtonCounters();
+            });
         }
 
         private void CreateAlert_ButtonReleased(object sender, EventArgs e)
@@ -219,6 +303,135 @@ namespace XrvSamples.Scenes
         private void NotifAdd_ButtonReleased(object sender, EventArgs e)
         {
             this.xrv.WindowsSystem.ShowNotification($"Title at {DateTime.Now.ToLongTimeString()}", $"This is the notification at {DateTime.Now.ToLongTimeString()}");
+        }
+
+        private void CustomTitleButton_ButtonPressed(object sender, EventArgs e)
+        {
+            if (this.customTitleWindow.IsOpened)
+            {
+                this.customTitleWindow.Close();
+            }
+            else
+            {
+                this.customTitleWindow.Open();
+            }
+        }
+
+        private void CustomTitleDialogButton_ButtonPressed(object sender, EventArgs e)
+        {
+            var titleContents = this.assetsService.Load<Prefab>(EvergineContent.Prefabs.WindowTitleView_weprefab);
+            var alertDialog = this.windowsSystem.ShowAlertDialog(string.Empty, "Message here", "OK");
+            alertDialog.Configurator.TitleView = titleContents.Instantiate();
+            alertDialog.Closed += this.CustomTitleDialogButton_Closed;
+        }
+
+        private void CustomTitleDialogButton_Closed(object sender, EventArgs e)
+        {
+            if (sender is AlertDialog alertDialog)
+            {
+                alertDialog.Configurator.TitleView = null;
+                alertDialog.Closed -= this.CustomTitleDialogButton_Closed;
+            }
+        }
+
+        private void AddSampleActionButton(bool isToggleSample = false)
+        {
+            var number = this.actionButtonsDescriptors.Count + 1;
+            var descriptor = new ButtonDescription
+            {
+                TextOn = () => $"Option {number}",
+                IconOn = EvergineContent.Materials.Icons.Pi,
+                Name = $"Option {number}",
+            };
+
+            if (isToggleSample)
+            {
+                descriptor.IsToggle = true;
+                descriptor.TextOff = () => $"#Off {number}";
+                descriptor.IconOff = EvergineContent.Materials.Icons.cross;
+            }
+
+            this.actionButtonsDescriptors.Add(descriptor);
+            this.actionButtonsWindow.ExtraActionButtons.Add(descriptor);
+            this.UpdateActionButtonCounters();
+
+            if (isToggleSample)
+            {
+                Entity buttonEntity = this.actionButtonsWindow.GetActionButtonEntity(descriptor);
+                buttonEntity.AddComponent(new AutomaticToggleChange());
+            }
+        }
+
+        private void ActionButtonsWindow_ActionButtonPressed(object sender, ActionButtonPressedEventArgs args)
+        {
+            this.actionButtonsCallbackText.Text = $"{(args.IsOn ? args.Description.TextOn() : args.Description.TextOff())} callback executed";
+        }
+
+        private void UpdateActionButtonCounters()
+        {
+            this.actionButtonActionsCountText.Text = this.actionButtonsWindow.ExtraActionButtons.Count.ToString();
+            this.actionButtonSlotsCountText.Text = this.actionButtonsWindow.AvailableActionSlots.ToString();
+        }
+
+        private void ActionButtonsShowWindowButton_ButtonPressed(object sender, EventArgs e) => this.actionButtonsWindow.Open();
+
+        private void ActionButtonsLessActionsButton_ButtonPressed(object sender, EventArgs e)
+        {
+            if (this.actionButtonsDescriptors.Any())
+            {
+                var descriptor = this.actionButtonsDescriptors.Last();
+                this.actionButtonsDescriptors.Remove(descriptor);
+                this.actionButtonsWindow.ExtraActionButtons.Remove(descriptor);
+            }
+
+            this.UpdateActionButtonCounters();
+        }
+
+        private void ActionButtonsMoreActionsButton_ButtonPressed(object sender, EventArgs e) => this.AddSampleActionButton();
+
+
+        private void ActionButtonsToggleChange_ButtonPressed(object sender, EventArgs e) => this.AddSampleActionButton(true);
+
+        private void ActionButtonsMoreSlotsButton_ButtonPressed(object sender, EventArgs e)
+        {
+            this.actionButtonsWindow.AvailableActionSlots++;
+            this.UpdateActionButtonCounters();
+        }
+
+        private void ActionButtonsLessSlotsButton_ButtonPressed(object sender, EventArgs e)
+        {
+            this.actionButtonsWindow.AvailableActionSlots = Math.Max(2, this.actionButtonsWindow.AvailableActionSlots - 1);
+            this.UpdateActionButtonCounters();
+        }
+
+        private void ActionButtonsCloseToggle_Toggled(object sender, EventArgs e) =>
+            this.actionButtonsWindow.ShowCloseButton = !this.actionButtonsWindow.ShowCloseButton;
+
+        private void ActionButtonsTogglePlacement_Toggled(object sender, EventArgs e) =>
+            this.actionButtonsWindow.MoreActionsPlacement = this.actionButtonsTogglePlacement.IsOn
+            ? MoreActionsButtonPlacement.BeforeFollowAndClose : MoreActionsButtonPlacement.BeforeActionButtons;
+
+        private void ActionButtonsToggleBehavior_Toggled(object sender, EventArgs e) =>
+            this.actionButtonsWindow.MoreActionsBehavior = this.actionButtonsToggleBehavior.IsOn
+            ? MoreActionsPanelBehavior.HideAutomatically : MoreActionsPanelBehavior.StayOpen;
+
+        private class AutomaticToggleChange : Behavior
+        {
+            private readonly TimeSpan toggleTime = TimeSpan.FromSeconds(2);
+            private TimeSpan currentTime;
+
+            [BindComponent(source: BindComponentSource.Children)]
+            private ToggleStateManager stateManager = null;
+
+            protected override void Update(TimeSpan gameTime)
+            {
+                if ((this.currentTime += gameTime) >= this.toggleTime)
+                {
+                    this.stateManager.ChangeState(this.stateManager.CurrentState.Value == ToggleState.On 
+                        ? this.stateManager.States.ElementAt(0) : this.stateManager.States.ElementAt(1));
+                    this.currentTime = TimeSpan.Zero;
+                }
+            }
         }
     }
 }

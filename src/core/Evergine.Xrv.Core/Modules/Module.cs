@@ -1,8 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-using Evergine.Framework;
 using System.Collections.Generic;
-using Evergine.Xrv.Core.Menu;
+using Evergine.Framework;
+using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Core.UI.Tabs;
 
 namespace Evergine.Xrv.Core.Modules
@@ -20,7 +20,7 @@ namespace Evergine.Xrv.Core.Modules
         /// <summary>
         /// Gets or sets module hand menu button description. If null, no button is added at all.
         /// </summary>
-        public abstract MenuButtonDescription HandMenuButton { get; protected set; }
+        public abstract ButtonDescription HandMenuButton { get; protected set; }
 
         /// <summary>
         /// Gets or sets help section item. If null, no item is added at all.

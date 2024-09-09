@@ -13,7 +13,7 @@ namespace Evergine.Xrv.Core.Localization
     [AllowMultipleInstances]
     public class ToggleButtonLocalization : BaseLocalization
     {
-        [BindComponent]
+        [BindComponent(source: BindComponentSource.Children)]
         private ToggleStateManager toggleManager = null;
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Evergine.Xrv.Core.Localization
         private ToggleButtonConfigurator FindConfiguratorForThisState()
         {
             var configurator = this.Owner
-                .FindComponents<ToggleButtonConfigurator>(isExactType: false)
+                .FindComponentsInChildren<ToggleButtonConfigurator>(isExactType: false)
                 .FirstOrDefault(configurator => configurator.TargetState == this.TargetState);
 
             return configurator;

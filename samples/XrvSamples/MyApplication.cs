@@ -20,17 +20,17 @@ namespace XrvSamples
     {
         public MyApplication()
         {
-            this.Container.RegisterType<Settings>();
-            this.Container.RegisterType<Clock>();
-            this.Container.RegisterType<TimerFactory>();
-            this.Container.RegisterType<Random>();
-            this.Container.RegisterType<ErrorHandler>();
-            this.Container.RegisterType<ScreenContextManager>();
-            this.Container.RegisterType<GraphicsPresenter>();
-            this.Container.RegisterType<AssetsDirectory>();
-            this.Container.RegisterType<AssetsService>();
-            this.Container.RegisterType<ForegroundTaskSchedulerService>();
-            this.Container.RegisterType<WorkActionScheduler>();
+            this.Container.Register<Settings>();
+            this.Container.Register<Clock>();
+            this.Container.Register<TimerFactory>();
+            this.Container.Register<Random>();
+            this.Container.Register<ErrorHandler>();
+            this.Container.Register<ScreenContextManager>();
+            this.Container.Register<GraphicsPresenter>();
+            this.Container.Register<AssetsDirectory>();
+            this.Container.Register<AssetsService>();
+            this.Container.Register<ForegroundTaskSchedulerService>();
+            this.Container.Register<WorkActionScheduler>();
 
             BackgroundTaskScheduler.Background.Configure(this.Container);
         }
@@ -95,9 +95,7 @@ namespace XrvSamples
                 })
                 .AddModule(new StreamingViewerModule()
                 {
-                    //SourceURL = "http://85.93.226.157:8082/mjpg/video.mjpg"
-                    SourceURL = "http://161.72.22.244/mjpg/video.mjpg"
-                    //SourceURL = "http://80.32.125.254:8080/cgi-bin/faststream.jpg?needlength"
+                    SourceURL = "http://94.124.210.59:8083/mjpg/video.mjpg"
                 })
                 .AddModule(new PainterModule());
 

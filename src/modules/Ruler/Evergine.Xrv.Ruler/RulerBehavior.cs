@@ -1,5 +1,8 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using System;
+using System.Collections.Generic;
+using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Components.Fonts;
 using Evergine.Components.Primitives;
@@ -7,8 +10,6 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using System;
-using System.Collections.Generic;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Themes;
 
@@ -19,61 +20,30 @@ namespace Evergine.Xrv.Ruler
     /// </summary>
     public class RulerBehavior : Behavior
     {
-        /// <summary>
-        /// Transform for first handle.
-        /// </summary>
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle1")]
-        protected Transform3D handle1Transform;
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_ruler_handle1")]
+        private Entity handle1Entity = null;
 
-        /// <summary>
-        /// Transform for second handle.
-        /// </summary>
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_handle2")]
-        protected Transform3D handle2Transform;
+        [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_ruler_handle2")]
+        private Entity handle2Entity = null;
 
-        /// <summary>
-        /// Line mesh.
-        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_Line")]
-        protected LineMesh line;
+        private LineMesh line = null;
 
-        /// <summary>
-        /// Label transform.
-        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_Label")]
-        protected Transform3D labelTransform;
+        private Transform3D labelTransform = null;
 
-        /// <summary>
-        /// Label text.
-        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_labelNumber")]
-        protected Text3DMesh labelNumber;
+        private Text3DMesh labelNumber = null;
 
-        /// <summary>
-        /// Units text.
-        /// </summary>
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_ruler_labelUnits")]
-        protected Text3DMesh labelUnits;
+        private Text3DMesh labelUnits = null;
 
-        /// <summary>
-        /// Line transform.
-        /// </summary>
-        protected Transform3D lineTransform;
-
-        /// <summary>
-        /// Settings entity.
-        /// </summary>
-        protected Entity settings;
-
-        /// <summary>
-        /// Toggle for metters.
-        /// </summary>
-        protected ToggleButton mettersToggle;
-
-        /// <summary>
-        /// Toggle for feet.
-        /// </summary>
-        protected ToggleButton feetToggle;
+        private Transform3D handle1Transform = null;
+        private Transform3D handle2Transform = null;
+        private Transform3D lineTransform;
+        private Entity settings;
+        private ToggleButton mettersToggle;
+        private ToggleButton feetToggle;
 
         [BindService]
         private XrvService xrvService = null;
@@ -102,14 +72,15 @@ namespace Evergine.Xrv.Ruler
         /// <summary>
         /// Gets or sets settings entity.
         /// </summary>
+        [IgnoreEvergine]
         public Entity Settings
         {
             get => this.settings;
             set
             {
                 this.settings = value;
-                this.mettersToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Meters", skipOwner: true);
-                this.feetToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Feets", skipOwner: true);
+                this.mettersToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Meters");
+                this.feetToggle = this.settings.FindComponentInChildren<ToggleButton>(tag: "PART_Feet");
 
                 this.mettersToggle.Toggled += this.UnitChanged;
                 this.feetToggle.Toggled += this.UnitChanged;
@@ -137,6 +108,9 @@ namespace Evergine.Xrv.Ruler
         protected override void OnActivated()
         {
             base.OnActivated();
+
+            this.handle1Transform = this.handle1Transform ?? this.handle1Entity.FindComponentInChildren<RulerHandlerBehavior>(isRecursive: true).HandleTransform;
+            this.handle2Transform = this.handle2Transform ?? this.handle2Entity.FindComponentInChildren<RulerHandlerBehavior>(isRecursive: true).HandleTransform;
 
             if (this.lineTransform == null)
             {

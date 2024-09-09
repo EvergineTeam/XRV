@@ -4,8 +4,6 @@ using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
-using System;
-using Evergine.Xrv.Core.UI.Buttons;
 using Evergine.Xrv.Painter.Enums;
 
 namespace Evergine.Xrv.Painter.Components
@@ -13,7 +11,7 @@ namespace Evergine.Xrv.Painter.Components
     /// <summary>
     /// Component of a pressable button which changes the color of the painter.
     /// </summary>
-    public class ColorButtonBehavior : Behavior
+    public class ColorButtonBehavior : Component
     {
         /// <summary>
         /// Assets service.
@@ -23,12 +21,6 @@ namespace Evergine.Xrv.Painter.Components
 
         [BindComponent]
         private ToggleButton toggleButton = null;
-
-        [BindComponent(isRequired: false)]
-        private XrvPressableButtonLookAndFeel lookAndFeel = null;
-
-        [BindEntity(isRequired: false, source: BindEntitySource.ChildrenSkipOwner, tag: "Hover", isRecursive: false)]
-        private Entity hoverEntity = null;
 
         private PainterManager painterManager = null;
 
@@ -63,28 +55,6 @@ namespace Evergine.Xrv.Painter.Components
         {
             base.OnDeactivated();
             this.toggleButton.Toggled -= this.ToggleButtonToggled;
-        }
-
-        /// <inheritdoc/>
-        protected override void Update(TimeSpan gameTime)
-        {
-            if (this.lookAndFeel != null)
-            {
-                if (this.lookAndFeel.IsDetected)
-                {
-                    if (this.hoverEntity != null && !this.hoverEntity.IsEnabled)
-                    {
-                        this.hoverEntity.IsEnabled = true;
-                    }
-                }
-                else
-                {
-                    if (this.hoverEntity != null && this.hoverEntity.IsEnabled)
-                    {
-                        this.hoverEntity.IsEnabled = false;
-                    }
-                }
-            }
         }
 
         private void ToggleButtonToggled(object sender, System.EventArgs e)

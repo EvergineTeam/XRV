@@ -77,6 +77,7 @@ namespace Evergine.Xrv.Core.UI.Dialogs
         {
             base.OnActivated();
 
+            this.UpdateLogoVisibility(false);
             this.Configurator.UpdateContent();
             this.cancelHolder = this.Owner.FindChildrenByTag("PART_base_dialog_cancel_holder", true).First();
             this.acceptHolder = this.Owner.FindChildrenByTag("PART_base_dialog_accept_holder", true).First();

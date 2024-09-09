@@ -1,5 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
+using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Physics3D;
@@ -16,10 +17,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
     {
         private bool isVisuallyEnabled = true;
 
-        // This must be ChildrenSkipOwner as we have XrvPressableButtonLookAndFeel components
-        // that adds a top-level collider to attached entity. But, we want to enable or disable, in this case,
-        // MRTK prefab button collider, to avoid user from pressing it.
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, isRecursive: true)]
+        [BindComponent(source: BindComponentSource.Children, isRecursive: true)]
         private BoxCollider3D boxCollider = null;
 
         [BindComponent(source: BindComponentSource.Children, isRecursive: true)]
@@ -27,6 +25,9 @@ namespace Evergine.Xrv.Core.UI.Buttons
 
         [BindComponent(source: BindComponentSource.Children, isRecursive: true, tag: "PART_Icon", isRequired: false)]
         private MaterialComponent iconMaterialComponent = null;
+
+        [BindComponent(source: BindComponentSource.Children, isRecursive: true, tag: "PART_Text", isRequired: false)]
+        private Text3DMesh textMesh = null;
 
         private HoloGraphic iconHoloGraphic;
 
@@ -88,6 +89,13 @@ namespace Evergine.Xrv.Core.UI.Buttons
             if (this.iconHoloGraphic != null)
             {
                 this.iconHoloGraphic.Parameters_Alpha = this.isVisuallyEnabled ? 1f : 0.5f;
+            }
+
+            if (this.textMesh != null)
+            {
+                var color = this.textMesh.Color;
+                color.A = (byte)(this.isVisuallyEnabled ? 255 : 64);
+                this.textMesh.Color = color;
             }
         }
     }
