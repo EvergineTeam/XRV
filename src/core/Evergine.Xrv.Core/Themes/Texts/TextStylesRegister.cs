@@ -8,7 +8,10 @@ using System.Reflection;
 
 namespace Evergine.Xrv.Core.Themes.Texts
 {
-    internal static class TextStylesRegister
+    /// <summary>
+    /// Register all text styles.
+    /// </summary>
+    public static class TextStylesRegister
     {
         static TextStylesRegister()
         {
@@ -41,6 +44,9 @@ namespace Evergine.Xrv.Core.Themes.Texts
             TextStyles = textStyles;
         }
 
+        /// <summary>
+        /// Gets all registered text styles.
+        /// </summary>
         public static Dictionary<string, TextStyle> TextStyles { get; private set; }
     }
 }
