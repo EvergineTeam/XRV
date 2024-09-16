@@ -129,9 +129,6 @@ namespace Evergine.Xrv.Core
                     /// <summary> Asset Path (XRV/Prefabs/Networking/Participants/DefaultHead.weprefab.weprf) </summary>
                     public static readonly Guid DefaultHead_weprefab = new Guid("34b5a455-2449-4ccb-afad-91bbff013a01");
 
-                    /// <summary> Asset Path (XRV/Prefabs/Networking/Participants/HoloLensHead.weprefab.weprf) </summary>
-                    public static readonly Guid HoloLensHead_weprefab = new Guid("c99aa11c-e668-419f-89c6-fcd910259b4d");
-
                     public static readonly Guid leftPalm_weprefab = new Guid("1a475651-6e98-4a28-8462-c56902a20f87");
 
                     public static readonly Guid rightPalm_weprefab = new Guid("f2cc2ae2-ed1b-4656-aff2-77367d3b525f");

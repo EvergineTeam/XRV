@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Description>XRV module that lets you load 3D models and manipulate them.</Description>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\Evergine.Xrv.Core\Evergine.Xrv.Core.csproj" />
-    <PackageReference Include="Evergine.Common" Version="2024.6.28.781" />
-    <PackageReference Include="Evergine.Components" Version="2024.6.28.781" />
-    <PackageReference Include="Evergine.Framework" Version="2024.6.28.781" />
-    <PackageReference Include="Evergine.Mathematics" Version="2024.6.28.781" />
-    <PackageReference Include="Evergine.Runtimes.GLB" Version="2024.6.28.781" />
-    <PackageReference Include="Evergine.Runtimes.STL" Version="2024.6.28.781" />
+    <PackageReference Include="Evergine.Common" Version="2024.9.12.184-nightly" />
+    <PackageReference Include="Evergine.Components" Version="2024.9.12.184-nightly" />
+    <PackageReference Include="Evergine.Framework" Version="2024.9.12.184-nightly" />
+    <PackageReference Include="Evergine.Mathematics" Version="2024.9.12.184-nightly" />
+    <PackageReference Include="Evergine.Runtimes.GLB" Version="2024.9.12.184-nightly" />
+    <PackageReference Include="Evergine.Runtimes.STL" Version="2024.9.12.184-nightly" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources\Strings.Designer.cs">

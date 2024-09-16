@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Evergine.Xrv.Core.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace Evergine.Xrv.Core.Services.QR
@@ -267,7 +266,6 @@ namespace Evergine.Xrv.Core.Services.QR
 
             QRScanningResultEventArgs args = null;
             Matrix4x4 pose = code.Transform.Value;
-            this.FixUpCodePoseByPlatform(ref pose);
 
             // Recalculate pose values, we want scale to be code physical length
             pose = Matrix4x4.CreateFromTRS(pose.Translation, pose.Orientation, new Vector3(code.PhysicalSideLength));
@@ -290,7 +288,6 @@ namespace Evergine.Xrv.Core.Services.QR
             transform.WorldTransform = Matrix4x4.CreateFromTRS(args.Pose.Translation, args.Pose.Orientation, Vector3.One);
             transform = this.qrMarkerEntity.FindComponent<Transform3D>();
             var qrLocalPosition = transform.LocalPosition;
-            QRPlatformHelper.FixUpCodeOrigin(ref qrLocalPosition);
 
             // apply scale separately to avoid all qrMarkerEntityPivot to be scaled (we are
             // only interested in qrMarkerEntity, that should fit real QR size.
@@ -310,27 +307,11 @@ namespace Evergine.Xrv.Core.Services.QR
             }
         }
 
-        private void FixUpCodePoseByPlatform(ref Matrix4x4 pose)
-        {
-            if (DeviceHelper.IsHoloLens())
-            {
-                // https://learn.microsoft.com/en-us/windows/mixed-reality/develop/unity/qr-code-tracking-unity#getting-the-coordinate-system-for-a-qr-code
-                pose = Matrix4x4.CreateRotationX(-MathHelper.Pi / 2) * pose;
-            }
-        }
-
         private void RegisterQrCodeWatcherServiceByPlatform()
         {
             var container = Application.Current.Container;
             if (!container.IsRegistered<IQRCodeWatcherService>())
             {
-#if UWP
-                if (Microsoft.MixedReality.QR.QRCodeWatcher.IsSupported())
-                {
-                    var qr = new Evergine.MixedReality.QR.QRCodeWatcherService();
-                    Application.Current.Container.RegisterInstance(qr);
-                }
-#endif
             }
         }
 

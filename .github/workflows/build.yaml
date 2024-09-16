@@ -16,11 +16,6 @@ on:
         required: false
         type: string
         default: submodules/MRTK/Source/Evergine.MRTK/Evergine.MRTK.csproj
-      windowsSdkVersion:
-        description: "Windows SDK version to be installed. Only required when compiling MRTK."
-        required: false
-        type: number
-        default: 18362
       buildConfiguration:
         description: "Build configuration, usually 'Release'."
         required: false
@@ -91,10 +86,6 @@ jobs:
         with:
           distribution: 'microsoft'
           java-version: '11'
-      - name: Install Windows SDK
-        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.8
-        with:
-          sdk-version: ${{ inputs.windowsSdkVersion }}
       - name: Build MRTK
         if: ${{ !inputs.isPackagingBuild }}
         shell: pwsh

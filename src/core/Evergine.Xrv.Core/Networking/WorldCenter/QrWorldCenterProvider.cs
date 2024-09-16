@@ -104,7 +104,6 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
             // Apply platform QR representation position fix-up
             var visualMarkerTransform = markerComponent.Owner.FindComponent<Transform3D>();
             var markerLocalPosition = visualMarkerTransform.LocalPosition;
-            QRPlatformHelper.FixUpCodeOrigin(ref markerLocalPosition);
             visualMarkerTransform.LocalPosition = markerLocalPosition;
 
             var pivotTransform = this.marker.FindComponent<Transform3D>();

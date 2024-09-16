@@ -11,7 +11,7 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
     /// </summary>
     public class ButtonEnabledStateByControlStatus : SessionControlChangeObserver
     {
-        [BindComponent]
+        [BindComponent(source: BindComponentSource.Children)]
         private VisuallyEnabledController visuallyEnabled = null;
 
         /// <summary>

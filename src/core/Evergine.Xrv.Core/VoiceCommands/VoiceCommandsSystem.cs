@@ -22,10 +22,6 @@ namespace Evergine.Xrv.Core.VoiceCommands
 
         public void RegisterService()
         {
-#if UWP
-            this.voiceService = new Evergine.MRTK.Services.Voice.VoiceCommandService();
-#endif
-
             if (this.voiceService != null)
             {
                 Application.Current.Container.RegisterInstance(this.voiceService);

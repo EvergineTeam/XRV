@@ -3,6 +3,7 @@ using Evergine.Common.Helpers;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
+using Evergine.MRTK;
 using Evergine.Platform;
 using System;
 using System.Diagnostics;
@@ -54,6 +55,7 @@ namespace XrvSamples.Windows
             // Create Services
             WindowsSystem windowsSystem = new Evergine.Forms.FormsWindowsSystem();
             application.Container.RegisterInstance(windowsSystem);
+            application.Container.RegisterInstance(new DummyXRPlatform());
             var window = windowsSystem.CreateWindow($"XrvSamples - DX11 - Port {port}", width, height);
 
             ConfigureGraphicsContext(application, window);

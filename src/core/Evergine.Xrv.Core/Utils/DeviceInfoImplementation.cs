@@ -3,11 +3,7 @@
 
 using Evergine.Common;
 using System.Runtime.InteropServices;
-#if UWP
-using System;
-using System.Diagnostics;
-using Windows.Security.ExchangeActiveSyncProvisioning;
-#elif ANDROID
+#if ANDROID
 using System;
 using Android.App;
 using Android.OS;
@@ -19,33 +15,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
     {
         public PlatformType PlatformType { get; internal set; }
 
-#if UWP
-        readonly EasClientDeviceInformation deviceInfo;
-        string systemProductName;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeviceInfoImplementation"/> class.
-        /// </summary>
-        public DeviceInfoImplementation()
-        {
-            deviceInfo = new EasClientDeviceInformation();
-            this.PlatformType = PlatformType.UWP;
-            try
-            {
-                systemProductName = deviceInfo.SystemProductName;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Unable to get system product name. {ex.Message}");
-            }
-        }
-
-        public string Model => deviceInfo.SystemProductName;
-
-        public string Manufacturer => deviceInfo.SystemManufacturer;
-
-        public string Name => deviceInfo.FriendlyName;
-#elif ANDROID
+#if ANDROID
         public DeviceInfoImplementation()
         {
             PlatformType = PlatformType.Android;

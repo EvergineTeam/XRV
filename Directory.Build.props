@@ -9,7 +9,7 @@
 		<PackageProjectUrl>https://evergine.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/EvergineTeam/</RepositoryUrl>
 		<PackageIcon>icon.png</PackageIcon>
-		<PackageTags>Evergine;C#;3D;AR;VR;MixedReality;HoloLens</PackageTags>
+		<PackageTags>Evergine;C#;3D;AR;VR</PackageTags>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<!-- 
 			This one indicates that required projects should reference MRTK NuGet package.
@@ -38,7 +38,7 @@
 		<IsAddOnProject Condition="'$(IsAddOnProject)'==''">false</IsAddOnProject>
 	</PropertyGroup>	
 	<ItemGroup Condition="'$(IsAddOnProject)'=='true'">
-		<PackageReference Include="Evergine.Packages.Targets" Version="2024.6.28.781" />
+		<PackageReference Include="Evergine.Packages.Targets" Version="2024.9.12.184-nightly" />
 	</ItemGroup>
 	
 	<!-- Stylecop -->
