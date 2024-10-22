@@ -4,7 +4,6 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
 using Evergine.MRTK;
-using Evergine.Platform;
 using System;
 using System.Diagnostics;
 
@@ -42,8 +41,8 @@ namespace XrvSamples.Windows
             }
             else
             {
-                var handle = Win32API.GetConsoleWindow();
-                Win32API.ShowWindow(handle, 0);
+                var handle = Evergine.Forms.Win32Native.GetConsoleWindow();
+                Evergine.Forms.Win32Native.ShowWindow(handle, false);
             }
 
             // Create app
