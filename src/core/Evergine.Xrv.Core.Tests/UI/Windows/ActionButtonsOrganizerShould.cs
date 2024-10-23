@@ -20,7 +20,7 @@ namespace Evergine.Xrv.Core.Tests.UI.Windows
                 AvailableActionSlots = 3,
             };
             this.organizer.Initialize(
-                (_, __) => new Entity().AddComponent(new XrvPressableButtonLookAndFeel()), 
+                (_, __) => new Entity().AddComponent(new ButtonCursorFeedback()), 
                 this.localization.Object);
         }
 
@@ -194,6 +194,13 @@ namespace Evergine.Xrv.Core.Tests.UI.Windows
             var foundDescription = this.organizer.GetButtonDescriptionByEntity(buttonEntity);
 
             Assert.Same(expectedDescription, foundDescription);
+        }
+
+        [Fact]
+        public void NotReturnCloseButtonEntityWhenNotIncluded()
+        {
+            this.organizer.IncludeCloseButton = false;
+            Assert.Null(this.organizer.CloseButtonEntity);
         }
     }
 }

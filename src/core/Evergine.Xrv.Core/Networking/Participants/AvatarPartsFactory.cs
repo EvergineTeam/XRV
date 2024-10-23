@@ -114,9 +114,7 @@ namespace Evergine.Xrv.Core.Networking.Participants
             switch (element)
             {
                 case TrackedElement.Head:
-                    return participant.DeviceInfo?.IsHoloLens() ?? false
-                        ? CoreResourcesIDs.Prefabs.Networking.Participants.HoloLensHead_weprefab
-                        : CoreResourcesIDs.Prefabs.Networking.Participants.DefaultHead_weprefab;
+                    return CoreResourcesIDs.Prefabs.Networking.Participants.DefaultHead_weprefab;
                 case TrackedElement.LeftHand:
                     return CoreResourcesIDs.Prefabs.Networking.Participants.leftPalm_weprefab;
                 case TrackedElement.RightHand:

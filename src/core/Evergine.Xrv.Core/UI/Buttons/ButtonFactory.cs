@@ -4,7 +4,6 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Services;
-using Evergine.MRTK;
 using Evergine.MRTK.SDK.Features.Input.Handlers;
 using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -14,6 +13,7 @@ using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Themes.Texts;
 using Evergine.Xrv.Core.VoiceCommands;
 using System;
+using System.Linq;
 
 namespace Evergine.Xrv.Core.UI.Buttons
 {
@@ -22,7 +22,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
     /// </summary>
     public class ButtonFactory
     {
-        private const float TextPositionHover = -0.002f;
         private readonly AssetsService assetsService;
 
         /// <summary>
@@ -39,7 +38,8 @@ namespace Evergine.Xrv.Core.UI.Buttons
         /// </summary>
         /// <param name="description">Button description.</param>
         /// <returns>Button entity.</returns>
-        public Entity CreateInstance(ButtonDescription description) => this.CreateInstance(description, MRTKResourceIDs.Prefabs.PressableButtonPlated);
+        public Entity CreateInstance(ButtonDescription description) =>
+            this.CreateInstance(description, description.IsToggle ? CoreResourcesIDs.Prefabs.baseToggleButton_weprefab : CoreResourcesIDs.Prefabs.baseButton_weprefab);
 
         /// <summary>
         /// Creates an instance of a button from its description.
@@ -59,7 +59,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 .AddComponent(new StandardButtonConfigurator
                 {
                     Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
-                    AllowBackPlateNullMaterial = true,
                 })
                 .AddComponent(new ButtonLocalization
                 {
@@ -68,10 +67,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 .AddComponent(new ButtonTextStyle
                 {
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
-                })
-                .AddComponent(new XrvPressableButtonLookAndFeel
-                {
-                    TextPositionOffset = TextPositionHover,
                 });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn))
@@ -83,8 +78,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 });
             }
 
-            this.AddCommonComponents(button);
-
             return button;
         }
 
@@ -93,14 +86,15 @@ namespace Evergine.Xrv.Core.UI.Buttons
             var prefab = this.assetsService.Load<Prefab>(prefabId);
             var button = prefab.Instantiate();
             button.Flags = HideFlags.DontSave | HideFlags.DontShow;
+
+            var configurators = button.FindComponentsInChildren<ToggleButtonConfigurator>(isExactType: false);
+            var offConfiguration = configurators.FirstOrDefault(c => c.TargetState == ToggleState.Off);
+            if (offConfiguration != null)
+            {
+                offConfiguration.Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff);
+            }
+
             button
-                .AddComponent(new ToggleButton())
-                .AddComponent(new ToggleButtonConfigurator
-                {
-                    TargetState = ToggleState.Off,
-                    Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOff),
-                    AllowBackPlateNullMaterial = true,
-                })
                 .AddComponent(new ToggleButtonLocalization
                 {
                     TargetState = ToggleState.Off,
@@ -110,10 +104,6 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 {
                     TargetState = ToggleState.Off,
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
-                })
-                .AddComponent(new XrvPressableButtonLookAndFeel
-                {
-                    TextPositionOffset = TextPositionHover,
                 });
 
             if (!string.IsNullOrEmpty(description.VoiceCommandOn)
@@ -127,13 +117,13 @@ namespace Evergine.Xrv.Core.UI.Buttons
                 });
             }
 
+            var onConfiguration = configurators.FirstOrDefault(c => c.TargetState == ToggleState.On);
+            if (onConfiguration != null)
+            {
+                onConfiguration.Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn);
+            }
+
             button
-                .AddComponent(new ToggleButtonConfigurator
-                {
-                    TargetState = ToggleState.On,
-                    Icon = this.assetsService.LoadIfNotDefaultId<Material>(description.IconOn),
-                    AllowBackPlateNullMaterial = true,
-                })
                 .AddComponent(new ToggleButtonLocalization
                 {
                     TargetState = ToggleState.On,
@@ -145,14 +135,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
                     TextStyleKey = DefaultTextStyles.XrvPrimary2Size3,
                 });
 
-            this.AddCommonComponents(button);
-
             return button;
-        }
-
-        private void AddCommonComponents(Entity button)
-        {
-            button.AddComponent(new VisuallyEnabledController());
         }
     }
 }

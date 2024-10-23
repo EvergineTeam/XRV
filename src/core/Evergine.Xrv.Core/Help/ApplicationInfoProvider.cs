@@ -1,8 +1,6 @@
 ﻿// Copyright © Plain Concepts S.L.U. All rights reserved. Use is subject to license terms.
 
-#if UWP
-using Windows.ApplicationModel;
-#elif ANDROID
+#if ANDROID
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -23,10 +21,7 @@ namespace Evergine.Xrv.Core.Help
         /// <returns>Application version name.</returns>
         public string GetVersion()
         {
-#if UWP
-            PackageVersion version = Package.Current.Id.Version;
-            return string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
-#elif NET8_0_ANDROID
+#if ANDROID
             Context ctx = Application.Context.ApplicationContext;
             PackageManager packageManager = ctx.PackageManager;
             PackageInfo info = packageManager.GetPackageInfo(ctx.PackageName, 0);

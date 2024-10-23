@@ -4,9 +4,6 @@
 using Android.OS;
 #endif
 using Evergine.Networking.Components;
-#if UWP
-using Evergine.Xrv.Core.Utils;
-#endif
 
 namespace Evergine.Xrv.Core.Networking.Participants
 {
@@ -26,8 +23,6 @@ namespace Evergine.Xrv.Core.Networking.Participants
             var deviceInfo = DeviceInfo.From(implementation);
 #if ANDROID
             deviceInfo.Extras.Add(DeviceInfo.ProductKey, Build.Product);
-#elif UWP
-            deviceInfo.Extras.Add(DeviceInfo.IsHoloLensKey, DeviceHelper.IsHoloLens().ToString());
 #endif
 
             this.PropertyValue = deviceInfo;

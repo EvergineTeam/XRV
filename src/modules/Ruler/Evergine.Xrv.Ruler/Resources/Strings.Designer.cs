@@ -97,7 +97,7 @@ namespace Evergine.Xrv.Ruler.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Feet Off.
+        ///   Looks up a localized string similar to Feet On.
         /// </summary>
         internal static string Settings_Ruler_Units_Feet_On {
             get {

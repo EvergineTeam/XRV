@@ -5,7 +5,6 @@ using Evergine.Xrv.Core.Networking.Participants;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Evergine.Xrv.Core.Utils
 {
@@ -14,7 +13,6 @@ namespace Evergine.Xrv.Core.Utils
     /// </summary>
     public static class DeviceHelper
     {
-        private static bool? isHoloLens;
         private static DeviceInfoImplementation deviceInfo;
 
         static DeviceHelper()
@@ -43,60 +41,6 @@ namespace Evergine.Xrv.Core.Utils
             {
                 return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             }
-        }
-
-        /// <summary>
-        /// Evaluates if current device is a HoloLens.
-        /// </summary>
-        /// <returns>True if current device is HoloLens; false otherwise.</returns>
-        public static bool IsHoloLens()
-        {
-            if (!isHoloLens.HasValue)
-            {
-                isHoloLens = false;
-#if UWP
-                /*
-                 * We have detected some exceptions on consecutive access to this
-                 * API method. Our solution is just cache first API usage.
-                 */
-                isHoloLens = Windows.ApplicationModel.Preview.Holographic.HolographicApplicationPreview.IsCurrentViewPresentedOnHolographicDisplay();
-#endif
-            }
-
-            return isHoloLens.Value;
-        }
-
-        /// <summary>
-        /// Ensures camera permissions have been granted.
-        /// </summary>
-        /// <returns>True if granted; false otherwise.</returns>
-        public static async Task<bool> EnsureCameraPersmissionAsync()
-        {
-#if UWP
-            const int NoCaptureDevicesHResult = -1072845856; // 0xC00DABE0
-            using (var mediaCapture = new Windows.Media.Capture.MediaCapture())
-            {
-                try
-                {
-                    await mediaCapture.InitializeAsync(new Windows.Media.Capture.MediaCaptureInitializationSettings
-                    {
-                        StreamingCaptureMode = Windows.Media.Capture.StreamingCaptureMode.AudioAndVideo,
-                    });
-
-                    return true;
-                }
-                catch (Exception ex) when (ex.HResult == NoCaptureDevicesHResult)
-                {
-                    return false;
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    return false;
-                }
-            }
-#else
-            return await Task.FromResult(true);
-#endif
         }
     }
 }

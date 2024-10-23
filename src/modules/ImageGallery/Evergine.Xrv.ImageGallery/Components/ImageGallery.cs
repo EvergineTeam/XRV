@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
+using Evergine.Common.IO;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Physics3D;
@@ -14,7 +15,6 @@ using Evergine.Framework.Threading;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.Sliders;
-using Evergine.Platform;
 using Evergine.Xrv.Core;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.Storage;
@@ -39,15 +39,6 @@ namespace Evergine.Xrv.ImageGallery.Components
         [BindService]
         private XrvService xrvService = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_next_pressable_button")]
-        private PressableButton nextButton = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_previous_pressable_button")]
-        private PressableButton previousButton = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_image_gallery_slider")]
-        private PinchSlider slider = null;
-
         [BindComponent(source: BindComponentSource.Children, tag: "PART_image_gallery_picture")]
         private MaterialComponent galleryFrameMaterial = null;
 
@@ -62,6 +53,10 @@ namespace Evergine.Xrv.ImageGallery.Components
 
         [BindEntity(source: BindEntitySource.ChildrenSkipOwner, tag: "PART_image_gallery_spinner", isRecursive: true)]
         private Entity spinnerEntity = null;
+
+        private PinchSlider slider = null;
+        private PressableButton nextButton = null;
+        private PressableButton previousButton = null;
 
         private Texture imageTexture = null;
         private int imageIndex = 0;
@@ -205,6 +200,10 @@ namespace Evergine.Xrv.ImageGallery.Components
             if (attached)
             {
                 this.logger = this.xrvService.Services.Logging;
+
+                this.nextButton = this.nextButtonEntity.FindComponentInChildren<PressableButton>(isRecursive: true);
+                this.previousButton = this.previousButtonEntity.FindComponentInChildren<PressableButton>(isRecursive: true);
+                this.slider = this.sliderEntity.FindComponentInChildren<PinchSlider>(isRecursive: true);
 
                 var holographicEffect = new HoloGraphic(this.galleryFrameMaterial.Material);
 
@@ -374,8 +373,8 @@ namespace Evergine.Xrv.ImageGallery.Components
                     this.nextButtonEntity.IsEnabled = true;
                 }
 
-                this.nextButtonEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
-                this.previousButtonEntity.FindComponent<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
+                this.nextButtonEntity.FindComponentInChildren<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
+                this.previousButtonEntity.FindComponentInChildren<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
             }
 
             var sliderCollider = this.slider.Owner.FindComponentInChildren<Collider3D>(isExactType: false);

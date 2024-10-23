@@ -1,6 +1,6 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;uap10.0.16299;net8.0-android</TargetFrameworks>
+    <TargetFrameworks>net8.0;net8.0-android</TargetFrameworks>
     <Description>XRV core features, including hand menu, windows creation, dialogs, settings and help panels, localization, themes, etc.</Description>
     <ReferenceMRTK>true</ReferenceMRTK>
   </PropertyGroup>
@@ -12,12 +12,11 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.1" />
     <PackageReference Include="Azure.Storage.Files.Shares" Version="12.11.0" />
-    <PackageReference Include="Evergine.Common" Version="2024.6.28.10" />
-    <PackageReference Include="Evergine.Components" Version="2024.6.28.10" />
-    <PackageReference Include="Evergine.Framework" Version="2024.6.28.10" />
-    <PackageReference Include="Evergine.Mathematics" Version="2024.6.28.10" />
-    <PackageReference Include="Evergine.Networking" Version="2024.6.28.10" />
-    <PackageReference Include="Evergine.Platform" Version="2024.6.28.10" />
+    <PackageReference Include="Evergine.Common" Version="2024.10.24.7" />
+    <PackageReference Include="Evergine.Components" Version="2024.10.24.7" />
+    <PackageReference Include="Evergine.Framework" Version="2024.10.24.7" />
+    <PackageReference Include="Evergine.Mathematics" Version="2024.10.24.7" />
+    <PackageReference Include="Evergine.Networking" Version="2024.10.24.7" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
@@ -26,9 +25,9 @@
   </ItemGroup>
   <!-- Packaging -->
   <ItemGroup>
-    <None Include="..\Evergine.Xrv.Core.Editor\bin\$(Configuration)\netstandard2.0\Evergine.Xrv.Core.Editor.dll" Visible="false">
+    <None Include="..\Evergine.Xrv.Core.Editor\bin\$(Configuration)\net8.0\Evergine.Xrv.Core.Editor.dll" Visible="false">
       <Pack>True</Pack>
-      <PackagePath>lib\netstandard2.0\Evergine.Xrv.Core.Editor.dll</PackagePath>
+      <PackagePath>lib\net8.0\Evergine.Xrv.Core.Editor.dll</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -41,16 +40,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Choose>
-    <When Condition="$(TargetFramework.StartsWith('uap'))">
-      <PropertyGroup>
-        <DefineConstants>UWP</DefineConstants>
-        <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-        <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
-      </PropertyGroup>
-      <ItemGroup>
-        <PackageReference Include="Evergine.MixedReality" Version="2024.6.28.10" />
-      </ItemGroup>
-    </When>
     <When Condition="$(TargetFramework.Contains('android'))">
       <PropertyGroup>
         <DefineConstants>ANDROID</DefineConstants>

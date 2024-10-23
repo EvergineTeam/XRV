@@ -116,20 +116,7 @@ namespace Evergine.Xrv.Core.Services.QR
 
         private async Task<bool> EnsurePermissionsGrantedAsync()
         {
-#if UWP
-            bool granted = true;
-
-            if (Microsoft.MixedReality.QR.QRCodeWatcher.IsSupported()
-                && (!await Utils.DeviceHelper.EnsureCameraPersmissionAsync() ||
-                   await Microsoft.MixedReality.QR.QRCodeWatcher.RequestAccessAsync() != Microsoft.MixedReality.QR.QRCodeWatcherAccessStatus.Allowed))
-            {
-                granted = false;
-            }
-
-            return granted;
-#else
             return await Task.FromResult(true);
-#endif
         }
     }
 }

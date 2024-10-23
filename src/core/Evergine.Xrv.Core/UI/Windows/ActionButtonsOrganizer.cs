@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Evergine.Framework;
-using Evergine.MRTK;
+using Evergine.MRTK.SDK.Features.UX.Components.Configurators;
 using Evergine.Xrv.Core.Localization;
 using Evergine.Xrv.Core.UI.Buttons;
 
@@ -259,10 +259,18 @@ namespace Evergine.Xrv.Core.UI.Windows
             {
                 this.CreateButtonInstanceForContainer(this.followButtonDescription, true);
             }
+            else
+            {
+                this.RemoveButtonInstanceForContainer(this.followButtonDescription, true);
+            }
 
             if (this.includeCloseButton)
             {
                 this.CreateButtonInstanceForContainer(this.closeButtonDescription, true);
+            }
+            else
+            {
+                this.RemoveButtonInstanceForContainer(this.closeButtonDescription, true);
             }
 
             this.OrganizationUpdated?.Invoke(this, EventArgs.Empty);
@@ -283,7 +291,9 @@ namespace Evergine.Xrv.Core.UI.Windows
 
                 if (!this.instantiatedActionBarButtons.ContainsKey(description.Id))
                 {
-                    Entity buttonInstance = this.CreateButtonEntity(description, MRTKResourceIDs.Prefabs.PressableButtonPlated);
+                    Entity buttonInstance = this.CreateButtonEntity(
+                        description,
+                        description.IsToggle ? CoreResourcesIDs.Prefabs.baseToggleButton_weprefab : CoreResourcesIDs.Prefabs.baseButton_weprefab);
                     this.instantiatedActionBarButtons.Add(description.Id, buttonInstance);
                 }
 
@@ -301,12 +311,31 @@ namespace Evergine.Xrv.Core.UI.Windows
                 if (!this.instantiatedMoreActionButtons.ContainsKey(description.Id))
                 {
                     Entity buttonInstance = this.CreateButtonEntity(description, CoreResourcesIDs.Prefabs.iconTextButton_weprefab);
-                    buttonInstance.FindComponent<XrvPressableButtonLookAndFeel>().HideTextOnCursorLeave = false;
+                    buttonInstance.FindComponentInChildren<ButtonCursorFeedback>().HideTextOnCursorLeave = false;
+
+                    foreach (var configurator in buttonInstance.FindComponentsInChildren<StandardButtonConfigurator>())
+                    {
+                        configurator.AllowBackPlateNullMaterial = true;
+                        configurator.Plate = null;
+                    }
+
                     this.instantiatedMoreActionButtons.Add(description.Id, buttonInstance);
                 }
 
                 this.instantiatedActionBarButtons.Remove(description.Id);
                 this.moreActionsButtons.Add(this.instantiatedMoreActionButtons[description.Id]);
+            }
+        }
+
+        private void RemoveButtonInstanceForContainer(ButtonDescription buttonDescription, bool isActionBarButton)
+        {
+            if (isActionBarButton)
+            {
+                this.instantiatedActionBarButtons.Remove(buttonDescription.Id);
+            }
+            else
+            {
+                this.instantiatedMoreActionButtons.Remove(buttonDescription.Id);
             }
         }
 

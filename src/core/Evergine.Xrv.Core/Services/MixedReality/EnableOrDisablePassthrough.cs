@@ -18,7 +18,7 @@ namespace Evergine.Xrv.Core.Services.MixedReality
         [BindComponent]
         private ToggleButton toggleButton = null;
 
-        [BindComponent]
+        [BindComponent(source: BindComponentSource.Children)]
         private VisuallyEnabledController visuallyEnabledController = null;
 
         private PasstroughService passthroughService;

@@ -71,14 +71,8 @@ namespace Evergine.Xrv.Core.Menu
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_detach")]
         private Transform3D detachButtonTransform = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_detach")]
-        private ToggleButton detachButtonToggle = null;
-
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_follow")]
         private Transform3D followButtonTransform = null;
-
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_follow")]
-        private ToggleButton followButtonToggle = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_hand_menu_text")]
         private Transform3D textTransform = null;
@@ -94,6 +88,9 @@ namespace Evergine.Xrv.Core.Menu
 
         [BindEntity(source: BindEntitySource.Scene, tag: "PART_hand_menu_buttons_container")]
         private Entity buttonsContainer = null;
+
+        private ToggleButton followButtonToggle = null;
+        private ToggleButton detachButtonToggle = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HandMenu"/> class.
@@ -222,6 +219,9 @@ namespace Evergine.Xrv.Core.Menu
         protected override void OnActivated()
         {
             base.OnActivated();
+
+            this.followButtonToggle = this.followButtonTransform.Owner.FindComponentInChildren<ToggleButton>();
+            this.detachButtonToggle = this.detachButtonTransform.Owner.FindComponentInChildren<ToggleButton>();
 
             if (this.palmPanelBehavior != null)
             {

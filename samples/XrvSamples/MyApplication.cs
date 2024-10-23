@@ -1,7 +1,6 @@
 using Evergine.Framework;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
-using Evergine.Platform;
 using System;
 using Evergine.Xrv.AudioNotes;
 using Evergine.Xrv.Core;
@@ -13,6 +12,7 @@ using Evergine.Xrv.Painter;
 using Evergine.Xrv.Ruler;
 using Evergine.Xrv.StreamingViewer;
 using Random = Evergine.Framework.Services.Random;
+using Evergine.Common.IO;
 
 namespace XrvSamples
 {

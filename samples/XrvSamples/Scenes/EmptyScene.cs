@@ -21,7 +21,7 @@ namespace XrvSamples.Scenes
             // they use different ports. This will affect scan reachability.
             ////var configuration = new NetworkConfigurationBuilder()
             ////    .ForApplication(nameof(XrvSamples))
-            ////    .UsePort(DeviceInfo.Current.PlatformType == Evergine.Common.PlatformType.UWP ? 12345 : 12344)
+            ////    .UsePort(12345)
             ////    .SetQrCodeForSession("This is XRV!")
             ////    .Build();
             ////xrv.Networking.Configuration = configuration;

@@ -112,6 +112,10 @@ namespace Evergine.Xrv.Core
 
             public static Guid Window = new Guid("76a3430f-9ddd-4536-abef-d51e7d67e444");
 
+            public static readonly Guid baseButton_weprefab = new Guid("9a0dfc46-87b5-49bb-b040-2f29cf3dc6aa");
+
+            public static readonly Guid baseToggleButton_weprefab = new Guid("9b0dfc46-87b5-49bb-b040-2f29cf3dc6aa");
+
             public static readonly Guid iconTextButton_weprefab = new Guid("6c2abc65-102e-4516-b8c2-f2886322f5a3");
 
             public static class Networking
@@ -124,9 +128,6 @@ namespace Evergine.Xrv.Core
                 {
                     /// <summary> Asset Path (XRV/Prefabs/Networking/Participants/DefaultHead.weprefab.weprf) </summary>
                     public static readonly Guid DefaultHead_weprefab = new Guid("34b5a455-2449-4ccb-afad-91bbff013a01");
-
-                    /// <summary> Asset Path (XRV/Prefabs/Networking/Participants/HoloLensHead.weprefab.weprf) </summary>
-                    public static readonly Guid HoloLensHead_weprefab = new Guid("c99aa11c-e668-419f-89c6-fcd910259b4d");
 
                     public static readonly Guid leftPalm_weprefab = new Guid("1a475651-6e98-4a28-8462-c56902a20f87");
 

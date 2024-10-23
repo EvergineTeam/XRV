@@ -1,0 +1,113 @@
+!Evergine.Assets.Exporters.Prefab.PrefabMetaFile,Evergine.Assets
+Id: 01dc3233-3953-4ed0-b056-3115e61da2d1
+DefaultProfile:
+  ExcludeAsset: false
+  Name: null
+  Platform: Undefined
+ExportAsRaw: false
+PrefabData: null
+Profiles: {}
+Source:
+  Header:
+    Id: ddd159ed-077d-41bb-9705-a71f677a18e5
+    IsCompressed: true
+  LastModified: 0001-01-01T00:00:00.0000000
+  PrefabData:
+    Id: 4c7fd493-30b9-4e49-a8c7-7dbb3a9d2875
+    Root:
+      Name: Handle
+      Tag: 
+      IsEnabled: true
+      IsStatic: false
+      Components:
+        - !Evergine.Framework.Graphics.Transform3D,Evergine.Framework
+          Id: 50389faa-cb22-4e62-80e2-48b95eceb147
+          IsEnabled: true
+          LocalOrientation:
+            W: 0.707106769
+            X: 0.0
+            Y: -0.707106769
+            Z: 0.0
+          LocalPosition:
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          LocalScale:
+            X: 1.0
+            Y: 1.0
+            Z: 1.0
+        - !Evergine.Components.Graphics3D.MaterialComponent,Evergine.Framework
+          Id: 6feb2445-131d-438b-b3e2-7b7c5ed67d8c
+          AsignedTo: Default
+          IsEnabled: true
+          Material: 55c2c50c-36c4-424c-9355-3e5c7ad8af04
+          UseCopy: false
+        - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
+          Id: 990e76dc-5955-4407-8624-646877f73a54
+          Height: 0.100000001
+          IsEnabled: true
+          Origin:
+            X: 0.5
+            Y: 0.5
+          PlaneNormal: ZPositive
+          TwoSides: false
+          UMirror: false
+          UOffset: 0.0
+          UTile: 1.0
+          VMirror: false
+          VOffset: 0.0
+          VTile: 1.0
+          Width: 0.100000001
+        - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
+          Id: e79ac27f-af30-4f07-8cf3-f1c1f2d9a3be
+          DebugBoundingbox: true
+          IsCullingEnabled: true
+          IsEnabled: true
+          OrderBias: 0
+          RenderFlags: None
+        - !Evergine.Framework.Physics3D.StaticBody3D,Evergine.Framework
+          Id: 03785065-8137-432f-9700-e0fb0b04fcbc
+          CcdMotionThreshold: 0.0
+          CcdSweptSphereRadius: 0.200000003
+          CollisionCategories: Cat1
+          Friction: 0.5
+          IsEnabled: true
+          IsSensor: true
+          MaskBits: All
+          Restitution: 0.0
+          RollingFriction: 0.0
+          UpdateOrder: 0.5
+        - !Evergine.Framework.Physics3D.SphereCollider3D,Evergine.Framework
+          Id: 1447bfc2-6db9-4a7a-b6bd-2b72480ed787
+          IsEnabled: true
+          Margin: 0.0399999991
+          Offset:
+            X: 0.0
+            Y: 0.0
+            Z: 0.0
+          Radius: 0.5
+        - !Evergine.Components.Toolkit.LookAtBehavior,Evergine.Components
+          Id: 954dcc94-cfef-4374-8154-0807f3c60a9a
+          Axis: Z
+          AxisConstraint: false
+          Flip: false
+          IsEnabled: true
+          IsLocalOriented: false
+          KeepUpVector: true
+          LookAtEntity: false
+          OrientationAxis: X
+          TargetEntity: null
+          UpdateOrder: 0.5
+        - !Evergine.Xrv.Ruler.RulerHandlerBehavior,Evergine.Xrv.Ruler
+          Id: 84cd67b6-5452-4eb4-b929-0c272f12e35f
+          IsEnabled: true
+        - !Evergine.Xrv.Core.Networking.Properties.TransformSynchronization,Evergine.Xrv.Core
+          Id: de20344b-b7e9-4a28-baad-748a1ca7d149
+          IsEnabled: true
+          PropertyKeyByte: 0
+          ProviderFilter: Room
+        - !Evergine.Xrv.Ruler.Networking.DisableHandlerOnControlLost,Evergine.Xrv.Ruler
+          Id: 19593225-35c0-4c65-a6f5-43329332e072
+          IsEnabled: true
+      Children: []
+      Id: fe9c6b37-690b-451d-ba34-f8f683bf7091

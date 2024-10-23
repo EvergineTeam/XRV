@@ -3,7 +3,7 @@ using Evergine.Common.Helpers;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Services;
-using Evergine.Platform;
+using Evergine.MRTK;
 using System;
 using System.Diagnostics;
 
@@ -41,8 +41,8 @@ namespace XrvSamples.Windows
             }
             else
             {
-                var handle = Win32API.GetConsoleWindow();
-                Win32API.ShowWindow(handle, 0);
+                var handle = Evergine.Forms.Win32Native.GetConsoleWindow();
+                Evergine.Forms.Win32Native.ShowWindow(handle, false);
             }
 
             // Create app
@@ -54,6 +54,7 @@ namespace XrvSamples.Windows
             // Create Services
             WindowsSystem windowsSystem = new Evergine.Forms.FormsWindowsSystem();
             application.Container.RegisterInstance(windowsSystem);
+            application.Container.RegisterInstance(new DummyXRPlatform());
             var window = windowsSystem.CreateWindow($"XrvSamples - DX11 - Port {port}", width, height);
 
             ConfigureGraphicsContext(application, window);

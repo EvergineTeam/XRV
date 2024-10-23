@@ -20,12 +20,6 @@ namespace Evergine.Xrv.Core.Networking.Participants
         /// </summary>
         public const string ProductKey = "product";
 
-        /// <summary>
-        /// HoloLens key for <see cref="Extras"/>. Applies for UWP-based
-        /// devices.
-        /// </summary>
-        public const string IsHoloLensKey = "isHoloLens";
-
         private static readonly Lazy<DeviceInfo> current = new Lazy<DeviceInfo>(() => From(new DeviceInfoImplementation()));
 
         /// <summary>
@@ -62,26 +56,6 @@ namespace Evergine.Xrv.Core.Networking.Participants
         /// Gets host <see cref="DeviceInfo"/> data.
         /// </summary>
         public static DeviceInfo Current { get => current.Value; }
-
-        /// <summary>
-        /// Checks if device is a HoloLens.
-        /// </summary>
-        /// <returns>True if this is a HoloLens; false otherwise.</returns>
-        public bool IsHoloLens()
-        {
-            if (this.PlatformType != PlatformType.UWP)
-            {
-                return false;
-            }
-
-            if (!this.Extras.ContainsKey(IsHoloLensKey))
-            {
-                return false;
-            }
-
-            bool isHoloLens = Convert.ToBoolean(this.Extras[IsHoloLensKey]);
-            return isHoloLens;
-        }
 
         /// <inheritdoc/>
         void INetworkSerializable.Write(NetBuffer buffer)

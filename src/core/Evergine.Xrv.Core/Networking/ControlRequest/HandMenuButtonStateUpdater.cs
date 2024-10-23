@@ -12,7 +12,7 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
         [BindService]
         private XrvService xrvService = null;
 
-        [BindComponent]
+        [BindComponent(source: BindComponentSource.Children)]
         private VisuallyEnabledController visuallyEnabled = null;
 
         private NetworkSystem networking = null;
