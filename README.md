@@ -1,8 +1,41 @@
-# XRV
+# Evergine XRV add-on
 
-## Prerequisites
+![Evergine.MRTK](docs/main.jpg)
 
-  - .NET 8
+XRV is a library we use internally while developing custom XR experiences for our customers. It aims to gather in one place various functionalities and features commonly required by the applications we build, such as floating windows, hand menus, voice commands, and more.
+
+It is based on our own [MRTK add-on](https://github.com/EvergineTeam/MixedRealityToolkit), which means it uses the same input pointers, user controls like buttons or sliders, configuration components, etc. Leveraging this foundation, we have built the entire XRV infrastructure.
+
+Most of the features are supported on many platforms, but some features may not be available on all platforms. You can run XRV on devices like:
+
+- Meta Quest 1
+- Meta Quest 2
+- Meta Quest 3
+- Meta Quest Pro
+- Pico XR headsets
+
+---
+**Note:**
+Microsoft HoloLens 2 is out-of-support.
+
+---
+
+## Builds
+
+|Branch|Status|
+|:--:|:--:|
+|main|[![Build status](https://github.com/EvergineTeam/XRV/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/EvergineTeam/XRV/tree/main)|
+|develop|[![Build status](https://github.com/EvergineTeam/XRV/actions/workflows/ci.yaml/badge.svg?branch=develop)](https://github.com/EvergineTeam/XRV/tree/develop)|
+
+## Documentation
+
+https://docs.evergine.com/2024.10.24/manual/addons/xrv/index.html
+
+## Required software
+
+| <a href="https://www.evergine.com"><img src="docs/evergine.png" alt="Evergine" width="100"/></a><br/> [Evergine](https://www.evergine.com) | <a href="http://dev.windows.com/downloads"><img src="docs/visual_studio.png" alt="Visual Studio" width="100"/></a><br/> [Visual Studio 2019/2022](http://dev.windows.com/downloads) |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Evergine provides support for building XR projects in Windows 10                                                                                     | Visual Studio is used for code editing, deploying, and building application packages                                                                            |
 
 ## How to update to newer Engine version
 
