@@ -15,6 +15,7 @@ using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
+using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 using Evergine.MRTK.SDK.Features.UX.Components.ToggleButtons;
 using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Menu.PalmDetection;
@@ -338,6 +339,9 @@ namespace Evergine.Xrv.Core.Menu
                 {
                     this.handMenuTransform.Owner.IsEnabled = true;
                 }
+
+                // Disable buttons during the animation
+                this.SetButtonsEnabled(enabled: false);
             })
             .ContinueWith(
                 new FloatAnimationWorkAction(this.Owner, start, end, TimeSpan.FromSeconds(0.4f), EaseFunction.SineInOutEase, (f) =>
@@ -350,6 +354,11 @@ namespace Evergine.Xrv.Core.Menu
                     if (!show)
                     {
                         this.handMenuTransform.Owner.IsEnabled = false;
+                    }
+                    else
+                    {
+                        // Enable buttons after the animation
+                        this.SetButtonsEnabled(enabled: true);
                     }
                 }));
             this.appearAnimation.Run();
@@ -390,6 +399,27 @@ namespace Evergine.Xrv.Core.Menu
                     }
                 }));
             this.extendedAnimation.Run();
+        }
+
+        private void SetButtonsEnabled(bool enabled)
+        {
+            foreach (var buttonEntity in this.buttonsIterator)
+            {
+                this.SetButtonEnabled(buttonEntity, enabled);
+            }
+
+            this.SetButtonEnabled(this.detachButtonToggle.Owner, enabled);
+            this.SetButtonEnabled(this.followButtonToggle.Owner, enabled);
+        }
+
+        private void SetButtonEnabled(Entity buttonEntity, bool enabled)
+        {
+            var pressableButton = buttonEntity?.FindComponentInChildren<PressableButton>();
+
+            if (pressableButton != null)
+            {
+                pressableButton.IsEnabled = enabled;
+            }
         }
 
         private void UpdateLayoutImmediately() => this.UpdateLayout(this.isDetached ? 1 : 0);
