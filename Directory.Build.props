@@ -2,7 +2,7 @@
     <!-- Nuget metadata -->
 	<PropertyGroup>
 		<Version>2023.0.0.0-preview</Version>
-		<Copyright>Copyright (c) Evergine 2024</Copyright>
+		<Copyright>Copyright (c) Evergine 2025</Copyright>
 		<Authors>Evergine Team</Authors>
 		<Company>Plain Concepts</Company>
 		<Product>XRV</Product>
@@ -38,7 +38,7 @@
 		<IsAddOnProject Condition="'$(IsAddOnProject)'==''">false</IsAddOnProject>
 	</PropertyGroup>	
 	<ItemGroup Condition="'$(IsAddOnProject)'=='true'">
-		<PackageReference Include="Evergine.Packages.Targets" Version="2024.10.24.7" />
+		<PackageReference Include="Evergine.Packages.Targets" Version="2025.3.12.192-nightly" />
 	</ItemGroup>
 	
 	<!-- Stylecop -->

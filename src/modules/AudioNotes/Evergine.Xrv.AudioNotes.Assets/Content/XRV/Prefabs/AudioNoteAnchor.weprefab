@@ -61,6 +61,7 @@ Root:
       Id: 12337a38-6052-4547-89aa-ee028c39108d
       AudioNote: null
       IsEnabled: true
+      IsSelected: false
     - !Evergine.Xrv.AudioNotes.TapDetector,Evergine.Xrv.AudioNotes
       Id: 26f83b4d-8c0d-4a29-91f6-81e64625ebad
       IsEnabled: true
@@ -95,19 +96,23 @@ Root:
           AsignedTo: Default
           IsEnabled: true
           Material: 55c2c50c-36c4-424c-9345-3e5c7ad8af03
+          UseCopy: false
         - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
           Id: 0db4e764-6c78-49b4-92f0-867780edfac4
           Height: 0.0700000003
-          UOffset: 0.0
-          VOffset: 0.0
           IsEnabled: true
+          Origin:
+            X: 0.5
+            Y: 0.5
           PlaneNormal: ZPositive
           TwoSides: false
-          UTile: 1.0
           UMirror: false
+          UOffset: 0.0
+          UTile: 1.0
           VMirror: false
-          Width: 0.0700000003
+          VOffset: 0.0
           VTile: 1.0
+          Width: 0.0700000003
         - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
           Id: cf8294f3-7026-4e6f-bfa1-d74131627607
           DebugBoundingbox: true
@@ -144,19 +149,23 @@ Root:
           AsignedTo: Default
           IsEnabled: true
           Material: 55c2c50c-36c4-424b-9345-3e5c7ad8af03
+          UseCopy: false
         - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
           Id: 91132483-d1dd-4eaa-b6c9-bf1ea0bd3241
           Height: 0.0700000003
-          UOffset: 0.0
-          VOffset: 0.0
           IsEnabled: true
+          Origin:
+            X: 0.5
+            Y: 0.5
           PlaneNormal: ZPositive
           TwoSides: false
-          UTile: 1.0
           UMirror: false
+          UOffset: 0.0
+          UTile: 1.0
           VMirror: false
-          Width: 0.0700000003
+          VOffset: 0.0
           VTile: 1.0
+          Width: 0.0700000003
         - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
           Id: 4458d530-61c4-434b-927c-6633166c7ba7
           DebugBoundingbox: true

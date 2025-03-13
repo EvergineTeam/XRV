@@ -3,6 +3,7 @@
 using Evergine.Common.Attributes;
 using Evergine.Common.Graphics;
 using Evergine.Framework;
+using Evergine.Framework.Managers;
 using Evergine.Framework.Services;
 using Evergine.Framework.XR;
 using Evergine.Framework.XR.TrackedDevices;
@@ -16,6 +17,9 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
     {
         [BindService(isRequired: false)]
         private XRPlatform xrPlatform = null;
+
+        [BindSceneManager]
+        private RenderManager renderManager = null;
 
         private XRTrackedDevice lastTrackedDevice;
         private bool lastButtonState;
@@ -123,9 +127,9 @@ namespace Evergine.Xrv.Core.Menu.PalmDetection
             var allVectorsOverUpperThreshold = cameraPalm > this.LookAtCameraUpperThreshold && fingersPalm > this.OpenPalmUpperThreshold;
             var anyVectorUnderLowerThreshold = cameraPalm < this.LookAtCameraLowerThreshold || fingersPalm < this.OpenPalmLowerThreshold;
 
-            if (this.Managers.RenderManager.DebugLines)
+            if (this.renderManager.DebugLines)
             {
-                var lineBatch = this.Managers.RenderManager.LineBatch3D;
+                var lineBatch = this.renderManager.LineBatch3D;
                 trackedDevice.TryGetArticulatedHandJoint(XRHandJointKind.Palm, out var palm);
                 lineBatch.DrawPoint(middleMetacarpalPosition, 0.01f, Color.Red);
                 lineBatch.DrawPoint(indexTipPosition, 0.01f, Color.Green);

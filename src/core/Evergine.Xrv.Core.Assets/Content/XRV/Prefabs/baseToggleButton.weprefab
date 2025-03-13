@@ -29,6 +29,7 @@ Root:
           AdditionalComponents:
             - !Evergine.Xrv.Core.UI.Buttons.ButtonCursorFeedback,Evergine.Xrv.Core
               Id: a3f7aa68-f9fb-40c6-b8dd-f0fa78d710e8
+              ApplyFeedbackOnGaze: false
               ContentOffset:
                 X: -0.0
                 Y: -0.0
@@ -121,7 +122,7 @@ Root:
         - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[Evergine.Framework.Graphics.Material,Evergine.Framework]],Evergine.Framework
           Name: Material
           Target: f42f8bb0-0585-4b4d-b788-c43e0a6ec63d
-          TypedValue: 4f32ee6e-22c9-48be-ad27-76ba638454fb
+          TypedValue: null
       RemovedComponents: []
       Source: b494b28e-72e8-4d27-8fc2-78a386cda0b3
   Id: 5eb8fb1a-d037-4b1d-af14-6c2db8759c26

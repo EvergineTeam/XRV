@@ -4,6 +4,7 @@ using Evergine.Common.Attributes;
 using Evergine.Common.Attributes.Converters;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Managers;
 using Evergine.Mathematics;
 using System;
 
@@ -17,6 +18,9 @@ namespace Evergine.Xrv.Core.UI.Windows
         private Vector3 desiredPosition;
         private Vector3 lastCameraToPanelVector;
         private Quaternion desiredOrientation = Quaternion.Identity;
+
+        [BindSceneManager]
+        private RenderManager renderManager = null;
 
         [BindComponent]
         private Transform3D transform = null;
@@ -78,8 +82,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         protected override void Update(TimeSpan gameTime)
         {
             // Gets the camera properties
-            var renderManager = this.Managers.RenderManager;
-            var cameraTransform = renderManager.ActiveCamera3D?.Transform;
+            var cameraTransform = this.renderManager.ActiveCamera3D?.Transform;
             if (cameraTransform == null)
             {
                 return;
@@ -151,9 +154,9 @@ namespace Evergine.Xrv.Core.UI.Windows
                 Quaternion.CreateFromLookAt(ref dest, ref up, out this.desiredOrientation);
             }
 
-            if (renderManager.DebugLines)
+            if (this.renderManager.DebugLines)
             {
-                renderManager.LineBatch3D.DrawForward(this.transform.WorldTransform, 0.1f);
+                this.renderManager.LineBatch3D.DrawForward(this.transform.WorldTransform, 0.1f);
             }
 
             // Sets final values

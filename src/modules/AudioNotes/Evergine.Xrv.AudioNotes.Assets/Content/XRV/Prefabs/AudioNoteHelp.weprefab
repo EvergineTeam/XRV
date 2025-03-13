@@ -64,6 +64,7 @@ Root:
           Size:
             X: 0.230000019
             Y: 0.170000017
+          Softness: 0.75
           Text: From this module, you will be able to create audio notes.
           VerticalAlignment: Top
           Wrapping: true
@@ -142,6 +143,7 @@ Root:
               Size:
                 X: 0.205000043
                 Y: 0.0150000369
+              Softness: 0.75
               Text: Press this button to create an audio note from hand and start recording
               VerticalAlignment: Top
               Wrapping: true
@@ -182,19 +184,23 @@ Root:
               AsignedTo: Default
               IsEnabled: true
               Material: aaeff01b-40ad-4239-b936-8c59dd77f916
+              UseCopy: false
             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
               Id: 20e89db1-29b6-4b3f-9d75-9a74d00cbd08
               Height: 0.0199999996
-              UOffset: 0.0
-              VOffset: 0.0
               IsEnabled: true
+              Origin:
+                X: 0.5
+                Y: 0.5
               PlaneNormal: ZPositive
               TwoSides: false
-              UTile: 1.0
               UMirror: false
+              UOffset: 0.0
+              UTile: 1.0
               VMirror: false
-              Width: 0.0199999996
+              VOffset: 0.0
               VTile: 1.0
+              Width: 0.0199999996
             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
               Id: fb90757b-3d2c-4b3b-9776-731a490d3281
               DebugBoundingbox: true
@@ -270,6 +276,7 @@ Root:
               Size:
                 X: 0.210000038
                 Y: 0.010000037
+              Softness: 0.75
               Text: Press this button to stop recording an audio note.
               VerticalAlignment: Top
               Wrapping: true
@@ -310,19 +317,23 @@ Root:
               AsignedTo: Default
               IsEnabled: true
               Material: eaeff01b-40ad-4239-b936-8b59dd77f916
+              UseCopy: false
             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
               Id: bb89b93f-7df4-462d-b220-47ccd011e1c3
               Height: 0.0199999996
-              UOffset: 0.0
-              VOffset: 0.0
               IsEnabled: true
+              Origin:
+                X: 0.5
+                Y: 0.5
               PlaneNormal: ZPositive
               TwoSides: false
-              UTile: 1.0
               UMirror: false
+              UOffset: 0.0
+              UTile: 1.0
               VMirror: false
-              Width: 0.0199999996
+              VOffset: 0.0
               VTile: 1.0
+              Width: 0.0199999996
             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
               Id: ca02ea86-2601-4c5d-99ff-2a96504f03e3
               DebugBoundingbox: true
@@ -398,6 +409,7 @@ Root:
               Size:
                 X: 0.205000043
                 Y: 0.0150000369
+              Softness: 0.75
               Text: Press this button to start recording an audio note. If a note is already recorded, ask for override
               VerticalAlignment: Top
               Wrapping: true
@@ -438,19 +450,23 @@ Root:
               AsignedTo: Default
               IsEnabled: true
               Material: eaeff01b-40ad-4239-b936-8c59dd77f918
+              UseCopy: false
             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
               Id: bb5e5f74-f6a4-4c8e-acc8-139a6a4ea676
               Height: 0.0199999996
-              UOffset: 0.0
-              VOffset: 0.0
               IsEnabled: true
+              Origin:
+                X: 0.5
+                Y: 0.5
               PlaneNormal: ZPositive
               TwoSides: false
-              UTile: 1.0
               UMirror: false
+              UOffset: 0.0
+              UTile: 1.0
               VMirror: false
-              Width: 0.0199999996
+              VOffset: 0.0
               VTile: 1.0
+              Width: 0.0199999996
             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
               Id: fb7018dc-0e30-40f6-9038-da904365366c
               DebugBoundingbox: true
@@ -526,6 +542,7 @@ Root:
               Size:
                 X: 0.210000038
                 Y: 0.010000037
+              Softness: 0.75
               Text: Press this button to start playing an audio note.
               VerticalAlignment: Top
               Wrapping: true
@@ -566,19 +583,23 @@ Root:
               AsignedTo: Default
               IsEnabled: true
               Material: eaeff01b-40ad-4239-b936-8c59dd77f915
+              UseCopy: false
             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
               Id: 7783376d-2031-48ea-9590-51bfb6220bf5
               Height: 0.0199999996
-              UOffset: 0.0
-              VOffset: 0.0
               IsEnabled: true
+              Origin:
+                X: 0.5
+                Y: 0.5
               PlaneNormal: ZPositive
               TwoSides: false
-              UTile: 1.0
               UMirror: false
+              UOffset: 0.0
+              UTile: 1.0
               VMirror: false
-              Width: 0.0199999996
+              VOffset: 0.0
               VTile: 1.0
+              Width: 0.0199999996
             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
               Id: 515a47f3-5a20-456d-b8d0-91bdc62d1186
               DebugBoundingbox: true
@@ -654,6 +675,7 @@ Root:
               Size:
                 X: 0.210000038
                 Y: 0.010000037
+              Softness: 0.75
               Text: Press this button to stop an audio note.
               VerticalAlignment: Top
               Wrapping: true
@@ -694,19 +716,23 @@ Root:
               AsignedTo: Default
               IsEnabled: true
               Material: eaeff01b-40ad-4239-b936-8c59dd77f916
+              UseCopy: false
             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
               Id: aaac4c6a-2d44-4c3d-8a0a-097ca29de6e8
               Height: 0.0199999996
-              UOffset: 0.0
-              VOffset: 0.0
               IsEnabled: true
+              Origin:
+                X: 0.5
+                Y: 0.5
               PlaneNormal: ZPositive
               TwoSides: false
-              UTile: 1.0
               UMirror: false
+              UOffset: 0.0
+              UTile: 1.0
               VMirror: false
-              Width: 0.0199999996
+              VOffset: 0.0
               VTile: 1.0
+              Width: 0.0199999996
             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
               Id: de4b3499-5d42-4499-9768-4d9737b7a313
               DebugBoundingbox: true
@@ -782,6 +808,7 @@ Root:
               Size:
                 X: 0.210000038
                 Y: 0.010000037
+              Softness: 0.75
               Text: Press this button to delte an audio note.
               VerticalAlignment: Top
               Wrapping: true
@@ -822,19 +849,23 @@ Root:
               AsignedTo: Default
               IsEnabled: true
               Material: eaeff01b-40ad-4239-b936-8c59dd77f919
+              UseCopy: false
             - !Evergine.Components.Graphics3D.PlaneMesh,Evergine.Components
               Id: b07dd838-e979-40d6-a5db-0f63101fbb28
               Height: 0.0199999996
-              UOffset: 0.0
-              VOffset: 0.0
               IsEnabled: true
+              Origin:
+                X: 0.5
+                Y: 0.5
               PlaneNormal: ZPositive
               TwoSides: false
-              UTile: 1.0
               UMirror: false
+              UOffset: 0.0
+              UTile: 1.0
               VMirror: false
-              Width: 0.0199999996
+              VOffset: 0.0
               VTile: 1.0
+              Width: 0.0199999996
             - !Evergine.Components.Graphics3D.MeshRenderer,Evergine.Framework
               Id: f1a8b939-095f-451a-8294-bb6311bfc969
               DebugBoundingbox: true

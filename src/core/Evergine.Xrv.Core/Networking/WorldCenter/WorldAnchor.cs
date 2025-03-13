@@ -3,6 +3,7 @@
 using Evergine.Common.Attributes;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Managers;
 using Evergine.Framework.Services;
 using Evergine.Framework.XR.SpatialAnchors;
 using Evergine.Mathematics;
@@ -18,6 +19,9 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
     {
         [BindService(isRequired: false)]
         private XRPlatform xrPlatform = null;
+
+        [BindSceneManager]
+        private RenderManager renderManager = null;
 
         [BindComponent]
         private Transform3D transform = null;
@@ -106,7 +110,7 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
                 {
                     const float DebugLinesSize = 0.1f;
                     var scale = this.transform.WorldInverseTransform.Scale.X * DebugLinesSize;
-                    this.Managers.RenderManager.LineBatch3D.DrawAxis(this.transform.WorldTransform, scale);
+                    this.renderManager.LineBatch3D.DrawAxis(this.transform.WorldTransform, scale);
                 }
             }
         }

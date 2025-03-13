@@ -480,12 +480,17 @@ Root:
         1a786ac8-3396-4d4b-8533-ae3616b443e0: 1d50afdc-7deb-4ef2-999c-4c79f82f80fe
         1e6f84d9-4d17-40e9-a5ec-72e819f1294a: d344316a-6bbd-4227-b067-ec7380b86e45
         213d46b8-5775-4beb-8663-4f0b4bde873b: 30eb9e66-a36d-4475-a0a9-b75e0384bc8c
+        2b4a35e5-d779-404f-800b-a500fec741b4: 3f04797f-5946-48d8-96f5-987513afeaef
         2b72dc7a-ae39-4f29-9f5f-5fe9db611114: 2cc363af-e863-419b-ba64-1ade455185d3
+        2b732880-bf04-4f89-ac33-5a3ca446ae80: 191b323a-3d2b-49dc-8fe9-85a8b524c522
         319c2a3a-2b8a-4d1f-9ac4-b62ffe608079: 9afd11fd-a28c-4ae7-bfea-65d8de61a7a9
+        453b2628-634f-4794-b29d-6fbc383eab89: a7f8f91e-22e0-4288-9302-524614bfcc98
         6a889edd-bb1b-4ca2-b9de-dc4a16526466: a0d215ba-018b-4b0e-8479-eca251f52148
         7a00d3b5-d1e3-424a-802c-78210815f22b: 03822625-97ca-4f81-ad3d-4f0b9c9abb8c
         86e5edc1-2fc5-4200-b5ca-2a5199959a6a: b296c366-fe65-469f-8609-9a06843b54ab
         9826dd37-8988-48d9-8ab6-1c04761913e1: 05893a36-1449-439d-ba46-b9996871e306
+        ab9d4941-4f7d-4b83-8abe-d6636baedb0b: b1173354-197c-476c-bdc9-7352300640db
+        b323bd0e-2f25-42c2-ae93-76bc63b60357: 04d6556f-3732-45b8-9364-67018172f618
         cc1d45a0-f33c-4f34-ae0c-b5e53dda46d1: 7b7dd1af-d218-4fd1-a8ba-0d5dc91c2066
         d23770a7-1916-4329-a95e-7e37439138cc: 6cd8f7b3-d0b2-41f4-a262-b6572f9142d4
         d7c30ba9-ed56-4547-8c0f-e8c28a5d70ff: 9680d55d-6903-47de-9049-885b664d7a54
@@ -501,13 +506,25 @@ Root:
             X: 0.0
             Y: 0.0
             Z: 0.0
+        - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%25601[[Evergine.MRTK.SDK.Features.UX.Components.Scrolling.ScrollBarVisibility,Evergine.MRTK]],Evergine.Framework
+          Name: HorizontalScrollBarVisibility
+          Target: e7c351e8-778e-4877-b2ec-b52e7a13356a
+          TypedValue: Hidden
+        - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.Boolean,System.Private.CoreLib]],Evergine.Framework
+          Name: HorizontalScrollEnabled
+          Target: e7c351e8-778e-4877-b2ec-b52e7a13356a
+          TypedValue: false
         - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[Evergine.Framework.Graphics.Material,Evergine.Framework]],Evergine.Framework
           Name: Material
           Target: d7c30ba9-ed56-4547-8c0f-e8c28a5d70ff
           TypedValue: 16016b69-8771-4df2-a9fe-aeb192bff81f
+        - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[System.Boolean,System.Private.CoreLib]],Evergine.Framework
+          Name: IsEnabled
+          Target: 453b2628-634f-4794-b29d-6fbc383eab89
+          TypedValue: true
         - !Evergine.Framework.Assets.AssetSources.Entities.PrefabModification%601[[Evergine.Mathematics.Vector3,Evergine.Mathematics]],Evergine.Framework
           Name: LocalScale
-          Target: 6a889edd-bb1b-4ca2-b9de-dc4a16526466
+          Target: 2b4a35e5-d779-404f-800b-a500fec741b4
           TypedValue:
             X: 0.00400000019
             Y: 0.147250384

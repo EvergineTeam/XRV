@@ -6,6 +6,7 @@ using System.Linq;
 using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Managers;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Xrv.Core.Help;
@@ -157,7 +158,7 @@ namespace Evergine.Xrv.Core
             this.logger?.LogDebug("Loading common services");
             this.Services.QrScanningFlow = new QRScanningFlow(
                 scene.Managers.EntityManager,
-                scene.Managers.RenderManager,
+                scene.Managers.FindManager<RenderManager>(),
                 this.assetsService,
                 this.logger);
             this.Services.Passthrough = new PasstroughService(scene.Managers.EntityManager);

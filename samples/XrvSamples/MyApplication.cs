@@ -95,7 +95,7 @@ namespace XrvSamples
                 })
                 .AddModule(new StreamingViewerModule()
                 {
-                    SourceURL = "http://94.124.210.59:8083/mjpg/video.mjpg"
+                    SourceURL = "http://flightcam1.pr.erau.edu/mjpg/video.mjpg"
                 })
                 .AddModule(new PainterModule());
 

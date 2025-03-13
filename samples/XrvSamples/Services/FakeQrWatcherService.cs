@@ -2,6 +2,7 @@
 using Evergine.Common.Input.Keyboard;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Managers;
 using Evergine.Framework.Services;
 using Evergine.Framework.XR.QR;
 using Evergine.Mathematics;
@@ -15,7 +16,7 @@ namespace XrvSamples.Services
 {
     public class FakeQRWatcherService : UpdatableService, IQRCodeWatcherService
     {
-        private Scene currentScene;
+        private RenderManager currentRenderManager;
         private Camera3D camera;
         private KeyboardDispatcher keyboardDispatcher;
         private List<QRCode> qrCodes;
@@ -65,7 +66,7 @@ namespace XrvSamples.Services
 
         public override void Update(TimeSpan gameTime)
         {
-            this.camera = this.currentScene?.Managers.RenderManager.ActiveCamera3D;
+            this.camera = this.currentRenderManager?.ActiveCamera3D;
             this.keyboardDispatcher = this.graphicsPresenter.FocusedDisplay?.KeyboardDispatcher;
 
             if (this.keyboardDispatcher == null || !this.IsWatcherRunning)
@@ -140,23 +141,19 @@ namespace XrvSamples.Services
 
             if (this.DebugEnabled)
             {
-                var lineBatch = this.currentScene.Managers.RenderManager.LineBatch3D;
+                var lineBatch = this.currentRenderManager?.LineBatch3D;
                 foreach (var code in this.qrCodes.Where(c => c.Transform.HasValue))
                 {
-                    lineBatch.DrawAxis(code.Transform.Value, code.PhysicalSideLength * 2f);
+                    lineBatch?.DrawAxis(code.Transform.Value, code.PhysicalSideLength * 2f);
                 }
             }
         }
 
-        private void ScreenContext_OnActivatingScene(Scene scene) => this.currentScene = scene;
+        private void ScreenContext_OnActivatingScene(Scene scene) =>
+            this.currentRenderManager = scene.Managers.FindManager<RenderManager>();
 
-        private void ScreenContext_OnDesactivatingScene(Scene scene)
-        {
-            if (this.currentScene == scene)
-            {
-                this.currentScene = null;
-            }
-        }
+        private void ScreenContext_OnDesactivatingScene(Scene scene) =>
+            this.currentRenderManager = null;
 
         private class FakeQrCode : QRCode
         {
