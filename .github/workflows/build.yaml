@@ -154,13 +154,13 @@ jobs:
           Get-ChildItem -Path ${{ inputs.outputAddonsPath }} | Select FullName
       - name: Upload NuGet artifacts
         if: ${{ inputs.isPackagingBuild }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: NuGets ${{ env.BUILD_VERSION }}
           path: ${{ inputs.outputNugetsPath }}
       - name: Upload add-on artifacts
         if: ${{ inputs.isPackagingBuild }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Add-ons ${{ env.BUILD_VERSION }}
           path: ${{ inputs.outputAddonsPath }}
