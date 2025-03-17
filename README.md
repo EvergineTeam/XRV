@@ -53,3 +53,12 @@ https://docs.evergine.com/2024.10.24/manual/addons/xrv/index.html
 		<PackageReference Include="Evergine.MRTK" Version="2023.9.25.3-nightly" />
     </ItemGroup>
 ```
+
+---
+Powered by [Evergine](https://evergine.com)
+
+LET'S CONNECT!
+
+- [Youtube](https://www.youtube.com/c/Evergine)
+- [Twitter](https://x.com/EvergineTeam)
+- [Blog](https://evergine.com/news/)
