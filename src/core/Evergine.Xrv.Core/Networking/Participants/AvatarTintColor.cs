@@ -55,9 +55,9 @@ namespace Evergine.Xrv.Core.Networking.Participants
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.holoGraphic?.Dispose();
             this.holoGraphic = null;
         }

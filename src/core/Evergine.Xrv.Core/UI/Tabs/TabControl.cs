@@ -236,9 +236,9 @@ namespace Evergine.Xrv.Core.UI.Tabs
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.items.CollectionChanged -= this.Items_CollectionChanged;
             this.moreItemsUpButton.ButtonReleased -= this.MoreItemsUpButton_ButtonReleased;
             this.moreItemsDownButton.ButtonReleased -= this.MoreItemsDownButton_ButtonReleased;

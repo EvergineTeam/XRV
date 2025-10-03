@@ -40,9 +40,9 @@ namespace Evergine.Xrv.ImageGallery.Networking
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.gallery.CurrentImageChanged -= this.Gallery_CurrentImageChanged;
         }
 

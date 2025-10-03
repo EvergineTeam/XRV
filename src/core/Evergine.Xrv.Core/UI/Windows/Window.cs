@@ -316,9 +316,9 @@ namespace Evergine.Xrv.Core.UI.Windows
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.UnsubscribeBuiltInButtonEvents();
             this.UnsubscribeActionButtonEvents();
         }

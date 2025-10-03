@@ -50,10 +50,10 @@ namespace Evergine.Xrv.Core.Menu.Tutorial
             var handTutorialEntity = handTutorialModel.InstantiateModelHierarchy(this.assetsService);
             handTutorialEntity.FindComponent<Transform3D>().Position = Vector3.Down * 0.2f;
             handTutorialEntity.AddComponent(new PingPongAnimation() { AnimationName = "Take 001" });
-            var handMesh = handTutorialEntity.Find("[this].L_Hand.MeshL");
+            var handMesh = handTutorialEntity.FindChild("MeshL", true);
             handMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.HandTutorial);
             handMesh.FindComponent<SkinnedMeshRenderer>().UseComputeSkinning = true;
-            var panelMesh = handTutorialEntity.Find("[this].Panel");
+            var panelMesh = handTutorialEntity.FindChild("Panel");
             panelMesh.FindComponent<MaterialComponent>().Material = this.assetsService.Load<Material>(CoreResourcesIDs.Materials.SecondaryColor4);
 
             // In front of the camera

@@ -39,9 +39,9 @@ namespace Evergine.Xrv.Core.Networking.ControlRequest
             return attached;
         }
 
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
 
             this.lastPresenterId = null;
             this.pubSub.Unsubscribe(this.subscription);

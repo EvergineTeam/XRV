@@ -37,9 +37,9 @@ namespace Evergine.Xrv.ImageGallery.Networking
             return attached;
         }
 
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.windowEntity.AttachableStateChanged -= this.WindowEntity_AttachableStateChanged;
             this.pendingSyncData = null;
         }

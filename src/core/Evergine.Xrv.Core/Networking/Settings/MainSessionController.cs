@@ -53,9 +53,9 @@ namespace Evergine.Xrv.Core.Networking.Settings
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.pubSub?.Unsubscribe(this.subscription);
         }
 

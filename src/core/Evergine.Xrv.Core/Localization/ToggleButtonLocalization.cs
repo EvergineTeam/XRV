@@ -35,9 +35,9 @@ namespace Evergine.Xrv.Core.Localization
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.toggleManager.StateChanged -= this.ToggleManager_StateChanged;
         }
 

@@ -208,7 +208,7 @@ namespace Evergine.Xrv.Core.Menu
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
             this.buttonDescriptions.Clear();
             this.buttonDescriptions.CollectionChanged -= this.ButtonDefinitions_CollectionChanged;

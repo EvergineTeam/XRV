@@ -250,11 +250,11 @@ namespace Evergine.Xrv.ImageGallery.Components
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
             this.nextButton.ButtonReleased -= this.NextButtonReleased;
             this.previousButton.ButtonReleased -= this.PreviousButtonReleased;
-            base.OnDetach();
+            base.OnDetached();
         }
 
         private async Task LoadFilesOnInitAsync()

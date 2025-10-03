@@ -128,9 +128,9 @@ namespace Evergine.Xrv.Painter.Components
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
 
             if (this.cursorMaterialAssignation != null)
             {

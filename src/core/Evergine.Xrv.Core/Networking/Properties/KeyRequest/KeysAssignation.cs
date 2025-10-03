@@ -96,9 +96,9 @@ namespace Evergine.Xrv.Core.Networking.Properties.KeyRequest
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.pubSub.Unsubscribe(this.subscription);
         }
 

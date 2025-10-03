@@ -56,9 +56,9 @@ namespace Evergine.Xrv.Core.Networking.Participants
             return attached;
         }
 
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
 
             this.CancelAndClearActionQueue();
             this.client.ClientStateChanged -= this.Client_ClientStateChanged;

@@ -31,9 +31,9 @@ namespace Evergine.Xrv.Core.Services.Messaging
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.pubSub.Unsubscribe(this.subToken);
         }
 

@@ -288,9 +288,9 @@ namespace Evergine.Xrv.Core.Networking.WorldCenter
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
 
             if (this.themes != null)
             {

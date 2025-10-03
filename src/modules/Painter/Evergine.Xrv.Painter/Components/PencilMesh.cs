@@ -151,21 +151,9 @@ namespace Evergine.Xrv.Painter.Components
         }
 
         /// <inheritdoc/>
-        protected override void OnActivated()
+        protected override void OnDetached()
         {
-            base.OnActivated();
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDeactivated()
-        {
-            base.OnDeactivated();
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDetach()
-        {
-            base.OnDetach();
+            base.OnDetached();
             if (this.debugLineBatch != null)
             {
                 this.Managers.RenderManager.RemoveRenderObject(this.debugLineBatch);

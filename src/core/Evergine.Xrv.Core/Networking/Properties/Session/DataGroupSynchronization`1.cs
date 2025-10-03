@@ -70,9 +70,9 @@ namespace Evergine.Xrv.Core.Networking.Properties.Session
         }
 
         /// <inheritdoc/>
-        protected override void OnDetach()
+        protected override void OnDetached()
         {
-            base.OnDetach();
+            base.OnDetached();
             this.pubSub.Unsubscribe(this.sessionStatusToken);
             this.pubSub.Unsubscribe(this.sessionSyncToken);
         }
