@@ -18,4 +18,4 @@ jobs:
     secrets:
       archiveSasToken: ${{ secrets.PUBLISH_FILE_SHARE_ARCHIVE_SAS_TOKEN }}
       blobContainerSasToken: ${{ secrets.PUBLISH_NIGHTLY_BLOB_CONTAINER_SAS_TOKEN }}
-      nugetToken: ${{ secrets.PUBLISH_NIGHTLY_NUGET_TOKEN }}
+      nugetToken: ${{ secrets.EVERGINE_NIGHTLY_FEED_PAT }}
