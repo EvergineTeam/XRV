@@ -29,7 +29,7 @@
 [End_ResourceLayout]
 
 [Begin_Pass:Default]
-	[Profile 10_0]
+	[Profile 12_1]
 	[Entrypoints VS=VS PS=PS]
 
 	struct VS_IN
