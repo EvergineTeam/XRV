@@ -24,7 +24,7 @@ on:
         required: false
       mode:
         description: "auto (push then PR if needed) or pr (always PR)"
-        default: "auto"
+        default: "pr"
         required: false
 
   schedule:
@@ -42,5 +42,5 @@ jobs:
       ref:  ${{ github.event.inputs.ref  || 'main' }}
       target_branch: ${{ github.event.inputs.target_branch || 'develop' }}
       commit_message: "${{ github.event.inputs.commit_message || vars.STANDARDS_COMMIT_MESSAGE || 'auto: sync standard files [skip ci]' }}"
-      mode: ${{ github.event.inputs.mode || 'auto' }}
+      mode: ${{ github.event.inputs.mode || 'pr' }}
     secrets: inherit
