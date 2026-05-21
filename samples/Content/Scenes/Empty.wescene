@@ -49,7 +49,7 @@ Items:
         FieldOfViewAxis: Vertical
         FocalDistance: 1.0
         FocalLength: 50.0
-        FrameBuffer: null
+        FrameBuffer: 00000000-0000-0000-0000-000000000000
         FrustumCullingEnabled: true
         HDREnabled: true
         IsEnabled: true
@@ -62,6 +62,8 @@ Items:
         LogLuminanceRange: 12.0
         MinLogLuminance: -10.0
         NearPlane: 0.100000001
+        OrthographicSize: 5.0
+        ProjectionType: Perspective
         Sensitivity: 100.0
         SensorSize:
           X: 36.0
@@ -69,6 +71,7 @@ Items:
         ShutterSpeed: 1.20000005
         TAU: 1.10000002
         TagFilter: null
+        UseCustomClearDepth: false
         UsePhysicalParameters: false
     Children: []
     Id: 9841b6b3-9c09-4b60-b442-a5c63257ee02
@@ -116,11 +119,6 @@ Items:
         ShadowBias: 0.00499999989
         ShadowDistance: 80.0
         ShadowOpacity: 1.0
-        SplitDistance:
-          - 0.0
-          - 0.0
-          - 0.0
-          - 0.0
         Temperature: 6500.0
       - !Evergine.Framework.Graphics.SunComponent,Evergine.Framework
         Id: 6f2b70f3-a505-49a6-9454-130b04d48cd3
@@ -153,7 +151,7 @@ Items:
         Id: bb44cd62-4d92-418a-8a42-bbc2ed2b6f07
         AsignedTo: Default
         IsEnabled: true
-        Material: 4fca3ed0-7e8f-429b-8cf6-115eb718902d
+        Material: 3add100f-15d3-444f-8fcb-2cc31a1f6c82
         UseCopy: false
       - !Evergine.Components.Graphics3D.SphereMesh,Evergine.Components
         Id: 3ef37285-f016-4173-bbf0-278ec1624224
@@ -217,4 +215,3 @@ Managers:
     PunctualResolution: Size_512
     ShadowFilter: PCF3x3
     SpotResolution: Size_512
-

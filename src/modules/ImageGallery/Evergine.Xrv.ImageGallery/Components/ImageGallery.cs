@@ -214,7 +214,6 @@ namespace Evergine.Xrv.ImageGallery.Components
                     Height = this.ImagePixelsHeight,
                     Depth = 1,
                     ArraySize = 1,
-                    Faces = 1,
                     Usage = ResourceUsage.Default,
                     CpuAccess = ResourceCpuAccess.None,
                     Flags = TextureFlags.ShaderResource,
