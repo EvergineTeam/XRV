@@ -44,10 +44,11 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.x'
+          dotnet-version: '10.0.x'
+          include-prerelease: true
           source-url: ${{ inputs.nugetSourceUrl }}
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.nugetToken }} 
