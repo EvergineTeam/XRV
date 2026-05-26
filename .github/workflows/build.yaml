@@ -91,6 +91,10 @@ jobs:
         with:
           dotnet-version: '10.0.x'
           include-prerelease: true
+      - name: Restore .NET workloads
+        shell: pwsh
+        run: |
+          dotnet workload restore ${{ inputs.coreProjectFilePath }}
       - name: Build MRTK
         if: ${{ !inputs.isPackagingBuild }}
         shell: pwsh
