@@ -68,33 +68,28 @@ Root:
           IsEnabled: true
           OrderBias: 0
           RenderFlags: CastShadows
-        - !Evergine.Framework.Physics3D.CylinderCollider3D,Evergine.Framework
+        - !Evergine.Framework.Physics.CylinderCollider,Evergine.Framework
           Id: db4e2895-e036-4b44-a191-1fd4d15ebc6e
           Height: 15.0
           IsEnabled: true
-          Margin: 0.0399999991
           Offset:
             X: 0.0
             Y: 0.0
             Z: 0.0
-          OrientationOffset:
-            W: 1.0
-            X: 0.0
-            Y: 0.0
-            Z: 0.0
+          RotationOffset:
+            X: 0
+            Y: 0
+            Z: 0
           Radius: 0.5
-        - !Evergine.Framework.Physics3D.StaticBody3D,Evergine.Framework
+          UseModelBounds: true
+          ConvexRadius: 0.0399999991
+        - !Evergine.Framework.Physics.StaticBody,Evergine.Framework
           Id: e72fb760-ee64-4be0-86e7-44d1c5f6dac4
-          CcdMotionThreshold: 0.0
-          CcdSweptSphereRadius: 0.200000003
-          CollisionCategories: Cat1
+          CollisionCategory: Cat1
           Friction: 0.5
           IsEnabled: true
           IsSensor: true
-          MaskBits: All
           Restitution: 0.0
-          RollingFriction: 0.0
-          UpdateOrder: 0.5
       Children:
         - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
           Name: setupArrow

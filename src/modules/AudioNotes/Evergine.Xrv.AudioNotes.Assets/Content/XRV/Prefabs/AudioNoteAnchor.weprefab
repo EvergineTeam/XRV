@@ -21,27 +21,22 @@ Root:
         X: 1.0
         Y: 1.0
         Z: 1.0
-    - !Evergine.Framework.Physics3D.StaticBody3D,Evergine.Framework
+    - !Evergine.Framework.Physics.StaticBody,Evergine.Framework
       Id: d522d698-f07c-496f-b5a0-47d88e54af9d
-      CcdMotionThreshold: 0.0
-      CcdSweptSphereRadius: 0.200000003
-      CollisionCategories: Cat1
+      CollisionCategory: Cat1
       Friction: 0.5
       IsEnabled: true
       IsSensor: true
-      MaskBits: All
       Restitution: 0.0
-      RollingFriction: 0.0
-      UpdateOrder: 0.5
-    - !Evergine.Framework.Physics3D.SphereCollider3D,Evergine.Framework
+    - !Evergine.Framework.Physics.SphereCollider,Evergine.Framework
       Id: c3737838-7887-4ac8-ba26-68f40b2b609a
       IsEnabled: true
-      Margin: 0.0399999991
       Offset:
         X: 0.0
         Y: 0.0
         Z: 0.0
       Radius: 0.0799999982
+      UseModelBounds: true
     - !Evergine.Components.Toolkit.LookAtBehavior,Evergine.Components
       Id: a0a32c0e-b5d0-49b3-a266-90de542bde76
       Axis: Z

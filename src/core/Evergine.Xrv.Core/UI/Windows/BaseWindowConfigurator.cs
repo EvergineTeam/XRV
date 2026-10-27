@@ -7,7 +7,7 @@ using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Physics3D;
+using Evergine.Framework.Physics;
 using Evergine.Mathematics;
 using Evergine.Xrv.Core.Extensions;
 using Evergine.Xrv.Core.Localization;
@@ -84,7 +84,7 @@ namespace Evergine.Xrv.Core.UI.Windows
         /// Box collider for window manipulation.
         /// </summary>
         [BindComponent(isRequired: false)]
-        protected BoxCollider3D manipulationCollider;
+        protected BoxCollider manipulationCollider;
 
         private Vector2 size = new Vector2(0.35f, 0.3f);
         private Vector2 frontPlateOffsets = new Vector2(0f);

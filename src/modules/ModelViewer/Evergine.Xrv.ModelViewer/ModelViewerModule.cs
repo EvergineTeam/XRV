@@ -9,7 +9,7 @@ using Evergine.Common.Graphics;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
-using Evergine.Framework.Physics3D;
+using Evergine.Framework.Physics;
 using Evergine.Framework.Prefabs;
 using Evergine.Framework.Runtimes;
 using Evergine.Framework.Services;
@@ -346,12 +346,13 @@ namespace Evergine.Xrv.ModelViewer
         private void AddManipulatorComponents(Entity root, BoundingBox boundingBox)
         {
             // Add global bounding box
-            root.AddComponent(new BoxCollider3D()
+            root.AddComponent(new BoxCollider()
             {
+                UseModelBounds = true,
                 Size = boundingBox.HalfExtent * 2,
                 Offset = boundingBox.Center,
             });
-            root.AddComponent(new StaticBody3D());
+            root.AddComponent(new StaticBody() { Friction = 0.5f });
             root.AddComponent(new Evergine.MRTK.SDK.Features.UX.Components.BoundingBox.BoundingBox()
             {
                 AutoCalculate = false,

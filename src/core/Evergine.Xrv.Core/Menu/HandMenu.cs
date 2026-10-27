@@ -11,7 +11,7 @@ using Evergine.Components.Fonts;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
-using Evergine.Framework.Physics3D;
+using Evergine.Framework.Physics;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 using Evergine.MRTK.SDK.Features.Input.Handlers.Manipulation;
@@ -85,7 +85,7 @@ namespace Evergine.Xrv.Core.Menu
         private SimpleManipulationHandler manipulationHandler = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner)]
-        private BoxCollider3D manipulationCollider = null;
+        private BoxCollider manipulationCollider = null;
 
         [BindEntity(source: BindEntitySource.Scene, tag: "PART_hand_menu_buttons_container")]
         private Entity buttonsContainer = null;
