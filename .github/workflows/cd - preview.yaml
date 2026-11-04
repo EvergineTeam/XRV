@@ -10,6 +10,9 @@ jobs:
   publish:
     needs: build
     uses: ./.github/workflows/publish.yaml
+    permissions:
+      contents: read
+      id-token: write
     with:
       version: ${{ needs.build.outputs.version }}
       storageAccountName: everginestudio
@@ -18,4 +21,3 @@ jobs:
     secrets:
       archiveSasToken: ${{ secrets.PUBLISH_FILE_SHARE_ARCHIVE_SAS_TOKEN }}
       blobContainerSasToken: ${{ secrets.PUBLISH_PREVIEW_BLOB_CONTAINER_SAS_TOKEN }}
-      nugetToken: ${{ secrets.EVERGINE_NUGETORG_TOKEN }}

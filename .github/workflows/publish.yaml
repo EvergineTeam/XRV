@@ -39,18 +39,26 @@ on:
       blobContainerSasToken:
         required: true
       nugetToken:
-        required: true
+        description: "Feed credential. Not needed for nuget.org, which uses trusted publishing."
+        required: false
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      # nuget.org trusted publishing: the policy names this file, so the caller's job must grant id-token: write.
+      - name: Log in to nuget.org
+        if: inputs.nugetSourceUrl == 'https://api.nuget.org/v3/index.json'
+        uses: NuGet/login@v1
+        id: nuget_login
+        with:
+          user: ${{ vars.EVERGINE_NUGETORG_USER }}
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.x'
           source-url: ${{ inputs.nugetSourceUrl }}
         env:
-          NUGET_AUTH_TOKEN: ${{ secrets.nugetToken }} 
+          NUGET_AUTH_TOKEN: ${{ steps.nuget_login.outputs.NUGET_API_KEY || secrets.nugetToken }}
       - name: Download NuGet artifacts
         uses: actions/download-artifact@v4
         with:
@@ -78,4 +86,4 @@ jobs:
       - name: Push NuGets
         if: success()
         run: |
-          dotnet nuget push "${{ inputs.nugetArtifactDirectory }}/**/*.nupkg" --skip-duplicate --no-symbols --api-key "${{ secrets.nugetToken }}"
+          dotnet nuget push "${{ inputs.nugetArtifactDirectory }}/**/*.nupkg" --skip-duplicate --no-symbols --api-key "${{ steps.nuget_login.outputs.NUGET_API_KEY || secrets.nugetToken }}"
