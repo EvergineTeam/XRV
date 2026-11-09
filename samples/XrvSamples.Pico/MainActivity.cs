@@ -26,6 +26,7 @@ namespace XrvSamples.Pico
         private static OpenXRPlatform openXRPlatform;
         private MyApplication application;
         private AndroidWindowsSystem windowsSystem;
+        private global::System.Threading.SynchronizationContext? foregroundContext;
 
         protected override void OnCreate(Bundle? savedInstanceState)
         {
@@ -59,12 +60,20 @@ namespace XrvSamples.Pico
             {
                 // The loop runs on its own thread: post await continuations back to the Evergine loop
                 // as the Android UI thread did, so async loads never race the frame.
-                global::System.Threading.SynchronizationContext.SetSynchronizationContext(new global::Evergine.Framework.Threading.ForegroundSynchronizationContext());
+                this.foregroundContext = new global::Evergine.Framework.Threading.ForegroundSynchronizationContext();
+                global::System.Threading.SynchronizationContext.SetSynchronizationContext(this.foregroundContext);
                 ConfigureGraphicsContext(this.application, surface);
                 this.application.Initialize();
             },
             () =>
             {
+                // When the app comes back from background, the surface starts the loop on a new thread
+                // without running the load action again, so the context has to be set here too.
+                if (global::System.Threading.SynchronizationContext.Current != this.foregroundContext)
+                {
+                    global::System.Threading.SynchronizationContext.SetSynchronizationContext(this.foregroundContext);
+                }
+
                 var gameTime = clockTimer.Elapsed;
                 clockTimer.Restart();
 

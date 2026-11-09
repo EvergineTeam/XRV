@@ -348,7 +348,6 @@ namespace Evergine.Xrv.ModelViewer
             // Add global bounding box
             root.AddComponent(new BoxCollider()
             {
-                UseModelBounds = true,
                 Size = boundingBox.HalfExtent * 2,
                 Offset = boundingBox.Center,
             });

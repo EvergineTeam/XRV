@@ -52,7 +52,7 @@ namespace Evergine.Xrv.Core.UI.Notifications
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Notification_Frame")]
         private MaterialComponent borderMaterial = null;
 
-        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Notification_Frame", isRequired: false)]
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Notification_Frame")]
         private StaticBody frameBody = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Notification_Plate")]
@@ -248,10 +248,7 @@ namespace Evergine.Xrv.Core.UI.Notifications
 
             // The hub follows the camera all the time, also while hidden. Its collider must only exist while it is
             // visible, otherwise it blocks hand rays and near interactions in front of the user.
-            if (this.frameBody != null)
-            {
-                this.frameBody.IsEnabled = show;
-            }
+            this.frameBody.IsEnabled = show;
 
             if (show)
             {
