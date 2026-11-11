@@ -8,6 +8,7 @@ using Evergine.Components.Sound;
 using Evergine.Components.WorkActions;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics;
 using Evergine.Framework.Services;
 using Evergine.Framework.Threading;
 using Evergine.Mathematics;
@@ -50,6 +51,9 @@ namespace Evergine.Xrv.Core.UI.Notifications
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Notification_Frame")]
         private MaterialComponent borderMaterial = null;
+
+        [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Notification_Frame")]
+        private StaticBody frameBody = null;
 
         [BindComponent(source: BindComponentSource.ChildrenSkipOwner, tag: "PART_Notification_Plate")]
         private MaterialComponent plateMaterial = null;
@@ -241,6 +245,11 @@ namespace Evergine.Xrv.Core.UI.Notifications
         private void ChangeHubVisibility(bool show, bool immediate, bool skipItem)
         {
             this.isDisplayingHub = show;
+
+            // The hub follows the camera all the time, also while hidden. Its collider must only exist while it is
+            // visible, otherwise it blocks hand rays and near interactions in front of the user.
+            this.frameBody.IsEnabled = show;
+
             if (show)
             {
                 this.plateMaterial.Owner.IsEnabled = true;

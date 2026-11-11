@@ -3,7 +3,7 @@
 using Evergine.Components.Fonts;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
-using Evergine.Framework.Physics3D;
+using Evergine.Framework.Physics;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
 
@@ -18,7 +18,7 @@ namespace Evergine.Xrv.Core.UI.Buttons
         private bool isVisuallyEnabled = true;
 
         [BindComponent(source: BindComponentSource.Children, isRecursive: true)]
-        private BoxCollider3D boxCollider = null;
+        private BoxCollider boxCollider = null;
 
         [BindComponent(source: BindComponentSource.Children, isRecursive: true)]
         private PressableButton pressableButton = null;

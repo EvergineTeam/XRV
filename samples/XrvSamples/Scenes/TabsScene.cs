@@ -17,12 +17,6 @@ namespace XrvSamples.Scenes
         private Text3DMesh numberOfButtons;
         private TabControl tabControl;
 
-        public override void RegisterManagers()
-        {
-            base.RegisterManagers();
-            Managers.AddManager(new Evergine.Bullet.BulletPhysicManager3D());
-        }
-
         protected override void OnPostCreateXRScene()
         {
             var xrv = Application.Current.Container.Resolve<XrvService>();

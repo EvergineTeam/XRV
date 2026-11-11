@@ -26,10 +26,17 @@
 		<None Include="$(MSBuildThisFileDirectory)packaging\resources\icon.png" Pack="true" PackagePath="\" Visible="false"/>
 	</ItemGroup>
     <ItemGroup Condition="'$(UseMRTKNuget)'=='false' And '$(ReferenceMRTK)'=='true'">
-		<ProjectReference Include="$(MSBuildThisFileDirectory)submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj" />
+		<ProjectReference Include="$(MSBuildThisFileDirectory)submodules\MRTK\Source\Evergine.MRTK\Evergine.MRTK.csproj">
+			<!--
+				Evergine.MRTK only targets net10.0. The Evergine editor watch-list walk (evergineeditor.watch.targets) forwards
+				TargetFramework=net10.0-android from multi-targeted projects to their references, which fails with NETSDK1005.
+				Skip it in android builds; MRTK sources are still watched through the net10.0 build.
+			-->
+			<Watch Condition="$(TargetFramework.Contains('-android'))">false</Watch>
+		</ProjectReference>
     </ItemGroup>
     <ItemGroup Condition="'$(UseMRTKNuget)'=='true' And '$(ReferenceMRTK)'=='true'">
-		<PackageReference Include="Evergine.MRTK" Version="2025.10.20.1" />
+		<PackageReference Include="Evergine.MRTK" Version="2026.5.26.1" />
     </ItemGroup>
 	
 	<!-- Add-ons packaging -->
@@ -38,7 +45,7 @@
 		<IsAddOnProject Condition="'$(IsAddOnProject)'==''">false</IsAddOnProject>
 	</PropertyGroup>	
 	<ItemGroup Condition="'$(IsAddOnProject)'=='true'">
-		<PackageReference Include="Evergine.Packages.Targets" Version="2025.10.21.8" />
+		<PackageReference Include="Evergine.Packages.Targets" Version="2026.11.9.188-nightly" />
 	</ItemGroup>
 	
 	<!-- Stylecop -->

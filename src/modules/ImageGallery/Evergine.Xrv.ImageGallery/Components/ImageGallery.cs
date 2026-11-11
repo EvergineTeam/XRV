@@ -10,7 +10,7 @@ using Evergine.Common.Graphics;
 using Evergine.Common.IO;
 using Evergine.Components.Graphics3D;
 using Evergine.Framework;
-using Evergine.Framework.Physics3D;
+using Evergine.Framework.Physics;
 using Evergine.Framework.Threading;
 using Evergine.MRTK.Effects;
 using Evergine.MRTK.SDK.Features.UX.Components.PressableButtons;
@@ -214,7 +214,6 @@ namespace Evergine.Xrv.ImageGallery.Components
                     Height = this.ImagePixelsHeight,
                     Depth = 1,
                     ArraySize = 1,
-                    Faces = 1,
                     Usage = ResourceUsage.Default,
                     CpuAccess = ResourceCpuAccess.None,
                     Flags = TextureFlags.ShaderResource,
@@ -377,8 +376,8 @@ namespace Evergine.Xrv.ImageGallery.Components
                 this.previousButtonEntity.FindComponentInChildren<VisuallyEnabledController>().IsVisuallyEnabled = this.isVisuallyEnabled;
             }
 
-            var sliderCollider = this.slider.Owner.FindComponentInChildren<Collider3D>(isExactType: false);
-            var sliderBody = this.slider.Owner.FindComponentInChildren<StaticBody3D>();
+            var sliderCollider = this.slider.Owner.FindComponentInChildren<Collider>(isExactType: false);
+            var sliderBody = this.slider.Owner.FindComponentInChildren<StaticBody>();
             sliderCollider.IsEnabled = sliderBody.IsEnabled = this.isVisuallyEnabled;
         }
 

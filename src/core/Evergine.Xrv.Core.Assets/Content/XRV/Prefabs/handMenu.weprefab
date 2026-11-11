@@ -45,23 +45,23 @@ Root:
       SmoothingActive: true
       SmoothingAmount: 0.00100000005
       UpdateOrder: 0.5
-    - !Evergine.Framework.Physics3D.BoxCollider3D,Evergine.Framework
+    - !Evergine.Framework.Physics.BoxCollider,Evergine.Framework
       Id: 8e2def54-3a88-47bd-880c-605a0fffe3b4
       IsEnabled: true
-      Margin: 0.0399999991
       Offset:
         X: 0.0160000008
         Y: 0.0
         Z: -0.00700000022
-      OrientationOffset:
-        W: 1.0
-        X: 0.0
-        Y: 0.0
-        Z: 0.0
+      RotationOffset:
+        X: 0
+        Y: 0
+        Z: 0
       Size:
         X: 0.0320000015
         Y: 0.064000003
         Z: 0.0320000015
+      UseModelBounds: true
+      ConvexRadius: 0.0399999991
   Children:
     - !Evergine.Framework.Assets.AssetSources.Entities.EntityItemModel,Evergine.Framework
       Name: backPlate

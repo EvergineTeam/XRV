@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32630.192
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12328.437 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XrvSamples.Windows", "XrvSamples.Windows\XrvSamples.Windows.csproj", "{67B341B9-4BC0-4659-A308-B7135C168FC3}"
 EndProject
@@ -75,6 +75,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StreamingViewer", "StreamingViewer", "{E6EE1B62-738E-4044-9845-5D76E0611C6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evergine.Xrv.StreamingViewer.Assets", "..\src\modules\StreamingViewer\Evergine.Xrv.StreamingViewer.Assets\Evergine.Xrv.StreamingViewer.Assets.csproj", "{C3C09CF5-251F-434D-AA17-692F08A2A128}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AndroidXR", "AndroidXR", "{908FE432-508C-4BD0-8760-A640D84817AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XrvSamples.AndroidXR", "XrvSamples.AndroidXR\XrvSamples.AndroidXR.csproj", "{1F95282B-265B-2830-BDBE-C809971542F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -570,6 +574,27 @@ Global
 		{C3C09CF5-251F-434D-AA17-692F08A2A128}.Release|x64.Build.0 = Release|Any CPU
 		{C3C09CF5-251F-434D-AA17-692F08A2A128}.Release|x86.ActiveCfg = Release|Any CPU
 		{C3C09CF5-251F-434D-AA17-692F08A2A128}.Release|x86.Build.0 = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|x64.Build.0 = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Debug|x86.Build.0 = Debug|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|ARM.Build.0 = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|ARM64.Build.0 = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|x64.ActiveCfg = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|x64.Build.0 = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F95282B-265B-2830-BDBE-C809971542F1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -608,6 +633,8 @@ Global
 		{B5294537-7F79-486D-B9C3-A7085201AB5A} = {5D64C9B4-88EA-47FD-803B-552E4A7204AA}
 		{E6EE1B62-738E-4044-9845-5D76E0611C6F} = {C76D85BC-1D7B-4800-A03C-F5AADCDF9A9C}
 		{C3C09CF5-251F-434D-AA17-692F08A2A128} = {E6EE1B62-738E-4044-9845-5D76E0611C6F}
+		{908FE432-508C-4BD0-8760-A640D84817AB} = {8C71025C-ECC1-4711-BB57-60FAFE9A89E8}
+		{1F95282B-265B-2830-BDBE-C809971542F1} = {908FE432-508C-4BD0-8760-A640D84817AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7FB4780F-59F9-4357-9D0A-C41B393E8799}

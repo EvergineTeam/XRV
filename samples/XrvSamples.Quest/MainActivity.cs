@@ -28,6 +28,7 @@ namespace XrvSamples.Quest
         private static OpenXRPlatform openXRPlatform;
         private MyApplication application;
         private AndroidWindowsSystem windowsSystem;
+        private global::System.Threading.SynchronizationContext? foregroundContext;
 
         protected override void OnCreate(Bundle? savedInstanceState)
         {
@@ -46,7 +47,7 @@ namespace XrvSamples.Quest
             // Create Services
             this.windowsSystem = new global::Evergine.Android.AndroidWindowsSystem(this);
             this.application.Container.RegisterInstance(windowsSystem);
-            var surface = this.windowsSystem.CreateSurface(0, 0) as global::Evergine.Android.AndroidSurface;
+            var surface = this.windowsSystem.CreateSurface(false) as global::Evergine.Android.AndroidSurface;
 
             var view = this.FindViewById<RelativeLayout>(Resource.Id.evergineContainer);
             view.AddView(surface.NativeSurface);
@@ -59,11 +60,22 @@ namespace XrvSamples.Quest
             this.windowsSystem.Run(
             () =>
             {
+                // The loop runs on its own thread: post await continuations back to the Evergine loop
+                // as the Android UI thread did, so async loads never race the frame.
+                this.foregroundContext = new global::Evergine.Framework.Threading.ForegroundSynchronizationContext();
+                global::System.Threading.SynchronizationContext.SetSynchronizationContext(this.foregroundContext);
                 ConfigureGraphicsContext(this.application, surface);
                 this.application.Initialize();
             },
             () =>
             {
+                // When the app comes back from background, the surface starts the loop on a new thread
+                // without running the load action again, so the context has to be set here too.
+                if (global::System.Threading.SynchronizationContext.Current != this.foregroundContext)
+                {
+                    global::System.Threading.SynchronizationContext.SetSynchronizationContext(this.foregroundContext);
+                }
+
                 var gameTime = clockTimer.Elapsed;
                 clockTimer.Restart();
 
@@ -74,15 +86,13 @@ namespace XrvSamples.Quest
 
         }
 
-        protected override void OnStop()
+        protected override void OnDestroy()
         {
-            base.OnStop();
-            this.windowsSystem.Dispose();
-            this.application.Dispose();
+            base.OnDestroy();
+            this.windowsSystem?.Dispose();
+            this.application?.Dispose();
             this.windowsSystem = null;
             this.application = null;
-
-            Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
         }
 
         private void ConfigureGraphicsContext(MyApplication application, Surface surface)
